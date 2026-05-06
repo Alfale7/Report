@@ -4,7 +4,6 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>تقرير التميز التعليمي</title>
-    <!-- مكتبة تحويل الكود إلى صورة -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Tajawal:wght@400;700;900&display=swap');
@@ -25,10 +24,10 @@
 
         .main-wrapper {
             height: 100vh; display: flex; flex-direction: column;
-            padding: 10px; box-sizing: border-box;
+            padding: 10px 10px 40px 10px; /* زيادة الهامش السفلي لرفع الأزرار */
+            box-sizing: border-box;
         }
 
-        /* الجزء المطلوب تصويره */
         #report-area {
             flex: 1; display: flex; flex-direction: column;
             padding: 5px; overflow: hidden;
@@ -85,7 +84,15 @@
         .box-fill { flex: 1; display: flex; flex-direction: column; }
         .box-fill textarea { flex: 1; resize: none; min-height: 80px; }
 
-        .action-bar { margin-top: 8px; display: flex; gap: 8px; flex-shrink: 0; }
+        /* تعديل منطقة الأزرار لرفعها بعيداً عن شريط المتصفح */
+        .action-bar { 
+            margin-top: 15px; 
+            display: flex; 
+            gap: 8px; 
+            flex-shrink: 0;
+            padding-bottom: 20px; /* مساحة إضافية داخل شريط الأزرار */
+        }
+        
         .btn { flex: 1; padding: 12px; border: none; border-radius: 10px; font-weight: 700; cursor: pointer; font-size: 0.8rem; }
         .btn-gold { background: linear-gradient(45deg, #d4af37, #aa891e); color: #1a262f; }
         .btn-blue { background: #2980b9; color: white; }
@@ -106,7 +113,6 @@
 <body>
 
     <div class="main-wrapper">
-        <!-- منطقة التقرير القابلة للتحميل -->
         <div id="report-area">
             <header>
                 <img src="logo.png" class="moe-logo" alt="logo">
@@ -144,7 +150,6 @@
             </div>
         </div>
 
-        <!-- الأزرار -->
         <div class="action-bar">
             <button class="btn btn-gray" onclick="location.reload()">تفريغ</button>
             <button class="btn btn-blue" onclick="downloadImage()">تحميل كصورة</button>
@@ -167,7 +172,6 @@
             }
         }
 
-        // دالة تحميل التقرير كصورة PNG
         function downloadImage() {
             const area = document.getElementById('report-area');
             html2canvas(area, { backgroundColor: "#1a262f", scale: 2 }).then(canvas => {
