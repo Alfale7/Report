@@ -3,15 +3,16 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>تقرير التميز التعليمي</title>
+    <title>تقرير المنجزات التعليمي</title>
+    <!-- مكتبة التحميل كصورة -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Tajawal:wght@400;700;900&display=swap');
 
         :root {
             --bg-dark: #1a262f;
-            --panel-bg: rgba(255, 255, 255, 0.05);
             --gold: #d4af37;
+            --panel-bg: rgba(255, 255, 255, 0.05);
             --border-color: rgba(212, 175, 55, 0.3);
         }
 
@@ -20,18 +21,17 @@
             overflow: hidden; font-family: 'Tajawal', sans-serif;
             background-color: var(--bg-dark);
             color: #fff;
-            direction: rtl;
         }
 
         .main-wrapper {
             height: 100vh; display: flex; flex-direction: column;
-            padding: 8px 8px 30px 8px;
+            padding: 10px 10px 35px 10px;
             box-sizing: border-box;
         }
 
         #report-area {
             flex: 1; display: flex; flex-direction: column;
-            padding: 10px; overflow: hidden;
+            padding: 5px; overflow: hidden;
             background-color: var(--bg-dark);
         }
 
@@ -39,16 +39,16 @@
             background: rgba(255, 255, 255, 0.03);
             border: 1px solid var(--border-color);
             border-radius: 12px;
-            padding: 6px 15px;
+            padding: 8px 15px;
             display: flex; justify-content: space-between; align-items: center;
-            margin-bottom: 8px; flex-shrink: 0;
+            margin-bottom: 10px; flex-shrink: 0;
         }
 
         .header-info { text-align: center; flex: 1; }
-        .header-info h1 { margin: 0; font-size: 1rem; color: var(--gold); font-weight: 900; }
-        .header-info p { margin: 0; font-size: 0.8rem; opacity: 0.8; }
+        .header-info h1 { margin: 0; font-size: 1.1rem; color: var(--gold); font-weight: 900; }
+        .header-info p { margin: 0; font-size: 0.85rem; opacity: 0.9; }
 
-        .moe-logo { width: 65px; height: auto; }
+        .moe-logo { width: 70px; height: auto; }
 
         .app-grid {
             flex: 1; display: grid;
@@ -59,7 +59,7 @@
         .photo-stack { display: flex; flex-direction: column; gap: 8px; overflow-y: auto; }
 
         .photo-card {
-            height: 125px;
+            height: 130px;
             background: var(--panel-bg);
             border: 1.5px dashed var(--border-color);
             border-radius: 10px;
@@ -68,7 +68,7 @@
         }
 
         .photo-card img { width: 100%; height: 100%; object-fit: contain; display: none; }
-        .photo-card span { font-size: 0.65rem; color: #aaa; }
+        .photo-card span { font-size: 0.75rem; color: #aaa; }
 
         .inputs-stack { display: flex; flex-direction: column; gap: 5px; }
         .input-item {
@@ -76,38 +76,34 @@
             border-radius: 8px;
             padding: 5px 12px;
             border-right: 4px solid var(--gold);
-            text-align: right;
         }
-        .input-item label { display: block; font-size: 0.6rem; color: var(--gold); font-weight: bold; margin-bottom: 2px; }
+        .input-item label { display: block; font-size: 0.65rem; color: var(--gold); font-weight: bold; margin-bottom: 2px; }
         
-        /* جعل الحقول تتصرف كنص عادي يلتف تلقائياً */
-        .editable-field {
+        .input-item input, .input-item textarea {
             width: 100%; border: none; outline: none; font-family: 'Tajawal';
-            font-size: 0.85rem; color: #fff; background: transparent;
+            font-size: 0.9rem; color: #fff; background: transparent;
             text-align: right; direction: rtl;
-            white-space: pre-wrap;
-            word-wrap: break-word;
-            min-height: 1.2em;
         }
 
         .box-fill { flex: 1; display: flex; flex-direction: column; overflow: hidden; }
-        .goals-box { flex: 1; overflow-y: auto; min-height: 80px; }
+        .box-fill textarea { flex: 1; resize: none; min-height: 80px; overflow-y: auto; }
 
-        .action-bar { margin-top: 10px; display: flex; gap: 6px; flex-shrink: 0; padding-bottom: 15px; }
-        .btn { flex: 1; padding: 12px; border: none; border-radius: 10px; font-weight: 700; cursor: pointer; font-size: 0.8rem; }
+        .action-bar { margin-top: 10px; display: flex; gap: 10px; flex-shrink: 0; padding-bottom: 15px; }
+        .btn { flex: 1; padding: 12px; border: none; border-radius: 10px; font-weight: 700; cursor: pointer; font-size: 0.85rem; }
         .btn-gold { background: linear-gradient(45deg, #d4af37, #aa891e); color: #1a262f; }
         .btn-blue { background: #2980b9; color: white; }
         .btn-gray { background: rgba(255,255,255,0.1); color: #fff; }
 
-        #print-container { display: none; }
-
         @media print {
-            body * { visibility: hidden; }
-            #print-container, #print-container * { visibility: visible; }
-            #print-container { position: absolute; left: 0; top: 0; width: 100%; display: block !important; }
-            #print-container img { width: 100%; height: auto; }
-            @page { margin: 0; size: auto; }
+            @page { size: A4; margin: 0; }
             * { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
+            body, html { background-color: var(--bg-dark) !important; height: 100%; overflow: hidden !important; }
+            .main-wrapper { width: 210mm; height: 297mm; padding: 10mm; box-sizing: border-box; margin: 0; }
+            .btn, .action-bar { display: none !important; }
+            header { background: rgba(255, 255, 255, 0.03) !important; border: 1px solid var(--border-color) !important; }
+            .input-item { background: var(--panel-bg) !important; }
+            .photo-card { height: 30% !important; background: var(--panel-bg) !important; }
+            input, textarea { color: #fff !important; }
         }
     </style>
 </head>
@@ -121,7 +117,7 @@
                     <h1>تـقـريـر الـفـعـالـيـة</h1>
                     <p>الإدارة العامة للتعليم</p>
                 </div>
-                <div style="width: 65px;"></div>
+                <div style="width: 70px;"></div>
             </header>
 
             <div class="app-grid">
@@ -141,41 +137,25 @@
                 </div>
 
                 <div class="inputs-stack">
-                    <div class="input-item"><label>الاسم / الجهة</label>
-                        <div class="editable-field" contenteditable="true" placeholder="..."></div>
-                    </div>
-                    <div class="input-item"><label>تاريخ التقرير</label>
-                        <div class="editable-field" contenteditable="true" placeholder="..."></div>
-                    </div>
-                    <div class="input-item"><label>المقر</label>
-                        <div class="editable-field" contenteditable="true" placeholder="..."></div>
-                    </div>
-                    <div class="input-item"><label>المستهدفون</label>
-                        <div class="editable-field" contenteditable="true" placeholder="..."></div>
-                    </div>
-                    <div class="input-item"><label>العدد</label>
-                        <div class="editable-field" contenteditable="true">0</div>
-                    </div>
-                    <div class="input-item box-fill">
-                        <label>الأهداف</label>
-                        <div class="editable-field goals-box" contenteditable="true" placeholder="اكتب هنا..."></div>
-                    </div>
+                    <div class="input-item"><label>الاسم / الجهة</label><input type="text" placeholder="..."></div>
+                    <div class="input-item"><label>تاريخ التقرير</label><input type="text" placeholder="..."></div>
+                    <div class="input-item"><label>المقر</label><input type="text" placeholder="..."></div>
+                    <div class="input-item"><label>المستهدفون</label><input type="text" placeholder="..."></div>
+                    <div class="input-item"><label>العدد</label><input type="number" value="0"></div>
+                    <div class="input-item box-fill"><label>الأهداف</label><textarea placeholder="..."></textarea></div>
                 </div>
             </div>
         </div>
 
         <div class="action-bar">
             <button class="btn btn-gray" onclick="location.reload()">تفريغ</button>
-            <button class="btn btn-blue" onclick="exportDoc('image')">تحميل كصورة</button>
-            <button class="btn btn-gold" onclick="exportDoc('pdf')">تصدير PDF</button>
+            <button class="btn btn-blue" onclick="downloadImage()">تحميل كصورة</button>
+            <button class="btn btn-gold" onclick="window.print()">تصدير PDF</button>
         </div>
     </div>
 
-    <div id="print-container"></div>
-
     <script>
         function openF(id) { document.getElementById('i' + id).click(); }
-        
         function preview(input, imgId, textId) {
             if (input.files && input.files[0]) {
                 const r = new FileReader();
@@ -189,30 +169,18 @@
             }
         }
 
-        function exportDoc(type) {
+        // دالة التحميل كصورة (مع ملاحظة احتمالية تقطع الحروف العربية في بعض المتصفحات)
+        function downloadImage() {
             const area = document.getElementById('report-area');
             html2canvas(area, { 
                 backgroundColor: "#1a262f", 
                 scale: 3, 
-                useCORS: true,
-                scrollX: 0,
-                scrollY: 0,
-                windowWidth: area.scrollWidth,
-                windowHeight: area.scrollHeight
+                useCORS: true 
             }).then(canvas => {
-                if (type === 'image') {
-                    const link = document.createElement('a');
-                    link.download = 'تقرير_فعالية.png';
-                    link.href = canvas.toDataURL("image/png");
-                    link.click();
-                } else {
-                    const printContainer = document.getElementById('print-container');
-                    printContainer.innerHTML = '';
-                    const img = document.createElement('img');
-                    img.src = canvas.toDataURL("image/png");
-                    printContainer.appendChild(img);
-                    setTimeout(() => { window.print(); }, 500);
-                }
+                const link = document.createElement('a');
+                link.download = 'تقرير_فعالية.png';
+                link.href = canvas.toDataURL("image/png");
+                link.click();
             });
         }
     </script>
