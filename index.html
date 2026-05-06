@@ -31,7 +31,7 @@
 
         #report-area {
             flex: 1; display: flex; flex-direction: column;
-            padding: 5px; overflow: hidden;
+            padding: 10px; overflow: hidden;
             background-color: var(--bg-dark);
         }
 
@@ -41,7 +41,7 @@
             border-radius: 12px;
             padding: 6px 15px;
             display: flex; justify-content: space-between; align-items: center;
-            margin-bottom: 6px; flex-shrink: 0;
+            margin-bottom: 8px; flex-shrink: 0;
         }
 
         .header-info { text-align: center; flex: 1; }
@@ -53,10 +53,10 @@
         .app-grid {
             flex: 1; display: grid;
             grid-template-columns: 0.9fr 1.1fr;
-            gap: 8px; overflow: hidden;
+            gap: 10px; overflow: hidden;
         }
 
-        .photo-stack { display: flex; flex-direction: column; gap: 6px; overflow-y: auto; }
+        .photo-stack { display: flex; flex-direction: column; gap: 8px; overflow-y: auto; }
 
         .photo-card {
             height: 125px;
@@ -70,30 +70,31 @@
         .photo-card img { width: 100%; height: 100%; object-fit: contain; display: none; }
         .photo-card span { font-size: 0.65rem; color: #aaa; }
 
-        .inputs-stack { display: flex; flex-direction: column; gap: 4px; }
+        .inputs-stack { display: flex; flex-direction: column; gap: 5px; }
         .input-item {
             background: var(--panel-bg);
             border-radius: 8px;
-            padding: 3px 12px;
-            border-right: 3px solid var(--gold);
+            padding: 5px 12px;
+            border-right: 4px solid var(--gold);
             text-align: right;
         }
-        .input-item label { display: block; font-size: 0.55rem; color: var(--gold); font-weight: bold; text-align: right; }
+        .input-item label { display: block; font-size: 0.6rem; color: var(--gold); font-weight: bold; margin-bottom: 2px; }
         
-        /* ضبط الحقول لضمان عدم تقطع الكلام عند التحميل */
-        .input-item input, .input-item textarea {
+        /* جعل الحقول تتصرف كنص عادي يلتف تلقائياً */
+        .editable-field {
             width: 100%; border: none; outline: none; font-family: 'Tajawal';
             font-size: 0.85rem; color: #fff; background: transparent;
             text-align: right; direction: rtl;
             white-space: pre-wrap;
             word-wrap: break-word;
+            min-height: 1.2em;
         }
 
         .box-fill { flex: 1; display: flex; flex-direction: column; overflow: hidden; }
-        .box-fill textarea { flex: 1; resize: none; min-height: 80px; overflow-y: auto; }
+        .goals-box { flex: 1; overflow-y: auto; min-height: 80px; }
 
         .action-bar { margin-top: 10px; display: flex; gap: 6px; flex-shrink: 0; padding-bottom: 15px; }
-        .btn { flex: 1; padding: 10px; border: none; border-radius: 10px; font-weight: 700; cursor: pointer; font-size: 0.8rem; }
+        .btn { flex: 1; padding: 12px; border: none; border-radius: 10px; font-weight: 700; cursor: pointer; font-size: 0.8rem; }
         .btn-gold { background: linear-gradient(45deg, #d4af37, #aa891e); color: #1a262f; }
         .btn-blue { background: #2980b9; color: white; }
         .btn-gray { background: rgba(255,255,255,0.1); color: #fff; }
@@ -140,20 +141,33 @@
                 </div>
 
                 <div class="inputs-stack">
-                    <div class="input-item"><label>الاسم / الجهة</label><input type="text" placeholder="..."></div>
-                    <div class="input-item"><label>تاريخ التقرير</label><input type="text" placeholder="..."></div>
-                    <div class="input-item"><label>المقر</label><input type="text" placeholder="..."></div>
-                    <div class="input-item"><label>المستهدفون</label><input type="text" placeholder="..."></div>
-                    <div class="input-item"><label>العدد</label><input type="number" value="0"></div>
-                    <div class="input-item box-fill"><label>الأهداف</label><textarea placeholder="..."></textarea></div>
+                    <div class="input-item"><label>الاسم / الجهة</label>
+                        <div class="editable-field" contenteditable="true" placeholder="..."></div>
+                    </div>
+                    <div class="input-item"><label>تاريخ التقرير</label>
+                        <div class="editable-field" contenteditable="true" placeholder="..."></div>
+                    </div>
+                    <div class="input-item"><label>المقر</label>
+                        <div class="editable-field" contenteditable="true" placeholder="..."></div>
+                    </div>
+                    <div class="input-item"><label>المستهدفون</label>
+                        <div class="editable-field" contenteditable="true" placeholder="..."></div>
+                    </div>
+                    <div class="input-item"><label>العدد</label>
+                        <div class="editable-field" contenteditable="true">0</div>
+                    </div>
+                    <div class="input-item box-fill">
+                        <label>الأهداف</label>
+                        <div class="editable-field goals-box" contenteditable="true" placeholder="اكتب هنا..."></div>
+                    </div>
                 </div>
             </div>
         </div>
 
         <div class="action-bar">
             <button class="btn btn-gray" onclick="location.reload()">تفريغ</button>
-            <button class="btn btn-blue" onclick="exportData('image')">تحميل كصورة</button>
-            <button class="btn btn-gold" onclick="exportData('pdf')">تصدير PDF</button>
+            <button class="btn btn-blue" onclick="exportDoc('image')">تحميل كصورة</button>
+            <button class="btn btn-gold" onclick="exportDoc('pdf')">تصدير PDF</button>
         </div>
     </div>
 
@@ -175,14 +189,16 @@
             }
         }
 
-        function exportData(type) {
+        function exportDoc(type) {
             const area = document.getElementById('report-area');
-            // تم إلغاء تحويل الحقول لنص عادي لمنع تقطع الحروف العربية
             html2canvas(area, { 
                 backgroundColor: "#1a262f", 
                 scale: 3, 
                 useCORS: true,
-                letterRendering: true // تحسين ريندر الحروف
+                scrollX: 0,
+                scrollY: 0,
+                windowWidth: area.scrollWidth,
+                windowHeight: area.scrollHeight
             }).then(canvas => {
                 if (type === 'image') {
                     const link = document.createElement('a');
