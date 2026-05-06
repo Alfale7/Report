@@ -25,7 +25,7 @@
 
         .main-wrapper {
             height: 100vh; display: flex; flex-direction: column;
-            padding: 8px 8px 30px 8px; /* تقليل الهوامش لرفع المحتوى */
+            padding: 8px 8px 30px 8px;
             box-sizing: border-box;
         }
 
@@ -39,7 +39,7 @@
             background: rgba(255, 255, 255, 0.03);
             border: 1px solid var(--border-color);
             border-radius: 12px;
-            padding: 6px 15px; /* تصغير الهيدر */
+            padding: 6px 15px;
             display: flex; justify-content: space-between; align-items: center;
             margin-bottom: 6px; flex-shrink: 0;
         }
@@ -59,7 +59,7 @@
         .photo-stack { display: flex; flex-direction: column; gap: 6px; overflow-y: auto; }
 
         .photo-card {
-            height: 125px; /* تقليل الارتفاع لضمان ظهور الشاهد الثالث */
+            height: 125px;
             background: var(--panel-bg);
             border: 1.5px dashed var(--border-color);
             border-radius: 10px;
@@ -74,15 +74,19 @@
         .input-item {
             background: var(--panel-bg);
             border-radius: 8px;
-            padding: 3px 12px; /* تقليل الحشو الداخلي */
+            padding: 3px 12px;
             border-right: 3px solid var(--gold);
             text-align: right;
         }
         .input-item label { display: block; font-size: 0.55rem; color: var(--gold); font-weight: bold; text-align: right; }
+        
+        /* تعديل حقل النص لمنع القص وضمان نزول السطر */
         .input-item input, .input-item textarea {
             width: 100%; border: none; outline: none; font-family: 'Tajawal';
             font-size: 0.8rem; color: #fff; background: transparent;
             text-align: right; direction: rtl;
+            white-space: pre-wrap; /* يضمن نزول السطر */
+            word-wrap: break-word; /* يكسر الكلمات الطويلة */
         }
 
         .box-fill { flex: 1; display: flex; flex-direction: column; overflow: hidden; }
@@ -102,6 +106,7 @@
             #print-container { position: absolute; left: 0; top: 0; width: 100%; display: block !important; }
             #print-container img { width: 100%; height: auto; }
             @page { margin: 0; size: auto; }
+            * { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
         }
     </style>
 </head>
@@ -170,7 +175,7 @@
         }
 
         function generateCanvas(area) {
-            return html2canvas(area, { backgroundColor: "#1a262f", scale: 3, useCORS: true, logging: false });
+            return html2canvas(area, { backgroundColor: "#1a262f", scale: 3, useCORS: true });
         }
 
         function downloadImage() {
