@@ -20,46 +20,46 @@
             overflow: hidden; font-family: 'Tajawal', sans-serif;
             background-color: var(--bg-dark);
             color: #fff;
-            direction: rtl; /* اتجاه عام للموقع من اليمين */
+            direction: rtl;
         }
 
         .main-wrapper {
             height: 100vh; display: flex; flex-direction: column;
-            padding: 10px 10px 40px 10px;
+            padding: 8px 8px 30px 8px; /* تقليل الهوامش لرفع المحتوى */
             box-sizing: border-box;
         }
 
         #report-area {
             flex: 1; display: flex; flex-direction: column;
             padding: 5px; overflow: hidden;
-            background-color: var(--bg-dark); /* لضمان خلفية الصورة المحملة */
+            background-color: var(--bg-dark);
         }
 
         header {
             background: rgba(255, 255, 255, 0.03);
             border: 1px solid var(--border-color);
             border-radius: 12px;
-            padding: 8px 15px;
+            padding: 6px 15px; /* تصغير الهيدر */
             display: flex; justify-content: space-between; align-items: center;
-            margin-bottom: 8px; flex-shrink: 0;
+            margin-bottom: 6px; flex-shrink: 0;
         }
 
         .header-info { text-align: center; flex: 1; }
-        .header-info h1 { margin: 0; font-size: 1.1rem; color: var(--gold); font-weight: 900; }
-        .header-info p { margin: 0; font-size: 0.85rem; opacity: 0.8; }
+        .header-info h1 { margin: 0; font-size: 1rem; color: var(--gold); font-weight: 900; }
+        .header-info p { margin: 0; font-size: 0.8rem; opacity: 0.8; }
 
-        .moe-logo { width: 70px; height: auto; }
+        .moe-logo { width: 65px; height: auto; }
 
         .app-grid {
             flex: 1; display: grid;
             grid-template-columns: 0.9fr 1.1fr;
-            gap: 10px; overflow: hidden;
+            gap: 8px; overflow: hidden;
         }
 
-        .photo-stack { display: flex; flex-direction: column; gap: 8px; overflow-y: auto; }
+        .photo-stack { display: flex; flex-direction: column; gap: 6px; overflow-y: auto; }
 
         .photo-card {
-            height: 135px;
+            height: 125px; /* تقليل الارتفاع لضمان ظهور الشاهد الثالث */
             background: var(--panel-bg);
             border: 1.5px dashed var(--border-color);
             border-radius: 10px;
@@ -68,49 +68,40 @@
         }
 
         .photo-card img { width: 100%; height: 100%; object-fit: contain; display: none; }
-        .photo-card span { font-size: 0.7rem; color: #aaa; }
+        .photo-card span { font-size: 0.65rem; color: #aaa; }
 
-        .inputs-stack { display: flex; flex-direction: column; gap: 5px; }
+        .inputs-stack { display: flex; flex-direction: column; gap: 4px; }
         .input-item {
             background: var(--panel-bg);
             border-radius: 8px;
-            padding: 4px 12px;
+            padding: 3px 12px; /* تقليل الحشو الداخلي */
             border-right: 3px solid var(--gold);
-            text-align: right; /* محاذاة المربعات لليمين */
+            text-align: right;
         }
-        .input-item label { display: block; font-size: 0.6rem; color: var(--gold); font-weight: bold; text-align: right; }
+        .input-item label { display: block; font-size: 0.55rem; color: var(--gold); font-weight: bold; text-align: right; }
         .input-item input, .input-item textarea {
             width: 100%; border: none; outline: none; font-family: 'Tajawal';
-            font-size: 0.85rem; color: #fff; background: transparent;
-            text-align: right; /* محاذاة النص داخل الحقول لليمين */
-            direction: rtl;
+            font-size: 0.8rem; color: #fff; background: transparent;
+            text-align: right; direction: rtl;
         }
 
-        .box-fill { flex: 1; display: flex; flex-direction: column; overflow: visible; }
-        .box-fill textarea { flex: 1; resize: none; min-height: 80px; overflow: visible; }
+        .box-fill { flex: 1; display: flex; flex-direction: column; overflow: hidden; }
+        .box-fill textarea { flex: 1; resize: none; min-height: 60px; overflow-y: auto; }
 
-        .action-bar { 
-            margin-top: 15px; 
-            display: flex; 
-            gap: 8px; 
-            flex-shrink: 0;
-            padding-bottom: 20px;
-        }
-        
-        .btn { flex: 1; padding: 12px; border: none; border-radius: 10px; font-weight: 700; cursor: pointer; font-size: 0.8rem; }
+        .action-bar { margin-top: 10px; display: flex; gap: 6px; flex-shrink: 0; padding-bottom: 15px; }
+        .btn { flex: 1; padding: 10px; border: none; border-radius: 10px; font-weight: 700; cursor: pointer; font-size: 0.8rem; }
         .btn-gold { background: linear-gradient(45deg, #d4af37, #aa891e); color: #1a262f; }
         .btn-blue { background: #2980b9; color: white; }
         .btn-gray { background: rgba(255,255,255,0.1); color: #fff; }
 
+        #print-container { display: none; }
+
         @media print {
-            @page { size: A4; margin: 0; }
-            body, html { background: #fff !important; color: #000 !important; height: 100%; overflow: hidden !important; }
-            .main-wrapper { width: 210mm; height: 297mm; padding: 10mm; }
-            .btn, .action-bar { display: none !important; }
-            header { border: 1px solid #000; background: #f0f0f0 !important; }
-            .input-item { border: 1px solid #000; background: none; margin-bottom: 1mm; }
-            .input-item label, .input-item input, .input-item textarea, .header-info h1, .header-info p { color: #000 !important; }
-            .photo-card { border: 1px solid #000; height: 30% !important; background: none; }
+            body * { visibility: hidden; }
+            #print-container, #print-container * { visibility: visible; }
+            #print-container { position: absolute; left: 0; top: 0; width: 100%; display: block !important; }
+            #print-container img { width: 100%; height: auto; }
+            @page { margin: 0; size: auto; }
         }
     </style>
 </head>
@@ -124,7 +115,7 @@
                     <h1>تـقـريـر الـفـعـالـيـة</h1>
                     <p>الإدارة العامة للتعليم</p>
                 </div>
-                <div style="width: 70px;"></div>
+                <div style="width: 65px;"></div>
             </header>
 
             <div class="app-grid">
@@ -157,9 +148,11 @@
         <div class="action-bar">
             <button class="btn btn-gray" onclick="location.reload()">تفريغ</button>
             <button class="btn btn-blue" onclick="downloadImage()">تحميل كصورة</button>
-            <button class="btn btn-gold" onclick="window.print()">تصدير PDF</button>
+            <button class="btn btn-gold" onclick="exportPDF()">تصدير PDF</button>
         </div>
     </div>
+
+    <div id="print-container"></div>
 
     <script>
         function openF(id) { document.getElementById('i' + id).click(); }
@@ -176,20 +169,28 @@
             }
         }
 
+        function generateCanvas(area) {
+            return html2canvas(area, { backgroundColor: "#1a262f", scale: 3, useCORS: true, logging: false });
+        }
+
         function downloadImage() {
-            const area = document.getElementById('report-area');
-            // تحسينات التحميل كصورة
-            html2canvas(area, { 
-                backgroundColor: "#1a262f", 
-                scale: 3, // دقة أعلى
-                useCORS: true,
-                scrollX: 0,
-                scrollY: -window.scrollY
-            }).then(canvas => {
+            generateCanvas(document.getElementById('report-area')).then(canvas => {
                 const link = document.createElement('a');
                 link.download = 'تقرير_فعالية.png';
                 link.href = canvas.toDataURL("image/png");
                 link.click();
+            });
+        }
+
+        function exportPDF() {
+            const area = document.getElementById('report-area');
+            const printContainer = document.getElementById('print-container');
+            generateCanvas(area).then(canvas => {
+                printContainer.innerHTML = '';
+                const img = document.createElement('img');
+                img.src = canvas.toDataURL("image/png");
+                printContainer.appendChild(img);
+                setTimeout(() => { window.print(); }, 500);
             });
         }
     </script>
