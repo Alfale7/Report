@@ -1,159 +1,739 @@
 <!DOCTYPE html>
 <html lang="ar" dir="rtl">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>تقرير المنجزات</title>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
-    <style>
-        @import url('https://fonts.googleapis.com/css2?family=Tajawal:wght@400;700;900&display=swap');
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>تقرير يوم التأسيس</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Tajawal:wght@400;700;900&display=swap');
 
-        :root {
-            --bg-dark: #1a262f;
-            --gold: #d4af37;
-            --panel-bg: rgba(255, 255, 255, 0.05);
-            --border-color: rgba(212, 175, 55, 0.3);
-        }
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
 
-        body, html {
-            margin: 0; padding: 0; width: 100%; height: 100vh;
-            overflow: hidden; font-family: 'Tajawal', sans-serif;
-            background-color: var(--bg-dark); color: #fff;
-        }
+body{
+  font-family:'Tajawal',sans-serif;
+  background:#e8e0d5;
+  min-height:100vh;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  padding:10px 0 30px;
+}
 
-        .main-wrapper {
-            height: 100vh; display: flex; flex-direction: column;
-            padding: 5px 10px 30px 10px; box-sizing: border-box;
-        }
+/* ══════════════════════════════
+   PAGE (A4-ish white sheet)
+══════════════════════════════ */
+#page{
+  width:100%;
+  max-width:480px;
+  background:#fff;
+  position:relative;
+  overflow:hidden;
+  box-shadow:0 4px 24px rgba(0,0,0,0.18);
+}
 
-        #report-area {
-            flex: 1; display: flex; flex-direction: column;
-            padding: 8px; overflow: hidden; background-color: var(--bg-dark);
-        }
+/* ── TOP BEIGE BAND ── */
+.top-band{
+  background:#c9b99a;
+  padding:10px 14px;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:8px;
+}
 
-        header {
-            background: rgba(255, 255, 255, 0.02); border: 1.2px solid var(--border-color);
-            border-radius: 10px; padding: 8px; display: flex;
-            justify-content: space-between; align-items: center; margin-bottom: 8px;
-            flex-shrink: 0;
-        }
+/* Founding day logo area */
+.founding-logo{
+  display:flex;
+  flex-direction:column;
+  align-items:flex-start;
+  gap:1px;
+}
+.founding-title{
+  font-size:1rem;
+  font-weight:900;
+  color:#3d2b1f;
+  line-height:1.1;
+  white-space:nowrap;
+}
+.founding-en{
+  font-size:0.55rem;
+  color:#5a3e2b;
+  letter-spacing:0.03em;
+}
+.founding-date{
+  font-size:0.55rem;
+  color:#5a3e2b;
+  direction:ltr;
+}
 
-        .header-info h1 { margin: 0; font-size: 1rem; color: var(--gold); font-weight: 900; }
-        .header-info p { margin: 0; font-size: 0.75rem; opacity: 0.8; }
-        .moe-logo { width: 60px; height: auto; }
+/* central emblem */
+.emblem{
+  width:52px;height:52px;
+  border-radius:50%;
+  background:radial-gradient(circle,#b5a080,#8a6e4e);
+  border:2.5px solid #7a5c3a;
+  display:flex;align-items:center;justify-content:center;
+  font-size:1.3rem;
+  flex-shrink:0;
+}
 
-        .app-grid { flex: 1; display: grid; grid-template-columns: 1fr 1.1fr; gap: 8px; overflow: hidden; }
-        
-        /* ضبط الشواهد لتظهر بالكامل */
-        .photo-stack { display: flex; flex-direction: column; gap: 6px; overflow: hidden; }
-        .photo-card {
-            flex: 1; min-height: 0; background: var(--panel-bg); border: 1.2px dashed var(--border-color);
-            border-radius: 8px; display: flex; align-items: center; justify-content: center;
-            cursor: pointer; overflow: hidden; position: relative;
-        }
-        .photo-card img { width: 100%; height: 100%; object-fit: contain; display: none; }
-        .photo-card span { font-size: 0.65rem; color: #aaa; }
+/* MOE logo */
+.moe-logo-box{
+  display:flex;
+  flex-direction:column;
+  align-items:flex-end;
+  gap:2px;
+}
+.moe-dots{
+  display:grid;
+  grid-template-columns:repeat(5,7px);
+  gap:2px;
+}
+.moe-dot{
+  width:7px;height:7px;
+  border-radius:50%;
+  background:#3d2b1f;
+}
+/* fade-out pattern like the logo */
+.moe-dot:nth-child(1),.moe-dot:nth-child(2){opacity:0.3;}
+.moe-dot:nth-child(6){opacity:0.3;}
+.moe-dot:nth-child(11){opacity:0.2;}
+.moe-dot:nth-child(16){opacity:0.15;}
+.moe-dot:nth-child(21){opacity:0.1;}
+.moe-name{
+  font-size:0.72rem;
+  font-weight:700;
+  color:#3d2b1f;
+  text-align:left;
+  white-space:nowrap;
+}
+.moe-name-en{
+  font-size:0.5rem;
+  color:#5a3e2b;
+  text-align:left;
+}
 
-        /* ضبط الحقول لضمان ظهور حقل الاسم */
-        .inputs-stack { display: flex; flex-direction: column; gap: 5px; overflow: hidden; }
-        .input-item {
-            background: var(--panel-bg); border-radius: 6px; padding: 4px 10px;
-            border-right: 3px solid var(--gold); flex-shrink: 0;
-        }
-        .input-item label { display: block; font-size: 0.6rem; color: var(--gold); font-weight: bold; margin-bottom: 1px; }
-        
-        .input-item input, .input-item textarea {
-            width: 100%; border: none; outline: none; font-family: 'Tajawal';
-            font-size: 0.85rem; color: #fff; background: transparent; text-align: right;
-        }
+/* ── SUB-HEADER (الإدارة العامة) ── */
+.sub-header{
+  background:#c9b99a;
+  text-align:center;
+  font-size:0.72rem;
+  color:#3d2b1f;
+  padding:3px 10px;
+  border-top:1px solid #b5a07a;
+}
 
-        /* حقل الطباعة الوهمي لحل مشكلة الحروف العربية */
-        .print-text { display: none; white-space: pre-wrap; word-wrap: break-word; font-size: 0.85rem; color: #fff; line-height: 1.4; }
+/* ── TITLE BARS ── */
+.title-bar{
+  background:#5a3e2b;
+  margin:8px 12px 0;
+  border-radius:3px;
+  padding:7px 16px;
+  font-size:0.88rem;
+  font-weight:700;
+  color:#fff;
+  text-align:center;
+  min-height:28px;
+}
+.title-bar.editable{
+  outline:none;
+  cursor:text;
+}
+.title-bar.editable:empty::before{
+  content:attr(data-ph);
+  opacity:0.4;
+}
 
-        .box-fill { flex: 1; display: flex; flex-direction: column; min-height: 0; }
-        .box-fill textarea { flex: 1; resize: none; overflow-y: auto; }
+.subtitle-bar{
+  background:#e8dcc8;
+  margin:4px 12px 0;
+  border-radius:3px;
+  padding:5px 16px;
+  font-size:0.78rem;
+  color:#5a3e2b;
+  font-weight:700;
+  text-align:center;
+  min-height:24px;
+}
+.subtitle-bar.editable{
+  outline:none;
+  cursor:text;
+}
+.subtitle-bar.editable:empty::before{
+  content:attr(data-ph);
+  opacity:0.4;
+}
 
-        .action-bar { margin-top: 10px; display: flex; gap: 8px; padding-bottom: 15px; flex-shrink: 0; }
-        .btn { flex: 1; padding: 12px; border: none; border-radius: 10px; font-weight: 700; cursor: pointer; font-size: 0.85rem; }
-        .btn-blue { background: #2980b9; color: white; }
-        .btn-gray { background: rgba(255,255,255,0.1); color: #fff; }
-    </style>
+/* ── MAIN CONTENT ── */
+.main-body{
+  padding:8px 12px;
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:8px;
+  align-items:start;
+}
+
+/* Photos column (right) */
+.photos-col{
+  display:flex;
+  flex-direction:column;
+  gap:6px;
+}
+.photo-frame{
+  width:100%;
+  aspect-ratio:4/3;
+  border:2px solid #8a6e4e;
+  background:#d4c5a9;
+  position:relative;
+  cursor:pointer;
+  overflow:hidden;
+  display:flex;align-items:center;justify-content:center;
+  box-shadow:inset 0 0 0 3px #c9b99a, inset 0 0 0 5px #8a6e4e;
+}
+.photo-frame img{
+  width:100%;height:100%;
+  object-fit:cover;
+  display:none;
+}
+.frame-placeholder{
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  gap:4px;
+  pointer-events:none;
+}
+/* watermark ring inside each frame */
+.frame-watermark{
+  position:absolute;
+  width:55%;aspect-ratio:1;
+  border-radius:50%;
+  border:3px solid rgba(90,62,43,0.15);
+  display:flex;align-items:center;justify-content:center;
+  font-size:1.4rem;
+  opacity:0.3;
+}
+.photo-spinner{
+  display:none;
+  width:20px;height:20px;
+  border:2px solid #c9b99a;
+  border-top-color:#5a3e2b;
+  border-radius:50%;
+  animation:spin 0.6s linear infinite;
+  position:absolute;
+}
+@keyframes spin{to{transform:rotate(360deg);}}
+.add-label{
+  font-size:0.55rem;
+  color:#5a3e2b;
+  font-weight:700;
+}
+
+/* Fields column (left) */
+.fields-col{
+  display:flex;
+  flex-direction:column;
+  gap:5px;
+}
+.field-row{
+  border:1px solid #8a6e4e;
+  border-radius:2px;
+  padding:5px 8px;
+  display:flex;
+  align-items:baseline;
+  gap:4px;
+  min-height:30px;
+  background:#fff;
+}
+.field-label{
+  font-size:0.68rem;
+  font-weight:700;
+  color:#3d2b1f;
+  white-space:nowrap;
+  flex-shrink:0;
+}
+.field-input{
+  border:none;outline:none;
+  font-family:'Tajawal',sans-serif;
+  font-size:0.72rem;
+  color:#3d2b1f;
+  background:transparent;
+  text-align:right;
+  flex:1;
+  width:0;
+  min-width:0;
+  caret-color:#5a3e2b;
+}
+.field-input::placeholder{color:rgba(90,62,43,0.3);}
+.field-input[readonly]{color:#5a3e2b;font-weight:700;}
+
+/* Ahdaf (tall textarea field) */
+.field-row.ahdaf{
+  align-items:flex-start;
+  flex-direction:column;
+  min-height:90px;
+}
+.field-row.ahdaf textarea{
+  border:none;outline:none;
+  font-family:'Tajawal',sans-serif;
+  font-size:0.72rem;
+  color:#3d2b1f;
+  background:transparent;
+  text-align:right;
+  width:100%;
+  resize:none;
+  flex:1;
+  min-height:70px;
+  caret-color:#5a3e2b;
+  line-height:1.6;
+}
+.field-row.ahdaf textarea::placeholder{color:rgba(90,62,43,0.3);}
+
+/* ── BOTTOM SECTION ── */
+.bottom-section{
+  padding:0 12px 0;
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:8px;
+  align-items:end;
+}
+
+/* Left: emblem + معد التقرير */
+.bottom-left{
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  gap:4px;
+}
+.bottom-emblem{
+  width:42px;height:42px;
+  border-radius:50%;
+  background:radial-gradient(circle,#b5a080,#8a6e4e);
+  border:2px solid #7a5c3a;
+  display:flex;align-items:center;justify-content:center;
+  font-size:1rem;
+}
+.maad-label{
+  font-size:0.6rem;
+  color:#3d2b1f;
+  font-weight:700;
+  display:flex;
+  align-items:center;
+  gap:6px;
+  width:100%;
+  justify-content:center;
+}
+.maad-label::before,.maad-label::after{
+  content:'';flex:1;height:1px;background:#8a6e4e;
+}
+.maad-box{
+  border:1px solid #8a6e4e;
+  border-radius:2px;
+  width:100%;
+  min-height:26px;
+  padding:4px 8px;
+}
+.maad-box input{
+  border:none;outline:none;
+  font-family:'Tajawal',sans-serif;
+  font-size:0.72rem;
+  color:#3d2b1f;
+  background:transparent;
+  text-align:center;
+  width:100%;
+  caret-color:#5a3e2b;
+}
+.maad-box input::placeholder{color:rgba(90,62,43,0.3);}
+
+/* Right: "يوم بدينا" tagline */
+.bottom-right{
+  display:flex;
+  flex-direction:column;
+  align-items:flex-start;
+  justify-content:flex-end;
+  padding-bottom:4px;
+}
+.tagline-ar{
+  font-size:1.6rem;
+  font-weight:900;
+  color:#3d2b1f;
+  line-height:1;
+}
+.tagline-en{
+  font-size:0.65rem;
+  font-weight:700;
+  color:#8a6e4e;
+  letter-spacing:0.12em;
+}
+
+/* ── FOOTER BAND ── */
+.footer-band{
+  margin-top:8px;
+  background:#c9b99a;
+  padding:5px 0 3px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  gap:3px;
+  flex-wrap:wrap;
+}
+.footer-dot-row{
+  display:flex;
+  gap:4px;
+}
+.footer-dot{
+  width:6px;height:6px;
+  border-radius:50%;
+  background:#5a3e2b;
+}
+/* alternating opacity for decorative pattern */
+.footer-dot:nth-child(even){opacity:0.4;}
+
+/* print-text for capture */
+.print-text{
+  display:none;
+  font-family:'Tajawal',sans-serif;
+  font-size:0.72rem;
+  color:#3d2b1f;
+  white-space:pre-wrap;
+  word-break:break-word;
+  text-align:right;
+  width:100%;
+}
+.pt-inline{
+  display:none;
+  font-family:'Tajawal',sans-serif;
+  font-size:0.72rem;
+  color:#3d2b1f;
+  flex:1;
+}
+
+/* ── ACTION BAR ── */
+.action-bar{
+  width:100%;max-width:480px;
+  display:flex;gap:8px;
+  padding:10px 12px 0;
+}
+.btn{
+  flex:1;padding:13px 8px;border:none;border-radius:10px;
+  font-family:'Tajawal',sans-serif;
+  font-weight:700;cursor:pointer;font-size:0.85rem;
+  transition:transform 0.15s,opacity 0.15s;
+}
+.btn:active{transform:scale(0.97);opacity:0.85;}
+.btn-brown{background:linear-gradient(135deg,#5a3e2b,#7a5c3a);color:#fff;}
+.btn-gray{background:rgba(90,62,43,0.12);color:#3d2b1f;border:1px solid rgba(90,62,43,0.2);}
+
+/* ── Toast ── */
+#toast{
+  position:fixed;bottom:80px;left:50%;transform:translateX(-50%) translateY(20px);
+  background:rgba(60,40,20,0.95);border:1px solid #c9b99a;
+  color:#fff;padding:8px 20px;border-radius:30px;
+  font-size:0.78rem;font-family:'Tajawal',sans-serif;
+  opacity:0;pointer-events:none;transition:opacity 0.3s,transform 0.3s;
+  white-space:nowrap;z-index:999;
+}
+#toast.show{opacity:1;transform:translateX(-50%) translateY(0);}
+
+/* ── Modal ── */
+#modal-overlay{
+  display:none;position:fixed;inset:0;
+  background:rgba(0,0,0,0.6);z-index:1000;
+  align-items:center;justify-content:center;
+}
+#modal-overlay.show{display:flex;}
+.modal-box{
+  background:#fff;border:2px solid #8a6e4e;
+  border-radius:12px;padding:22px 18px;text-align:center;
+  max-width:270px;width:90%;
+  font-family:'Tajawal',sans-serif;
+}
+.modal-box p{margin:0 0 16px;font-size:0.88rem;color:#3d2b1f;line-height:1.5;}
+.modal-actions{display:flex;gap:10px;}
+.modal-actions .btn{padding:10px;font-size:0.8rem;}
+</style>
 </head>
 <body>
 
-    <div class="main-wrapper">
-        <div id="report-area">
-            <header>
-                <img src="logo.png" class="moe-logo">
-                <div class="header-info">
-                    <h1>تـقـريـر الـفـعـالـيـة</h1>
-                    <p>الإدارة العامة للتعليم</p>
-                </div>
-                <div style="width: 60px;"></div>
-            </header>
+<!-- ════════════════════════════
+     PAGE
+════════════════════════════ -->
+<div id="page">
 
-            <div class="app-grid">
-                <div class="photo-stack">
-                    <div class="photo-card" onclick="openF(1)"><img id="p1"><span id="s1">+ شاهد (1)</span><input type="file" id="i1" hidden accept="image/*" onchange="preview(this, 'p1', 's1')"></div>
-                    <div class="photo-card" onclick="openF(2)"><img id="p2"><span id="s2">+ شاهد (2)</span><input type="file" id="i2" hidden accept="image/*" onchange="preview(this, 'p2', 's2')"></div>
-                    <div class="photo-card" onclick="openF(3)"><img id="p3"><span id="s3">+ شاهد (3)</span><input type="file" id="i3" hidden accept="image/*" onchange="preview(this, 'p3', 's3')"></div>
-                </div>
+  <!-- Top band -->
+  <div class="top-band">
+    <!-- Founding Day -->
+    <div class="founding-logo">
+      <div class="founding-title">يـوم التـأسيس</div>
+      <div class="founding-en">Saudi Founding Day</div>
+      <div class="founding-date">— ١١٣٩هـ / ١٧٢٧م —</div>
+    </div>
+    <!-- Central emblem -->
+    <div class="emblem">🇸🇦</div>
+    <!-- MOE logo -->
+    <div class="moe-logo-box">
+      <div class="moe-dots">
+        <div class="moe-dot"></div><div class="moe-dot"></div><div class="moe-dot"></div><div class="moe-dot"></div><div class="moe-dot"></div>
+        <div class="moe-dot"></div><div class="moe-dot"></div><div class="moe-dot"></div><div class="moe-dot"></div><div class="moe-dot"></div>
+        <div class="moe-dot"></div><div class="moe-dot"></div><div class="moe-dot"></div><div class="moe-dot"></div><div class="moe-dot"></div>
+        <div class="moe-dot"></div><div class="moe-dot"></div><div class="moe-dot"></div><div class="moe-dot"></div><div class="moe-dot"></div>
+        <div class="moe-dot"></div><div class="moe-dot"></div><div class="moe-dot"></div><div class="moe-dot"></div><div class="moe-dot"></div>
+      </div>
+      <div class="moe-name">وزارة التعـليم</div>
+      <div class="moe-name-en">Ministry of Education</div>
+    </div>
+  </div>
 
-                <div class="inputs-stack">
-                    <div class="input-item"><label>الجهة المنفذة / الاسم</label><input type="text" placeholder="..."><div class="print-text"></div></div>
-                    <div class="input-item"><label>التاريخ</label><input type="text" placeholder="..."><div class="print-text"></div></div>
-                    <div class="input-item"><label>المقر</label><input type="text" placeholder="..."><div class="print-text"></div></div>
-                    <div class="input-item"><label>المستهدفون</label><input type="text" placeholder="..."><div class="print-text"></div></div>
-                    <div class="input-item"><label>العدد الإجمالي</label><input type="number" value="0"><div class="print-text"></div></div>
-                    <div class="input-item box-fill"><label>الأهداف والتوصيات</label><textarea placeholder="اكتب هنا..."></textarea><div class="print-text"></div></div>
-                </div>
-            </div>
+  <!-- Sub header -->
+  <div class="sub-header">الإدارة العامة للتعليم</div>
+
+  <!-- Title bars -->
+  <div class="title-bar editable" contenteditable="true" data-ph="اكتب عنوان الفعالية..."></div>
+  <div class="subtitle-bar editable" contenteditable="true" data-ph="اكتب الفعالية الفرعية أو البرنامج..."></div>
+
+  <!-- Main body -->
+  <div class="main-body">
+
+    <!-- Photos (right column in RTL) -->
+    <div class="photos-col">
+      <div class="photo-frame" onclick="openF(1)">
+        <img id="p1">
+        <div class="frame-watermark">🔱</div>
+        <div class="frame-placeholder" id="lbl1">
+          <div class="add-label">+ إضافة صورة</div>
         </div>
-
-        <div class="action-bar">
-            <button class="btn btn-gray" onclick="location.reload()">تفريغ البيانات</button>
-            <button class="btn btn-blue" onclick="saveAsImage()">تحميل التقرير كصورة</button>
+        <div class="photo-spinner" id="sp1"></div>
+        <input type="file" id="i1" hidden accept="image/*" onchange="preview(this,1)">
+      </div>
+      <div class="photo-frame" onclick="openF(2)">
+        <img id="p2">
+        <div class="frame-watermark">🔱</div>
+        <div class="frame-placeholder" id="lbl2">
+          <div class="add-label">+ إضافة صورة</div>
         </div>
+        <div class="photo-spinner" id="sp2"></div>
+        <input type="file" id="i2" hidden accept="image/*" onchange="preview(this,2)">
+      </div>
+      <div class="photo-frame" onclick="openF(3)">
+        <img id="p3">
+        <div class="frame-watermark">🔱</div>
+        <div class="frame-placeholder" id="lbl3">
+          <div class="add-label">+ إضافة صورة</div>
+        </div>
+        <div class="photo-spinner" id="sp3"></div>
+        <input type="file" id="i3" hidden accept="image/*" onchange="preview(this,3)">
+      </div>
     </div>
 
-    <script>
-        function openF(id) { document.getElementById('i' + id).click(); }
-        function preview(input, imgId, textId) {
-            if (input.files && input.files[0]) {
-                const r = new FileReader();
-                r.onload = e => {
-                    const img = document.getElementById(imgId);
-                    img.src = e.target.result; img.style.display = 'block';
-                    document.getElementById(textId).style.display = 'none';
-                }
-                r.readAsDataURL(input.files[0]);
-            }
-        }
+    <!-- Fields (left column in RTL) -->
+    <div class="fields-col">
 
-        async function saveAsImage() {
-            const area = document.getElementById('report-area');
-            const items = document.querySelectorAll('.input-item');
-            
-            items.forEach(item => {
-                const input = item.querySelector('input, textarea');
-                const printDiv = item.querySelector('.print-text');
-                printDiv.innerText = input.value || '...';
-                input.style.display = 'none';
-                printDiv.style.display = 'block';
-            });
+      <div class="field-row" id="fr-exec">
+        <span class="field-label">المنفـذ/ة :</span>
+        <input class="field-input" id="f-exec" type="text" placeholder="الاسم...">
+        <span class="pt-inline" id="pt-exec"></span>
+      </div>
 
-            html2canvas(area, { backgroundColor: "#1a262f", scale: 3, useCORS: true }).then(canvas => {
-                items.forEach(item => {
-                    item.querySelector('input, textarea').style.display = 'block';
-                    item.querySelector('.print-text').style.display = 'none';
-                });
+      <div class="field-row" id="fr-place">
+        <span class="field-label">مكان التنفيذ :</span>
+        <input class="field-input" id="f-place" type="text" placeholder="...">
+        <span class="pt-inline" id="pt-place"></span>
+      </div>
 
-                const link = document.createElement('a');
-                link.download = 'تقرير_فعالية.png';
-                link.href = canvas.toDataURL("image/png");
-                link.click();
-            });
-        }
-    </script>
+      <div class="field-row" id="fr-bene">
+        <span class="field-label">المستفيدون :</span>
+        <input class="field-input" id="f-bene" type="text" placeholder="...">
+        <span class="pt-inline" id="pt-bene"></span>
+      </div>
+
+      <div class="field-row" id="fr-count">
+        <span class="field-label">عدد المستفيدين :</span>
+        <input class="field-input" id="f-count" type="number" min="0" value="">
+        <span class="pt-inline" id="pt-count"></span>
+      </div>
+
+<div class="field-row" id="fr-date">
+  <span class="field-label">تاريخ التنفيذ :</span>
+  <!-- قمنا بحذف readonly وتغيير النوع إلى date لسهولة الاختيار -->
+  <input class="field-input" id="f-date" type="date">
+  <span class="pt-inline" id="pt-date"></span>
+</div>
+
+
+      <div class="field-row" id="fr-principal">
+        <span class="field-label">مدير/ة المدرسة :</span>
+        <input class="field-input" id="f-principal" type="text" placeholder="...">
+        <span class="pt-inline" id="pt-principal"></span>
+      </div>
+
+      <div class="field-row ahdaf" id="fr-goals">
+        <span class="field-label">الأهداف :</span>
+        <textarea id="f-goals" placeholder="اكتب الأهداف هنا..."></textarea>
+        <div class="print-text" id="pt-goals"></div>
+      </div>
+
+    </div>
+  </div><!-- /main-body -->
+
+  <!-- Bottom section -->
+  <div class="bottom-section">
+    <div class="bottom-left">
+      <div class="bottom-emblem">🔱</div>
+      <div class="maad-label">مُـعد/ة التقرير</div>
+      <div class="maad-box">
+        <input type="text" id="f-author" placeholder="الاسم...">
+        <span class="pt-inline" id="pt-author" style="text-align:center;"></span>
+      </div>
+    </div>
+
+    <div class="bottom-right">
+      <div class="tagline-ar">يوم بدينـا</div>
+      <div class="tagline-en">OUR STORY</div>
+    </div>
+  </div>
+
+  <!-- Footer decorative dots -->
+  <div class="footer-band">
+    <div class="footer-dot-row">
+      <div class="footer-dot"></div><div class="footer-dot"></div><div class="footer-dot"></div>
+      <div class="footer-dot"></div><div class="footer-dot"></div><div class="footer-dot"></div>
+      <div class="footer-dot"></div><div class="footer-dot"></div><div class="footer-dot"></div>
+      <div class="footer-dot"></div><div class="footer-dot"></div><div class="footer-dot"></div>
+      <div class="footer-dot"></div><div class="footer-dot"></div><div class="footer-dot"></div>
+      <div class="footer-dot"></div><div class="footer-dot"></div><div class="footer-dot"></div>
+      <div class="footer-dot"></div><div class="footer-dot"></div><div class="footer-dot"></div>
+      <div class="footer-dot"></div><div class="footer-dot"></div><div class="footer-dot"></div>
+    </div>
+  </div>
+
+</div><!-- /page -->
+
+<!-- Action bar -->
+<div class="action-bar">
+  <button class="btn btn-gray" onclick="confirmClear()">تفريغ</button>
+  <button class="btn btn-brown" onclick="saveAsImage()">⬇ تحميل التقرير</button>
+</div>
+
+<!-- Toast -->
+<div id="toast"></div>
+
+<!-- Confirm modal -->
+<div id="modal-overlay">
+  <div class="modal-box">
+    <p>هل أنت متأكد من تفريغ جميع البيانات والصور؟</p>
+    <div class="modal-actions">
+      <button class="btn btn-gray" onclick="closeModal()">إلغاء</button>
+      <button class="btn btn-brown" onclick="doClear()">تأكيد</button>
+    </div>
+  </div>
+</div>
+
+<script>
+/* ── Auto date ── */
+(function(){
+  const now = new Date();
+  const y = now.getFullYear();
+  const m = String(now.getMonth()+1).padStart(2,'0');
+  const d = String(now.getDate()).padStart(2,'0');
+  document.getElementById('f-date').value = y+'-'+m+'-'+d;
+})();
+
+/* ── Photos ── */
+function openF(id){ document.getElementById('i'+id).click(); }
+
+function preview(input,id){
+  if(!input.files||!input.files[0]) return;
+  const lbl=document.getElementById('lbl'+id);
+  const sp=document.getElementById('sp'+id);
+  const img=document.getElementById('p'+id);
+  lbl.style.display='none'; sp.style.display='block';
+  const r=new FileReader();
+  r.onload=e=>{
+    img.src=e.target.result; img.style.display='block';
+    sp.style.display='none';
+  };
+  r.readAsDataURL(input.files[0]);
+}
+
+/* ── Toast ── */
+function showToast(msg){
+  const t=document.getElementById('toast');
+  t.textContent=msg; t.classList.add('show');
+  setTimeout(()=>t.classList.remove('show'),2500);
+}
+
+/* ── Clear ── */
+function confirmClear(){ document.getElementById('modal-overlay').classList.add('show'); }
+function closeModal(){ document.getElementById('modal-overlay').classList.remove('show'); }
+
+function doClear(){
+  closeModal();
+  ['f-exec','f-place','f-bene','f-count','f-principal','f-goals','f-author']
+    .forEach(id=>{ document.getElementById(id).value=''; });
+  // reset auto date
+  const now=new Date();
+  const y=now.getFullYear(),m=String(now.getMonth()+1).padStart(2,'0'),d=String(now.getDate()).padStart(2,'0');
+  document.getElementById('f-date').value=y+'-'+m+'-'+d;
+  // reset photos
+  [1,2,3].forEach(id=>{
+    document.getElementById('p'+id).style.display='none';
+    document.getElementById('p'+id).src='';
+    document.getElementById('lbl'+id).style.display='flex';
+    document.getElementById('i'+id).value='';
+  });
+  // reset editable divs
+  document.querySelectorAll('.editable').forEach(el=>el.textContent='');
+  showToast('تم تفريغ البيانات');
+}
+
+/* ── Save image ── */
+async function saveAsImage(){
+  const page=document.getElementById('page');
+
+  // map: [inputId, printId, isTextarea, isInline]
+  const fields=[
+    ['f-exec','pt-exec',false,true],
+    ['f-place','pt-place',false,true],
+    ['f-bene','pt-bene',false,true],
+    ['f-count','pt-count',false,true],
+    ['f-date','pt-date',false,true],
+    ['f-principal','pt-principal',false,true],
+    ['f-goals','pt-goals',true,false],
+    ['f-author','pt-author',false,true],
+  ];
+
+  // Swap to print text
+  fields.forEach(([inpId,ptId,,isInline])=>{
+    const inp=document.getElementById(inpId);
+    const pt=document.getElementById(ptId);
+    pt.textContent=inp.value||'';
+    inp.style.display='none';
+    pt.style.display= isInline ? 'inline' : 'block';
+  });
+
+  showToast('⏳ جاري تحضير التقرير...');
+
+  try{
+    const canvas=await html2canvas(page,{
+      backgroundColor:'#ffffff',
+      scale:3, useCORS:true, logging:false
+    });
+    const link=document.createElement('a');
+    link.download='تقرير_يوم_التأسيس.png';
+    link.href=canvas.toDataURL('image/png');
+    link.click();
+    showToast('✅ تم تحميل التقرير');
+  }catch(e){
+    showToast('❌ حدث خطأ');
+  }
+
+  // Restore inputs
+  fields.forEach(([inpId,ptId,,isInline])=>{
+    document.getElementById(inpId).style.display='';
+    const pt=document.getElementById(ptId);
+    pt.style.display='none';
+  });
+}
+</script>
 </body>
 </html>
