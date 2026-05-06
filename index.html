@@ -20,17 +20,19 @@
             overflow: hidden; font-family: 'Tajawal', sans-serif;
             background-color: var(--bg-dark);
             color: #fff;
+            direction: rtl; /* اتجاه عام للموقع من اليمين */
         }
 
         .main-wrapper {
             height: 100vh; display: flex; flex-direction: column;
-            padding: 10px 10px 40px 10px; /* زيادة الهامش السفلي لرفع الأزرار */
+            padding: 10px 10px 40px 10px;
             box-sizing: border-box;
         }
 
         #report-area {
             flex: 1; display: flex; flex-direction: column;
             padding: 5px; overflow: hidden;
+            background-color: var(--bg-dark); /* لضمان خلفية الصورة المحملة */
         }
 
         header {
@@ -74,23 +76,25 @@
             border-radius: 8px;
             padding: 4px 12px;
             border-right: 3px solid var(--gold);
+            text-align: right; /* محاذاة المربعات لليمين */
         }
-        .input-item label { display: block; font-size: 0.6rem; color: var(--gold); font-weight: bold; }
+        .input-item label { display: block; font-size: 0.6rem; color: var(--gold); font-weight: bold; text-align: right; }
         .input-item input, .input-item textarea {
             width: 100%; border: none; outline: none; font-family: 'Tajawal';
             font-size: 0.85rem; color: #fff; background: transparent;
+            text-align: right; /* محاذاة النص داخل الحقول لليمين */
+            direction: rtl;
         }
 
-        .box-fill { flex: 1; display: flex; flex-direction: column; }
-        .box-fill textarea { flex: 1; resize: none; min-height: 80px; }
+        .box-fill { flex: 1; display: flex; flex-direction: column; overflow: visible; }
+        .box-fill textarea { flex: 1; resize: none; min-height: 80px; overflow: visible; }
 
-        /* تعديل منطقة الأزرار لرفعها بعيداً عن شريط المتصفح */
         .action-bar { 
             margin-top: 15px; 
             display: flex; 
             gap: 8px; 
             flex-shrink: 0;
-            padding-bottom: 20px; /* مساحة إضافية داخل شريط الأزرار */
+            padding-bottom: 20px;
         }
         
         .btn { flex: 1; padding: 12px; border: none; border-radius: 10px; font-weight: 700; cursor: pointer; font-size: 0.8rem; }
@@ -174,7 +178,14 @@
 
         function downloadImage() {
             const area = document.getElementById('report-area');
-            html2canvas(area, { backgroundColor: "#1a262f", scale: 2 }).then(canvas => {
+            // تحسينات التحميل كصورة
+            html2canvas(area, { 
+                backgroundColor: "#1a262f", 
+                scale: 3, // دقة أعلى
+                useCORS: true,
+                scrollX: 0,
+                scrollY: -window.scrollY
+            }).then(canvas => {
                 const link = document.createElement('a');
                 link.download = 'تقرير_فعالية.png';
                 link.href = canvas.toDataURL("image/png");
