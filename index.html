@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>تقرير التميز التعليمي</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Tajawal:wght@400;700;900&display=swap');
+
+        :root {
+            --bg-dark: #1a262f;
+            --panel-bg: rgba(255, 255, 255, 0.05);
+            --gold: #d4af37;
+            --border-color: rgba(212, 175, 55, 0.3);
+        }
+
+        body, html {
+            margin: 0; padding: 0; width: 100%; height: 100vh;
+            overflow: hidden; font-family: 'Tajawal', sans-serif;
+            background-color: var(--bg-dark);
+            color: #fff;
+        }
+
+        .main-wrapper {
+            height: 100vh; display: flex; flex-direction: column;
+            padding: 10px; box-sizing: border-box;
+        }
+
+        header {
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 8px 15px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+
+        .header-info { text-align: center; flex: 1; }
+        .header-info h1 { margin: 0; font-size: 1.1rem; color: var(--gold); font-weight: 900; }
+        .header-info p { margin: 0; font-size: 0.85rem; opacity: 0.8; }
+
+        .moe-logo { width: 70px; height: auto; }
+
+        .app-grid {
+            flex: 1; display: grid;
+            grid-template-columns: 0.9fr 1.1fr;
+            gap: 10px; overflow: hidden; /* يمنع خروج المحتوى */
+        }
+
+        /* تعديل جوهري: قسم الصور قابل للتمرير إذا زادت العناصر */
+        .photo-stack { 
+            display: flex;
+            flex-direction: column;
+            gap: 10px; 
+            overflow-y: auto; /* يسمح بالسحب داخل قسم الصور فقط */
+            padding-right: 2px;
+        }
+
+        /* تحسين مظهر شريط التمرير */
+        .photo-stack::-webkit-scrollbar { width: 3px; }
+        .photo-stack::-webkit-scrollbar-thumb { background: var(--gold); border-radius: 10px; }
+
+        .photo-card {
+            min-height: 160px; /* ضمان مساحة لكل صورة */
+            background: var(--panel-bg);
+            border: 1.5px dashed var(--border-color);
+            border-radius: 10px;
+            display: flex; align-items: center; justify-content: center;
+            cursor: pointer; overflow: hidden;
+            flex-shrink: 0; /* يمنع المربعات من الانضغاط */
+        }
+
+        .photo-card img { 
+            width: 100%; 
+            height: 100%; 
+            object-fit: contain; 
+            display: none; 
+        }
+
+        .photo-card span { font-size: 0.7rem; color: #aaa; }
+
+        .inputs-stack { display: flex; flex-direction: column; gap: 5px; overflow-y: auto; }
+        .input-item {
+            background: var(--panel-bg);
+            border-radius: 8px;
+            padding: 5px 12px;
+            border-right: 3px solid var(--gold);
+        }
+        .input-item label { display: block; font-size: 0.6rem; color: var(--gold); font-weight: bold; }
+        .input-item input, .input-item textarea {
+            width: 100%; border: none; outline: none; font-family: 'Tajawal';
+            font-size: 0.85rem; color: #fff; background: transparent;
+        }
+
+        .box-fill { flex: 1; min-height: 120px; display: flex; flex-direction: column; }
+        .box-fill textarea { flex: 1; resize: none; }
+
+        .action-bar { margin-top: 10px; display: flex; gap: 10px; }
+        .btn { flex: 1; padding: 12px; border: none; border-radius: 10px; font-weight: 700; cursor: pointer; }
+        .btn-gold { background: linear-gradient(45deg, #d4af37, #aa891e); color: #1a262f; }
+        .btn-gray { background: rgba(255,255,255,0.1); color: #fff; }
+
+        @media print {
+            header, .btn, .action-bar { display: none !important; }
+            body, html { overflow: visible; height: auto; }
+            .main-wrapper { height: auto; overflow: visible; }
+            .photo-stack { overflow: visible; display: block; }
+            .photo-card { margin-bottom: 10px; page-break-inside: avoid; }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="main-wrapper">
+        <header>
+            <img src="logo.png" class="moe-logo" alt="الشعار">
+            <div class="header-info">
+                <h1>تـقـريـر الـفـعـالـيـة</h1>
+                <p>الإدارة العامة للتعليم</p>
+            </div>
+            <div style="width: 70px;"></div>
+        </header>
+
+        <div class="app-grid">
+            <!-- قسم الصور: الآن يمكنك سحبه للوصول للشاهد الثالث -->
+            <div class="photo-stack">
+                <div class="photo-card" onclick="openF(1)">
+                    <img id="p1"><span id="s1">+ شاهد (1)</span>
+                    <input type="file" id="i1" hidden accept="image/*" onchange="preview(this, 'p1', 's1')">
+                </div>
+                <div class="photo-card" onclick="openF(2)">
+                    <img id="p2"><span id="s2">+ شاهد (2)</span>
+                    <input type="file" id="i2" hidden accept="image/*" onchange="preview(this, 'p2', 's2')">
+                </div>
+                <div class="photo-card" onclick="openF(3)">
+                    <img id="p3"><span id="s3">+ شاهد (3)</span>
+                    <input type="file" id="i3" hidden accept="image/*" onchange="preview(this, 'p3', 's3')">
+                </div>
+            </div>
+
+            <!-- قسم البيانات -->
+            <div class="inputs-stack">
+                <div class="input-item">
+                    <label>الاسم / الجهة المنفذة</label>
+                    <input type="text" placeholder="...">
+                </div>
+                <div class="input-item">
+                    <label>تاريخ التقرير</label>
+                    <input type="text" placeholder="اكتب التاريخ هنا...">
+                </div>
+                <div class="input-item">
+                    <label>المقر / الموقع</label>
+                    <input type="text" placeholder="...">
+                </div>
+                <div class="input-item">
+                    <label>الفئة المستهدفة</label>
+                    <input type="text" placeholder="...">
+                </div>
+                <div class="input-item">
+                    <label>العدد الإجمالي</label>
+                    <input type="number" value="0">
+                </div>
+                <div class="input-item box-fill">
+                    <label>الأهداف والتوصيات</label>
+                    <textarea placeholder="ملخص سريع..."></textarea>
+                </div>
+            </div>
+        </div>
+
+        <div class="action-bar">
+            <button class="btn btn-gray" onclick="location.reload()">مسح البيانات</button>
+            <button class="btn btn-gold" onclick="window.print()">تصدير التقرير PDF</button>
+        </div>
+    </div>
+
+    <script>
+        function openF(id) { document.getElementById('i' + id).click(); }
+        function preview(input, imgId, textId) {
+            if (input.files && input.files[0]) {
+                const r = new FileReader();
+                r.onload = e => {
+                    const img = document.getElementById(imgId);
+                    img.src = e.target.result;
+                    img.style.display = 'block';
+                    document.getElementById(textId).style.display = 'none';
+                }
+                r.readAsDataURL(input.files[0]);
+            }
+        }
+    </script>
+</body>
+</html>
