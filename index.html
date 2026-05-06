@@ -3,8 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>تقرير المنجزات التعليمي</title>
-    <!-- مكتبة التحميل كصورة -->
+    <title>تقرير المنجزات</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Tajawal:wght@400;700;900&display=swap');
@@ -25,13 +24,13 @@
 
         .main-wrapper {
             height: 100vh; display: flex; flex-direction: column;
-            padding: 10px 10px 35px 10px;
+            padding: 10px 10px 40px 10px;
             box-sizing: border-box;
         }
 
         #report-area {
             flex: 1; display: flex; flex-direction: column;
-            padding: 5px; overflow: hidden;
+            padding: 10px; overflow: hidden;
             background-color: var(--bg-dark);
         }
 
@@ -41,7 +40,7 @@
             border-radius: 12px;
             padding: 8px 15px;
             display: flex; justify-content: space-between; align-items: center;
-            margin-bottom: 10px; flex-shrink: 0;
+            margin-bottom: 8px; flex-shrink: 0;
         }
 
         .header-info { text-align: center; flex: 1; }
@@ -59,7 +58,7 @@
         .photo-stack { display: flex; flex-direction: column; gap: 8px; overflow-y: auto; }
 
         .photo-card {
-            height: 130px;
+            height: 125px;
             background: var(--panel-bg);
             border: 1.5px dashed var(--border-color);
             border-radius: 10px;
@@ -68,42 +67,49 @@
         }
 
         .photo-card img { width: 100%; height: 100%; object-fit: contain; display: none; }
-        .photo-card span { font-size: 0.75rem; color: #aaa; }
+        .photo-card span { font-size: 0.7rem; color: #aaa; }
 
-        .inputs-stack { display: flex; flex-direction: column; gap: 5px; }
+        .inputs-stack { display: flex; flex-direction: column; gap: 6px; }
+        
         .input-item {
             background: var(--panel-bg);
             border-radius: 8px;
-            padding: 5px 12px;
+            padding: 6px 12px;
             border-right: 4px solid var(--gold);
+            text-align: right;
         }
-        .input-item label { display: block; font-size: 0.65rem; color: var(--gold); font-weight: bold; margin-bottom: 2px; }
+
+        .input-item label { 
+            display: block; font-size: 0.65rem; color: var(--gold); 
+            font-weight: bold; margin-bottom: 4px; pointer-events: none;
+        }
         
-        .input-item input, .input-item textarea {
-            width: 100%; border: none; outline: none; font-family: 'Tajawal';
-            font-size: 0.9rem; color: #fff; background: transparent;
-            text-align: right; direction: rtl;
+        /* هذا هو السر: حقل كتابة يتصرف كنص عادي وليس كصندوق إدخال */
+        .edit-area {
+            width: 100%; min-height: 1.2em; border: none; outline: none;
+            font-size: 0.9rem; color: #fff; text-align: right;
+            white-space: pre-wrap; word-wrap: break-word; display: block;
         }
 
         .box-fill { flex: 1; display: flex; flex-direction: column; overflow: hidden; }
-        .box-fill textarea { flex: 1; resize: none; min-height: 80px; overflow-y: auto; }
+        .goals-edit { flex: 1; overflow-y: auto; min-height: 80px; }
 
-        .action-bar { margin-top: 10px; display: flex; gap: 10px; flex-shrink: 0; padding-bottom: 15px; }
+        .action-bar { margin-top: 15px; display: flex; gap: 10px; flex-shrink: 0; padding-bottom: 20px; }
         .btn { flex: 1; padding: 12px; border: none; border-radius: 10px; font-weight: 700; cursor: pointer; font-size: 0.85rem; }
         .btn-gold { background: linear-gradient(45deg, #d4af37, #aa891e); color: #1a262f; }
         .btn-blue { background: #2980b9; color: white; }
         .btn-gray { background: rgba(255,255,255,0.1); color: #fff; }
 
+        #print-container { display: none; }
+
         @media print {
             @page { size: A4; margin: 0; }
             * { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
             body, html { background-color: var(--bg-dark) !important; height: 100%; overflow: hidden !important; }
-            .main-wrapper { width: 210mm; height: 297mm; padding: 10mm; box-sizing: border-box; margin: 0; }
+            .main-wrapper { width: 210mm; height: 297mm; padding: 10mm; box-sizing: border-box; }
             .btn, .action-bar { display: none !important; }
-            header { background: rgba(255, 255, 255, 0.03) !important; border: 1px solid var(--border-color) !important; }
-            .input-item { background: var(--panel-bg) !important; }
-            .photo-card { height: 30% !important; background: var(--panel-bg) !important; }
-            input, textarea { color: #fff !important; }
+            header { background: rgba(255, 255, 255, 0.03) !important; }
+            .photo-card { height: 30% !important; }
         }
     </style>
 </head>
@@ -137,12 +143,12 @@
                 </div>
 
                 <div class="inputs-stack">
-                    <div class="input-item"><label>الاسم / الجهة</label><input type="text" placeholder="..."></div>
-                    <div class="input-item"><label>تاريخ التقرير</label><input type="text" placeholder="..."></div>
-                    <div class="input-item"><label>المقر</label><input type="text" placeholder="..."></div>
-                    <div class="input-item"><label>المستهدفون</label><input type="text" placeholder="..."></div>
-                    <div class="input-item"><label>العدد</label><input type="number" value="0"></div>
-                    <div class="input-item box-fill"><label>الأهداف</label><textarea placeholder="..."></textarea></div>
+                    <div class="input-item"><label>الاسم / الجهة</label><div class="edit-area" contenteditable="true"></div></div>
+                    <div class="input-item"><label>تاريخ التقرير</label><div class="edit-area" contenteditable="true"></div></div>
+                    <div class="input-item"><label>المقر</label><div class="edit-area" contenteditable="true"></div></div>
+                    <div class="input-item"><label>المستهدفون</label><div class="edit-area" contenteditable="true"></div></div>
+                    <div class="input-item"><label>العدد</label><div class="edit-area" contenteditable="true">0</div></div>
+                    <div class="input-item box-fill"><label>الأهداف</label><div class="edit-area goals-edit" contenteditable="true"></div></div>
                 </div>
             </div>
         </div>
@@ -169,16 +175,11 @@
             }
         }
 
-        // دالة التحميل كصورة (مع ملاحظة احتمالية تقطع الحروف العربية في بعض المتصفحات)
         function downloadImage() {
             const area = document.getElementById('report-area');
-            html2canvas(area, { 
-                backgroundColor: "#1a262f", 
-                scale: 3, 
-                useCORS: true 
-            }).then(canvas => {
+            html2canvas(area, { backgroundColor: "#1a262f", scale: 3, useCORS: true }).then(canvas => {
                 const link = document.createElement('a');
-                link.download = 'تقرير_فعالية.png';
+                link.download = 'تقرير.png';
                 link.href = canvas.toDataURL("image/png");
                 link.click();
             });
