@@ -18,99 +18,65 @@
         body, html {
             margin: 0; padding: 0; width: 100%; height: 100vh;
             overflow: hidden; font-family: 'Tajawal', sans-serif;
-            background-color: var(--bg-dark);
-            color: #fff;
+            background-color: var(--bg-dark); color: #fff;
         }
 
         .main-wrapper {
             height: 100vh; display: flex; flex-direction: column;
-            padding: 10px 10px 40px 10px;
-            box-sizing: border-box;
+            padding: 5px 10px 30px 10px; box-sizing: border-box;
         }
 
         #report-area {
             flex: 1; display: flex; flex-direction: column;
-            padding: 10px; overflow: hidden;
-            background-color: var(--bg-dark);
+            padding: 8px; overflow: hidden; background-color: var(--bg-dark);
         }
 
         header {
-            background: rgba(255, 255, 255, 0.03);
-            border: 1px solid var(--border-color);
-            border-radius: 12px;
-            padding: 8px 15px;
-            display: flex; justify-content: space-between; align-items: center;
-            margin-bottom: 8px; flex-shrink: 0;
+            background: rgba(255, 255, 255, 0.02); border: 1.2px solid var(--border-color);
+            border-radius: 10px; padding: 8px; display: flex;
+            justify-content: space-between; align-items: center; margin-bottom: 8px;
+            flex-shrink: 0;
         }
 
-        .header-info { text-align: center; flex: 1; }
-        .header-info h1 { margin: 0; font-size: 1.1rem; color: var(--gold); font-weight: 900; }
-        .header-info p { margin: 0; font-size: 0.85rem; opacity: 0.9; }
+        .header-info h1 { margin: 0; font-size: 1rem; color: var(--gold); font-weight: 900; }
+        .header-info p { margin: 0; font-size: 0.75rem; opacity: 0.8; }
+        .moe-logo { width: 60px; height: auto; }
 
-        .moe-logo { width: 70px; height: auto; }
-
-        .app-grid {
-            flex: 1; display: grid;
-            grid-template-columns: 0.9fr 1.1fr;
-            gap: 10px; overflow: hidden;
-        }
-
-        .photo-stack { display: flex; flex-direction: column; gap: 8px; overflow-y: auto; }
-
+        .app-grid { flex: 1; display: grid; grid-template-columns: 1fr 1.1fr; gap: 8px; overflow: hidden; }
+        
+        /* ضبط الشواهد لتظهر بالكامل */
+        .photo-stack { display: flex; flex-direction: column; gap: 6px; overflow: hidden; }
         .photo-card {
-            height: 125px;
-            background: var(--panel-bg);
-            border: 1.5px dashed var(--border-color);
-            border-radius: 10px;
-            display: flex; align-items: center; justify-content: center;
-            cursor: pointer; overflow: hidden; flex-shrink: 0;
+            flex: 1; min-height: 0; background: var(--panel-bg); border: 1.2px dashed var(--border-color);
+            border-radius: 8px; display: flex; align-items: center; justify-content: center;
+            cursor: pointer; overflow: hidden; position: relative;
         }
-
         .photo-card img { width: 100%; height: 100%; object-fit: contain; display: none; }
-        .photo-card span { font-size: 0.7rem; color: #aaa; }
+        .photo-card span { font-size: 0.65rem; color: #aaa; }
 
-        .inputs-stack { display: flex; flex-direction: column; gap: 6px; }
-        
+        /* ضبط الحقول لضمان ظهور حقل الاسم */
+        .inputs-stack { display: flex; flex-direction: column; gap: 5px; overflow: hidden; }
         .input-item {
-            background: var(--panel-bg);
-            border-radius: 8px;
-            padding: 6px 12px;
-            border-right: 4px solid var(--gold);
-            text-align: right;
+            background: var(--panel-bg); border-radius: 6px; padding: 4px 10px;
+            border-right: 3px solid var(--gold); flex-shrink: 0;
         }
-
-        .input-item label { 
-            display: block; font-size: 0.65rem; color: var(--gold); 
-            font-weight: bold; margin-bottom: 4px; pointer-events: none;
-        }
+        .input-item label { display: block; font-size: 0.6rem; color: var(--gold); font-weight: bold; margin-bottom: 1px; }
         
-        /* هذا هو السر: حقل كتابة يتصرف كنص عادي وليس كصندوق إدخال */
-        .edit-area {
-            width: 100%; min-height: 1.2em; border: none; outline: none;
-            font-size: 0.9rem; color: #fff; text-align: right;
-            white-space: pre-wrap; word-wrap: break-word; display: block;
+        .input-item input, .input-item textarea {
+            width: 100%; border: none; outline: none; font-family: 'Tajawal';
+            font-size: 0.85rem; color: #fff; background: transparent; text-align: right;
         }
 
-        .box-fill { flex: 1; display: flex; flex-direction: column; overflow: hidden; }
-        .goals-edit { flex: 1; overflow-y: auto; min-height: 80px; }
+        /* حقل الطباعة الوهمي لحل مشكلة الحروف العربية */
+        .print-text { display: none; white-space: pre-wrap; word-wrap: break-word; font-size: 0.85rem; color: #fff; line-height: 1.4; }
 
-        .action-bar { margin-top: 15px; display: flex; gap: 10px; flex-shrink: 0; padding-bottom: 20px; }
+        .box-fill { flex: 1; display: flex; flex-direction: column; min-height: 0; }
+        .box-fill textarea { flex: 1; resize: none; overflow-y: auto; }
+
+        .action-bar { margin-top: 10px; display: flex; gap: 8px; padding-bottom: 15px; flex-shrink: 0; }
         .btn { flex: 1; padding: 12px; border: none; border-radius: 10px; font-weight: 700; cursor: pointer; font-size: 0.85rem; }
-        .btn-gold { background: linear-gradient(45deg, #d4af37, #aa891e); color: #1a262f; }
         .btn-blue { background: #2980b9; color: white; }
         .btn-gray { background: rgba(255,255,255,0.1); color: #fff; }
-
-        #print-container { display: none; }
-
-        @media print {
-            @page { size: A4; margin: 0; }
-            * { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
-            body, html { background-color: var(--bg-dark) !important; height: 100%; overflow: hidden !important; }
-            .main-wrapper { width: 210mm; height: 297mm; padding: 10mm; box-sizing: border-box; }
-            .btn, .action-bar { display: none !important; }
-            header { background: rgba(255, 255, 255, 0.03) !important; }
-            .photo-card { height: 30% !important; }
-        }
     </style>
 </head>
 <body>
@@ -118,45 +84,35 @@
     <div class="main-wrapper">
         <div id="report-area">
             <header>
-                <img src="logo.png" class="moe-logo" alt="logo">
+                <img src="logo.png" class="moe-logo">
                 <div class="header-info">
                     <h1>تـقـريـر الـفـعـالـيـة</h1>
                     <p>الإدارة العامة للتعليم</p>
                 </div>
-                <div style="width: 70px;"></div>
+                <div style="width: 60px;"></div>
             </header>
 
             <div class="app-grid">
                 <div class="photo-stack">
-                    <div class="photo-card" onclick="openF(1)">
-                        <img id="p1"><span id="s1">+ شاهد (1)</span>
-                        <input type="file" id="i1" hidden accept="image/*" onchange="preview(this, 'p1', 's1')">
-                    </div>
-                    <div class="photo-card" onclick="openF(2)">
-                        <img id="p2"><span id="s2">+ شاهد (2)</span>
-                        <input type="file" id="i2" hidden accept="image/*" onchange="preview(this, 'p2', 's2')">
-                    </div>
-                    <div class="photo-card" onclick="openF(3)">
-                        <img id="p3"><span id="s3">+ شاهد (3)</span>
-                        <input type="file" id="i3" hidden accept="image/*" onchange="preview(this, 'p3', 's3')">
-                    </div>
+                    <div class="photo-card" onclick="openF(1)"><img id="p1"><span id="s1">+ شاهد (1)</span><input type="file" id="i1" hidden accept="image/*" onchange="preview(this, 'p1', 's1')"></div>
+                    <div class="photo-card" onclick="openF(2)"><img id="p2"><span id="s2">+ شاهد (2)</span><input type="file" id="i2" hidden accept="image/*" onchange="preview(this, 'p2', 's2')"></div>
+                    <div class="photo-card" onclick="openF(3)"><img id="p3"><span id="s3">+ شاهد (3)</span><input type="file" id="i3" hidden accept="image/*" onchange="preview(this, 'p3', 's3')"></div>
                 </div>
 
                 <div class="inputs-stack">
-                    <div class="input-item"><label>الاسم / الجهة</label><div class="edit-area" contenteditable="true"></div></div>
-                    <div class="input-item"><label>تاريخ التقرير</label><div class="edit-area" contenteditable="true"></div></div>
-                    <div class="input-item"><label>المقر</label><div class="edit-area" contenteditable="true"></div></div>
-                    <div class="input-item"><label>المستهدفون</label><div class="edit-area" contenteditable="true"></div></div>
-                    <div class="input-item"><label>العدد</label><div class="edit-area" contenteditable="true">0</div></div>
-                    <div class="input-item box-fill"><label>الأهداف</label><div class="edit-area goals-edit" contenteditable="true"></div></div>
+                    <div class="input-item"><label>الجهة المنفذة / الاسم</label><input type="text" placeholder="..."><div class="print-text"></div></div>
+                    <div class="input-item"><label>التاريخ</label><input type="text" placeholder="..."><div class="print-text"></div></div>
+                    <div class="input-item"><label>المقر</label><input type="text" placeholder="..."><div class="print-text"></div></div>
+                    <div class="input-item"><label>المستهدفون</label><input type="text" placeholder="..."><div class="print-text"></div></div>
+                    <div class="input-item"><label>العدد الإجمالي</label><input type="number" value="0"><div class="print-text"></div></div>
+                    <div class="input-item box-fill"><label>الأهداف والتوصيات</label><textarea placeholder="اكتب هنا..."></textarea><div class="print-text"></div></div>
                 </div>
             </div>
         </div>
 
         <div class="action-bar">
-            <button class="btn btn-gray" onclick="location.reload()">تفريغ</button>
-            <button class="btn btn-blue" onclick="downloadImage()">تحميل كصورة</button>
-            <button class="btn btn-gold" onclick="window.print()">تصدير PDF</button>
+            <button class="btn btn-gray" onclick="location.reload()">تفريغ البيانات</button>
+            <button class="btn btn-blue" onclick="saveAsImage()">تحميل التقرير كصورة</button>
         </div>
     </div>
 
@@ -167,19 +123,33 @@
                 const r = new FileReader();
                 r.onload = e => {
                     const img = document.getElementById(imgId);
-                    img.src = e.target.result;
-                    img.style.display = 'block';
+                    img.src = e.target.result; img.style.display = 'block';
                     document.getElementById(textId).style.display = 'none';
                 }
                 r.readAsDataURL(input.files[0]);
             }
         }
 
-        function downloadImage() {
+        async function saveAsImage() {
             const area = document.getElementById('report-area');
+            const items = document.querySelectorAll('.input-item');
+            
+            items.forEach(item => {
+                const input = item.querySelector('input, textarea');
+                const printDiv = item.querySelector('.print-text');
+                printDiv.innerText = input.value || '...';
+                input.style.display = 'none';
+                printDiv.style.display = 'block';
+            });
+
             html2canvas(area, { backgroundColor: "#1a262f", scale: 3, useCORS: true }).then(canvas => {
+                items.forEach(item => {
+                    item.querySelector('input, textarea').style.display = 'block';
+                    item.querySelector('.print-text').style.display = 'none';
+                });
+
                 const link = document.createElement('a');
-                link.download = 'تقرير.png';
+                link.download = 'تقرير_فعالية.png';
                 link.href = canvas.toDataURL("image/png");
                 link.click();
             });
