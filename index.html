@@ -77,17 +77,20 @@
             padding: 3px 12px;
             border-right: 3px solid var(--gold);
             text-align: right;
+            position: relative;
         }
         .input-item label { display: block; font-size: 0.55rem; color: var(--gold); font-weight: bold; text-align: right; }
         
-        /* تعديل حقل النص لمنع القص وضمان نزول السطر */
-        .input-item input, .input-item textarea {
+        .input-item input, .input-item textarea, .input-item div.printable-text {
             width: 100%; border: none; outline: none; font-family: 'Tajawal';
             font-size: 0.8rem; color: #fff; background: transparent;
             text-align: right; direction: rtl;
-            white-space: pre-wrap; /* يضمن نزول السطر */
-            word-wrap: break-word; /* يكسر الكلمات الطويلة */
+            white-space: pre-wrap;
+            word-wrap: break-word;
         }
+
+        /* حقل نص وهمي يظهر فقط عند التصدير */
+        .printable-text { display: none; }
 
         .box-fill { flex: 1; display: flex; flex-direction: column; overflow: hidden; }
         .box-fill textarea { flex: 1; resize: none; min-height: 60px; overflow-y: auto; }
@@ -106,7 +109,6 @@
             #print-container { position: absolute; left: 0; top: 0; width: 100%; display: block !important; }
             #print-container img { width: 100%; height: auto; }
             @page { margin: 0; size: auto; }
-            * { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
         }
     </style>
 </head>
@@ -140,20 +142,38 @@
                 </div>
 
                 <div class="inputs-stack">
-                    <div class="input-item"><label>الاسم / الجهة</label><input type="text" placeholder="..."></div>
-                    <div class="input-item"><label>تاريخ التقرير</label><input type="text" placeholder="..."></div>
-                    <div class="input-item"><label>المقر</label><input type="text" placeholder="..."></div>
-                    <div class="input-item"><label>المستهدفون</label><input type="text" placeholder="..."></div>
-                    <div class="input-item"><label>العدد</label><input type="number" value="0"></div>
-                    <div class="input-item box-fill"><label>الأهداف</label><textarea placeholder="..."></textarea></div>
+                    <div class="input-item"><label>الاسم / الجهة</label>
+                        <input type="text" id="nameIn" placeholder="...">
+                        <div id="nameDiv" class="printable-text"></div>
+                    </div>
+                    <div class="input-item"><label>تاريخ التقرير</label>
+                        <input type="text" id="dateIn" placeholder="...">
+                        <div id="dateDiv" class="printable-text"></div>
+                    </div>
+                    <div class="input-item"><label>المقر</label>
+                        <input type="text" id="placeIn" placeholder="...">
+                        <div id="placeDiv" class="printable-text"></div>
+                    </div>
+                    <div class="input-item"><label>المستهدفون</label>
+                        <input type="text" id="targetIn" placeholder="...">
+                        <div id="targetDiv" class="printable-text"></div>
+                    </div>
+                    <div class="input-item"><label>العدد</label>
+                        <input type="number" id="countIn" value="0">
+                        <div id="countDiv" class="printable-text"></div>
+                    </div>
+                    <div class="input-item box-fill"><label>الأهداف</label>
+                        <textarea id="goalsIn" placeholder="..."></textarea>
+                        <div id="goalsDiv" class="printable-text"></div>
+                    </div>
                 </div>
             </div>
         </div>
 
         <div class="action-bar">
             <button class="btn btn-gray" onclick="location.reload()">تفريغ</button>
-            <button class="btn btn-blue" onclick="downloadImage()">تحميل كصورة</button>
-            <button class="btn btn-gold" onclick="exportPDF()">تصدير PDF</button>
+            <button class="btn btn-blue" onclick="processExport('download')">تحميل كصورة</button>
+            <button class="btn btn-gold" onclick="processExport('pdf')">تصدير PDF</button>
         </div>
     </div>
 
@@ -161,6 +181,7 @@
 
     <script>
         function openF(id) { document.getElementById('i' + id).click(); }
+        
         function preview(input, imgId, textId) {
             if (input.files && input.files[0]) {
                 const r = new FileReader();
@@ -174,28 +195,47 @@
             }
         }
 
-        function generateCanvas(area) {
-            return html2canvas(area, { backgroundColor: "#1a262f", scale: 3, useCORS: true });
-        }
-
-        function downloadImage() {
-            generateCanvas(document.getElementById('report-area')).then(canvas => {
-                const link = document.createElement('a');
-                link.download = 'تقرير_فعالية.png';
-                link.href = canvas.toDataURL("image/png");
-                link.click();
+        // دالة تحضير المحتوى قبل التصدير لمنع القص
+        function prepareForExport(isExporting) {
+            const fields = ['name', 'date', 'place', 'target', 'count', 'goals'];
+            fields.forEach(f => {
+                const input = document.getElementById(f + 'In');
+                const div = document.getElementById(f + 'Div');
+                if (isExporting) {
+                    div.innerText = input.value || (f === 'count' ? '0' : '...');
+                    div.style.display = 'block';
+                    input.style.display = 'none';
+                } else {
+                    div.style.display = 'none';
+                    input.style.display = 'block';
+                }
             });
         }
 
-        function exportPDF() {
+        function processExport(type) {
+            prepareForExport(true); // تحويل الحقول لنص عادي
+            
             const area = document.getElementById('report-area');
-            const printContainer = document.getElementById('print-container');
-            generateCanvas(area).then(canvas => {
-                printContainer.innerHTML = '';
-                const img = document.createElement('img');
-                img.src = canvas.toDataURL("image/png");
-                printContainer.appendChild(img);
-                setTimeout(() => { window.print(); }, 500);
+            html2canvas(area, { 
+                backgroundColor: "#1a262f", 
+                scale: 3, 
+                useCORS: true 
+            }).then(canvas => {
+                prepareForExport(false); // إعادة الحقول لوضع الكتابة
+                
+                if (type === 'download') {
+                    const link = document.createElement('a');
+                    link.download = 'تقرير_فعالية.png';
+                    link.href = canvas.toDataURL("image/png");
+                    link.click();
+                } else {
+                    const printContainer = document.getElementById('print-container');
+                    printContainer.innerHTML = '';
+                    const img = document.createElement('img');
+                    img.src = canvas.toDataURL("image/png");
+                    printContainer.appendChild(img);
+                    setTimeout(() => { window.print(); }, 500);
+                }
             });
         }
     </script>
