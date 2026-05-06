@@ -4,6 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>تقرير التميز التعليمي</title>
+    <!-- مكتبة تحويل الكود إلى صورة -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Tajawal:wght@400;700;900&display=swap');
 
@@ -14,7 +16,6 @@
             --border-color: rgba(212, 175, 55, 0.3);
         }
 
-        /* منع التمرير في الشاشة وتثبيت الارتفاع */
         body, html {
             margin: 0; padding: 0; width: 100%; height: 100vh;
             overflow: hidden; font-family: 'Tajawal', sans-serif;
@@ -27,16 +28,19 @@
             padding: 10px; box-sizing: border-box;
         }
 
+        /* الجزء المطلوب تصويره */
+        #report-area {
+            flex: 1; display: flex; flex-direction: column;
+            padding: 5px; overflow: hidden;
+        }
+
         header {
             background: rgba(255, 255, 255, 0.03);
             border: 1px solid var(--border-color);
             border-radius: 12px;
             padding: 8px 15px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 8px;
-            flex-shrink: 0;
+            display: flex; justify-content: space-between; align-items: center;
+            margin-bottom: 8px; flex-shrink: 0;
         }
 
         .header-info { text-align: center; flex: 1; }
@@ -51,29 +55,18 @@
             gap: 10px; overflow: hidden;
         }
 
-        /* قسم الصور قابل للتمرير في الجوال لكن يظهر كاملاً في الطباعة */
-        .photo-stack { 
-            display: flex;
-            flex-direction: column;
-            gap: 8px; 
-            overflow-y: auto; 
-        }
+        .photo-stack { display: flex; flex-direction: column; gap: 8px; overflow-y: auto; }
 
         .photo-card {
-            height: 140px; /* تقليل الارتفاع ليناسب الصفحة الواحدة */
+            height: 135px;
             background: var(--panel-bg);
             border: 1.5px dashed var(--border-color);
             border-radius: 10px;
             display: flex; align-items: center; justify-content: center;
-            cursor: pointer; overflow: hidden;
-            flex-shrink: 0;
+            cursor: pointer; overflow: hidden; flex-shrink: 0;
         }
 
-        .photo-card img { 
-            width: 100%; height: 100%; 
-            object-fit: contain; display: none; 
-        }
-
+        .photo-card img { width: 100%; height: 100%; object-fit: contain; display: none; }
         .photo-card span { font-size: 0.7rem; color: #aaa; }
 
         .inputs-stack { display: flex; flex-direction: column; gap: 5px; }
@@ -92,102 +85,70 @@
         .box-fill { flex: 1; display: flex; flex-direction: column; }
         .box-fill textarea { flex: 1; resize: none; min-height: 80px; }
 
-        .action-bar { margin-top: 8px; display: flex; gap: 10px; flex-shrink: 0; }
-        .btn { flex: 1; padding: 10px; border: none; border-radius: 10px; font-weight: 700; cursor: pointer; }
+        .action-bar { margin-top: 8px; display: flex; gap: 8px; flex-shrink: 0; }
+        .btn { flex: 1; padding: 12px; border: none; border-radius: 10px; font-weight: 700; cursor: pointer; font-size: 0.8rem; }
         .btn-gold { background: linear-gradient(45deg, #d4af37, #aa891e); color: #1a262f; }
+        .btn-blue { background: #2980b9; color: white; }
         .btn-gray { background: rgba(255,255,255,0.1); color: #fff; }
 
-        /* تعديلات الطباعة لفرض صفحة واحدة */
         @media print {
-            @page {
-                size: A4;
-                margin: 5mm; /* هوامش صغيرة جداً */
-            }
-            body, html { 
-                background: #fff !important; 
-                color: #000 !important; 
-                height: auto; 
-                overflow: visible; 
-            }
-            .main-wrapper { 
-                height: 280mm; /* أقل من طول A4 */
-                padding: 0;
-                overflow: hidden; 
-            }
-            header { border: 1px solid #000; background: #f9f9f9; }
+            @page { size: A4; margin: 0; }
+            body, html { background: #fff !important; color: #000 !important; height: 100%; overflow: hidden !important; }
+            .main-wrapper { width: 210mm; height: 297mm; padding: 10mm; }
             .btn, .action-bar { display: none !important; }
-            .input-item { border: 1px solid #000; background: none; margin-bottom: 2px; }
+            header { border: 1px solid #000; background: #f0f0f0 !important; }
+            .input-item { border: 1px solid #000; background: none; margin-bottom: 1mm; }
             .input-item label, .input-item input, .input-item textarea, .header-info h1, .header-info p { color: #000 !important; }
-            .photo-card { 
-                border: 1px solid #000; 
-                height: 85mm; /* تحديد ارتفاع دقيق للصور في الطباعة لضمان بقائها في صفحة واحدة */
-                margin-bottom: 5px;
-                background: none;
-            }
-            .photo-stack { overflow: visible !important; }
-            .moe-logo { filter: none; }
+            .photo-card { border: 1px solid #000; height: 30% !important; background: none; }
         }
     </style>
 </head>
 <body>
 
     <div class="main-wrapper">
-        <header>
-            <img src="logo.png" class="moe-logo" alt="الشعار">
-            <div class="header-info">
-                <h1>تـقـريـر الـفـعـالـيـة</h1>
-                <p>الإدارة العامة للتعليم</p>
-            </div>
-            <div style="width: 70px;"></div>
-        </header>
+        <!-- منطقة التقرير القابلة للتحميل -->
+        <div id="report-area">
+            <header>
+                <img src="logo.png" class="moe-logo" alt="logo">
+                <div class="header-info">
+                    <h1>تـقـريـر الـفـعـالـيـة</h1>
+                    <p>الإدارة العامة للتعليم</p>
+                </div>
+                <div style="width: 70px;"></div>
+            </header>
 
-        <div class="app-grid">
-            <div class="photo-stack">
-                <div class="photo-card" onclick="openF(1)">
-                    <img id="p1"><span id="s1">+ شاهد (1)</span>
-                    <input type="file" id="i1" hidden accept="image/*" onchange="preview(this, 'p1', 's1')">
+            <div class="app-grid">
+                <div class="photo-stack">
+                    <div class="photo-card" onclick="openF(1)">
+                        <img id="p1"><span id="s1">+ شاهد (1)</span>
+                        <input type="file" id="i1" hidden accept="image/*" onchange="preview(this, 'p1', 's1')">
+                    </div>
+                    <div class="photo-card" onclick="openF(2)">
+                        <img id="p2"><span id="s2">+ شاهد (2)</span>
+                        <input type="file" id="i2" hidden accept="image/*" onchange="preview(this, 'p2', 's2')">
+                    </div>
+                    <div class="photo-card" onclick="openF(3)">
+                        <img id="p3"><span id="s3">+ شاهد (3)</span>
+                        <input type="file" id="i3" hidden accept="image/*" onchange="preview(this, 'p3', 's3')">
+                    </div>
                 </div>
-                <div class="photo-card" onclick="openF(2)">
-                    <img id="p2"><span id="s2">+ شاهد (2)</span>
-                    <input type="file" id="i2" hidden accept="image/*" onchange="preview(this, 'p2', 's2')">
-                </div>
-                <div class="photo-card" onclick="openF(3)">
-                    <img id="p3"><span id="s3">+ شاهد (3)</span>
-                    <input type="file" id="i3" hidden accept="image/*" onchange="preview(this, 'p3', 's3')">
-                </div>
-            </div>
 
-            <div class="inputs-stack">
-                <div class="input-item">
-                    <label>الاسم / الجهة المنفذة</label>
-                    <input type="text" placeholder="...">
-                </div>
-                <div class="input-item">
-                    <label>تاريخ التقرير</label>
-                    <input type="text" placeholder="اكتب التاريخ هنا...">
-                </div>
-                <div class="input-item">
-                    <label>المقر / الموقع</label>
-                    <input type="text" placeholder="...">
-                </div>
-                <div class="input-item">
-                    <label>الفئة المستهدفة</label>
-                    <input type="text" placeholder="...">
-                </div>
-                <div class="input-item">
-                    <label>العدد الإجمالي</label>
-                    <input type="number" value="0">
-                </div>
-                <div class="input-item box-fill">
-                    <label>الأهداف والتوصيات</label>
-                    <textarea placeholder="ملخص سريع..."></textarea>
+                <div class="inputs-stack">
+                    <div class="input-item"><label>الاسم / الجهة</label><input type="text" placeholder="..."></div>
+                    <div class="input-item"><label>تاريخ التقرير</label><input type="text" placeholder="..."></div>
+                    <div class="input-item"><label>المقر</label><input type="text" placeholder="..."></div>
+                    <div class="input-item"><label>المستهدفون</label><input type="text" placeholder="..."></div>
+                    <div class="input-item"><label>العدد</label><input type="number" value="0"></div>
+                    <div class="input-item box-fill"><label>الأهداف</label><textarea placeholder="..."></textarea></div>
                 </div>
             </div>
         </div>
 
+        <!-- الأزرار -->
         <div class="action-bar">
-            <button class="btn btn-gray" onclick="location.reload()">مسح البيانات</button>
-            <button class="btn btn-gold" onclick="window.print()">تصدير التقرير PDF</button>
+            <button class="btn btn-gray" onclick="location.reload()">تفريغ</button>
+            <button class="btn btn-blue" onclick="downloadImage()">تحميل كصورة</button>
+            <button class="btn btn-gold" onclick="window.print()">تصدير PDF</button>
         </div>
     </div>
 
@@ -204,6 +165,17 @@
                 }
                 r.readAsDataURL(input.files[0]);
             }
+        }
+
+        // دالة تحميل التقرير كصورة PNG
+        function downloadImage() {
+            const area = document.getElementById('report-area');
+            html2canvas(area, { backgroundColor: "#1a262f", scale: 2 }).then(canvas => {
+                const link = document.createElement('a');
+                link.download = 'تقرير_فعالية.png';
+                link.href = canvas.toDataURL("image/png");
+                link.click();
+            });
         }
     </script>
 </body>
