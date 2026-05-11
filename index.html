@@ -1,24 +1,22 @@
 <!DOCTYPE html>
 <html lang="ar" dir="rtl">
 <head>
-<meta charset="UTF-8">
-
 <meta property="og:title" content="مُعـد التقارير الذكي | Smart Report Maker">
 <meta property="og:description" content="منصة احترافية لإعداد وتنزيل التقارير والمناسبات المدرسية بتصاميم جاهزة وفخمة">
 <meta property="og:image" content="https://alfale7.github.io/Report/logo.png">
 <meta property="og:url" content="https://alfale7.github.io/Report/">
 <meta property="og:type" content="website">
 
-<meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:title" content="مُعـد التقارير الذكي">
-<meta name="twitter:description" content="صمم تقاريرك المدرسية بلمسة احترافية وسهولة تامة.">
-<meta name="twitter:image" content="https://alfale7.github.io/Report/logo.png">
+<meta property="og:image:type" content="image/png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
 
+<meta charset="UTF-8">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;700;900&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;800;900&display=swap" rel="stylesheet">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<title>نظام تقارير المدرسة</title>
+<title>التقارير الذكية — منصة احترافية لتقارير المدرسة</title>
 <style>
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
 
@@ -27,468 +25,492 @@ font-family:'Tajawal','Tahoma','Arial',sans-serif;
 min-height:100vh;
 width:100%;
 overflow-x:hidden;
-background:linear-gradient(135deg,#2a5d6e 0%,#1a3c4e 50%,#0d2530 100%);
+background:#050a12;
 color:#fff;
+-webkit-font-smoothing:antialiased;
 }
 
-body::before{
-content:"";
+/* خلفية فاخرة */
+.bg-layer{
 position:fixed;
-top:-100px;right:-100px;
-width:300px;height:300px;
-border-radius:50%;
-background:radial-gradient(circle,rgba(76,175,80,0.15),transparent 70%);
+top:0;left:0;right:0;bottom:0;
+z-index:0;
+background:
+  radial-gradient(ellipse at top right,rgba(76,175,80,0.18) 0%,transparent 50%),
+  radial-gradient(ellipse at top left,rgba(59,109,181,0.15) 0%,transparent 50%),
+  radial-gradient(ellipse at bottom center,rgba(232,197,71,0.08) 0%,transparent 60%),
+  linear-gradient(180deg,#050a12 0%,#0a1620 50%,#050a12 100%);
+}
+.bg-grid{
+position:fixed;
+top:0;left:0;right:0;bottom:0;
+z-index:0;
+background-image:
+  linear-gradient(rgba(255,255,255,0.02) 1px,transparent 1px),
+  linear-gradient(90deg,rgba(255,255,255,0.02) 1px,transparent 1px);
+background-size:40px 40px;
 pointer-events:none;
 }
-body::after{
-content:"";
+.orb{
 position:fixed;
-bottom:-100px;left:-100px;
-width:300px;height:300px;
 border-radius:50%;
-background:radial-gradient(circle,rgba(232,197,71,0.12),transparent 70%);
+filter:blur(60px);
 pointer-events:none;
+z-index:0;
+opacity:0.5;
+animation:float 12s ease-in-out infinite;
+}
+.orb-1{top:5%;right:-10%;width:280px;height:280px;background:radial-gradient(circle,rgba(76,175,80,0.4),transparent);}
+.orb-2{top:30%;left:-15%;width:320px;height:320px;background:radial-gradient(circle,rgba(59,109,181,0.35),transparent);animation-delay:-4s;}
+.orb-3{bottom:10%;right:30%;width:240px;height:240px;background:radial-gradient(circle,rgba(232,197,71,0.25),transparent);animation-delay:-8s;}
+@keyframes float{
+0%,100%{transform:translateY(0) scale(1);}
+50%{transform:translateY(-30px) scale(1.05);}
 }
 
 .wrap{
 position:relative;
 z-index:1;
-padding:24px 16px 40px;
-max-width:520px;
+padding:18px 14px 40px;
+max-width:540px;
 margin:0 auto;
 }
 
-.hero{text-align:center;padding:20px 8px 30px;}
-.app-logo{
-width:84px;height:84px;
+/* Hero */
+.hero{text-align:center;padding:24px 8px 22px;position:relative;}
+
+.brand-mark{
+display:inline-flex;align-items:center;gap:5px;
+padding:5px 12px;
+background:rgba(255,255,255,0.05);
+border:1px solid rgba(255,255,255,0.1);
+border-radius:99px;
+backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);
+font-size:0.7rem;color:rgba(255,255,255,0.7);font-weight:700;
+margin-bottom:18px;
+}
+.brand-mark .live-dot{
+width:6px;height:6px;border-radius:50%;
+background:#4caf50;
+box-shadow:0 0 8px #4caf50;
+animation:livepulse 1.6s infinite;
+}
+@keyframes livepulse{0%,100%{opacity:1;}50%{opacity:0.5;}}
+
+.app-logo{position:relative;width:90px;height:90px;margin:0 auto 18px;}
+.app-logo::before{
+content:"";position:absolute;inset:-12px;
 border-radius:50%;
-background:linear-gradient(135deg,#4caf50,#2a9d8f);
-margin:0 auto 14px;
-display:flex;align-items:center;justify-content:center;
-font-size:38px;
-box-shadow:0 8px 24px rgba(76,175,80,0.35);
+background:radial-gradient(circle,rgba(76,175,80,0.35),transparent 65%);
+filter:blur(8px);
+animation:pulse-glow 3s ease-in-out infinite;
 }
-.app-title{font-size:1.55rem;font-weight:900;margin-bottom:6px;}
-.app-sub{
-font-size:0.88rem;
-color:rgba(255,255,255,0.7);
-line-height:1.5;
-max-width:340px;
-margin:0 auto;
+@keyframes pulse-glow{0%,100%{opacity:0.6;}50%{opacity:1;}}
+.app-logo-inner{
+position:relative;width:100%;height:100%;
+border-radius:24px;
+background:linear-gradient(135deg,#4caf50 0%,#2a9d8f 50%,#1a7a8a 100%);
+display:flex;align-items:center;justify-content:center;
+font-size:42px;
+box-shadow:0 10px 30px rgba(76,175,80,0.4),inset 0 2px 0 rgba(255,255,255,0.3),inset 0 -2px 0 rgba(0,0,0,0.2);
 }
 
-.cta-row{display:flex;gap:10px;margin-top:20px;}
-.cta-btn{
-flex:1;
-padding:14px 12px;
-border:none;
-border-radius:12px;
-font-family:inherit;
-font-weight:700;
-font-size:0.92rem;
-cursor:pointer;
+.app-title{
+font-size:1.85rem;font-weight:900;margin-bottom:8px;
+background:linear-gradient(135deg,#fff 0%,#a5d6a7 100%);
+-webkit-background-clip:text;-webkit-text-fill-color:transparent;
+background-clip:text;
+letter-spacing:-0.5px;
 }
-.cta-btn:active{transform:scale(0.97);opacity:0.9;}
+.app-sub{
+font-size:0.92rem;color:rgba(255,255,255,0.65);line-height:1.6;
+max-width:360px;margin:0 auto 18px;
+}
+
+.trust-row{
+display:flex;justify-content:center;gap:8px;
+margin:14px 0 22px;flex-wrap:wrap;
+}
+.trust-pill{
+display:inline-flex;align-items:center;gap:5px;
+padding:6px 12px;
+background:rgba(255,255,255,0.06);
+border:1px solid rgba(255,255,255,0.1);
+border-radius:99px;
+font-size:0.7rem;color:rgba(255,255,255,0.85);font-weight:700;
+backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);
+}
+
+.cta-row{display:flex;gap:10px;margin-top:6px;}
+.cta-btn{
+flex:1;padding:15px 12px;border:none;border-radius:14px;
+font-family:inherit;font-weight:800;font-size:0.95rem;cursor:pointer;
+display:flex;align-items:center;justify-content:center;gap:6px;
+transition:transform 0.2s;
+}
+.cta-btn:active{transform:scale(0.97);}
 .cta-primary{
-background:linear-gradient(135deg,#4caf50,#2a9d8f);
-color:#fff;
-box-shadow:0 5px 15px rgba(76,175,80,0.3);
+background:linear-gradient(135deg,#4caf50,#2a9d8f);color:#fff;
+box-shadow:0 8px 24px rgba(76,175,80,0.4),inset 0 1px 0 rgba(255,255,255,0.25);
 }
 .cta-ghost{
-background:rgba(255,255,255,0.08);
-border:1.5px solid rgba(255,255,255,0.25);
+background:rgba(255,255,255,0.06);
+border:1.5px solid rgba(255,255,255,0.15);
 color:#fff;
+backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);
 }
+
+.stats-strip{
+display:flex;justify-content:space-around;align-items:center;
+margin:24px 0 18px;padding:14px 8px;
+background:rgba(255,255,255,0.03);
+border:1px solid rgba(255,255,255,0.08);
+border-radius:16px;
+backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);
+}
+.stat-item{text-align:center;flex:1;}
+.stat-item .num{
+font-size:1.25rem;font-weight:900;
+background:linear-gradient(135deg,#a5d6a7,#4caf50);
+-webkit-background-clip:text;-webkit-text-fill-color:transparent;
+background-clip:text;line-height:1;
+}
+.stat-item .label{
+font-size:0.62rem;color:rgba(255,255,255,0.55);
+margin-top:3px;font-weight:700;
+}
+.stat-divider{width:1px;height:24px;background:rgba(255,255,255,0.1);}
 
 .user-bar{
-display:none;
-align-items:center;
-justify-content:space-between;
-gap:10px;
-margin-bottom:18px;
-padding:12px 16px;
-background:rgba(76,175,80,0.12);
+display:none;align-items:center;justify-content:space-between;
+gap:10px;margin-bottom:18px;padding:13px 16px;
+background:linear-gradient(135deg,rgba(76,175,80,0.15),rgba(42,157,143,0.1));
 border:1px solid rgba(76,175,80,0.3);
-border-radius:14px;
+border-radius:16px;
+backdrop-filter:blur(15px);-webkit-backdrop-filter:blur(15px);
 }
 .user-bar.show{display:flex;}
-.user-bar .who{
-font-size:0.82rem;
-font-weight:700;
-display:flex;
-align-items:center;
-gap:8px;
-}
+.user-bar .who{font-size:0.85rem;font-weight:700;display:flex;align-items:center;gap:8px;}
 .user-bar .who .dot{
-width:8px;height:8px;
-border-radius:50%;
+width:9px;height:9px;border-radius:50%;
 background:#4caf50;
-box-shadow:0 0 0 3px rgba(76,175,80,0.25);
+box-shadow:0 0 0 3px rgba(76,175,80,0.25),0 0 10px #4caf50;
 }
 .logout-mini{
-padding:6px 12px;
-border:1px solid rgba(244,67,54,0.4);
-border-radius:8px;
+padding:7px 14px;
+border:1px solid rgba(244,67,54,0.3);
+border-radius:10px;
 background:rgba(244,67,54,0.1);
-color:#ffcdd2;
-font-family:inherit;
-font-weight:700;
-font-size:0.72rem;
-cursor:pointer;
+color:#ffcdd2;font-family:inherit;font-weight:700;font-size:0.75rem;cursor:pointer;
 }
 
-.section-title{
-display:flex;
-align-items:center;
-gap:10px;
-margin:24px 4px 14px;
+.section-head{margin:28px 4px 18px;}
+.section-head .label{
+font-size:0.7rem;color:#a5d6a7;font-weight:800;
+letter-spacing:2px;margin-bottom:6px;
 }
-.section-title::before,.section-title::after{
-content:"";
-flex:1;
-height:1px;
-background:rgba(255,255,255,0.12);
+.section-head h3{font-size:1.4rem;font-weight:900;color:#fff;line-height:1.3;}
+.section-head .desc{
+font-size:0.82rem;color:rgba(255,255,255,0.55);
+margin-top:6px;line-height:1.6;
 }
-.section-title h3{font-size:0.95rem;font-weight:900;color:#fff;}
 
-.previews{display:flex;flex-direction:column;gap:16px;}
+.previews{display:flex;flex-direction:column;gap:20px;}
 
 .preview-card{
-background:rgba(255,255,255,0.06);
-border:1px solid rgba(255,255,255,0.12);
-border-radius:18px;
+position:relative;
+background:rgba(255,255,255,0.04);
+backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);
+border:1px solid rgba(255,255,255,0.1);
+border-radius:24px;
 overflow:hidden;
+transition:transform 0.3s,box-shadow 0.3s;
+cursor:pointer;
 }
-.preview-card.locked{cursor:pointer;}
-.preview-card.locked:active{transform:scale(0.99);}
+.preview-card:active{transform:scale(0.99);}
 
-.thumb{height:170px;position:relative;overflow:hidden;}
+.card-badge{
+position:absolute;top:14px;left:14px;z-index:10;
+padding:5px 12px;border-radius:99px;
+font-size:0.66rem;font-weight:900;letter-spacing:0.5px;
+display:inline-flex;align-items:center;gap:4px;
+backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);
+}
+.badge-hot{background:linear-gradient(135deg,#ff5252,#d32f2f);color:#fff;box-shadow:0 4px 12px rgba(255,82,82,0.4);}
+.badge-new{background:linear-gradient(135deg,#4caf50,#2a9d8f);color:#fff;box-shadow:0 4px 12px rgba(76,175,80,0.4);}
+.badge-pop{background:linear-gradient(135deg,#e8c547,#d4a83a);color:#1a3c2a;box-shadow:0 4px 12px rgba(232,197,71,0.4);}
+.badge-premium{background:linear-gradient(135deg,#9c27b0,#673ab7);color:#fff;box-shadow:0 4px 12px rgba(156,39,176,0.4);}
 
-/* ── Thumb 1: Founding Day ── */
-.thumb-tasis{background:#fff;}
+.thumb{height:210px;position:relative;overflow:hidden;background:#fff;}
+
+/* Thumb يوم التأسيس */
 .thumb-tasis .t-header{
-height:36px;
-background:linear-gradient(180deg,#efe2cd,#e6d5b8);
-display:flex;
-align-items:center;
-justify-content:space-between;
-padding:0 8px;
+height:38px;background:linear-gradient(180deg,#efe2cd,#e6d5b8);
+display:flex;align-items:center;justify-content:space-between;padding:0 10px;
 }
-.thumb-tasis .t-header .tt-l,
-.thumb-tasis .t-header .tt-r{
-font-size:7px;
-color:#6b4a2b;
-font-weight:900;
+.thumb-tasis .tt-right,.thumb-tasis .tt-left{display:flex;align-items:center;gap:5px;}
+.thumb-tasis .seal-mini{
+width:22px;height:22px;border-radius:50%;
+background:linear-gradient(135deg,#8b6a47,#6b4a2b);
+color:#f5ede0;
+display:flex;align-items:center;justify-content:center;
+font-size:5.5px;font-weight:900;text-align:center;line-height:1;
+border:1.5px solid #d8c19a;
 }
-.thumb-tasis .t-header .seal{
-width:18px;height:18px;
-border-radius:50%;
-background:#6b4a2b;
+.thumb-tasis .tt-text{font-size:7px;color:#6b4a2b;font-weight:900;line-height:1.2;}
+.thumb-tasis .center-emblem{
+width:22px;height:22px;border-radius:50%;
+background:linear-gradient(135deg,#8b6a47,#6b4a2b);
+border:2px solid #d8c19a;
 }
-.thumb-tasis .ribbon-brown{
-height:8px;
-background:#6b4a2b;
-margin:5px 20px 0;
-border-radius:2px;
+.thumb-tasis .ribbon-1{
+height:9px;background:#6b4a2b;margin:8px 28px 0;
+border-radius:2px;box-shadow:0 1px 3px rgba(0,0,0,0.15);
 }
-.thumb-tasis .ribbon-tan{
-height:9px;
-background:#c9a878;
-margin:3px 28px 0;
-border-radius:2px;
+.thumb-tasis .ribbon-2{
+height:10px;background:linear-gradient(180deg,#d4b893,#c9a878);
+margin:3px 32px 0;border-radius:2px;box-shadow:0 2px 4px rgba(0,0,0,0.15);
 }
-.thumb-tasis .body-row{
-display:flex;
-gap:4px;
-padding:6px;
-}
-.thumb-tasis .frames-mini{
-flex:1;
-display:flex;
-flex-direction:column;
-gap:3px;
-}
+.thumb-tasis .body-grid{display:flex;gap:5px;padding:7px;}
+.thumb-tasis .frames-col{flex:1;display:flex;flex-direction:column;gap:4px;}
 .thumb-tasis .frame-mini{
-height:18px;
-background:#d4b893;
-border:1px solid #b8915a;
-border-radius:2px;
+height:22px;
+background:linear-gradient(135deg,#d4b893,#c9a878);
+border:2px solid #b8915a;
+border-radius:2px;position:relative;
 }
-.thumb-tasis .fields-mini{
-flex:1.1;
-display:flex;
-flex-direction:column;
-gap:3px;
+.thumb-tasis .frame-mini::after{
+content:"";position:absolute;top:50%;left:50%;
+transform:translate(-50%,-50%);
+width:8px;height:8px;border-radius:50%;
+border:1.5px solid rgba(255,255,255,0.4);
 }
+.thumb-tasis .fields-col{flex:1.1;display:flex;flex-direction:column;gap:4px;}
 .thumb-tasis .field-mini{
-height:8px;
-background:#fff;
-border:1px solid #6b4a2b;
-border-radius:1px;
+height:10px;background:#fff;border:1.5px solid #6b4a2b;
+border-radius:2px;position:relative;
+}
+.thumb-tasis .field-mini::before{
+content:"";position:absolute;right:3px;top:50%;
+transform:translateY(-50%);
+width:25%;height:3px;background:#6b4a2b;
+border-radius:1px;opacity:0.4;
 }
 .thumb-tasis .obj-mini{
-height:18px;
-background:#fff;
-border:1px solid #6b4a2b;
-border-radius:1px;
+height:22px;background:#fff;border:1.5px solid #6b4a2b;
+border-radius:2px;position:relative;
+}
+.thumb-tasis .obj-mini::before{
+content:"";position:absolute;right:3px;top:3px;
+width:30%;height:2px;background:#6b4a2b;opacity:0.5;
 }
 
-/* ── Thumb 2: Teacher Day ── */
+/* Thumb يوم المعلم */
 .thumb-teacher{background:#fff;}
-.thumb-teacher .t-top{
-padding:6px;
-display:flex;
-gap:6px;
-align-items:center;
-}
-.thumb-teacher .muh-mini{
-flex:1.2;
-height:24px;
+.thumb-teacher .t-top{padding:8px 10px;display:flex;gap:8px;align-items:center;}
+.thumb-teacher .muh-bar-mini{
+flex:1.3;height:28px;
 background:linear-gradient(135deg,#3a7a8a,#2a5d6e);
-border-radius:5px;
+border-radius:7px;position:relative;
+box-shadow:0 2px 6px rgba(42,93,110,0.3);
+}
+.thumb-teacher .muh-bar-mini::before{
+content:"";position:absolute;left:5px;top:50%;
+margin-top:-9px;width:11px;height:18px;
+background:linear-gradient(180deg,#4caf50,transparent);
+border-radius:50% 50% 50% 50% / 30% 30% 70% 70%;
+opacity:0.8;
+}
+.thumb-teacher .muh-bar-mini::after{
+content:"";position:absolute;left:10px;top:50%;
+margin-top:-12px;width:8px;height:14px;
+background:linear-gradient(180deg,#e8c547,transparent);
+border-radius:50% 50% 50% 50% / 30% 30% 70% 70%;
+opacity:0.85;
+}
+.thumb-teacher .logos-mini{flex-shrink:0;text-align:left;}
+.thumb-teacher .tday{font-size:9px;font-weight:900;color:#1f3a44;line-height:1;}
+.thumb-teacher .teacher-en{font-size:4.5px;letter-spacing:1.5px;color:#1f3a44;margin-top:2px;}
+.thumb-teacher .stripe-mini{
+height:7px;margin:0 10px;
+background:linear-gradient(90deg,#3b6db5,#3a7a8a,#4caf50,#e8c547);
+border-radius:2px;box-shadow:0 2px 5px rgba(0,0,0,0.1);
+}
+.thumb-teacher .body-grid{display:flex;gap:6px;padding:10px;}
+.thumb-teacher .frames-col{flex:1;display:flex;flex-direction:column;gap:5px;}
+.thumb-teacher .frame-mini{
+height:23px;
+background:linear-gradient(135deg,#3a7a8a,#2a5d6e);
+border:2px solid #4caf50;border-radius:5px;
 position:relative;
 }
-.thumb-teacher .muh-mini::before{
-content:"";
-position:absolute;
-left:4px;top:50%;
-margin-top:-7px;
-width:8px;height:14px;
-background:#4caf50;
-border-radius:50%;
-opacity:0.7;
+.thumb-teacher .frame-mini::after{
+content:"";position:absolute;top:50%;left:50%;
+transform:translate(-50%,-50%);
+width:10px;height:10px;border-radius:50%;
+border:1.5px solid rgba(255,255,255,0.3);
 }
-.thumb-teacher .logos-mini{
-flex-shrink:0;
-font-size:8px;
-font-weight:900;
-color:#1f3a44;
-text-align:left;
-line-height:1.1;
-}
-.thumb-teacher .stripe-mini{
-height:6px;
-margin:0 8px;
-background:linear-gradient(90deg,#3b6db5,#3a7a8a,#4caf50,#e8c547);
-border-radius:2px;
-}
-.thumb-teacher .body-row{
-display:flex;
-gap:4px;
-padding:8px;
-}
-.thumb-teacher .frames-mini{
-flex:1;
-display:flex;
-flex-direction:column;
-gap:3px;
-}
-.thumb-teacher .frame-mini{
-height:18px;
-background:linear-gradient(135deg,#3a7a8a,#2a5d6e);
-border:1.5px solid #4caf50;
-border-radius:3px;
-}
-.thumb-teacher .fields-mini{
-flex:1;
-display:flex;
-flex-direction:column;
-gap:3px;
-}
+.thumb-teacher .fields-col{flex:1;display:flex;flex-direction:column;gap:4px;}
 .thumb-teacher .field-mini{
-height:7px;
-background:#fff;
-border:1.5px solid #4caf50;
-border-radius:1px;
+height:11px;background:#fff;border:1.5px solid #4caf50;
+border-radius:6px;position:relative;
+}
+.thumb-teacher .field-mini::before{
+content:"";position:absolute;right:4px;top:50%;
+transform:translateY(-50%);width:30%;height:3px;
+background:#4caf50;border-radius:1px;opacity:0.5;
 }
 
-/* ── Thumb 3: General ── */
+/* Thumb التقرير العام */
 .thumb-general{background:#fff;}
 .thumb-general .t-header{
-height:30px;
+height:34px;
 background:linear-gradient(135deg,#1a3c4e,#2a6878);
-display:flex;
-align-items:center;
-justify-content:space-between;
-padding:0 8px;
+display:flex;align-items:center;justify-content:space-between;padding:0 10px;
 }
-.thumb-general .t-header span{
-color:#fff;
-font-size:7px;
-font-weight:900;
+.thumb-general .gen-title{color:#fff;font-size:8px;font-weight:900;line-height:1.4;}
+.thumb-general .gen-title span{color:#7ecfcf;}
+.thumb-general .moe-dots-mini{
+display:grid;grid-template-columns:repeat(5,3px);gap:1.5px;
 }
+.thumb-general .dot-m{width:3px;height:3px;border-radius:50%;background:#fff;}
 .thumb-general .stripe-mini{
-height:4px;
-background:linear-gradient(to left,#4caf8a,#2a9d8f,#1a6e8a);
+height:5px;background:linear-gradient(to left,#4caf8a,#2a9d8f,#1a6e8a);
 }
-.thumb-general .titles-mini{
-padding:4px 8px 0;
-display:flex;
-flex-direction:column;
-gap:2px;
-}
+.thumb-general .titles-section{padding:6px 10px 0;display:flex;flex-direction:column;gap:3px;}
 .thumb-general .tbar-mini{
-height:10px;
+height:11px;
 background:linear-gradient(135deg,#2a9d8f,#1a7a8a);
-border-radius:2px;
+border-radius:3px;box-shadow:0 2px 5px rgba(42,157,143,0.3);
 }
 .thumb-general .sbar-mini{
-height:7px;
-background:#e4f4f4;
-border:1px dashed rgba(42,157,143,0.5);
-border-radius:2px;
+height:8px;background:#e4f4f4;
+border:1.5px dashed rgba(42,157,143,0.5);border-radius:3px;
 }
-.thumb-general .body-row{
-display:flex;
-gap:3px;
-padding:5px 8px;
-}
-.thumb-general .photos-panel-mini{
-flex:1;
-background:#d4eeee;
-border:1px solid #9ecece;
-border-radius:3px;
-padding:3px;
-display:flex;
-flex-direction:column;
-gap:2px;
+.thumb-general .body-grid{display:flex;gap:4px;padding:6px 10px;}
+.thumb-general .photos-panel{
+flex:1;background:#d4eeee;
+border:1.5px solid #9ecece;border-radius:5px;
+padding:4px;display:flex;flex-direction:column;gap:3px;
 }
 .thumb-general .photo-mini{
-height:11px;
+height:14px;
 background:linear-gradient(135deg,#5bb8c4,#2a9d8f);
-border-radius:1px;
+border-radius:2px;position:relative;
 }
-.thumb-general .fields-mini{
-flex:1.1;
-display:flex;
-flex-direction:column;
-gap:2px;
+.thumb-general .photo-mini::after{
+content:"";position:absolute;top:50%;left:50%;
+transform:translate(-50%,-50%);
+width:6px;height:6px;border-radius:50%;
+border:1px solid rgba(255,255,255,0.4);
 }
+.thumb-general .fields-col{flex:1.1;display:flex;flex-direction:column;gap:3px;}
 .thumb-general .field-mini{
-height:6px;
-background:#fff;
-border:1px solid #9ecece;
-border-radius:1px;
+height:9px;background:#fff;border:1.5px solid #9ecece;
+border-radius:2px;position:relative;
 }
-.thumb-general .tall-mini{
-height:12px;
-background:#fff;
-border:1px solid #9ecece;
-border-radius:1px;
+.thumb-general .field-mini::before{
+content:"";position:absolute;right:3px;top:50%;
+transform:translateY(-50%);width:25%;height:2.5px;
+background:#1a6e8a;border-radius:1px;opacity:0.5;
 }
+.thumb-general .tall-mini{height:18px;background:#fff;border:1.5px solid #9ecece;border-radius:2px;}
 
-/* ── Thumb 4: National Day ── */
+/* Thumb اليوم الوطني */
 .thumb-national{background:#fff;}
-.thumb-national .teeth-mini{
-height:6px;
-background:#1a3d2a;
+.thumb-national .teeth{
+height:8px;background:#1a3d2a;
 background-image:linear-gradient(135deg,#fff 50%,transparent 50%);
-background-size:5px 6px;
-background-repeat:repeat-x;
-background-position:0 100%;
+background-size:7px 8px;background-repeat:repeat-x;background-position:0 100%;
 }
-.thumb-national .t-header-nd{
-padding:5px 8px;
-display:flex;
-align-items:center;
-justify-content:space-between;
-gap:6px;
+.thumb-national .t-header{
+padding:6px 10px;display:flex;align-items:center;justify-content:space-between;gap:8px;
 }
-.thumb-national .nd-mini-text{
-font-size:7px;
-color:#1f3a44;
-font-weight:900;
-}
+.thumb-national .nd-text{font-size:7px;color:#1f3a44;font-weight:900;line-height:1.4;}
+.thumb-national .nd-text .sub{color:#3a8a52;}
 .thumb-national .nd-logo-mini{
-font-size:8px;
-color:#fff;
-background:#1a3d2a;
-padding:3px 6px;
-border-radius:3px;
-font-weight:900;
-border:1px solid #2a5d3a;
+background:#1a3d2a;border:1px solid #2a5d3a;
+border-radius:4px;padding:3px 8px;position:relative;overflow:hidden;
 }
+.thumb-national .nd-logo-mini::before{
+content:"";position:absolute;top:0;left:0;right:0;
+height:1px;background:#4caf50;
+}
+.thumb-national .nd-logo-mini .a{font-size:9px;font-weight:900;color:#fff;line-height:1;}
+.thumb-national .nd-logo-mini .b{font-size:4px;color:#a5d6a7;letter-spacing:1px;margin-top:1px;}
 .thumb-national .nd-muh-bar{
-height:10px;
-background:#1a3d2a;
-margin:0 8px;
-border-radius:3px;
+height:14px;background:#1a3d2a;margin:0 10px;
+border-radius:4px;box-shadow:0 2px 5px rgba(26,61,42,0.25);
 }
 .thumb-national .nd-stripe{
-height:5px;
-margin:4px 8px 0;
+height:6px;margin:4px 10px 0;
 background:linear-gradient(90deg,#3b6db5,#2a5d6e,#3a8a52,#4caf50);
-border-radius:2px;
+border-radius:2px;box-shadow:0 2px 4px rgba(0,0,0,0.1);
 }
-.thumb-national .body-row{
-display:flex;
-gap:4px;
-padding:6px 8px;
-}
-.thumb-national .frames-mini{
-flex:1;
-display:flex;
-flex-direction:column;
-gap:3px;
-}
+.thumb-national .body-grid{display:flex;gap:5px;padding:8px 10px;}
+.thumb-national .frames-col{flex:1;display:flex;flex-direction:column;gap:4px;}
 .thumb-national .frame-mini{
-height:16px;
+height:20px;
 background:linear-gradient(135deg,#3a7a8a,#1a3d4e);
-border:1.5px solid #4caf50;
-border-radius:3px;
-box-shadow:inset 0 0 0 1px #3b6db5;
+border:2px solid #4caf50;border-radius:4px;
+box-shadow:inset 0 0 0 1px #3b6db5;position:relative;
 }
-.thumb-national .fields-mini{
-flex:1;
-display:flex;
-flex-direction:column;
-gap:3px;
+.thumb-national .frame-mini::after{
+content:"";position:absolute;top:50%;left:50%;
+transform:translate(-50%,-50%);
+width:9px;height:9px;border-radius:50%;
+border:1.5px solid rgba(255,255,255,0.3);
 }
+.thumb-national .fields-col{flex:1;display:flex;flex-direction:column;gap:3px;}
 .thumb-national .field-mini{
-height:7px;
-background:#fff;
-border:1.5px solid #3a8a52;
-border-radius:2px;
+height:10px;background:#fff;border:1.5px solid #3a8a52;
+border-radius:6px;position:relative;
+}
+.thumb-national .field-mini::before{
+content:"";position:absolute;right:3px;top:50%;
+transform:translateY(-50%);width:30%;height:2.5px;
+background:#3a8a52;border-radius:1px;opacity:0.5;
 }
 
-/* ── Lock overlay ── */
+/* Lock overlay فاخر */
 .lock-overlay{
-position:absolute;
-top:0;left:0;right:0;bottom:0;
-background:linear-gradient(180deg,rgba(0,0,0,0) 0%,rgba(0,0,0,0.55) 100%);
-display:flex;
-align-items:flex-end;
-justify-content:center;
-padding:10px;
+position:absolute;top:0;left:0;right:0;bottom:0;
+background:linear-gradient(180deg,rgba(0,0,0,0) 0%,rgba(5,10,18,0.3) 40%,rgba(5,10,18,0.88) 100%);
+display:flex;align-items:flex-end;justify-content:center;padding:14px;
 }
 .preview-card:not(.locked) .lock-overlay{display:none;}
-.lock-overlay .lock-tag{
-display:flex;
-align-items:center;
-gap:6px;
-padding:6px 12px;
-background:rgba(0,0,0,0.5);
-border:1px solid rgba(255,255,255,0.25);
-border-radius:99px;
-color:#fff;
-font-size:0.72rem;
-font-weight:700;
+.lock-cta{
+display:inline-flex;align-items:center;gap:6px;
+padding:8px 16px;
+background:rgba(255,255,255,0.95);
+color:#1a3c4e;border-radius:99px;
+font-size:0.78rem;font-weight:800;
+backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);
+box-shadow:0 6px 20px rgba(0,0,0,0.3);
 }
 
+/* Card content */
 .card-content{
-padding:14px 16px 16px;
-display:flex;
-align-items:center;
-gap:12px;
+padding:16px 18px 18px;display:flex;align-items:center;gap:14px;position:relative;
 }
+.card-content::before{
+content:"";position:absolute;top:0;left:18px;right:18px;height:1px;
+background:linear-gradient(90deg,transparent,rgba(255,255,255,0.1),transparent);
+}
+.card-icon-wrap{position:relative;flex-shrink:0;}
+.card-icon-wrap::after{
+content:"";position:absolute;inset:-4px;
+border-radius:18px;opacity:0.5;filter:blur(8px);z-index:-1;
+}
+.r-tasis .card-icon-wrap::after{background:#c9a878;}
+.r-teacher .card-icon-wrap::after{background:#4caf50;}
+.r-general .card-icon-wrap::after{background:#2a9d8f;}
+.r-national .card-icon-wrap::after{background:#3a8a52;}
+
 .card-icon{
-width:46px;height:46px;
-border-radius:12px;
-display:flex;
-align-items:center;
-justify-content:center;
-font-size:22px;
-flex-shrink:0;
+width:52px;height:52px;border-radius:14px;
+display:flex;align-items:center;justify-content:center;font-size:24px;
+box-shadow:0 6px 16px rgba(0,0,0,0.3),inset 0 1px 0 rgba(255,255,255,0.25);
 }
 .r-tasis .card-icon{background:linear-gradient(135deg,#c9a878,#6b4a2b);}
 .r-teacher .card-icon{background:linear-gradient(135deg,#4caf50,#2a5d6e);}
@@ -496,213 +518,265 @@ flex-shrink:0;
 .r-national .card-icon{background:linear-gradient(135deg,#3a8a52,#1a3d2a);}
 
 .card-text{flex:1;min-width:0;}
-.card-text .title{font-size:1rem;font-weight:900;margin-bottom:2px;}
-.card-text .desc{
-font-size:0.72rem;
-color:rgba(255,255,255,0.6);
-line-height:1.4;
-}
+.card-text .title{font-size:1.05rem;font-weight:900;margin-bottom:3px;color:#fff;}
+.card-text .desc{font-size:0.74rem;color:rgba(255,255,255,0.55);line-height:1.4;}
+.card-text .meta{display:flex;align-items:center;gap:8px;margin-top:6px;flex-wrap:wrap;}
+.meta-pill{display:inline-flex;align-items:center;gap:3px;
+font-size:0.62rem;color:rgba(255,255,255,0.5);font-weight:700;}
+.meta-sep{width:3px;height:3px;border-radius:50%;background:rgba(255,255,255,0.2);}
 
 .card-action{
-flex-shrink:0;
-font-size:24px;
-color:rgba(255,255,255,0.4);
+flex-shrink:0;width:36px;height:36px;border-radius:50%;
+background:rgba(255,255,255,0.06);
+border:1px solid rgba(255,255,255,0.1);
+display:flex;align-items:center;justify-content:center;
+font-size:18px;color:rgba(255,255,255,0.7);
 }
 .preview-card:not(.locked) .card-action{
-font-size:13px;
-padding:6px 12px;
-border:1px solid rgba(76,175,80,0.5);
-border-radius:99px;
-color:#a5d6a7;
-font-weight:700;
-background:rgba(76,175,80,0.12);
+background:linear-gradient(135deg,#4caf50,#2a9d8f);
+color:#fff;border-color:transparent;
+box-shadow:0 4px 12px rgba(76,175,80,0.4);
 }
 
-/* ═══ MODAL ═══ */
+/* Features */
+.features{
+margin-top:32px;display:grid;grid-template-columns:1fr 1fr;gap:10px;
+}
+.feature-card{
+padding:16px 14px;
+background:rgba(255,255,255,0.04);
+border:1px solid rgba(255,255,255,0.08);
+border-radius:16px;
+backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);
+text-align:center;
+}
+.feature-card .f-icon{font-size:24px;margin-bottom:8px;}
+.feature-card .f-title{font-size:0.82rem;font-weight:800;margin-bottom:4px;color:#fff;}
+.feature-card .f-desc{font-size:0.66rem;color:rgba(255,255,255,0.5);line-height:1.5;}
+
+/* Footer */
+.footer{
+text-align:center;margin-top:36px;padding-top:24px;
+border-top:1px solid rgba(255,255,255,0.06);
+}
+.footer .made-with{font-size:0.75rem;color:rgba(255,255,255,0.5);margin-bottom:6px;}
+.footer .heart{color:#f44336;}
+.footer .copy{font-size:0.66rem;color:rgba(255,255,255,0.3);}
+
+/* MODAL */
 .modal-overlay{
-position:fixed;
-top:0;left:0;right:0;bottom:0;
-background:rgba(0,0,0,0.75);
-display:none;
-align-items:center;
-justify-content:center;
-padding:20px;
-z-index:1000;
+position:fixed;top:0;left:0;right:0;bottom:0;
+background:rgba(0,0,0,0.78);
+backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);
+display:none;align-items:flex-start;justify-content:center;
+padding:20px 16px;z-index:1000;
+overflow-y:auto;-webkit-overflow-scrolling:touch;
 }
 .modal-overlay.show{display:flex;}
-
 .modal-card{
-background:linear-gradient(135deg,#1a3c4e,#0d2530);
-border:1px solid rgba(255,255,255,0.15);
+background:linear-gradient(135deg,#0d1f2d,#0a1620);
+border:1px solid rgba(255,255,255,0.12);
 border-radius:24px;
-padding:28px 24px;
-width:100%;
-max-width:380px;
-position:relative;
-box-shadow:0 20px 60px rgba(0,0,0,0.5);
+padding:24px 20px 22px;
+width:100%;max-width:400px;position:relative;
+box-shadow:0 30px 80px rgba(0,0,0,0.6);
+margin:0 auto;
 }
 .modal-close{
-position:absolute;
-top:14px;left:14px;
-width:32px;height:32px;
-border-radius:50%;
-background:rgba(255,255,255,0.1);
-border:none;
-color:#fff;
-font-size:18px;
-cursor:pointer;
-display:flex;align-items:center;justify-content:center;
+position:absolute;top:14px;left:14px;
+width:34px;height:34px;border-radius:50%;
+background:rgba(255,255,255,0.08);
+border:1px solid rgba(255,255,255,0.1);
+color:#fff;font-size:16px;cursor:pointer;
+display:flex;align-items:center;justify-content:center;z-index:10;
 }
-.modal-title{text-align:center;margin-bottom:18px;}
-.modal-title h3{font-size:1.2rem;font-weight:900;margin-bottom:4px;}
+.top-attention-badge{
+display:flex;align-items:center;justify-content:center;gap:6px;
+background:linear-gradient(135deg,#e8c547,#d4a83a);
+color:#1a3c2a;
+padding:8px 14px;border-radius:99px;
+font-size:0.74rem;font-weight:900;
+margin:0 -4px 16px;
+box-shadow:0 6px 16px rgba(232,197,71,0.4);
+animation:bounce 2s ease-in-out infinite;
+}
+.top-attention-badge .sparkle{font-size:0.85rem;animation:spin-sparkle 3s linear infinite;}
+@keyframes bounce{0%,100%{transform:translateY(0);}50%{transform:translateY(-4px);}}
+@keyframes spin-sparkle{0%,100%{transform:scale(1);}50%{transform:scale(1.25);}}
 
-/* ── New Golden Offer Section ── */
-.golden-offer {
-    background: linear-gradient(135deg, rgba(232,197,71,0.15) 0%, rgba(232,197,71,0.05) 100%);
-    border: 1px solid rgba(232,197,71,0.4);
-    border-radius: 16px;
-    padding: 18px;
-    margin-bottom: 20px;
-    text-align: center;
-    position: relative;
-    overflow: hidden;
+.modal-title{text-align:center;margin-bottom:18px;}
+.modal-title h3{font-size:1.25rem;font-weight:900;margin-bottom:4px;}
+.modal-title p{font-size:0.78rem;color:rgba(255,255,255,0.55);}
+
+.promo-banner{
+background:linear-gradient(135deg,rgba(20,40,30,0.6),rgba(15,30,25,0.7));
+border:1.5px solid rgba(76,175,80,0.3);
+border-radius:18px;padding:18px 16px 16px;
+margin-bottom:6px;position:relative;overflow:hidden;
 }
-.golden-offer::before {
-    content: "عرض خاص";
-    position: absolute;
-    top: 5px;
-    right: -25px;
-    background: #e8c547;
-    color: #0d2530;
-    font-size: 0.6rem;
-    font-weight: 900;
-    padding: 2px 30px;
-    transform: rotate(45deg);
+.promo-banner::before{
+content:"";position:absolute;top:-50px;right:-50px;
+width:160px;height:160px;border-radius:50%;
+background:radial-gradient(circle,rgba(232,197,71,0.18),transparent 70%);
+pointer-events:none;
 }
-.offer-text {
-    font-size: 0.88rem;
-    line-height: 1.6;
-    color: #fff;
-    margin-bottom: 12px;
+.promo-banner::after{
+content:"";position:absolute;bottom:-40px;left:-40px;
+width:130px;height:130px;border-radius:50%;
+background:radial-gradient(circle,rgba(76,175,80,0.18),transparent 70%);
+pointer-events:none;
 }
-.offer-price {
-    display: inline-block;
-    background: #e8c547;
-    color: #0d2530;
-    padding: 6px 14px;
-    border-radius: 99px;
-    font-weight: 900;
-    font-size: 1.05rem;
-    margin: 8px 0;
+.promo-ribbon{
+position:absolute;top:13px;left:-34px;
+background:linear-gradient(135deg,#e8c547,#d4a83a);
+color:#1a3c2a;font-weight:900;font-size:0.72rem;
+padding:5px 40px;transform:rotate(-45deg);
+box-shadow:0 2px 8px rgba(0,0,0,0.4);z-index:5;letter-spacing:1.5px;
 }
-.whatsapp-frame {
-    display: block;
-    background-color: #58d360; 
-    color: white !important;
-    text-align: center;
-    padding: 12px;
-    border-radius: 10px;
-    margin-top: 10px;
-    text-decoration: none;
-    font-weight: 700;
-    font-size: 0.95rem;
-    transition: all 0.3s ease;
-    box-shadow: 0 4px 12px rgba(88, 211, 96, 0.2);
+.promo-title{
+font-size:1.08rem;font-weight:900;color:#fff;
+text-align:center;line-height:1.5;margin-bottom:12px;
+position:relative;z-index:1;
 }
-.whatsapp-frame:hover {
-    background-color: #4bc353;
-    transform: translateY(-2px);
+.promo-text{
+font-size:0.84rem;color:rgba(255,255,255,0.88);
+line-height:1.9;text-align:center;
+margin-bottom:12px;position:relative;z-index:1;
 }
+.promo-text .hl{color:#ffd76b;font-weight:900;}
+.promo-text-alert{color:#ffd76b !important;font-weight:900;font-size:0.9rem;margin:14px 0;}
+
+.price-card{
+background:linear-gradient(135deg,#f4c842 0%,#e8c547 50%,#d4a83a 100%);
+border:2px solid #ffd76b;border-radius:16px;padding:16px;
+margin:16px 0 14px;text-align:center;
+position:relative;overflow:hidden;
+box-shadow:0 10px 28px rgba(232,197,71,0.4),inset 0 1px 0 rgba(255,255,255,0.4);
+}
+.price-card-glow{
+position:absolute;top:-50%;left:-30%;width:60%;height:200%;
+background:linear-gradient(90deg,transparent,rgba(255,255,255,0.45),transparent);
+transform:rotate(20deg);
+animation:shine 3.5s infinite;pointer-events:none;
+}
+@keyframes shine{0%{left:-30%;}100%{left:130%;}}
+.price-line-1{
+font-size:1.02rem;font-weight:900;color:#1a3c2a;
+margin-bottom:6px;display:flex;align-items:center;
+justify-content:center;gap:6px;position:relative;z-index:1;
+}
+.price-line-1 .diamond{font-size:1.15rem;}
+.price-line-2{font-size:1.18rem;font-weight:900;color:#1a3c2a;position:relative;z-index:1;}
+.price-line-2 .price-num{
+font-size:1.95rem;font-weight:900;color:#0d2818;
+text-shadow:0 2px 4px rgba(255,255,255,0.4);margin:0 4px;
+}
+
+.promo-wa-btn{
+display:flex;align-items:center;justify-content:center;gap:10px;
+width:100%;padding:15px 14px;border:none;border-radius:14px;
+background:linear-gradient(135deg,#25d366,#128c7e);
+color:#fff;font-family:inherit;font-weight:900;font-size:0.9rem;
+cursor:pointer;
+box-shadow:0 8px 22px rgba(37,211,102,0.4),inset 0 1px 0 rgba(255,255,255,0.2);
+text-decoration:none;position:relative;z-index:1;
+text-align:center;line-height:1.4;
+}
+.promo-wa-btn:active{transform:scale(0.98);}
+.promo-wa-btn .wa-icon{width:22px;height:22px;flex-shrink:0;}
+
+.modal-divider{display:flex;align-items:center;gap:12px;margin:22px 0 16px;}
+.modal-divider::before,.modal-divider::after{
+content:"";flex:1;height:1px;background:rgba(255,255,255,0.12);
+}
+.modal-divider span{font-size:0.72rem;color:rgba(255,255,255,0.5);font-weight:700;white-space:nowrap;}
 
 .form-group{margin-bottom:14px;}
-.form-label{
-display:block;
-font-size:0.78rem;
-font-weight:700;
-color:rgba(255,255,255,0.85);
-margin-bottom:6px;
-}
+.form-label{display:block;font-size:0.78rem;font-weight:700;color:rgba(255,255,255,0.85);margin-bottom:6px;}
 .form-input{
-width:100%;
-padding:13px 16px;
-border:1.5px solid rgba(255,255,255,0.18);
+width:100%;padding:14px 16px;
+border:1.5px solid rgba(255,255,255,0.15);
 border-radius:12px;
-background:rgba(255,255,255,0.06);
-color:#fff;
-font-family:inherit;
-font-size:0.95rem;
-font-weight:700;
-direction:ltr;
-text-align:center;
-outline:none;
+background:rgba(255,255,255,0.05);
+color:#fff;font-family:inherit;font-size:0.95rem;font-weight:700;
+direction:ltr;text-align:center;outline:none;
 }
 .form-input:focus{border-color:#4caf50;background:rgba(255,255,255,0.1);}
 .form-input::placeholder{color:rgba(255,255,255,0.3);font-weight:400;}
 
 .login-btn{
-width:100%;
-padding:14px;
-border:none;
-border-radius:12px;
+width:100%;padding:15px;border:none;border-radius:12px;
 background:linear-gradient(135deg,#4caf50,#2a9d8f);
-color:#fff;
-font-family:inherit;
-font-weight:700;
-font-size:1rem;
-cursor:pointer;
-margin-top:6px;
-box-shadow:0 5px 15px rgba(76,175,80,0.3);
+color:#fff;font-family:inherit;font-weight:800;font-size:1rem;cursor:pointer;
+margin-top:6px;box-shadow:0 8px 20px rgba(76,175,80,0.35);
 }
 .login-btn:active{transform:scale(0.98);opacity:0.9;}
 
 .error-msg{
 background:rgba(244,67,54,0.15);
 border:1px solid rgba(244,67,54,0.4);
-color:#ffcdd2;
-padding:9px 14px;
-border-radius:10px;
-font-size:0.78rem;
-text-align:center;
-margin-top:12px;
-display:none;
+color:#ffcdd2;padding:10px 14px;border-radius:10px;
+font-size:0.78rem;text-align:center;margin-top:12px;display:none;
 }
 .error-msg.show{display:block;}
 
-.modal-hint{
-text-align:center;
-font-size:0.7rem;
-color:rgba(255,255,255,0.45);
-margin-top:14px;
-}
-
-.footer{
-text-align:center;
-margin-top:32px;
-padding-top:20px;
-border-top:1px solid rgba(255,255,255,0.08);
-}
-.footer p{
-font-size:0.7rem;
-color:rgba(255,255,255,0.4);
-line-height:1.7;
-}
+.modal-hint{text-align:center;font-size:0.72rem;color:rgba(255,255,255,0.45);margin-top:14px;}
 </style>
-
 </head>
 <body>
+
+<div class="bg-layer"></div>
+<div class="bg-grid"></div>
+<div class="orb orb-1"></div>
+<div class="orb orb-2"></div>
+<div class="orb orb-3"></div>
 
 <div class="wrap">
 
   <div class="hero">
-    <div class="app-logo">📋</div>
-    <div class="app-title">مُعـد التقارير الذكي</div>
-    <div class="app-sub">
-      منصة احترافية لإعداد وتنزيل التقاير والمناسبات بتصاميم جاهزة وقابلة للتخصيص
+    <div class="brand-mark">
+      <span class="live-dot"></span>
+      <span>المنصة متاحة الآن</span>
+    </div>
+
+    <div class="app-logo">
+      <div class="app-logo-inner">📋</div>
+    </div>
+
+    <h1 class="app-title">التقارير الذكية</h1>
+    <p class="app-sub">منصة احترافية متكاملة لإعداد وتنزيل تقارير المناسبات المدرسية بتصاميم جاهزة، قابلة للتخصيص، وبجودة عالية ✨</p>
+
+    <div class="trust-row">
+      <div class="trust-pill"><span>⚡</span> سريع</div>
+      <div class="trust-pill"><span>🔒</span> آمن</div>
+      <div class="trust-pill"><span>📱</span> متجاوب</div>
+      <div class="trust-pill"><span>💎</span> فاخر</div>
     </div>
 
     <div class="cta-row" id="ctaRow">
-      <button class="cta-btn cta-primary" onclick="openLogin()">🔐 تسجيل الدخول</button>
-      <button class="cta-btn cta-ghost" onclick="scrollToPreviews()">👁 معاينة</button>
+      <button class="cta-btn cta-primary" onclick="openLogin()">
+        <span>🔐</span><span>تسجيل الدخول</span>
+      </button>
+      <button class="cta-btn cta-ghost" onclick="scrollToPreviews()">
+        <span>👁️</span><span>معاينة</span>
+      </button>
+    </div>
+
+    <div class="stats-strip">
+      <div class="stat-item">
+        <div class="num">+500</div>
+        <div class="label">مستخدم نشط</div>
+      </div>
+      <div class="stat-divider"></div>
+      <div class="stat-item">
+        <div class="num">+2K</div>
+        <div class="label">تقرير منزّل</div>
+      </div>
+      <div class="stat-divider"></div>
+      <div class="stat-item">
+        <div class="num">4.9★</div>
+        <div class="label">تقييم</div>
+      </div>
     </div>
   </div>
 
@@ -714,27 +788,37 @@ line-height:1.7;
     <button class="logout-mini" onclick="logout()">خروج ↩</button>
   </div>
 
-  <div class="section-title" id="previewsAnchor">
-    <h3 id="sectionTitle">معاينة التقارير المتاحة</h3>
+  <div class="section-head" id="previewsAnchor">
+    <div class="label" id="sectionLabel">معاينة حصرية</div>
+    <h3 id="sectionTitle">قوالب التقارير المتاحة</h3>
+    <p class="desc">تصاميم احترافية معتمدة، قابلة للتعبئة المباشرة وتحميل كصورة عالية الجودة</p>
   </div>
 
   <div class="previews">
+
+    <!-- Card 1: يوم التأسيس -->
     <div class="preview-card r-tasis locked" data-target="tasis.html" onclick="handleCardClick(this)">
+      <span class="card-badge badge-pop">🔥 الأكثر طلباً</span>
       <div class="thumb thumb-tasis">
         <div class="t-header">
-          <span class="tt-l">يوم التأسيس</span>
-          <div class="seal"></div>
-          <span class="tt-r">وزارة التعليم</span>
+          <div class="tt-right">
+            <div class="seal-mini">يوم<br>التأسيس</div>
+            <div class="tt-text">يوم التأسيس<br><span style="opacity:0.6">١١٣٩هـ/١٧٢٧م</span></div>
+          </div>
+          <div class="center-emblem"></div>
+          <div class="tt-left">
+            <div class="tt-text" style="text-align:left">وزارة التعليم<br><span style="opacity:0.6">Ministry of Edu.</span></div>
+          </div>
         </div>
-        <div class="ribbon-brown"></div>
-        <div class="ribbon-tan"></div>
-        <div class="body-row">
-          <div class="frames-mini">
+        <div class="ribbon-1"></div>
+        <div class="ribbon-2"></div>
+        <div class="body-grid">
+          <div class="frames-col">
             <div class="frame-mini"></div>
             <div class="frame-mini"></div>
             <div class="frame-mini"></div>
           </div>
-          <div class="fields-mini">
+          <div class="fields-col">
             <div class="field-mini"></div>
             <div class="field-mini"></div>
             <div class="field-mini"></div>
@@ -743,33 +827,48 @@ line-height:1.7;
           </div>
         </div>
         <div class="lock-overlay">
-          <div class="lock-tag">🔒 سجّل الدخول للوصول</div>
+          <div class="lock-cta">
+            <span>🔑</span>
+            <span>سجّل الدخول للوصول</span>
+          </div>
         </div>
       </div>
       <div class="card-content">
-        <div class="card-icon">🏛️</div>
+        <div class="card-icon-wrap">
+          <div class="card-icon">🏛️</div>
+        </div>
         <div class="card-text">
-          <div class="title">تقرير يوم التأسيس</div>
-          <div class="desc">١١٣٩هـ / ١٧٢٧م — يوم بدينا</div>
+          <div class="title">يوم التأسيس</div>
+          <div class="desc">١١٣٩هـ — ١٧٢٧م · يوم بدينا</div>
+          <div class="meta">
+            <span class="meta-pill">📷 3 صور</span>
+            <span class="meta-sep"></span>
+            <span class="meta-pill">📝 7 حقول</span>
+          </div>
         </div>
         <div class="card-action">‹</div>
       </div>
     </div>
 
+    <!-- Card 2: يوم المعلم -->
     <div class="preview-card r-teacher locked" data-target="teacher.html" onclick="handleCardClick(this)">
+      <span class="card-badge badge-new">✨ جديد</span>
       <div class="thumb thumb-teacher">
         <div class="t-top">
-          <div class="muh-mini"></div>
-          <div class="logos-mini">يوم المعلم<br><span style="font-size:5px;letter-spacing:1px;">TEACHER DAY</span></div>
+          <div class="muh-bar-mini"></div>
+          <div class="logos-mini">
+            <div class="tday">يوم المعلم</div>
+            <div class="teacher-en">TEACHER DAY</div>
+          </div>
         </div>
         <div class="stripe-mini"></div>
-        <div class="body-row">
-          <div class="frames-mini">
+        <div class="body-grid">
+          <div class="frames-col">
             <div class="frame-mini"></div>
             <div class="frame-mini"></div>
             <div class="frame-mini"></div>
           </div>
-          <div class="fields-mini">
+          <div class="fields-col">
             <div class="field-mini"></div>
             <div class="field-mini"></div>
             <div class="field-mini"></div>
@@ -778,74 +877,106 @@ line-height:1.7;
           </div>
         </div>
         <div class="lock-overlay">
-          <div class="lock-tag">🔒 سجّل الدخول للوصول</div>
+          <div class="lock-cta">
+            <span>🔑</span>
+            <span>سجّل الدخول للوصول</span>
+          </div>
         </div>
       </div>
       <div class="card-content">
-        <div class="card-icon">🎓</div>
+        <div class="card-icon-wrap">
+          <div class="card-icon">🎓</div>
+        </div>
         <div class="card-text">
-          <div class="title">تقرير يوم المعلم</div>
-          <div class="desc">احتفاءً برسالة المعلم — Teacher Day</div>
+          <div class="title">يوم المعلم</div>
+          <div class="desc">احتفاءً برسالة المعلم · Teacher Day</div>
+          <div class="meta">
+            <span class="meta-pill">📷 3 صور</span>
+            <span class="meta-sep"></span>
+            <span class="meta-pill">📝 7 حقول</span>
+          </div>
         </div>
         <div class="card-action">‹</div>
       </div>
     </div>
 
+    <!-- Card 3: التقرير العام -->
     <div class="preview-card r-general locked" data-target="report.html" onclick="handleCardClick(this)">
+      <span class="card-badge badge-premium">💎 احترافي</span>
       <div class="thumb thumb-general">
         <div class="t-header">
-          <span>الإدارة العامة للتعليم</span>
-          <span>MOE</span>
+          <div class="gen-title">الإدارة العامة للتعليم<br><span>بمحافظة ...</span></div>
+          <div class="moe-dots-mini">
+            <div class="dot-m"></div><div class="dot-m"></div><div class="dot-m"></div><div class="dot-m"></div><div class="dot-m"></div>
+            <div class="dot-m"></div><div class="dot-m"></div><div class="dot-m"></div><div class="dot-m"></div><div class="dot-m"></div>
+            <div class="dot-m"></div><div class="dot-m"></div><div class="dot-m"></div><div class="dot-m"></div><div class="dot-m"></div>
+            <div class="dot-m"></div><div class="dot-m"></div><div class="dot-m"></div><div class="dot-m"></div><div class="dot-m"></div>
+          </div>
         </div>
         <div class="stripe-mini"></div>
-        <div class="titles-mini">
+        <div class="titles-section">
           <div class="tbar-mini"></div>
           <div class="sbar-mini"></div>
         </div>
-        <div class="body-row">
-          <div class="photos-panel-mini">
+        <div class="body-grid">
+          <div class="photos-panel">
             <div class="photo-mini"></div>
             <div class="photo-mini"></div>
             <div class="photo-mini"></div>
           </div>
-          <div class="fields-mini">
+          <div class="fields-col">
             <div class="field-mini"></div>
             <div class="field-mini"></div>
             <div class="field-mini"></div>
-            <div class="tall-mini"></div>
+            <div class="field-mini"></div>
             <div class="tall-mini"></div>
           </div>
         </div>
         <div class="lock-overlay">
-          <div class="lock-tag">🔒 سجّل الدخول للوصول</div>
+          <div class="lock-cta">
+            <span>🔑</span>
+            <span>سجّل الدخول للوصول</span>
+          </div>
         </div>
       </div>
       <div class="card-content">
-        <div class="card-icon">📊</div>
+        <div class="card-icon-wrap">
+          <div class="card-icon">📊</div>
+        </div>
         <div class="card-text">
           <div class="title">التقرير العام</div>
-          <div class="desc">تقرير الإدارة العامة للتعليم</div>
+          <div class="desc">للأنشطة والفعاليات المدرسية المتنوعة</div>
+          <div class="meta">
+            <span class="meta-pill">📷 3 صور</span>
+            <span class="meta-sep"></span>
+            <span class="meta-pill">📝 8 حقول</span>
+          </div>
         </div>
         <div class="card-action">‹</div>
       </div>
     </div>
 
+    <!-- Card 4: اليوم الوطني -->
     <div class="preview-card r-national locked" data-target="watny.html" onclick="handleCardClick(this)">
+      <span class="card-badge badge-hot">🇸🇦 وطني</span>
       <div class="thumb thumb-national">
-        <div class="teeth-mini"></div>
-        <div class="t-header-nd">
-          <span class="nd-mini-text">الإدارة العامة للتعليم</span>
-          <span class="nd-logo-mini">عزّنا بطبعنا</span>
+        <div class="teeth"></div>
+        <div class="t-header">
+          <div class="nd-text">الإدارة العامة للتعليم<br><span class="sub">اسم المحافظة</span></div>
+          <div class="nd-logo-mini">
+            <div class="a">عزّنا بطبعنا</div>
+            <div class="b">SAUDI ND 95</div>
+          </div>
         </div>
         <div class="nd-muh-bar"></div>
         <div class="nd-stripe"></div>
-        <div class="body-row">
-          <div class="frames-mini">
+        <div class="body-grid">
+          <div class="frames-col">
             <div class="frame-mini"></div>
             <div class="frame-mini"></div>
             <div class="frame-mini"></div>
           </div>
-          <div class="fields-mini">
+          <div class="fields-col">
             <div class="field-mini"></div>
             <div class="field-mini"></div>
             <div class="field-mini"></div>
@@ -854,50 +985,126 @@ line-height:1.7;
           </div>
         </div>
         <div class="lock-overlay">
-          <div class="lock-tag">🔒 سجّل الدخول للوصول</div>
+          <div class="lock-cta">
+            <span>🔑</span>
+            <span>سجّل الدخول للوصول</span>
+          </div>
         </div>
       </div>
       <div class="card-content">
-        <div class="card-icon">🇸🇦</div>
+        <div class="card-icon-wrap">
+          <div class="card-icon">🇸🇦</div>
+        </div>
         <div class="card-text">
-          <div class="title">تقرير اليوم الوطني</div>
-          <div class="desc">عزّنا بطبعنا — اليوم الوطني السعودي ٩٥</div>
+          <div class="title">اليوم الوطني</div>
+          <div class="desc">عزّنا بطبعنا · اليوم الوطني السعودي ٩٥</div>
+          <div class="meta">
+            <span class="meta-pill">📷 3 صور</span>
+            <span class="meta-sep"></span>
+            <span class="meta-pill">📝 7 حقول</span>
+          </div>
         </div>
         <div class="card-action">‹</div>
       </div>
+    </div>
+
+  </div>
+
+  <div class="section-head">
+    <div class="label">لماذا تختارنا</div>
+    <h3>المميزات الحصرية</h3>
+  </div>
+
+  <div class="features">
+    <div class="feature-card">
+      <div class="f-icon">⚡</div>
+      <div class="f-title">سريع وفوري</div>
+      <div class="f-desc">جاهز خلال ثواني</div>
+    </div>
+    <div class="feature-card">
+      <div class="f-icon">📸</div>
+      <div class="f-title">رفع الصور</div>
+      <div class="f-desc">من الاستوديو مباشرة</div>
+    </div>
+    <div class="feature-card">
+      <div class="f-icon">🎨</div>
+      <div class="f-title">تصاميم فاخرة</div>
+      <div class="f-desc">مطابقة للهوية الرسمية</div>
+    </div>
+    <div class="feature-card">
+      <div class="f-icon">💾</div>
+      <div class="f-title">تحميل HD</div>
+      <div class="f-desc">جودة عالية للطباعة</div>
     </div>
   </div>
 
   <div class="footer">
-    <p>جميع التقارير قابلة للتعبئة، إضافة صور، وتحميل كصورة عالية الجودة</p>
-    <p style="margin-top:6px;">© ٢٠٢٦ — نظام تقارير المدرسة</p>
+    <div class="made-with">صُمم بـ <span class="heart">♥</span> لمدارس المملكة العربية السعودية</div>
+    <div class="copy">© ٢٠٢٦ — جميع الحقوق محفوظة · التقارير الذكية</div>
   </div>
 
 </div>
 
+<!-- MODAL -->
 <div class="modal-overlay" id="loginModal">
   <div class="modal-card">
     <button class="modal-close" onclick="closeLogin()">✕</button>
-    
-    <div class="modal-title">
-      <h3>تسجيل الدخول</h3>
+
+    <div class="top-attention-badge">
+      <span class="sparkle">✨</span>
+      <span>عرض حصري — اقرأ التفاصيل</span>
+      <span class="sparkle">✨</span>
     </div>
 
-    <div class="golden-offer">
-        <div class="offer-text">
-            🤝 <b>شريكك المثالي في الإنجاز!</b> 🌟<br>
-            وفرنا لك الوقت والجهد بتصميم ذكي يساعدك على إنشاء تقارير احترافية بكل سهولة وسلاسة. 📝🚀
-            <br>
-            <span style="display:block; margin-top:8px; color:#e8c547; font-weight:700;">🌟 لا تفوّت عروض نهاية السنة الهجرية 🌟</span>
+    <div class="modal-title">
+      <h3>تسجيل الدخول</h3>
+      <p>ادخل بياناتك للوصول إلى التقارير</p>
+    </div>
 
-           <span style="display:block; margin-top:8px; color:#e8c547; font-weight:700;">🌟تواصل معنا الآن لتفعيل حسابك وتسجيل رقم جوالك للحصول على كلمة المرور الخاصة بموقع التقارير الذكية. ‎ابدأ رحلتك نحو تقارير أكثر احترافية وتنظيماً بسهولة وسرعة!🌟</span>
+    <div class="promo-banner">
+      <div class="promo-ribbon">عرض</div>
 
-            <div class="offer-price">💎 النسخة الذهبية مدى الحياة بـ 49 ريال فقط!</div>
+      <div class="promo-title">
+        🤝 شريكك المثالي في الإنجاز! 🌟
+      </div>
+
+      <div class="promo-text">
+        وفّرنا لك الوقت والجهد بتصميم ذكي يساعدك على إنشاء
+        <span class="hl">تقارير احترافية</span> بكل سهولة وسلاسة 🚀📝
+      </div>
+
+      <div class="promo-text promo-text-alert">
+        🌟 لا تفوّت عروض نهاية السنة الهجرية 🌟
+      </div>
+
+      <div class="promo-text">
+        🌟 تواصل معنا الآن لتفعيل حسابك وتسجيل رقم جوالك للحصول على
+        <span class="hl">كلمة المرور الخاصة</span> بموقع
+        <span class="hl">التقارير الذكية</span>.
+        ابدأ رحلتك نحو تقارير أكثر احترافية وتنظيماً بسهولة وسرعة! 🌟
+      </div>
+
+      <div class="price-card">
+        <div class="price-card-glow"></div>
+        <div class="price-line-1">
+          <span class="diamond">💎</span>
+          <span>النسخة الذهبية مدى الحياة</span>
         </div>
-        
-        <a href="https://wa.me/966502517217" class="whatsapp-frame" target="_blank">
-           تواصل معنا عبر الواتساب لتفعيل حسابك 💬
-        </a>
+        <div class="price-line-2">
+          بـ <span class="price-num">49</span> ريال فقط!
+        </div>
+      </div>
+
+      <a href="https://wa.me/966502517217?text=السلام%20عليكم،%20أرغب%20بالاشتراك%20في%20موقع%20التقارير%20الذكية%20والحصول%20على%20النسخة%20الذهبية%20بـ%2049%20ريال." class="promo-wa-btn" target="_blank" rel="noopener">
+        <svg class="wa-icon" viewBox="0 0 24 24" fill="currentColor">
+          <path d="M.057 24l1.687-6.163c-1.041-1.804-1.588-3.849-1.587-5.946.003-6.556 5.338-11.891 11.893-11.891 3.181.001 6.167 1.24 8.413 3.488 2.245 2.248 3.481 5.236 3.48 8.414-.003 6.557-5.338 11.892-11.893 11.892-1.99-.001-3.951-.5-5.688-1.448l-6.305 1.654zm6.597-3.807c1.676.995 3.276 1.591 5.392 1.592 5.448 0 9.886-4.434 9.889-9.885.002-5.462-4.415-9.89-9.881-9.892-5.452 0-9.887 4.434-9.889 9.884-.001 2.225.651 3.891 1.746 5.634l-.999 3.648 3.742-.981zm11.387-5.464c-.074-.124-.272-.198-.57-.347-.297-.149-1.758-.868-2.031-.967-.272-.099-.47-.149-.669.149-.198.297-.768.967-.941 1.165-.173.198-.347.223-.644.074-.297-.149-1.255-.462-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.297-.347.446-.521.151-.172.2-.296.3-.495.099-.198.05-.372-.025-.521-.075-.148-.669-1.611-.916-2.206-.242-.579-.487-.501-.669-.51l-.57-.01c-.198 0-.52.074-.792.372s-1.04 1.016-1.04 2.479 1.065 2.876 1.213 3.074c.149.198 2.095 3.2 5.076 4.487.709.306 1.263.489 1.694.626.712.226 1.36.194 1.872.118.571-.085 1.758-.719 2.006-1.413.248-.695.248-1.29.173-1.414z"/>
+        </svg>
+        <span>تواصل معنا عبر الواتساب لتفعيل حسابك 💬</span>
+      </a>
+    </div>
+
+    <div class="modal-divider">
+      <span>إذا عندك حساب بالفعل</span>
     </div>
 
     <div class="form-group">
@@ -912,7 +1119,8 @@ line-height:1.7;
 
     <button class="login-btn" onclick="login()">دخول</button>
     <div class="error-msg" id="errorMsg"></div>
-    <div class="modal-hint">للمساعدة تواصل مع الدعم الفني</div>
+    <div class="modal-hint">للمساعدة تواصل مع إدارة الموقع</div>
+
   </div>
 </div>
 
@@ -946,12 +1154,15 @@ window.addEventListener('DOMContentLoaded', function(){
 });
 
 function openLogin(){
-  document.getElementById('loginModal').classList.add('show');
-  setTimeout(function(){document.getElementById('phone').focus();},200);
+  const modal = document.getElementById('loginModal');
+  modal.classList.add('show');
+  modal.scrollTop = 0;
+  document.body.style.overflow = 'hidden';
 }
 function closeLogin(){
   document.getElementById('loginModal').classList.remove('show');
   document.getElementById('errorMsg').classList.remove('show');
+  document.body.style.overflow = '';
 }
 
 function login(){
@@ -981,12 +1192,11 @@ function enterLoggedInMode(phone){
   document.getElementById('userBar').classList.add('show');
   document.getElementById('userName').textContent = phone;
   document.getElementById('ctaRow').style.display = 'none';
+  document.getElementById('sectionLabel').textContent = 'مرحباً بك';
   document.getElementById('sectionTitle').textContent = 'اختر التقرير لفتحه';
 
   document.querySelectorAll('.preview-card.locked').forEach(function(card){
     card.classList.remove('locked');
-    const action = card.querySelector('.card-action');
-    if(action) action.textContent = 'فتح';
   });
 }
 
