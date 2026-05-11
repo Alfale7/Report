@@ -358,20 +358,33 @@ background:#5a3e2b;
 
 .print-text{
 display:none;
-font-family:‘Tajawal’,sans-serif;
+font-family:‘Tajawal’,‘Tahoma’,‘Arial’,sans-serif;
 font-size:0.72rem;
 color:#3d2b1f;
 white-space:pre-wrap;
-word-break:break-word;
+word-wrap:break-word;
+overflow-wrap:break-word;
+word-break:normal;
 text-align:right;
 width:100%;
+line-height:1.7;
+direction:rtl;
+unicode-bidi:embed;
+text-rendering:optimizeLegibility;
+-webkit-font-feature-settings:“liga”,“calt”,“kern”;
+font-feature-settings:“liga”,“calt”,“kern”;
+font-variant-ligatures:common-ligatures contextual;
 }
 .pt-inline{
 display:none;
-font-family:‘Tajawal’,sans-serif;
+font-family:‘Tajawal’,‘Tahoma’,‘Arial’,sans-serif;
 font-size:0.72rem;
 color:#3d2b1f;
 flex:1;
+direction:rtl;
+unicode-bidi:embed;
+text-rendering:optimizeLegibility;
+font-feature-settings:“liga”,“calt”,“kern”;
 }
 
 .action-bar{
@@ -627,7 +640,33 @@ async function saveAsImage(){
   fields.forEach(([inpId,ptId,,isInline])=>{
     const inp=document.getElementById(inpId);
     const pt=document.getElementById(ptId);
-    pt.textContent=inp.value||'';
+    const val=inp.value||'';
+    // معالجة خاصة لحقل الأهداف: نلفّ كل كلمة بـ span عشان
+    // html2canvas ما يفصل حروف العربية أثناء عمل line-break
+    if(inpId==='f-goals'){
+      pt.innerHTML='';
+      const lines=val.split('\n');
+      lines.forEach((line,lineIdx)=>{
+        if(lineIdx>0){
+          pt.appendChild(document.createElement('br'));
+        }
+        const words=line.split(' ');
+        words.forEach((word,wIdx)=>{
+          if(word){
+            const wSpan=document.createElement('span');
+            wSpan.textContent=word;
+            wSpan.style.whiteSpace='nowrap';
+            wSpan.style.display='inline-block';
+            pt.appendChild(wSpan);
+          }
+          if(wIdx<words.length-1){
+            pt.appendChild(document.createTextNode(' '));
+          }
+        });
+      });
+    } else {
+      pt.textContent=val;
+    }
     inp.style.display='none';
     pt.style.display= isInline ? 'inline' : 'block';
   });
