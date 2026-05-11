@@ -1,0 +1,962 @@
+<!DOCTYPE html>
+
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;700;900&display=swap" rel="stylesheet">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>نظام تقارير المدرسة</title>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+
+html,body{
+font-family:‘Tajawal’,‘Tahoma’,‘Arial’,sans-serif;
+min-height:100vh;
+width:100%;
+overflow-x:hidden;
+background:linear-gradient(135deg,#2a5d6e 0%,#1a3c4e 50%,#0d2530 100%);
+color:#fff;
+}
+
+body::before{
+content:””;
+position:fixed;
+top:-100px;right:-100px;
+width:300px;height:300px;
+border-radius:50%;
+background:radial-gradient(circle,rgba(76,175,80,0.15),transparent 70%);
+pointer-events:none;
+}
+body::after{
+content:””;
+position:fixed;
+bottom:-100px;left:-100px;
+width:300px;height:300px;
+border-radius:50%;
+background:radial-gradient(circle,rgba(232,197,71,0.12),transparent 70%);
+pointer-events:none;
+}
+
+.wrap{
+position:relative;
+z-index:1;
+padding:24px 16px 40px;
+max-width:520px;
+margin:0 auto;
+}
+
+.hero{text-align:center;padding:20px 8px 30px;}
+.app-logo{
+width:84px;height:84px;
+border-radius:50%;
+background:linear-gradient(135deg,#4caf50,#2a9d8f);
+margin:0 auto 14px;
+display:flex;align-items:center;justify-content:center;
+font-size:38px;
+box-shadow:0 8px 24px rgba(76,175,80,0.35);
+}
+.app-title{font-size:1.55rem;font-weight:900;margin-bottom:6px;}
+.app-sub{
+font-size:0.88rem;
+color:rgba(255,255,255,0.7);
+line-height:1.5;
+max-width:340px;
+margin:0 auto;
+}
+
+.cta-row{display:flex;gap:10px;margin-top:20px;}
+.cta-btn{
+flex:1;
+padding:14px 12px;
+border:none;
+border-radius:12px;
+font-family:inherit;
+font-weight:700;
+font-size:0.92rem;
+cursor:pointer;
+}
+.cta-btn:active{transform:scale(0.97);opacity:0.9;}
+.cta-primary{
+background:linear-gradient(135deg,#4caf50,#2a9d8f);
+color:#fff;
+box-shadow:0 5px 15px rgba(76,175,80,0.3);
+}
+.cta-ghost{
+background:rgba(255,255,255,0.08);
+border:1.5px solid rgba(255,255,255,0.2);
+color:#fff;
+}
+
+.user-bar{
+display:none;
+align-items:center;
+justify-content:space-between;
+gap:10px;
+margin-bottom:18px;
+padding:12px 16px;
+background:rgba(76,175,80,0.12);
+border:1px solid rgba(76,175,80,0.3);
+border-radius:14px;
+}
+.user-bar.show{display:flex;}
+.user-bar .who{
+font-size:0.82rem;
+font-weight:700;
+display:flex;
+align-items:center;
+gap:8px;
+}
+.user-bar .who .dot{
+width:8px;height:8px;
+border-radius:50%;
+background:#4caf50;
+box-shadow:0 0 0 3px rgba(76,175,80,0.25);
+}
+.logout-mini{
+padding:6px 12px;
+border:1px solid rgba(244,67,54,0.4);
+border-radius:8px;
+background:rgba(244,67,54,0.1);
+color:#ffcdd2;
+font-family:inherit;
+font-weight:700;
+font-size:0.72rem;
+cursor:pointer;
+}
+
+.section-title{
+display:flex;
+align-items:center;
+gap:10px;
+margin:24px 4px 14px;
+}
+.section-title::before,.section-title::after{
+content:””;
+flex:1;
+height:1px;
+background:rgba(255,255,255,0.12);
+}
+.section-title h3{font-size:0.95rem;font-weight:900;color:#fff;}
+
+.previews{display:flex;flex-direction:column;gap:16px;}
+
+.preview-card{
+background:rgba(255,255,255,0.06);
+border:1px solid rgba(255,255,255,0.12);
+border-radius:18px;
+overflow:hidden;
+}
+.preview-card.locked{cursor:pointer;}
+.preview-card.locked:active{transform:scale(0.99);}
+
+.thumb{height:170px;position:relative;overflow:hidden;}
+
+/* ── Thumb 1: Founding Day ── */
+.thumb-tasis{background:#fff;}
+.thumb-tasis .t-header{
+height:36px;
+background:linear-gradient(180deg,#efe2cd,#e6d5b8);
+display:flex;
+align-items:center;
+justify-content:space-between;
+padding:0 8px;
+}
+.thumb-tasis .t-header .tt-l,
+.thumb-tasis .t-header .tt-r{
+font-size:7px;
+color:#6b4a2b;
+font-weight:900;
+}
+.thumb-tasis .t-header .seal{
+width:18px;height:18px;
+border-radius:50%;
+background:#6b4a2b;
+}
+.thumb-tasis .ribbon-brown{
+height:8px;
+background:#6b4a2b;
+margin:5px 20px 0;
+border-radius:2px;
+}
+.thumb-tasis .ribbon-tan{
+height:9px;
+background:#c9a878;
+margin:3px 28px 0;
+border-radius:2px;
+}
+.thumb-tasis .body-row{
+display:flex;
+gap:4px;
+padding:6px;
+}
+.thumb-tasis .frames-mini{
+flex:1;
+display:flex;
+flex-direction:column;
+gap:3px;
+}
+.thumb-tasis .frame-mini{
+height:18px;
+background:#d4b893;
+border:1px solid #b8915a;
+border-radius:2px;
+}
+.thumb-tasis .fields-mini{
+flex:1.1;
+display:flex;
+flex-direction:column;
+gap:3px;
+}
+.thumb-tasis .field-mini{
+height:8px;
+background:#fff;
+border:1px solid #6b4a2b;
+border-radius:1px;
+}
+.thumb-tasis .obj-mini{
+height:18px;
+background:#fff;
+border:1px solid #6b4a2b;
+border-radius:1px;
+}
+
+/* ── Thumb 2: Teacher Day ── */
+.thumb-teacher{background:#fff;}
+.thumb-teacher .t-top{
+padding:6px;
+display:flex;
+gap:6px;
+align-items:center;
+}
+.thumb-teacher .muh-mini{
+flex:1.2;
+height:24px;
+background:linear-gradient(135deg,#3a7a8a,#2a5d6e);
+border-radius:5px;
+position:relative;
+}
+.thumb-teacher .muh-mini::before{
+content:””;
+position:absolute;
+left:4px;top:50%;
+margin-top:-7px;
+width:8px;height:14px;
+background:#4caf50;
+border-radius:50%;
+opacity:0.7;
+}
+.thumb-teacher .logos-mini{
+flex-shrink:0;
+font-size:8px;
+font-weight:900;
+color:#1f3a44;
+text-align:left;
+line-height:1.1;
+}
+.thumb-teacher .stripe-mini{
+height:6px;
+margin:0 8px;
+background:linear-gradient(90deg,#3b6db5,#3a7a8a,#4caf50,#e8c547);
+border-radius:2px;
+}
+.thumb-teacher .body-row{
+display:flex;
+gap:4px;
+padding:8px;
+}
+.thumb-teacher .frames-mini{
+flex:1;
+display:flex;
+flex-direction:column;
+gap:3px;
+}
+.thumb-teacher .frame-mini{
+height:18px;
+background:linear-gradient(135deg,#3a7a8a,#2a5d6e);
+border:1.5px solid #4caf50;
+border-radius:3px;
+}
+.thumb-teacher .fields-mini{
+flex:1;
+display:flex;
+flex-direction:column;
+gap:3px;
+}
+.thumb-teacher .field-mini{
+height:7px;
+background:#fff;
+border:1.5px solid #4caf50;
+border-radius:1px;
+}
+
+/* ── Thumb 3: General ── */
+.thumb-general{background:#fff;}
+.thumb-general .t-header{
+height:30px;
+background:linear-gradient(135deg,#1a3c4e,#2a6878);
+display:flex;
+align-items:center;
+justify-content:space-between;
+padding:0 8px;
+}
+.thumb-general .t-header span{
+color:#fff;
+font-size:7px;
+font-weight:900;
+}
+.thumb-general .stripe-mini{
+height:4px;
+background:linear-gradient(to left,#4caf8a,#2a9d8f,#1a6e8a);
+}
+.thumb-general .titles-mini{
+padding:4px 8px 0;
+display:flex;
+flex-direction:column;
+gap:2px;
+}
+.thumb-general .tbar-mini{
+height:10px;
+background:linear-gradient(135deg,#2a9d8f,#1a7a8a);
+border-radius:2px;
+}
+.thumb-general .sbar-mini{
+height:7px;
+background:#e4f4f4;
+border:1px dashed rgba(42,157,143,0.5);
+border-radius:2px;
+}
+.thumb-general .body-row{
+display:flex;
+gap:3px;
+padding:5px 8px;
+}
+.thumb-general .photos-panel-mini{
+flex:1;
+background:#d4eeee;
+border:1px solid #9ecece;
+border-radius:3px;
+padding:3px;
+display:flex;
+flex-direction:column;
+gap:2px;
+}
+.thumb-general .photo-mini{
+height:11px;
+background:linear-gradient(135deg,#5bb8c4,#2a9d8f);
+border-radius:1px;
+}
+.thumb-general .fields-mini{
+flex:1.1;
+display:flex;
+flex-direction:column;
+gap:2px;
+}
+.thumb-general .field-mini{
+height:6px;
+background:#fff;
+border:1px solid #9ecece;
+border-radius:1px;
+}
+.thumb-general .tall-mini{
+height:12px;
+background:#fff;
+border:1px solid #9ecece;
+border-radius:1px;
+}
+
+/* ── Thumb 4: National Day ── */
+.thumb-national{background:#fff;}
+.thumb-national .teeth-mini{
+height:6px;
+background:#1a3d2a;
+background-image:linear-gradient(135deg,#fff 50%,transparent 50%);
+background-size:5px 6px;
+background-repeat:repeat-x;
+background-position:0 100%;
+}
+.thumb-national .t-header-nd{
+padding:5px 8px;
+display:flex;
+align-items:center;
+justify-content:space-between;
+gap:6px;
+}
+.thumb-national .nd-mini-text{
+font-size:7px;
+color:#1f3a44;
+font-weight:900;
+}
+.thumb-national .nd-logo-mini{
+font-size:8px;
+color:#fff;
+background:#1a3d2a;
+padding:3px 6px;
+border-radius:3px;
+font-weight:900;
+border:1px solid #2a5d3a;
+}
+.thumb-national .nd-muh-bar{
+height:10px;
+background:#1a3d2a;
+margin:0 8px;
+border-radius:3px;
+}
+.thumb-national .nd-stripe{
+height:5px;
+margin:4px 8px 0;
+background:linear-gradient(90deg,#3b6db5,#2a5d6e,#3a8a52,#4caf50);
+border-radius:2px;
+}
+.thumb-national .body-row{
+display:flex;
+gap:4px;
+padding:6px 8px;
+}
+.thumb-national .frames-mini{
+flex:1;
+display:flex;
+flex-direction:column;
+gap:3px;
+}
+.thumb-national .frame-mini{
+height:16px;
+background:linear-gradient(135deg,#3a7a8a,#1a3d4e);
+border:1.5px solid #4caf50;
+border-radius:3px;
+box-shadow:inset 0 0 0 1px #3b6db5;
+}
+.thumb-national .fields-mini{
+flex:1;
+display:flex;
+flex-direction:column;
+gap:3px;
+}
+.thumb-national .field-mini{
+height:7px;
+background:#fff;
+border:1.5px solid #3a8a52;
+border-radius:2px;
+}
+
+/* ── Lock overlay ── */
+.lock-overlay{
+position:absolute;
+top:0;left:0;right:0;bottom:0;
+background:linear-gradient(180deg,rgba(0,0,0,0) 0%,rgba(0,0,0,0.55) 100%);
+display:flex;
+align-items:flex-end;
+justify-content:center;
+padding:10px;
+}
+.preview-card:not(.locked) .lock-overlay{display:none;}
+.lock-overlay .lock-tag{
+display:flex;
+align-items:center;
+gap:6px;
+padding:6px 12px;
+background:rgba(0,0,0,0.5);
+border:1px solid rgba(255,255,255,0.25);
+border-radius:99px;
+color:#fff;
+font-size:0.72rem;
+font-weight:700;
+}
+
+.card-content{
+padding:14px 16px 16px;
+display:flex;
+align-items:center;
+gap:12px;
+}
+.card-icon{
+width:46px;height:46px;
+border-radius:12px;
+display:flex;
+align-items:center;
+justify-content:center;
+font-size:22px;
+flex-shrink:0;
+}
+.r-tasis .card-icon{background:linear-gradient(135deg,#c9a878,#6b4a2b);}
+.r-teacher .card-icon{background:linear-gradient(135deg,#4caf50,#2a5d6e);}
+.r-general .card-icon{background:linear-gradient(135deg,#2a9d8f,#1a3c4e);}
+.r-national .card-icon{background:linear-gradient(135deg,#3a8a52,#1a3d2a);}
+
+.card-text{flex:1;min-width:0;}
+.card-text .title{font-size:1rem;font-weight:900;margin-bottom:2px;}
+.card-text .desc{
+font-size:0.72rem;
+color:rgba(255,255,255,0.6);
+line-height:1.4;
+}
+
+.card-action{
+flex-shrink:0;
+font-size:24px;
+color:rgba(255,255,255,0.4);
+}
+.preview-card:not(.locked) .card-action{
+font-size:13px;
+padding:6px 12px;
+border:1px solid rgba(76,175,80,0.5);
+border-radius:99px;
+color:#a5d6a7;
+font-weight:700;
+background:rgba(76,175,80,0.12);
+}
+
+/* ═══ MODAL ═══ */
+.modal-overlay{
+position:fixed;
+top:0;left:0;right:0;bottom:0;
+background:rgba(0,0,0,0.75);
+display:none;
+align-items:center;
+justify-content:center;
+padding:20px;
+z-index:1000;
+}
+.modal-overlay.show{display:flex;}
+
+.modal-card{
+background:linear-gradient(135deg,#1a3c4e,#0d2530);
+border:1px solid rgba(255,255,255,0.15);
+border-radius:24px;
+padding:28px 24px;
+width:100%;
+max-width:380px;
+position:relative;
+box-shadow:0 20px 60px rgba(0,0,0,0.5);
+}
+.modal-close{
+position:absolute;
+top:14px;left:14px;
+width:32px;height:32px;
+border-radius:50%;
+background:rgba(255,255,255,0.1);
+border:none;
+color:#fff;
+font-size:18px;
+cursor:pointer;
+display:flex;
+align-items:center;
+justify-content:center;
+}
+.modal-title{text-align:center;margin-bottom:20px;}
+.modal-title h3{font-size:1.2rem;font-weight:900;margin-bottom:4px;}
+.modal-title p{
+font-size:0.78rem;
+color:rgba(255,255,255,0.6);
+}
+
+.form-group{margin-bottom:14px;}
+.form-label{
+display:block;
+font-size:0.78rem;
+font-weight:700;
+color:rgba(255,255,255,0.85);
+margin-bottom:6px;
+}
+.form-input{
+width:100%;
+padding:13px 16px;
+border:1.5px solid rgba(255,255,255,0.18);
+border-radius:12px;
+background:rgba(255,255,255,0.06);
+color:#fff;
+font-family:inherit;
+font-size:0.95rem;
+font-weight:700;
+direction:ltr;
+text-align:center;
+outline:none;
+}
+.form-input:focus{border-color:#4caf50;background:rgba(255,255,255,0.1);}
+.form-input::placeholder{color:rgba(255,255,255,0.3);font-weight:400;}
+
+.login-btn{
+width:100%;
+padding:14px;
+border:none;
+border-radius:12px;
+background:linear-gradient(135deg,#4caf50,#2a9d8f);
+color:#fff;
+font-family:inherit;
+font-weight:700;
+font-size:1rem;
+cursor:pointer;
+margin-top:6px;
+box-shadow:0 5px 15px rgba(76,175,80,0.3);
+}
+.login-btn:active{transform:scale(0.98);opacity:0.9;}
+
+.error-msg{
+background:rgba(244,67,54,0.15);
+border:1px solid rgba(244,67,54,0.4);
+color:#ffcdd2;
+padding:9px 14px;
+border-radius:10px;
+font-size:0.78rem;
+text-align:center;
+margin-top:12px;
+display:none;
+}
+.error-msg.show{display:block;}
+
+.modal-hint{
+text-align:center;
+font-size:0.7rem;
+color:rgba(255,255,255,0.45);
+margin-top:14px;
+}
+
+.footer{
+text-align:center;
+margin-top:32px;
+padding-top:20px;
+border-top:1px solid rgba(255,255,255,0.08);
+}
+.footer p{
+font-size:0.7rem;
+color:rgba(255,255,255,0.4);
+line-height:1.7;
+}
+</style>
+
+</head>
+<body>
+
+<div class="wrap">
+
+  <div class="hero">
+    <div class="app-logo">📋</div>
+    <div class="app-title">نظام تقارير المدرسة</div>
+    <div class="app-sub">
+      منصة احترافية لإعداد وتنزيل تقارير المناسبات المدرسية بتصاميم جاهزة وقابلة للتخصيص.
+    </div>
+
+```
+<div class="cta-row" id="ctaRow">
+  <button class="cta-btn cta-primary" onclick="openLogin()">🔐 تسجيل الدخول</button>
+  <button class="cta-btn cta-ghost" onclick="scrollToPreviews()">👁 معاينة</button>
+</div>
+```
+
+  </div>
+
+  <div class="user-bar" id="userBar">
+    <div class="who">
+      <span class="dot"></span>
+      <span>مرحباً <span id="userName">05XXXXXXXX</span></span>
+    </div>
+    <button class="logout-mini" onclick="logout()">خروج ↩</button>
+  </div>
+
+  <div class="section-title" id="previewsAnchor">
+    <h3 id="sectionTitle">معاينة التقارير المتاحة</h3>
+  </div>
+
+  <div class="previews">
+
+```
+<!-- Card 1: يوم التأسيس -->
+<div class="preview-card r-tasis locked" data-target="tasis.html" onclick="handleCardClick(this)">
+  <div class="thumb thumb-tasis">
+    <div class="t-header">
+      <span class="tt-l">يوم التأسيس</span>
+      <div class="seal"></div>
+      <span class="tt-r">وزارة التعليم</span>
+    </div>
+    <div class="ribbon-brown"></div>
+    <div class="ribbon-tan"></div>
+    <div class="body-row">
+      <div class="frames-mini">
+        <div class="frame-mini"></div>
+        <div class="frame-mini"></div>
+        <div class="frame-mini"></div>
+      </div>
+      <div class="fields-mini">
+        <div class="field-mini"></div>
+        <div class="field-mini"></div>
+        <div class="field-mini"></div>
+        <div class="field-mini"></div>
+        <div class="obj-mini"></div>
+      </div>
+    </div>
+    <div class="lock-overlay">
+      <div class="lock-tag">🔒 سجّل الدخول للوصول</div>
+    </div>
+  </div>
+  <div class="card-content">
+    <div class="card-icon">🏛️</div>
+    <div class="card-text">
+      <div class="title">تقرير يوم التأسيس</div>
+      <div class="desc">١١٣٩هـ / ١٧٢٧م — يوم بدينا</div>
+    </div>
+    <div class="card-action">‹</div>
+  </div>
+</div>
+
+<!-- Card 2: يوم المعلم -->
+<div class="preview-card r-teacher locked" data-target="teacher.html" onclick="handleCardClick(this)">
+  <div class="thumb thumb-teacher">
+    <div class="t-top">
+      <div class="muh-mini"></div>
+      <div class="logos-mini">يوم المعلم<br><span style="font-size:5px;letter-spacing:1px;">TEACHER DAY</span></div>
+    </div>
+    <div class="stripe-mini"></div>
+    <div class="body-row">
+      <div class="frames-mini">
+        <div class="frame-mini"></div>
+        <div class="frame-mini"></div>
+        <div class="frame-mini"></div>
+      </div>
+      <div class="fields-mini">
+        <div class="field-mini"></div>
+        <div class="field-mini"></div>
+        <div class="field-mini"></div>
+        <div class="field-mini"></div>
+        <div class="field-mini"></div>
+      </div>
+    </div>
+    <div class="lock-overlay">
+      <div class="lock-tag">🔒 سجّل الدخول للوصول</div>
+    </div>
+  </div>
+  <div class="card-content">
+    <div class="card-icon">🎓</div>
+    <div class="card-text">
+      <div class="title">تقرير يوم المعلم</div>
+      <div class="desc">احتفاءً برسالة المعلم — Teacher Day</div>
+    </div>
+    <div class="card-action">‹</div>
+  </div>
+</div>
+
+<!-- Card 3: التقرير العام -->
+<div class="preview-card r-general locked" data-target="report.html" onclick="handleCardClick(this)">
+  <div class="thumb thumb-general">
+    <div class="t-header">
+      <span>الإدارة العامة للتعليم</span>
+      <span>MOE</span>
+    </div>
+    <div class="stripe-mini"></div>
+    <div class="titles-mini">
+      <div class="tbar-mini"></div>
+      <div class="sbar-mini"></div>
+    </div>
+    <div class="body-row">
+      <div class="photos-panel-mini">
+        <div class="photo-mini"></div>
+        <div class="photo-mini"></div>
+        <div class="photo-mini"></div>
+      </div>
+      <div class="fields-mini">
+        <div class="field-mini"></div>
+        <div class="field-mini"></div>
+        <div class="field-mini"></div>
+        <div class="tall-mini"></div>
+        <div class="tall-mini"></div>
+      </div>
+    </div>
+    <div class="lock-overlay">
+      <div class="lock-tag">🔒 سجّل الدخول للوصول</div>
+    </div>
+  </div>
+  <div class="card-content">
+    <div class="card-icon">📊</div>
+    <div class="card-text">
+      <div class="title">التقرير العام</div>
+      <div class="desc">تقرير الإدارة العامة للتعليم</div>
+    </div>
+    <div class="card-action">‹</div>
+  </div>
+</div>
+
+<!-- Card 4: اليوم الوطني -->
+<div class="preview-card r-national locked" data-target="national.html" onclick="handleCardClick(this)">
+  <div class="thumb thumb-national">
+    <div class="teeth-mini"></div>
+    <div class="t-header-nd">
+      <span class="nd-mini-text">الإدارة العامة للتعليم</span>
+      <span class="nd-logo-mini">عزّنا بطبعنا</span>
+    </div>
+    <div class="nd-muh-bar"></div>
+    <div class="nd-stripe"></div>
+    <div class="body-row">
+      <div class="frames-mini">
+        <div class="frame-mini"></div>
+        <div class="frame-mini"></div>
+        <div class="frame-mini"></div>
+      </div>
+      <div class="fields-mini">
+        <div class="field-mini"></div>
+        <div class="field-mini"></div>
+        <div class="field-mini"></div>
+        <div class="field-mini"></div>
+        <div class="field-mini"></div>
+      </div>
+    </div>
+    <div class="lock-overlay">
+      <div class="lock-tag">🔒 سجّل الدخول للوصول</div>
+    </div>
+  </div>
+  <div class="card-content">
+    <div class="card-icon">🇸🇦</div>
+    <div class="card-text">
+      <div class="title">تقرير اليوم الوطني</div>
+      <div class="desc">عزّنا بطبعنا — اليوم الوطني السعودي ٩٥</div>
+    </div>
+    <div class="card-action">‹</div>
+  </div>
+</div>
+```
+
+  </div>
+
+  <div class="footer">
+    <p>جميع التقارير قابلة للتعبئة، إضافة صور، وتحميل كصورة عالية الجودة</p>
+    <p style="margin-top:6px;">© ٢٠٢٦ — نظام تقارير المدرسة</p>
+  </div>
+
+</div>
+
+<!-- MODAL تسجيل الدخول -->
+
+<div class="modal-overlay" id="loginModal">
+  <div class="modal-card">
+    <button class="modal-close" onclick="closeLogin()">✕</button>
+    <div class="modal-title">
+      <h3>تسجيل الدخول</h3>
+      <p>ادخل بياناتك للوصول إلى التقارير</p>
+    </div>
+
+```
+<div class="form-group">
+  <label class="form-label">رقم الجوال</label>
+  <input type="tel" class="form-input" id="phone" placeholder="05XXXXXXXX" maxlength="10" inputmode="numeric">
+</div>
+
+<div class="form-group">
+  <label class="form-label">الرقم السري</label>
+  <input type="password" class="form-input" id="password" placeholder="••••" inputmode="numeric">
+</div>
+
+<button class="login-btn" onclick="login()">دخول</button>
+<div class="error-msg" id="errorMsg"></div>
+<div class="modal-hint">للمساعدة تواصل مع إدارة المدرسة</div>
+```
+
+  </div>
+</div>
+
+<script>
+const users = {
+    "0504854223": "1234",
+    "0506399549": "1234",
+    "0551234567": "3344",
+    "0530490887": "1234",
+    "0531415531": "1234",
+    "0558176875": "1234",
+    "0559357091": "1234",
+    "0503393365": "1234",
+    "0536183076": "1234",
+    "0504864020": "1234",
+    "0556003663": "1234",
+    "0568861023": "1234",
+    "0534592970": "1234",
+    "0557794423": "1234",
+    "0504865224": "1234",
+    "0569914505": "1234",
+    "0596688516": "1234",
+    "0510038611": "1234"
+};
+
+window.addEventListener('DOMContentLoaded', function(){
+  const savedUser = sessionStorage.getItem('loggedUser');
+  if(savedUser && users[savedUser]){
+    enterLoggedInMode(savedUser);
+  }
+});
+
+function openLogin(){
+  document.getElementById('loginModal').classList.add('show');
+  setTimeout(function(){document.getElementById('phone').focus();},200);
+}
+function closeLogin(){
+  document.getElementById('loginModal').classList.remove('show');
+  document.getElementById('errorMsg').classList.remove('show');
+}
+
+function login(){
+  const phone = document.getElementById('phone').value.trim();
+  const password = document.getElementById('password').value.trim();
+  const errorMsg = document.getElementById('errorMsg');
+
+  if(!phone || !password){
+    errorMsg.textContent = 'الرجاء تعبئة جميع الحقول';
+    errorMsg.classList.add('show');
+    return;
+  }
+
+  if(users[phone] && users[phone] === password){
+    sessionStorage.setItem('loggedUser', phone);
+    errorMsg.classList.remove('show');
+    closeLogin();
+    enterLoggedInMode(phone);
+  } else {
+    errorMsg.textContent = 'رقم الجوال أو الرقم السري غير صحيح';
+    errorMsg.classList.add('show');
+    document.getElementById('password').value = '';
+  }
+}
+
+function enterLoggedInMode(phone){
+  document.getElementById('userBar').classList.add('show');
+  document.getElementById('userName').textContent = phone;
+  document.getElementById('ctaRow').style.display = 'none';
+  document.getElementById('sectionTitle').textContent = 'اختر التقرير لفتحه';
+
+  document.querySelectorAll('.preview-card.locked').forEach(function(card){
+    card.classList.remove('locked');
+    const action = card.querySelector('.card-action');
+    if(action) action.textContent = 'فتح';
+  });
+}
+
+function logout(){
+  if(confirm('هل تريد تسجيل الخروج؟')){
+    sessionStorage.removeItem('loggedUser');
+    location.reload();
+  }
+}
+
+function handleCardClick(card){
+  if(card.classList.contains('locked')){
+    openLogin();
+  } else {
+    const target = card.getAttribute('data-target');
+    if(target) window.location.href = target;
+  }
+}
+
+function scrollToPreviews(){
+  document.getElementById('previewsAnchor').scrollIntoView({behavior:'smooth',block:'start'});
+}
+
+document.getElementById('password').addEventListener('keydown', function(e){
+  if(e.key === 'Enter') login();
+});
+document.getElementById('phone').addEventListener('keydown', function(e){
+  if(e.key === 'Enter') document.getElementById('password').focus();
+});
+
+document.getElementById('loginModal').addEventListener('click', function(e){
+  if(e.target === this) closeLogin();
+});
+</script>
+
+</body>
+</html>
