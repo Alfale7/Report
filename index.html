@@ -1,5 +1,4 @@
 <!DOCTYPE html>
-
 <html lang="ar" dir="rtl">
 <head>
 <meta charset="UTF-8">
@@ -12,7 +11,7 @@
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
 
 html,body{
-font-family:‘Tajawal’,‘Tahoma’,‘Arial’,sans-serif;
+font-family:'Tajawal','Tahoma','Arial',sans-serif;
 min-height:100vh;
 width:100%;
 overflow-x:hidden;
@@ -21,7 +20,7 @@ color:#fff;
 }
 
 body::before{
-content:””;
+content:"";
 position:fixed;
 top:-100px;right:-100px;
 width:300px;height:300px;
@@ -30,7 +29,7 @@ background:radial-gradient(circle,rgba(76,175,80,0.15),transparent 70%);
 pointer-events:none;
 }
 body::after{
-content:””;
+content:"";
 position:fixed;
 bottom:-100px;left:-100px;
 width:300px;height:300px;
@@ -85,7 +84,7 @@ box-shadow:0 5px 15px rgba(76,175,80,0.3);
 }
 .cta-ghost{
 background:rgba(255,255,255,0.08);
-border:1.5px solid rgba(255,255,255,0.2);
+border:1.5px solid rgba(255,255,255,0.25);
 color:#fff;
 }
 
@@ -133,7 +132,7 @@ gap:10px;
 margin:24px 4px 14px;
 }
 .section-title::before,.section-title::after{
-content:””;
+content:"";
 flex:1;
 height:1px;
 background:rgba(255,255,255,0.12);
@@ -238,7 +237,7 @@ border-radius:5px;
 position:relative;
 }
 .thumb-teacher .muh-mini::before{
-content:””;
+content:"";
 position:absolute;
 left:4px;top:50%;
 margin-top:-7px;
@@ -540,15 +539,67 @@ border:none;
 color:#fff;
 font-size:18px;
 cursor:pointer;
-display:flex;
-align-items:center;
-justify-content:center;
+display:flex;align-items:center;justify-content:center;
 }
-.modal-title{text-align:center;margin-bottom:20px;}
+.modal-title{text-align:center;margin-bottom:18px;}
 .modal-title h3{font-size:1.2rem;font-weight:900;margin-bottom:4px;}
-.modal-title p{
-font-size:0.78rem;
-color:rgba(255,255,255,0.6);
+
+/* ── New Golden Offer Section ── */
+.golden-offer {
+    background: linear-gradient(135deg, rgba(232,197,71,0.15) 0%, rgba(232,197,71,0.05) 100%);
+    border: 1px solid rgba(232,197,71,0.4);
+    border-radius: 16px;
+    padding: 18px;
+    margin-bottom: 20px;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+}
+.golden-offer::before {
+    content: "عرض خاص";
+    position: absolute;
+    top: 5px;
+    right: -25px;
+    background: #e8c547;
+    color: #0d2530;
+    font-size: 0.6rem;
+    font-weight: 900;
+    padding: 2px 30px;
+    transform: rotate(45deg);
+}
+.offer-text {
+    font-size: 0.88rem;
+    line-height: 1.6;
+    color: #fff;
+    margin-bottom: 12px;
+}
+.offer-price {
+    display: inline-block;
+    background: #e8c547;
+    color: #0d2530;
+    padding: 6px 14px;
+    border-radius: 99px;
+    font-weight: 900;
+    font-size: 1.05rem;
+    margin: 8px 0;
+}
+.whatsapp-frame {
+    display: block;
+    background-color: #58d360; 
+    color: white !important;
+    text-align: center;
+    padding: 12px;
+    border-radius: 10px;
+    margin-top: 10px;
+    text-decoration: none;
+    font-weight: 700;
+    font-size: 0.95rem;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 12px rgba(88, 211, 96, 0.2);
+}
+.whatsapp-frame:hover {
+    background-color: #4bc353;
+    transform: translateY(-2px);
 }
 
 .form-group{margin-bottom:14px;}
@@ -632,18 +683,15 @@ line-height:1.7;
 
   <div class="hero">
     <div class="app-logo">📋</div>
-    <div class="app-title">نظام تقارير المدرسة</div>
+    <div class="app-title">مُعـد التقارير الذكي</div>
     <div class="app-sub">
-      منصة احترافية لإعداد وتنزيل تقارير المناسبات المدرسية بتصاميم جاهزة وقابلة للتخصيص.
+      منصة احترافية لإعداد وتنزيل التقاير والمناسبات بتصاميم جاهزة وقابلة للتخصيص
     </div>
 
-```
-<div class="cta-row" id="ctaRow">
-  <button class="cta-btn cta-primary" onclick="openLogin()">🔐 تسجيل الدخول</button>
-  <button class="cta-btn cta-ghost" onclick="scrollToPreviews()">👁 معاينة</button>
-</div>
-```
-
+    <div class="cta-row" id="ctaRow">
+      <button class="cta-btn cta-primary" onclick="openLogin()">🔐 تسجيل الدخول</button>
+      <button class="cta-btn cta-ghost" onclick="scrollToPreviews()">👁 معاينة</button>
+    </div>
   </div>
 
   <div class="user-bar" id="userBar">
@@ -659,161 +707,153 @@ line-height:1.7;
   </div>
 
   <div class="previews">
+    <div class="preview-card r-tasis locked" data-target="tasis.html" onclick="handleCardClick(this)">
+      <div class="thumb thumb-tasis">
+        <div class="t-header">
+          <span class="tt-l">يوم التأسيس</span>
+          <div class="seal"></div>
+          <span class="tt-r">وزارة التعليم</span>
+        </div>
+        <div class="ribbon-brown"></div>
+        <div class="ribbon-tan"></div>
+        <div class="body-row">
+          <div class="frames-mini">
+            <div class="frame-mini"></div>
+            <div class="frame-mini"></div>
+            <div class="frame-mini"></div>
+          </div>
+          <div class="fields-mini">
+            <div class="field-mini"></div>
+            <div class="field-mini"></div>
+            <div class="field-mini"></div>
+            <div class="field-mini"></div>
+            <div class="obj-mini"></div>
+          </div>
+        </div>
+        <div class="lock-overlay">
+          <div class="lock-tag">🔒 سجّل الدخول للوصول</div>
+        </div>
+      </div>
+      <div class="card-content">
+        <div class="card-icon">🏛️</div>
+        <div class="card-text">
+          <div class="title">تقرير يوم التأسيس</div>
+          <div class="desc">١١٣٩هـ / ١٧٢٧م — يوم بدينا</div>
+        </div>
+        <div class="card-action">‹</div>
+      </div>
+    </div>
 
-```
-<!-- Card 1: يوم التأسيس -->
-<div class="preview-card r-tasis locked" data-target="tasis.html" onclick="handleCardClick(this)">
-  <div class="thumb thumb-tasis">
-    <div class="t-header">
-      <span class="tt-l">يوم التأسيس</span>
-      <div class="seal"></div>
-      <span class="tt-r">وزارة التعليم</span>
-    </div>
-    <div class="ribbon-brown"></div>
-    <div class="ribbon-tan"></div>
-    <div class="body-row">
-      <div class="frames-mini">
-        <div class="frame-mini"></div>
-        <div class="frame-mini"></div>
-        <div class="frame-mini"></div>
+    <div class="preview-card r-teacher locked" data-target="teacher.html" onclick="handleCardClick(this)">
+      <div class="thumb thumb-teacher">
+        <div class="t-top">
+          <div class="muh-mini"></div>
+          <div class="logos-mini">يوم المعلم<br><span style="font-size:5px;letter-spacing:1px;">TEACHER DAY</span></div>
+        </div>
+        <div class="stripe-mini"></div>
+        <div class="body-row">
+          <div class="frames-mini">
+            <div class="frame-mini"></div>
+            <div class="frame-mini"></div>
+            <div class="frame-mini"></div>
+          </div>
+          <div class="fields-mini">
+            <div class="field-mini"></div>
+            <div class="field-mini"></div>
+            <div class="field-mini"></div>
+            <div class="field-mini"></div>
+            <div class="field-mini"></div>
+          </div>
+        </div>
+        <div class="lock-overlay">
+          <div class="lock-tag">🔒 سجّل الدخول للوصول</div>
+        </div>
       </div>
-      <div class="fields-mini">
-        <div class="field-mini"></div>
-        <div class="field-mini"></div>
-        <div class="field-mini"></div>
-        <div class="field-mini"></div>
-        <div class="obj-mini"></div>
+      <div class="card-content">
+        <div class="card-icon">🎓</div>
+        <div class="card-text">
+          <div class="title">تقرير يوم المعلم</div>
+          <div class="desc">احتفاءً برسالة المعلم — Teacher Day</div>
+        </div>
+        <div class="card-action">‹</div>
       </div>
     </div>
-    <div class="lock-overlay">
-      <div class="lock-tag">🔒 سجّل الدخول للوصول</div>
-    </div>
-  </div>
-  <div class="card-content">
-    <div class="card-icon">🏛️</div>
-    <div class="card-text">
-      <div class="title">تقرير يوم التأسيس</div>
-      <div class="desc">١١٣٩هـ / ١٧٢٧م — يوم بدينا</div>
-    </div>
-    <div class="card-action">‹</div>
-  </div>
-</div>
 
-<!-- Card 2: يوم المعلم -->
-<div class="preview-card r-teacher locked" data-target="teacher.html" onclick="handleCardClick(this)">
-  <div class="thumb thumb-teacher">
-    <div class="t-top">
-      <div class="muh-mini"></div>
-      <div class="logos-mini">يوم المعلم<br><span style="font-size:5px;letter-spacing:1px;">TEACHER DAY</span></div>
-    </div>
-    <div class="stripe-mini"></div>
-    <div class="body-row">
-      <div class="frames-mini">
-        <div class="frame-mini"></div>
-        <div class="frame-mini"></div>
-        <div class="frame-mini"></div>
+    <div class="preview-card r-general locked" data-target="report.html" onclick="handleCardClick(this)">
+      <div class="thumb thumb-general">
+        <div class="t-header">
+          <span>الإدارة العامة للتعليم</span>
+          <span>MOE</span>
+        </div>
+        <div class="stripe-mini"></div>
+        <div class="titles-mini">
+          <div class="tbar-mini"></div>
+          <div class="sbar-mini"></div>
+        </div>
+        <div class="body-row">
+          <div class="photos-panel-mini">
+            <div class="photo-mini"></div>
+            <div class="photo-mini"></div>
+            <div class="photo-mini"></div>
+          </div>
+          <div class="fields-mini">
+            <div class="field-mini"></div>
+            <div class="field-mini"></div>
+            <div class="field-mini"></div>
+            <div class="tall-mini"></div>
+            <div class="tall-mini"></div>
+          </div>
+        </div>
+        <div class="lock-overlay">
+          <div class="lock-tag">🔒 سجّل الدخول للوصول</div>
+        </div>
       </div>
-      <div class="fields-mini">
-        <div class="field-mini"></div>
-        <div class="field-mini"></div>
-        <div class="field-mini"></div>
-        <div class="field-mini"></div>
-        <div class="field-mini"></div>
+      <div class="card-content">
+        <div class="card-icon">📊</div>
+        <div class="card-text">
+          <div class="title">التقرير العام</div>
+          <div class="desc">تقرير الإدارة العامة للتعليم</div>
+        </div>
+        <div class="card-action">‹</div>
       </div>
     </div>
-    <div class="lock-overlay">
-      <div class="lock-tag">🔒 سجّل الدخول للوصول</div>
-    </div>
-  </div>
-  <div class="card-content">
-    <div class="card-icon">🎓</div>
-    <div class="card-text">
-      <div class="title">تقرير يوم المعلم</div>
-      <div class="desc">احتفاءً برسالة المعلم — Teacher Day</div>
-    </div>
-    <div class="card-action">‹</div>
-  </div>
-</div>
 
-<!-- Card 3: التقرير العام -->
-<div class="preview-card r-general locked" data-target="report.html" onclick="handleCardClick(this)">
-  <div class="thumb thumb-general">
-    <div class="t-header">
-      <span>الإدارة العامة للتعليم</span>
-      <span>MOE</span>
-    </div>
-    <div class="stripe-mini"></div>
-    <div class="titles-mini">
-      <div class="tbar-mini"></div>
-      <div class="sbar-mini"></div>
-    </div>
-    <div class="body-row">
-      <div class="photos-panel-mini">
-        <div class="photo-mini"></div>
-        <div class="photo-mini"></div>
-        <div class="photo-mini"></div>
+    <div class="preview-card r-national locked" data-target="watny.html" onclick="handleCardClick(this)">
+      <div class="thumb thumb-national">
+        <div class="teeth-mini"></div>
+        <div class="t-header-nd">
+          <span class="nd-mini-text">الإدارة العامة للتعليم</span>
+          <span class="nd-logo-mini">عزّنا بطبعنا</span>
+        </div>
+        <div class="nd-muh-bar"></div>
+        <div class="nd-stripe"></div>
+        <div class="body-row">
+          <div class="frames-mini">
+            <div class="frame-mini"></div>
+            <div class="frame-mini"></div>
+            <div class="frame-mini"></div>
+          </div>
+          <div class="fields-mini">
+            <div class="field-mini"></div>
+            <div class="field-mini"></div>
+            <div class="field-mini"></div>
+            <div class="field-mini"></div>
+            <div class="field-mini"></div>
+          </div>
+        </div>
+        <div class="lock-overlay">
+          <div class="lock-tag">🔒 سجّل الدخول للوصول</div>
+        </div>
       </div>
-      <div class="fields-mini">
-        <div class="field-mini"></div>
-        <div class="field-mini"></div>
-        <div class="field-mini"></div>
-        <div class="tall-mini"></div>
-        <div class="tall-mini"></div>
-      </div>
-    </div>
-    <div class="lock-overlay">
-      <div class="lock-tag">🔒 سجّل الدخول للوصول</div>
-    </div>
-  </div>
-  <div class="card-content">
-    <div class="card-icon">📊</div>
-    <div class="card-text">
-      <div class="title">التقرير العام</div>
-      <div class="desc">تقرير الإدارة العامة للتعليم</div>
-    </div>
-    <div class="card-action">‹</div>
-  </div>
-</div>
-
-<!-- Card 4: اليوم الوطني -->
-<div class="preview-card r-national locked" data-target="national.html" onclick="handleCardClick(this)">
-  <div class="thumb thumb-national">
-    <div class="teeth-mini"></div>
-    <div class="t-header-nd">
-      <span class="nd-mini-text">الإدارة العامة للتعليم</span>
-      <span class="nd-logo-mini">عزّنا بطبعنا</span>
-    </div>
-    <div class="nd-muh-bar"></div>
-    <div class="nd-stripe"></div>
-    <div class="body-row">
-      <div class="frames-mini">
-        <div class="frame-mini"></div>
-        <div class="frame-mini"></div>
-        <div class="frame-mini"></div>
-      </div>
-      <div class="fields-mini">
-        <div class="field-mini"></div>
-        <div class="field-mini"></div>
-        <div class="field-mini"></div>
-        <div class="field-mini"></div>
-        <div class="field-mini"></div>
+      <div class="card-content">
+        <div class="card-icon">🇸🇦</div>
+        <div class="card-text">
+          <div class="title">تقرير اليوم الوطني</div>
+          <div class="desc">عزّنا بطبعنا — اليوم الوطني السعودي ٩٥</div>
+        </div>
+        <div class="card-action">‹</div>
       </div>
     </div>
-    <div class="lock-overlay">
-      <div class="lock-tag">🔒 سجّل الدخول للوصول</div>
-    </div>
-  </div>
-  <div class="card-content">
-    <div class="card-icon">🇸🇦</div>
-    <div class="card-text">
-      <div class="title">تقرير اليوم الوطني</div>
-      <div class="desc">عزّنا بطبعنا — اليوم الوطني السعودي ٩٥</div>
-    </div>
-    <div class="card-action">‹</div>
-  </div>
-</div>
-```
-
   </div>
 
   <div class="footer">
@@ -823,32 +863,41 @@ line-height:1.7;
 
 </div>
 
-<!-- MODAL تسجيل الدخول -->
-
 <div class="modal-overlay" id="loginModal">
   <div class="modal-card">
     <button class="modal-close" onclick="closeLogin()">✕</button>
+    
     <div class="modal-title">
       <h3>تسجيل الدخول</h3>
-      <p>ادخل بياناتك للوصول إلى التقارير</p>
     </div>
 
-```
-<div class="form-group">
-  <label class="form-label">رقم الجوال</label>
-  <input type="tel" class="form-input" id="phone" placeholder="05XXXXXXXX" maxlength="10" inputmode="numeric">
-</div>
+    <div class="golden-offer">
+        <div class="offer-text">
+            🤝 <b>شريكك المثالي في الإنجاز!</b> 🌟<br>
+            وفرنا لك الوقت والجهد بتصميم ذكي يساعدك على إنشاء تقارير احترافية بكل سهولة وسلاسة. 📝🚀
+            <br>
+            <span style="display:block; margin-top:8px; color:#e8c547; font-weight:700;">🌟 لا تفوّت عروض نهاية السنة الهجرية 🌟</span>
+            <div class="offer-price">💎 النسخة الذهبية مدى الحياة بـ 49 ريال فقط!</div>
+        </div>
+        
+        <a href="https://wa.me/966502517217" class="whatsapp-frame" target="_blank">
+           تواصل معنا عبر الواتساب لتفعيل حسابك 💬
+        </a>
+    </div>
 
-<div class="form-group">
-  <label class="form-label">الرقم السري</label>
-  <input type="password" class="form-input" id="password" placeholder="••••" inputmode="numeric">
-</div>
+    <div class="form-group">
+      <label class="form-label">رقم الجوال</label>
+      <input type="tel" class="form-input" id="phone" placeholder="05XXXXXXXX" maxlength="10" inputmode="numeric">
+    </div>
 
-<button class="login-btn" onclick="login()">دخول</button>
-<div class="error-msg" id="errorMsg"></div>
-<div class="modal-hint">للمساعدة تواصل مع إدارة المدرسة</div>
-```
+    <div class="form-group">
+      <label class="form-label">الرقم السري</label>
+      <input type="password" class="form-input" id="password" placeholder="••••" inputmode="numeric">
+    </div>
 
+    <button class="login-btn" onclick="login()">دخول</button>
+    <div class="error-msg" id="errorMsg"></div>
+    <div class="modal-hint">للمساعدة تواصل مع الدعم الفني</div>
   </div>
 </div>
 
