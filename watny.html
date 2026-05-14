@@ -106,19 +106,21 @@ top:0;left:0;right:0;height:2px;
 background:#4caf50;
 }
 .nd-ar{
-font-family:‘Tajawal’,serif;
-font-size:0.95rem;
+font-family:‘Tajawal’,‘Tahoma’,‘Arial’,sans-serif;
+font-size:1rem;
 font-weight:900;
 color:#fff;
-line-height:1;
-letter-spacing:0.5px;
+line-height:1.1;
+letter-spacing:0;
 }
 .nd-sub{
-font-size:0.45rem;
+font-family:‘Tajawal’,‘Tahoma’,‘Arial’,sans-serif;
+font-size:0.55rem;
 color:#a5d6a7;
 margin-top:3px;
-letter-spacing:0.2em;
+letter-spacing:0;
 font-weight:700;
+line-height:1.2;
 }
 .nd-en{
 font-size:0.32rem;
@@ -403,11 +405,12 @@ flex-shrink:0;
 text-align:center;
 }
 .maad-logo .nd-ar-mini{
-font-family:‘Tajawal’,serif;
+font-family:‘Tajawal’,‘Tahoma’,‘Arial’,sans-serif;
 font-size:1.2rem;
 font-weight:900;
 color:#3a8a52;
-line-height:1;
+line-height:1.1;
+letter-spacing:0;
 }
 .maad-logo .nd-sub-mini{
 font-size:0.4rem;
@@ -789,18 +792,68 @@ async function saveAsImage(){
     muhPt.style.display='inline-block';
   }
 
+  // الهيدر والفوتر: نرسم النص العربي على canvas منفصل ونحطه كصورة
+  // هذا يحل مشكلة تكسر الحروف نهائياً لأن Canvas API يدعم Arabic shaping بشكل ممتاز
+  function renderArabicToImage(text, fontSize, fontWeight, color, scale){
+    scale = scale || 4;
+    const cnv = document.createElement('canvas');
+    const ctx = cnv.getContext('2d');
+    // قياس مبدئي
+    ctx.font = fontWeight + ' ' + (fontSize*scale) + "px 'Tajawal','Tahoma','Arial',sans-serif";
+    ctx.direction = 'rtl';
+    const metrics = ctx.measureText(text);
+    const w = Math.ceil(metrics.width) + 20*scale;
+    const h = Math.ceil(fontSize * scale * 1.4);
+    cnv.width = w;
+    cnv.height = h;
+    // إعادة تعيين بعد تغيير الحجم
+    ctx.font = fontWeight + ' ' + (fontSize*scale) + "px 'Tajawal','Tahoma','Arial',sans-serif";
+    ctx.direction = 'rtl';
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
+    ctx.fillStyle = color;
+    ctx.fillText(text, w/2, h/2);
+    const img = new Image();
+    img.src = cnv.toDataURL('image/png');
+    img.style.display = 'block';
+    img.style.maxWidth = '100%';
+    img.style.height = 'auto';
+    return img;
+  }
+
   // الهيدر: عزّنا بطبعنا + اليوم الوطني السعودي ٩٥
   const ndArHeader=document.getElementById('nd-ar-header');
   const ndSubHeader=document.getElementById('nd-sub-header');
   const ndArHeaderOrig=ndArHeader.innerHTML;
   const ndSubHeaderOrig=ndSubHeader.innerHTML;
-  wrapWords(ndArHeader, 'عزّنا بطبعنا');
-  wrapWords(ndSubHeader, 'اليوم الوطني السعودي ٩٥');
 
-  // الفوتر: عزّنا بطبعنا
+  // نحفظ المقاسات الأصلية ثم نستبدل بصور
+  const ndArRect = ndArHeader.getBoundingClientRect();
+  const ndSubRect = ndSubHeader.getBoundingClientRect();
+
+  ndArHeader.innerHTML='';
+  const ndArImg = renderArabicToImage('عزّنا بطبعنا', 16, '900', '#ffffff');
+  ndArImg.style.height = Math.max(ndArRect.height, 18) + 'px';
+  ndArImg.style.width = 'auto';
+  ndArImg.style.margin = '0 auto';
+  ndArHeader.appendChild(ndArImg);
+
+  ndSubHeader.innerHTML='';
+  const ndSubImg = renderArabicToImage('اليوم الوطني السعودي ٩٥', 10, '700', '#a5d6a7');
+  ndSubImg.style.height = Math.max(ndSubRect.height, 12) + 'px';
+  ndSubImg.style.width = 'auto';
+  ndSubImg.style.margin = '0 auto';
+  ndSubHeader.appendChild(ndSubImg);
+
+  // الفوتر: عزّنا بطبعنا (لون أخضر)
   const ndArFooter=document.getElementById('nd-ar-footer');
   const ndArFooterOrig=ndArFooter.innerHTML;
-  wrapWords(ndArFooter, 'عزّنا بطبعنا');
+  const ndFooterRect = ndArFooter.getBoundingClientRect();
+  ndArFooter.innerHTML='';
+  const ndFooterImg = renderArabicToImage('عزّنا بطبعنا', 20, '900', '#3a8a52');
+  ndFooterImg.style.height = Math.max(ndFooterRect.height, 22) + 'px';
+  ndFooterImg.style.width = 'auto';
+  ndArFooter.appendChild(ndFooterImg);
 
   // الأهداف
   const goalsInp=document.getElementById('f-goals');
