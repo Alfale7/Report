@@ -387,16 +387,40 @@ font-family:‘Tajawal’,‘Tahoma’,‘Arial’,sans-serif;
 .mbox p{margin:0 0 14px;font-size:0.85rem;color:#1a3c4e;line-height:1.5;}
 .mbox-btns{display:flex;gap:8px;}
 .mbox-btns .btn{padding:10px;font-size:0.78rem;}
+
+/* ═══ زر تغيير اللغة (FAB) ═══ */
+.lang-fab{
+position:fixed;top:14px;left:14px;z-index:998;
+display:inline-flex;align-items:center;gap:6px;
+padding:7px 12px;background:#1a3c4e;color:#fff;
+border:1.5px solid rgba(255,255,255,0.25);border-radius:99px;
+font-family:‘Tajawal’,‘Tahoma’,‘Arial’,sans-serif;
+font-size:0.75rem;font-weight:700;cursor:pointer;
+box-shadow:0 4px 12px rgba(0,0,0,0.2);
+backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);
+transition:all 0.2s;
+}
+.lang-fab:hover{transform:translateY(-1px);opacity:0.95;}
+.lang-fab:active{transform:scale(0.95);}
+.lang-fab .globe{font-size:0.9rem;}
+.lang-fab .lang-code{min-width:18px;text-align:center;letter-spacing:0.5px;}
 </style>
 
 </head>
 <body>
 
+<!-- زر تغيير اللغة عائم -->
+
+<button class="lang-fab" onclick="toggleLang()" aria-label="Switch language">
+  <span class="globe">🌐</span>
+  <span class="lang-code" id="langCode">EN</span>
+</button>
+
 <div id="page">
 
   <div class="hdr">
     <div class="hdr-text">
-      <h2>الإدارة العامة للتعليم<br><span id="muhafaza">بمنطقة ...</span></h2>
+      <h2><span data-i18n="moeLabel">الإدارة العامة للتعليم</span><br><span id="muhafaza" data-i18n="moeRegion">بمحافظة ...</span></h2>
     </div>
     <!-- شعار وزارة التعليم الرسمي (بالأبيض بسبب filter) -->
     <div class="moe">
@@ -405,8 +429,8 @@ font-family:‘Tajawal’,‘Tahoma’,‘Arial’,sans-serif;
   </div>
   <div class="stripe"></div>
 
-  <div class="tbar" contenteditable="true" data-ph="اكتب عنوان البرنامج / الفعالية..."></div>
-  <div class="sbar" contenteditable="true" data-ph="عنوان فرعي أو اسم المدرسة..."></div>
+  <div class="tbar" contenteditable="true" data-ph="اكتب عنوان البرنامج / الفعالية..." data-i18n-dataph="phProgramTitle"></div>
+  <div class="sbar" contenteditable="true" data-ph="عنوان فرعي أو اسم المدرسة..." data-i18n-dataph="phSubTitle"></div>
 
   <div class="tbl">
 
@@ -414,13 +438,13 @@ font-family:‘Tajawal’,‘Tahoma’,‘Arial’,sans-serif;
 <!-- RIGHT (in RTL): photos column -->
 <div class="col-L">
   <div class="ppanel">
-    <div class="phdr"><div class="phdr-dot"></div>شـواهد</div>
+    <div class="phdr"><div class="phdr-dot"></div><span data-i18n="evidence">شـواهد</span></div>
     <div class="pinner">
 
       <div class="pf" onclick="openF(1)">
         <img id="p1">
         <div class="pwm"><svg viewBox="0 0 100 100" fill="none"><circle cx="50" cy="38" r="24" stroke="white" stroke-width="4"/><circle cx="50" cy="38" r="12" stroke="white" stroke-width="4"/><path d="M18 70 Q34 54 50 65 Q66 54 82 70" stroke="white" stroke-width="4" fill="none"/></svg></div>
-        <div class="padd">+ أضف صورة</div>
+        <div class="padd" data-i18n="addPhoto">+ أضف صورة</div>
         <div class="psp" id="sp1"></div>
         <input type="file" id="i1" hidden accept="image/*" onchange="prev(this,1)">
       </div>
@@ -428,7 +452,7 @@ font-family:‘Tajawal’,‘Tahoma’,‘Arial’,sans-serif;
       <div class="pf" onclick="openF(2)">
         <img id="p2">
         <div class="pwm"><svg viewBox="0 0 100 100" fill="none"><circle cx="50" cy="38" r="24" stroke="white" stroke-width="4"/><circle cx="50" cy="38" r="12" stroke="white" stroke-width="4"/><path d="M18 70 Q34 54 50 65 Q66 54 82 70" stroke="white" stroke-width="4" fill="none"/></svg></div>
-        <div class="padd">+ أضف صورة</div>
+        <div class="padd" data-i18n="addPhoto">+ أضف صورة</div>
         <div class="psp" id="sp2"></div>
         <input type="file" id="i2" hidden accept="image/*" onchange="prev(this,2)">
       </div>
@@ -436,16 +460,16 @@ font-family:‘Tajawal’,‘Tahoma’,‘Arial’,sans-serif;
       <div class="pf" onclick="openF(3)">
         <img id="p3">
         <div class="pwm"><svg viewBox="0 0 100 100" fill="none"><circle cx="50" cy="38" r="24" stroke="white" stroke-width="4"/><circle cx="50" cy="38" r="12" stroke="white" stroke-width="4"/><path d="M18 70 Q34 54 50 65 Q66 54 82 70" stroke="white" stroke-width="4" fill="none"/></svg></div>
-        <div class="padd">+ أضف صورة</div>
+        <div class="padd" data-i18n="addPhoto">+ أضف صورة</div>
         <div class="psp" id="sp3"></div>
         <input type="file" id="i3" hidden accept="image/*" onchange="prev(this,3)">
       </div>
 
     </div>
     <div class="princ-wrap">
-      <div class="princ-lbl">مُعـد التقرير</div>
+      <div class="princ-lbl" data-i18n="lblPrincipal">مدير المدرسة</div>
       <div class="princ-box">
-        <input type="text" id="f-princ" placeholder="اسم المُعـد/ة...">
+        <input type="text" id="f-princ" placeholder="اسم المدير/ة..." data-i18n-placeholder="phPrincipalName">
         <span class="fp" id="pt-princ" style="text-align:center;"></span>
       </div>
     </div>
@@ -456,50 +480,44 @@ font-family:‘Tajawal’,‘Tahoma’,‘Arial’,sans-serif;
 <div class="col-R">
 
   <div class="fr">
-    <span class="fl">المنفذ / ة</span>
-    <input class="fi" id="f-exec" type="text" placeholder="الاسم...">
+    <span class="fl" data-i18n="lblExec">المنفذ:</span>
+    <input class="fi" id="f-exec" type="text" placeholder="الاسم..." data-i18n-placeholder="phName">
     <span class="fp" id="pt-exec"></span>
   </div>
 
   <div class="fr">
-    <span class="fl">مكان التنفيذ:</span>
-    <input class="fi" id="f-place" type="text" placeholder="...">
+    <span class="fl" data-i18n="lblPlace">مكان التنفيذ:</span>
+    <input class="fi" id="f-place" type="text" placeholder="..." data-i18n-placeholder="phDots">
     <span class="fp" id="pt-place"></span>
   </div>
 
   <div class="fr">
-    <span class="fl">المستفيدون:</span>
-    <input class="fi" id="f-bene" type="text" placeholder="...">
+    <span class="fl" data-i18n="lblBene">المستفيدون:</span>
+    <input class="fi" id="f-bene" type="text" placeholder="..." data-i18n-placeholder="phDots">
     <span class="fp" id="pt-bene"></span>
   </div>
 
   <div class="fr">
-    <span class="fl">العدد:</span>
+    <span class="fl" data-i18n="lblCount">العدد:</span>
     <input class="fi" id="f-count" type="number" min="0" placeholder="0">
     <span class="fp" id="pt-count"></span>
   </div>
 
   <div class="fr">
-    <span class="fl">التاريخ:</span>
+    <span class="fl" data-i18n="lblDate">التاريخ:</span>
     <input class="fi" id="f-date" type="text" placeholder="YYYY/MM/DD">
     <span class="fp" id="pt-date"></span>
   </div>
 
-  <div class="fr">
-    <span class="fl">مدير/ ة المدرسة:</span>
-    <input class="fi" id="f-exec" type="text" placeholder="الاسم...">
-    <span class="fp" id="pt-exec"></span>
-  </div>
-
   <div class="fr-tall">
-    <span class="fl">الأهـداف:</span>
-    <textarea id="f-goals" placeholder="اكتب الأهداف..."></textarea>
+    <span class="fl" data-i18n="lblGoals">الأهـداف:</span>
+    <textarea id="f-goals" placeholder="اكتب الأهداف..." data-i18n-placeholder="phGoalsShort"></textarea>
     <div class="fp-blk" id="pt-goals"></div>
   </div>
 
   <div class="fr-tall">
-    <span class="fl">وصف البرنامج:</span>
-    <textarea id="f-desc" placeholder="اكتب الوصف..."></textarea>
+    <span class="fl" data-i18n="lblDesc">وصف البرنامج:</span>
+    <textarea id="f-desc" placeholder="اكتب الوصف..." data-i18n-placeholder="phDescShort"></textarea>
     <div class="fp-blk" id="pt-desc"></div>
   </div>
 
@@ -512,22 +530,127 @@ font-family:‘Tajawal’,‘Tahoma’,‘Arial’,sans-serif;
 </div>
 
 <div class="action-bar">
-  <button class="btn btn-gray" onclick="confirmClear()">تفريغ</button>
-  <button class="btn btn-teal" onclick="saveImg()">⬇ تحميل التقرير</button>
+  <button class="btn btn-gray" onclick="confirmClear()" data-i18n="btnClear">تفريغ</button>
+  <button class="btn btn-teal" onclick="saveImg()">⬇ <span data-i18n="btnDownload">تحميل التقرير</span></button>
 </div>
 
 <div id="toast"></div>
 <div id="modal-ov">
   <div class="mbox">
-    <p>هل أنت متأكد من تفريغ جميع البيانات والصور؟</p>
+    <p data-i18n="confirmClearMsg">هل أنت متأكد من تفريغ جميع البيانات والصور؟</p>
     <div class="mbox-btns">
-      <button class="btn btn-gray" onclick="closeModal()">إلغاء</button>
-      <button class="btn btn-teal" onclick="doClear()">تأكيد</button>
+      <button class="btn btn-gray" onclick="closeModal()" data-i18n="btnCancel">إلغاء</button>
+      <button class="btn btn-teal" onclick="doClear()" data-i18n="btnConfirm">تأكيد</button>
     </div>
   </div>
 </div>
 
 <script>
+
+/* ═══════════════════ نظام الترجمة (i18n) ═══════════════════ */
+const I18N = {
+  ar: {
+    moeLabel: "الإدارة العامة للتعليم",
+    moeRegion: "بمحافظة ...",
+    phProgramTitle: "اكتب عنوان البرنامج / الفعالية...",
+    phSubTitle: "عنوان فرعي أو اسم المدرسة...",
+    evidence: "شـواهد",
+    addPhoto: "+ أضف صورة",
+    phName: "الاسم...",
+    phDots: "...",
+    phPrincipalName: "اسم المدير/ة...",
+    phAuthorName: "اسم المُعد/ة...",
+    phGoalsShort: "اكتب الأهداف...",
+    phDescShort: "اكتب الوصف...",
+    lblExec: "المنفذ:",
+    lblPlace: "مكان التنفيذ:",
+    lblBene: "المستفيدون:",
+    lblCount: "العدد:",
+    lblDate: "التاريخ:",
+    lblGoals: "الأهـداف:",
+    lblDesc: "وصف البرنامج:",
+    lblPrincipal: "مدير المدرسة",
+    lblAuthor: "مُعد/ة التقرير",
+    btnClear: "تفريغ",
+    btnDownload: "تحميل التقرير",
+    btnCancel: "إلغاء",
+    btnConfirm: "تأكيد",
+    confirmClearMsg: "هل أنت متأكد من تفريغ جميع البيانات والصور؟",
+    toastCleared: "تم تفريغ البيانات",
+    toastPreparing: "⏳ جاري تحضير التقرير...",
+    toastDone: "✅ تم التحميل بنجاح",
+    toastError: "❌ حدث خطأ"
+  },
+  en: {
+    moeLabel: "General Directorate of Education",
+    moeRegion: "in the region ...",
+    phProgramTitle: "Enter program / event title...",
+    phSubTitle: "Subtitle or school name...",
+    evidence: "Evidence",
+    addPhoto: "+ Add Photo",
+    phName: "Name...",
+    phDots: "...",
+    phPrincipalName: "Principal's name...",
+    phAuthorName: "Author's name...",
+    phGoalsShort: "Enter goals...",
+    phDescShort: "Enter description...",
+    lblExec: "Implementer:",
+    lblPlace: "Location:",
+    lblBene: "Beneficiaries:",
+    lblCount: "Count:",
+    lblDate: "Date:",
+    lblGoals: "Goals:",
+    lblDesc: "Description:",
+    lblPrincipal: "School Principal",
+    lblAuthor: "Report Author",
+    btnClear: "Clear",
+    btnDownload: "Download Report",
+    btnCancel: "Cancel",
+    btnConfirm: "Confirm",
+    confirmClearMsg: "Are you sure you want to clear all data and images?",
+    toastCleared: "Data cleared",
+    toastPreparing: "⏳ Preparing report...",
+    toastDone: "✅ Downloaded successfully",
+    toastError: "❌ An error occurred"
+  }
+};
+
+function getCurrentLang(){
+  return localStorage.getItem('siteLang') || 'ar';
+}
+
+function applyLang(lang){
+  const dict = I18N[lang] || I18N.ar;
+  document.querySelectorAll('[data-i18n]').forEach(function(el){
+    const key = el.getAttribute('data-i18n');
+    if(dict[key] !== undefined) el.textContent = dict[key];
+  });
+  document.querySelectorAll('[data-i18n-placeholder]').forEach(function(el){
+    const key = el.getAttribute('data-i18n-placeholder');
+    if(dict[key] !== undefined) el.setAttribute('placeholder', dict[key]);
+  });
+  // data-ph للحقول contenteditable
+  document.querySelectorAll('[data-i18n-dataph]').forEach(function(el){
+    const key = el.getAttribute('data-i18n-dataph');
+    if(dict[key] !== undefined) el.setAttribute('data-ph', dict[key]);
+  });
+  document.documentElement.lang = lang;
+  document.documentElement.dir = (lang === 'ar') ? 'rtl' : 'ltr';
+  const codeEl = document.getElementById('langCode');
+  if(codeEl) codeEl.textContent = (lang === 'ar') ? 'EN' : 'ع';
+  localStorage.setItem('siteLang', lang);
+}
+
+function toggleLang(){
+  const current = getCurrentLang();
+  applyLang((current === 'ar') ? 'en' : 'ar');
+}
+
+document.addEventListener('DOMContentLoaded', function(){
+  applyLang(getCurrentLang());
+});
+/* ═══════════════════ نهاية نظام الترجمة ═══════════════════ */
+
 (function(){
   const n=new Date();
   document.getElementById('f-date').value=n.getFullYear()+'/'+String(n.getMonth()+1).padStart(2,'0')+'/'+String(n.getDate()).padStart(2,'0');
@@ -577,7 +700,7 @@ function doClear(){
   });
   document.querySelectorAll('[contenteditable]').forEach(el=>el.textContent='');
   document.getElementById('muhafaza').textContent='بمحافظة ...';
-  toast('تم تفريغ البيانات');
+  toast(I18N[getCurrentLang()].toastCleared);
 }
 
 async function saveImg(){
@@ -654,9 +777,9 @@ async function saveImg(){
     l.download='تقرير_الإدارة_العامة_للتعليم.png';
     l.href=c.toDataURL('image/png');
     l.click();
-    toast('✅ تم التحميل بنجاح');
+    toast(I18N[getCurrentLang()].toastDone);
   }catch(e){
-    toast('❌ حدث خطأ');
+    toast(I18N[getCurrentLang()].toastError);
   }
 
   // إعادة الحقول لشكلها الأصلي
