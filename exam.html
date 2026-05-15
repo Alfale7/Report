@@ -976,7 +976,10 @@ body::before{
   .action-bar,
   .col-delete,
   .row-delete,
-  .row-delete-cell{display:none!important;}
+  .row-delete-cell,
+  .school-logo-remove,
+  .school-logo-hint{display:none!important;}
+  .school-logo-frame{border:1px solid #999!important;border-style:solid!important;}
   .header-card,.table-card{
     box-shadow:none!important;
     border:1px solid #999!important;
@@ -1493,6 +1496,18 @@ function doClear(){
     document.getElementById(id).value = '';
   });
   document.getElementById('year').value = '١٤٤٧/١٤٤٦هـ';
+  // امسح شعار المدرسة
+  const img = document.getElementById('school-logo-img');
+  const placeholder = document.getElementById('school-logo-placeholder');
+  const removeBtn = document.getElementById('school-logo-remove');
+  const frame = document.getElementById('school-logo-frame');
+  if(img){
+    img.src = '';
+    img.style.display = 'none';
+    placeholder.style.display = 'flex';
+    removeBtn.style.display = 'none';
+    frame.classList.remove('has-logo');
+  }
   // ارجع الـ tableData لـ defaults
   tableData = {};
   ensureModeData(currentMode);
