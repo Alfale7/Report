@@ -971,6 +971,7 @@ body::before{
     color:#000!important;
   }
   body::before{display:none;}
+  /* عناصر التحكم - إخفاء كامل في الطباعة */
   .mode-selector,
   .add-controls,
   .action-bar,
@@ -978,8 +979,43 @@ body::before{
   .row-delete,
   .row-delete-cell,
   .school-logo-remove,
-  .school-logo-hint{display:none!important;}
-  .school-logo-frame{border:1px solid #999!important;border-style:solid!important;}
+  .school-logo-hint,
+  #toast,
+  .modal-overlay{
+    display:none!important;
+    visibility:hidden!important;
+    opacity:0!important;
+  }
+  /* تأكيد إضافي: التوست والمودال مخفيين تماماً */
+  #toast.show,
+  #toast{
+    display:none!important;
+    visibility:hidden!important;
+    opacity:0!important;
+    position:absolute!important;
+    left:-9999px!important;
+  }
+  /* شعار المدرسة في الطباعة */
+  .school-logo-frame{
+    border:1px solid #999!important;
+    border-style:solid!important;
+    background:#fff!important;
+  }
+  .school-logo-frame.has-logo{
+    border:1px solid #ccc!important;
+    padding:3px!important;
+  }
+  .school-logo-frame img{
+    display:block!important;
+    visibility:visible!important;
+    opacity:1!important;
+    -webkit-print-color-adjust:exact!important;
+    print-color-adjust:exact!important;
+  }
+  /* placeholder يختفي تماماً لو في شعار */
+  .school-logo-frame.has-logo .school-logo-placeholder{
+    display:none!important;
+  }
   .header-card,.table-card{
     box-shadow:none!important;
     border:1px solid #999!important;
@@ -1257,15 +1293,34 @@ function loadData(){
 
 /* ═══════════ SCHOOL LOGO ═══════════ */
 function setSchoolLogo(dataUrl){
+  if(!dataUrl) return;
   const img = document.getElementById('school-logo-img');
   const placeholder = document.getElementById('school-logo-placeholder');
   const removeBtn = document.getElementById('school-logo-remove');
   const frame = document.getElementById('school-logo-frame');
+  if(!img || !frame) return;
+  // ضع الـ src وانتظر التحميل قبل الإظهار
+  img.onload = function(){
+    img.style.display = 'block';
+    img.style.visibility = 'visible';
+    img.style.opacity = '1';
+    if(placeholder) placeholder.style.display = 'none';
+    if(removeBtn) removeBtn.style.display = 'flex';
+    frame.classList.add('has-logo');
+  };
+  img.onerror = function(){
+    console.warn('Failed to load school logo');
+  };
   img.src = dataUrl;
-  img.style.display = 'block';
-  placeholder.style.display = 'none';
-  removeBtn.style.display = 'flex';
-  frame.classList.add('has-logo');
+  // في حال تم الـ cache بسرعة، fallback مباشر
+  if(img.complete && img.naturalWidth > 0){
+    img.style.display = 'block';
+    img.style.visibility = 'visible';
+    img.style.opacity = '1';
+    if(placeholder) placeholder.style.display = 'none';
+    if(removeBtn) removeBtn.style.display = 'flex';
+    frame.classList.add('has-logo');
+  }
 }
 
 function uploadSchoolLogo(event){
@@ -1518,8 +1573,26 @@ function doClear(){
 
 /* ═══════════ PRINT ═══════════ */
 function printPage(){
-  showToast('🖨️ جاري فتح نافذة الطباعة...');
-  setTimeout(() => window.print(), 300);
+  // 1. تأكد من حفظ كل البيانات قبل الطباعة
+  saveData();
+  // 2. أخفِ التوست بشكل قطعي
+  const t = document.getElementById('toast');
+  if(t){
+    t.classList.remove('show');
+    t.style.display = 'none';
+    t.textContent = '';
+  }
+  // 3. أخفِ أي مودال مفتوح
+  const m = document.getElementById('modal');
+  if(m){ m.classList.remove('show'); }
+  // 4. أعطِ المتصفح وقت كافي للـ render وتحميل الصور
+  setTimeout(() => {
+    window.print();
+    // 5. أعد إظهار التوست للاستخدام بعد الطباعة
+    setTimeout(() => {
+      if(t){ t.style.display = ''; }
+    }, 500);
+  }, 350);
 }
 
 /* ═══════════ INIT ═══════════ */
