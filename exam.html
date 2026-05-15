@@ -177,17 +177,36 @@ body::before{
   padding:3px;
 }
 
-/* إخفاء قطعي للـ placeholder عند وجود شعار */
-.school-logo-frame.has-logo .school-logo-placeholder{
-  display:none!important;
-  visibility:hidden!important;
+/* ═══ منطق العرض المبني على class بدلاً من inline ═══ */
+/* الحالة الافتراضية: لا يوجد شعار → الـ img مخفي، placeholder ظاهر، زر الحذف مخفي */
+.school-logo-frame .school-logo-img,
+.school-logo-frame img#school-logo-img{
+  display:none;
+}
+.school-logo-frame .school-logo-remove,
+.school-logo-frame button#school-logo-remove{
+  display:none;
+}
+.school-logo-frame .school-logo-placeholder,
+.school-logo-frame #school-logo-placeholder{
+  display:flex;
 }
 
-/* تأكيد ظهور الصورة عند وجود شعار */
-.school-logo-frame.has-logo img{
+/* الحالة بعد الرفع: الـ img ظاهر، placeholder مخفي، زر الحذف ظاهر */
+.school-logo-frame.has-logo .school-logo-img,
+.school-logo-frame.has-logo img#school-logo-img{
   display:block!important;
   visibility:visible!important;
   opacity:1!important;
+}
+.school-logo-frame.has-logo .school-logo-remove,
+.school-logo-frame.has-logo button#school-logo-remove{
+  display:flex!important;
+}
+.school-logo-frame.has-logo .school-logo-placeholder,
+.school-logo-frame.has-logo #school-logo-placeholder{
+  display:none!important;
+  visibility:hidden!important;
 }
 
 .school-logo-frame img{
@@ -1070,13 +1089,13 @@ body::before{
   <div class="school-logo">
     <input type="file" id="school-logo-input" accept="image/*" style="display:none" onchange="uploadSchoolLogo(event)">
     <div class="school-logo-frame" id="school-logo-frame" onclick="document.getElementById('school-logo-input').click()">
-      <img id="school-logo-img" src="" alt="شعار المدرسة" style="display:none;">
+      <img id="school-logo-img" src="" alt="شعار المدرسة">
       <div class="school-logo-placeholder" id="school-logo-placeholder">
         <div class="school-logo-icon">🏫</div>
         <div class="school-logo-text">شعار المدرسة</div>
         <div class="school-logo-hint">اضغط للرفع</div>
       </div>
-      <button class="school-logo-remove" id="school-logo-remove" onclick="removeSchoolLogo(event)" style="display:none;" title="حذف الشعار">×</button>
+      <button class="school-logo-remove" id="school-logo-remove" onclick="removeSchoolLogo(event)" title="حذف الشعار">×</button>
     </div>
   </div>
 </div>
@@ -1262,6 +1281,8 @@ function saveData(){
   // اقرأ القيم الحالية من الـ DOM
   syncFromDOM();
   const logoImg = document.getElementById('school-logo-img');
+  const logoFrame = document.getElementById('school-logo-frame');
+  const hasLogo = logoFrame && logoFrame.classList.contains('has-logo');
   const payload = {
     schoolName: document.getElementById('school-name').value,
     schoolStage: document.getElementById('school-stage').value,
@@ -1270,7 +1291,7 @@ function saveData(){
     year: document.getElementById('year').value,
     viceName: document.getElementById('vice-name').value,
     principalName: document.getElementById('principal-name').value,
-    schoolLogo: logoImg && logoImg.style.display !== 'none' ? logoImg.src : '',
+    schoolLogo: hasLogo && logoImg ? logoImg.src : '',
     currentMode,
     tableData
   };
@@ -1308,30 +1329,17 @@ function loadData(){
 function setSchoolLogo(dataUrl){
   if(!dataUrl) return;
   const img = document.getElementById('school-logo-img');
-  const placeholder = document.getElementById('school-logo-placeholder');
-  const removeBtn = document.getElementById('school-logo-remove');
   const frame = document.getElementById('school-logo-frame');
   if(!img || !frame) return;
-  // ضع الـ src وانتظر التحميل قبل الإظهار
   img.onload = function(){
-    img.style.display = 'block';
-    img.style.visibility = 'visible';
-    img.style.opacity = '1';
-    if(placeholder) placeholder.style.display = 'none';
-    if(removeBtn) removeBtn.style.display = 'flex';
     frame.classList.add('has-logo');
   };
   img.onerror = function(){
     console.warn('Failed to load school logo');
   };
   img.src = dataUrl;
-  // في حال تم الـ cache بسرعة، fallback مباشر
+  // fallback لو كانت الصورة محملة من الـ cache
   if(img.complete && img.naturalWidth > 0){
-    img.style.display = 'block';
-    img.style.visibility = 'visible';
-    img.style.opacity = '1';
-    if(placeholder) placeholder.style.display = 'none';
-    if(removeBtn) removeBtn.style.display = 'flex';
     frame.classList.add('has-logo');
   }
 }
@@ -1380,14 +1388,9 @@ function uploadSchoolLogo(event){
 function removeSchoolLogo(event){
   event.stopPropagation();
   const img = document.getElementById('school-logo-img');
-  const placeholder = document.getElementById('school-logo-placeholder');
-  const removeBtn = document.getElementById('school-logo-remove');
   const frame = document.getElementById('school-logo-frame');
-  img.src = '';
-  img.style.display = 'none';
-  placeholder.style.display = 'flex';
-  removeBtn.style.display = 'none';
-  frame.classList.remove('has-logo');
+  if(img) img.src = '';
+  if(frame) frame.classList.remove('has-logo');
   saveData();
   showToast('🗑️ تم حذف شعار المدرسة');
 }
@@ -1566,16 +1569,9 @@ function doClear(){
   document.getElementById('year').value = '١٤٤٧/١٤٤٦هـ';
   // امسح شعار المدرسة
   const img = document.getElementById('school-logo-img');
-  const placeholder = document.getElementById('school-logo-placeholder');
-  const removeBtn = document.getElementById('school-logo-remove');
   const frame = document.getElementById('school-logo-frame');
-  if(img){
-    img.src = '';
-    img.style.display = 'none';
-    placeholder.style.display = 'flex';
-    removeBtn.style.display = 'none';
-    frame.classList.remove('has-logo');
-  }
+  if(img) img.src = '';
+  if(frame) frame.classList.remove('has-logo');
   // ارجع الـ tableData لـ defaults
   tableData = {};
   ensureModeData(currentMode);
