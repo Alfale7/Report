@@ -388,39 +388,41 @@ font-family:‘Tajawal’,‘Tahoma’,‘Arial’,sans-serif;
 .mbox-btns{display:flex;gap:8px;}
 .mbox-btns .btn{padding:10px;font-size:0.78rem;}
 
-/* ═══ زر تغيير اللغة (FAB) ═══ */
-.lang-fab{
-position:fixed;top:14px;left:14px;z-index:998;
-display:inline-flex;align-items:center;gap:6px;
-padding:7px 12px;background:#1a3c4e;color:#fff;
-border:1.5px solid rgba(255,255,255,0.25);border-radius:99px;
+/* ═══ زر تغيير اللغة داخل شريط الأزرار ═══ */
+.action-bar .btn-lang{
+flex:0 0 auto;
+width:48px;
+min-width:48px;
+padding:0;
+display:inline-flex;
+align-items:center;
+justify-content:center;
+gap:3px;
+background:#1a3c4e;
+color:#fff;
+border:1.5px solid rgba(255,255,255,0.2);
+border-radius:14px;
 font-family:‘Tajawal’,‘Tahoma’,‘Arial’,sans-serif;
-font-size:0.75rem;font-weight:700;cursor:pointer;
-box-shadow:0 4px 12px rgba(0,0,0,0.2);
-backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);
+font-size:0.7rem;
+font-weight:800;
+cursor:pointer;
+box-shadow:0 3px 8px rgba(0,0,0,0.15);
 transition:all 0.2s;
 }
-.lang-fab:hover{transform:translateY(-1px);opacity:0.95;}
-.lang-fab:active{transform:scale(0.95);}
-.lang-fab .globe{font-size:0.9rem;}
-.lang-fab .lang-code{min-width:18px;text-align:center;letter-spacing:0.5px;}
-</style>
+.action-bar .btn-lang:hover{transform:translateY(-1px);opacity:0.92;}
+.action-bar .btn-lang:active{transform:scale(0.95);}
+.action-bar .btn-lang .globe{font-size:1rem;line-height:1;}
+.action-bar .btn-lang .lang-code{font-size:0.65rem;line-height:1;letter-spacing:0.5px;}
 
+</style>
 </head>
 <body>
-
-<!-- زر تغيير اللغة عائم -->
-
-<button class="lang-fab" onclick="toggleLang()" aria-label="Switch language">
-  <span class="globe">🌐</span>
-  <span class="lang-code" id="langCode">EN</span>
-</button>
 
 <div id="page">
 
   <div class="hdr">
     <div class="hdr-text">
-      <h2><span data-i18n="moeLabel">الإدارة العامة للتعليم</span><br><span id="muhafaza" data-i18n="moeRegion">بمحافظة ...</span></h2>
+      <h2><span data-i18n="moeLabel">الإدارة العامة للتعليم</span><br><span id="muhafaza" data-i18n="moeRegion">بمنطقة ...</span></h2>
     </div>
     <!-- شعار وزارة التعليم الرسمي (بالأبيض بسبب filter) -->
     <div class="moe">
@@ -531,6 +533,10 @@ transition:all 0.2s;
 
 <div class="action-bar">
   <button class="btn btn-gray" onclick="confirmClear()" data-i18n="btnClear">تفريغ</button>
+  <button class="btn btn-lang" onclick="toggleLang()" aria-label="Switch language" title="Switch language">
+    <span class="globe">🌐</span>
+    <span class="lang-code" id="langCode">EN</span>
+  </button>
   <button class="btn btn-teal" onclick="saveImg()">⬇ <span data-i18n="btnDownload">تحميل التقرير</span></button>
 </div>
 

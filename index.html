@@ -568,6 +568,76 @@ filter:drop-shadow(0 1px 1px rgba(107,74,43,0.25));
 .r-teacher .card-icon{background:linear-gradient(135deg,#4caf50,#2a5d6e);}
 .r-general .card-icon{background:linear-gradient(135deg,#2a9d8f,#1a3c4e);}
 .r-national .card-icon{background:linear-gradient(135deg,#3a8a52,#1a3d2a);}
+.r-exam .card-icon{background:linear-gradient(135deg,#c9a45b,#9a7a3d);color:#fff;}
+.r-exam .card-icon-wrap::after{background:#c9a45b;}
+
+/* Thumb جدول الاختبارات */
+.thumb-exam{background:linear-gradient(180deg,#fbf9f4 0%,#f3efe6 100%);}
+.thumb-exam .exam-top-stripe{
+height:5px;
+background:linear-gradient(90deg,#006c35 0%,#006c35 25%,#c9a45b 50%,#006c35 75%,#006c35 100%);
+}
+.thumb-exam .exam-header{
+padding:6px 10px 4px;display:flex;align-items:center;justify-content:space-between;gap:6px;
+}
+.thumb-exam .exam-logo-mini{display:flex;align-items:center;gap:5px;}
+.thumb-exam .dots-mini{
+display:grid;grid-template-columns:repeat(5,2.5px);gap:1.5px;
+}
+.thumb-exam .dots-mini span{
+width:2.5px;height:2.5px;border-radius:50%;background:#006c35;
+}
+.thumb-exam .dots-mini span.g{background:#c9a45b;}
+.thumb-exam .exam-moe-text{font-size:6px;font-weight:900;color:#1f2d24;line-height:1;}
+.thumb-exam .exam-year-mini{
+font-size:6.5px;font-weight:800;color:#fff;
+background:linear-gradient(135deg,#006c35,#004d24);
+padding:2px 6px;border-radius:99px;
+}
+.thumb-exam .exam-title-mini{
+text-align:center;font-size:9px;font-weight:900;color:#1f2d24;
+padding:3px 0 5px;letter-spacing:-0.3px;
+position:relative;
+}
+.thumb-exam .exam-title-mini::after{
+content:””;position:absolute;left:50%;bottom:2px;
+transform:translateX(-50%);
+width:18px;height:1.5px;background:#c9a45b;border-radius:1px;
+}
+.thumb-exam .exam-table-mini{
+padding:0 10px 8px;display:flex;flex-direction:column;
+border-radius:3px;overflow:hidden;
+}
+.thumb-exam .exam-row{
+display:flex;gap:0;
+border-bottom:1px solid rgba(216,210,194,0.6);
+}
+.thumb-exam .exam-row:last-child{border-bottom:none;}
+.thumb-exam .exam-row-head{
+background:linear-gradient(135deg,#006c35,#004d24);
+border-bottom:1.5px solid #c9a45b;
+}
+.thumb-exam .exam-row-head .exam-cell{
+height:7px;border-left:1px solid rgba(255,255,255,0.15);
+}
+.thumb-exam .exam-row-head .exam-cell:last-child{border-left:none;}
+.thumb-exam .exam-cell{
+flex:1;height:9px;background:#fff;
+border-left:1px solid rgba(216,210,194,0.5);
+position:relative;
+}
+.thumb-exam .exam-cell:last-child{border-left:none;}
+.thumb-exam .exam-row:not(.exam-row-head):nth-child(even) .exam-cell{
+background:rgba(201,164,91,0.08);
+}
+.thumb-exam .exam-cell.ec-first{
+background:rgba(0,108,53,0.06)!important;
+}
+.thumb-exam .exam-cell.ec-first::after{
+content:””;position:absolute;left:50%;top:50%;
+transform:translate(-50%,-50%);
+width:50%;height:1.5px;background:#006c35;border-radius:1px;opacity:0.5;
+}
 
 .card-text{flex:1;min-width:0;}
 .card-text .title{font-size:1.05rem;font-weight:900;margin-bottom:3px;color:#fff;}
@@ -798,6 +868,7 @@ font-size:0.78rem;text-align:center;margin-top:12px;display:none;
       </button>
     </div>
 
+```
 <div class="app-logo">
   <div class="app-logo-inner">📋</div>
 </div>
@@ -837,7 +908,7 @@ font-size:0.78rem;text-align:center;margin-top:12px;display:none;
     <div class="label" data-i18n="statRating">تقييم</div>
   </div>
 </div>
-
+```
 
   </div>
 
@@ -857,6 +928,7 @@ font-size:0.78rem;text-align:center;margin-top:12px;display:none;
 
   <div class="previews">
 
+```
 <!-- Card 1: يوم التأسيس -->
 <div class="preview-card r-tasis locked" data-target="tasis.html" onclick="handleCardClick(this)">
   <span class="card-badge badge-pop">🔥 <span data-i18n="badgePop">الأكثر طلباً</span></span>
@@ -1068,6 +1140,72 @@ font-size:0.78rem;text-align:center;margin-top:12px;display:none;
     <div class="card-action">‹</div>
   </div>
 </div>
+
+<div class="preview-card r-exam locked" data-target="exam.html" onclick="handleCardClick(this)">
+  <span class="card-badge badge-new">✨ <span data-i18n="badgeExam">جديد</span></span>
+  <div class="thumb thumb-exam">
+    <div class="exam-top-stripe"></div>
+    <div class="exam-header">
+      <div class="exam-logo-mini">
+        <div class="dots-mini">
+          <span></span><span></span><span></span><span></span>
+          <span class="g"></span><span class="g"></span>
+          <span></span><span></span><span></span><span></span>
+        </div>
+        <div class="exam-moe-text">وزارة التعليم</div>
+      </div>
+      <div class="exam-year-mini">١٤٤٧هـ</div>
+    </div>
+    <div class="exam-title-mini">جدول الاختبارات</div>
+    <div class="exam-table-mini">
+      <div class="exam-row exam-row-head">
+        <div class="exam-cell"></div>
+        <div class="exam-cell"></div>
+        <div class="exam-cell"></div>
+        <div class="exam-cell"></div>
+      </div>
+      <div class="exam-row">
+        <div class="exam-cell ec-first"></div>
+        <div class="exam-cell"></div>
+        <div class="exam-cell"></div>
+        <div class="exam-cell"></div>
+      </div>
+      <div class="exam-row">
+        <div class="exam-cell ec-first"></div>
+        <div class="exam-cell"></div>
+        <div class="exam-cell"></div>
+        <div class="exam-cell"></div>
+      </div>
+      <div class="exam-row">
+        <div class="exam-cell ec-first"></div>
+        <div class="exam-cell"></div>
+        <div class="exam-cell"></div>
+        <div class="exam-cell"></div>
+      </div>
+    </div>
+    <div class="lock-overlay">
+      <div class="lock-cta">
+        <span>🔑</span>
+        <span data-i18n="lockCta">سجّل الدخول للوصول</span>
+      </div>
+    </div>
+  </div>
+  <div class="card-content">
+    <div class="card-icon-wrap">
+      <div class="card-icon">📋</div>
+    </div>
+    <div class="card-text">
+      <div class="title" data-i18n="card5Title">جدول الاختبارات</div>
+      <div class="desc" data-i18n="card5Desc">رسمي · فاخر · قابل للتعديل والطباعة</div>
+      <div class="meta">
+        <span class="meta-pill">📅 <span data-i18n="metaModes">3 أوضاع</span></span>
+        <span class="meta-sep"></span>
+        <span class="meta-pill">🖨️ <span data-i18n="metaPrint">طباعة</span></span>
+      </div>
+    </div>
+    <div class="card-action">‹</div>
+  </div>
+</div>
 ```
 
   </div>
@@ -1243,6 +1381,11 @@ const I18N = {
     card3Desc: "للأنشطة والفعاليات المدرسية المتنوعة",
     card4Title: "اليوم الوطني",
     card4Desc: "عزّنا بطبعنا · اليوم الوطني السعودي ٩٥",
+    card5Title: "جدول الاختبارات",
+    card5Desc: "رسمي · فاخر · قابل للتعديل والطباعة",
+    badgeExam: "جديد",
+    metaModes: "3 أوضاع",
+    metaPrint: "طباعة",
     lockCta: "سجّل الدخول للوصول",
     metaPhotos: "3 صور",
     metaFields: "7 حقول",
@@ -1315,6 +1458,11 @@ const I18N = {
     card3Desc: "For various school activities and events",
     card4Title: "National Day",
     card4Desc: "We rise by nature · Saudi National Day 95",
+    card5Title: "Exam Schedule",
+    card5Desc: "Official · Premium · Editable & Printable",
+    badgeExam: "New",
+    metaModes: "3 modes",
+    metaPrint: "Print",
     lockCta: "Login to access",
     metaPhotos: "3 photos",
     metaFields: "7 fields",
