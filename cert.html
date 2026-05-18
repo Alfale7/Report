@@ -1439,6 +1439,10 @@ async function printMultipleCertificates(names){
     .map(l => l.outerHTML).join('\n');
 
   // نبني صفحات الطباعة - نسخة لكل اسم
+  // نستخرج theme class فقط (cp-theme-xxx)
+  const themeClassMatch = paperClass.match(/cp-theme-\S+/);
+  const themeClass = themeClassMatch ? themeClassMatch[0] : 'cp-theme-teal';
+
   let pages = '';
   names.forEach((name, i) => {
     updateProgress(i + 1, names.length);
@@ -1456,7 +1460,8 @@ async function printMultipleCertificates(names){
     tempDiv.querySelectorAll('[id]').forEach(el => el.removeAttribute('id'));
     tempDiv.querySelectorAll('[contenteditable]').forEach(el => el.removeAttribute('contenteditable'));
 
-    pages += `<div class="cert-paper ${paperClass.replace('cert-paper', '').trim()} print-page">${tempDiv.innerHTML}</div>`;
+    // print-page بدل cert-paper + كلاس الثيم
+    pages += `<div class="print-page ${themeClass}">${tempDiv.innerHTML}</div>`;
   });
 
   // نفتح نافذة جديدة فيها الصفحات
@@ -1482,15 +1487,54 @@ body{
   font-family:'Tajawal','Tahoma','Arial',sans-serif;
 }
 .print-page{
-  width:100%;
-  max-width:840px;
-  aspect-ratio:1.414 / 1;
+  width:297mm;            /* عرض A4 landscape */
+  height:210mm;           /* ارتفاع A4 landscape */
   margin:0 auto 24px;
   box-shadow:0 10px 30px rgba(0,0,0,0.18);
   page-break-after:always;
   page-break-inside:avoid;
+  position:relative;
+  background:#fdfcf8;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:space-between;
+  padding:30px 36px;
+  overflow:hidden;
 }
 .print-page:last-child{page-break-after:auto;}
+
+/* الإطار المزدوج (نسخة من cert-paper) */
+.print-page::before{
+  content:"";
+  position:absolute;
+  top:14px; left:14px; right:14px; bottom:14px;
+  border:3px double currentColor;
+  border-radius:6px;
+  pointer-events:none;
+  opacity:0.85;
+}
+.print-page::after{
+  content:"";
+  position:absolute;
+  top:22px; left:22px; right:22px; bottom:22px;
+  border:1px solid currentColor;
+  border-radius:4px;
+  pointer-events:none;
+  opacity:0.4;
+}
+
+/* تطبيق ثيمات الألوان على .print-page (مثل .cert-paper) */
+.print-page.cp-theme-teal{color:#1a3c4e; background:linear-gradient(135deg,#fdfcf8 0%,#f0e6c4 100%);}
+.print-page.cp-theme-gold{color:#5d2e0e; background:linear-gradient(135deg,#fdfcf8 0%,#f5e8c4 100%);}
+.print-page.cp-theme-green{color:#1a4d2e; background:linear-gradient(135deg,#fdfcf8 0%,#d4e8d4 100%);}
+.print-page.cp-theme-purple{color:#4a1a4d; background:linear-gradient(135deg,#fdfcf8 0%,#f0e0f0 100%);}
+.print-page.cp-theme-blue{color:#1a2a4d; background:linear-gradient(135deg,#fdfcf8 0%,#d4e0f0 100%);}
+.print-page.cp-theme-red{color:#5d1a1a; background:linear-gradient(135deg,#fdfcf8 0%,#f0d4d4 100%);}
+.print-page.cp-theme-ocean{color:#0d4d5d; background:linear-gradient(135deg,#fdfcf8 0%,#d4eaf0 100%);}
+
+.print-page .cert-seal-wrap{background:currentColor;}
+.print-page.cp-theme-gold .cert-seal-wrap{background:linear-gradient(135deg,#c9a45b,#8b6428);}
 
 .print-toolbar{
   position:fixed;
@@ -1539,19 +1583,31 @@ body{
 
 @media print{
   @page{size:A4 landscape; margin:0;}
-  body{background:#fff !important; padding:0 !important;}
+  html, body{
+    background:#fff !important;
+    padding:0 !important;
+    margin:0 !important;
+    width:297mm;
+    height:210mm;
+  }
   .print-toolbar, .print-info{display:none !important;}
   .print-page{
-    width:100% !important;
-    max-width:100% !important;
-    height:100vh !important;
-    aspect-ratio:auto !important;
+    width:297mm !important;
+    height:210mm !important;
+    max-width:none !important;
     margin:0 !important;
+    padding:30px 36px !important;
     box-shadow:none !important;
-    page-break-after:always;
-    page-break-inside:avoid;
+    page-break-after:always !important;
+    page-break-inside:avoid !important;
+    break-after:page;
+    break-inside:avoid;
+    overflow:hidden !important;
   }
-  .print-page:last-child{page-break-after:auto;}
+  .print-page:last-child{
+    page-break-after:auto !important;
+    break-after:auto;
+  }
 }
 </style>
 </head>
