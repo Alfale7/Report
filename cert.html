@@ -1070,7 +1070,7 @@ html,body{
       <h3>📋 طباعة عدة شهادات (للأسماء المتعددة)</h3>
       <div class="bulk-section">
         <div class="hint">
-          💡 اكتب أسماء عدة أشخاص — كل اسم في سطر منفصل — ستفتح نافذة جديدة فيها شهادة لكل اسم، ويمكنك طباعتها كلها مرة واحدة أو حفظها كـ <strong>ملف PDF واحد</strong>.
+          💡 اكتب أسماء عدة أشخاص — كل اسم في سطر منفصل — ستحصل على شهادة لكل واحد منهم كصور PNG عالية الجودة داخل ملف <strong>ZIP</strong> واحد.
         </div>
         <textarea id="bulk-names" placeholder="مثال:&#10;الأستاذ محمد العتيبي&#10;الأستاذة فاطمة الزهراني&#10;الأستاذ خالد القحطاني"></textarea>
         <div class="bulk-count" id="bulk-count">عدد الأسماء: 0</div>
@@ -1086,12 +1086,15 @@ html,body{
         <span>🖨️</span><span>طباعة الشهادة الحالية</span>
       </button>
       <button class="btn btn-primary" onclick="downloadBulk()">
-        <span>📥</span><span>طباعة / حفظ PDF (نسخ متعددة)</span>
+        <span>📥</span><span>تحميل الكل (ZIP)</span>
       </button>
     </div>
 
   </div>
 </div>
+
+<!-- مكتبة JSZip لتغليف الصور -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
 
 <script>
 /* ═══════════════════════════════════════════════
@@ -1376,8 +1379,8 @@ function printSingle(){
 }
 
 /* ═══════════════════════════════════════════════
-   تحميل/طباعة شهادات متعددة (طريقة الطباعة المباشرة)
-   لتجنّب مشكلة الحروف المتقطعة في html2canvas
+   تحميل شهادات متعددة (ZIP من SVG → PNG)
+   تستخدم foreignObject ليحافظ على الحروف العربية
    ═══════════════════════════════════════════════ */
 async function downloadBulk(){
   const namesRaw = bulkTextarea.value.trim();
@@ -1399,271 +1402,233 @@ async function downloadBulk(){
     return;
   }
 
-  // لو شهادة واحدة فقط، استخدم نفس الطباعة العادية
-  if(names.length === 1){
-    document.getElementById('cert-name').textContent = names[0];
-    document.getElementById('q-name').value = names[0];
-    showToast('🖨️ جاري فتح نافذة الطباعة...');
-    setTimeout(() => window.print(), 300);
-    return;
-  }
-
-  // عدة شهادات → نبني صفحة طباعة فيها نسخة لكل اسم
-  showProgress('📄 جاري تحضير ' + names.length + ' شهادة...', 0, names.length);
+  showProgress('📥 جاري تحضير الشهادات...', 0, names.length);
   await new Promise(r => setTimeout(r, 100));
 
+  const paper = document.getElementById('cert-paper');
+  const nameEl = document.getElementById('cert-name');
+  const originalName = nameEl.textContent;
+
   try{
-    await printMultipleCertificates(names);
-    hideProgress();
-    showToast('✅ تم تحضير ' + names.length + ' شهادة - استخدم نافذة الطباعة لحفظها PDF');
-  } catch(err){
-    console.error(err);
-    hideProgress();
-    showToast('❌ حدث خطأ أثناء التحضير');
-  }
-}
+    if(names.length === 1){
+      // شهادة واحدة - PNG مباشر
+      nameEl.textContent = names[0];
+      await new Promise(r => setTimeout(r, 200));
+      const blob = await renderPaperToPng(paper);
+      downloadBlob(blob, `شهادة_${sanitize(names[0])}.png`);
+      updateProgress(1, 1);
+      hideProgress();
+      showToast('✅ تم تحميل الشهادة');
+    } else {
+      // عدة شهادات - ZIP
+      const zip = new JSZip();
+      const folder = zip.folder('الشهادات');
 
-/* بناء وطباعة عدة شهادات في صفحات منفصلة */
-async function printMultipleCertificates(names){
-  // نلتقط HTML الشهادة الحالية
-  const paperOriginal = document.getElementById('cert-paper');
-  const paperClass = paperOriginal.className;  // يحوي ثيم الألوان (cp-theme-xxx)
+      for(let i = 0; i < names.length; i++){
+        nameEl.textContent = names[i];
+        // انتظر شوي ليتم تحديث الـ DOM والخطوط
+        await new Promise(r => setTimeout(r, 150));
 
-  // نأخذ نسخة من الـ innerHTML الحالي
-  const certInnerHTML = paperOriginal.innerHTML;
+        const blob = await renderPaperToPng(paper);
+        folder.file(`شهادة_${(i+1).toString().padStart(2,'0')}_${sanitize(names[i])}.png`, blob);
 
-  // نقرأ كل الستايلات المضمنة في الصفحة
-  const styles = Array.from(document.querySelectorAll('style'))
-    .map(s => s.textContent).join('\n');
-  const fontLinks = Array.from(document.querySelectorAll('link[rel="stylesheet"]'))
-    .map(l => l.outerHTML).join('\n');
+        updateProgress(i + 1, names.length);
+      }
 
-  // نبني صفحات الطباعة - نسخة لكل اسم
-  // نستخرج theme class فقط (cp-theme-xxx)
-  const themeClassMatch = paperClass.match(/cp-theme-\S+/);
-  const themeClass = themeClassMatch ? themeClassMatch[0] : 'cp-theme-teal';
+      showProgress('📦 جاري ضغط الملفات...', names.length, names.length);
+      const zipBlob = await zip.generateAsync({type:'blob', compression:'DEFLATE', compressionOptions:{level:6}});
+      downloadBlob(zipBlob, 'الشهادات.zip');
 
-  let pages = '';
-  names.forEach((name, i) => {
-    updateProgress(i + 1, names.length);
-    // نستبدل اسم cert-name بالاسم الحالي مع نسخ كل HTML
-    const tempDiv = document.createElement('div');
-    tempDiv.innerHTML = certInnerHTML;
-    const nameField = tempDiv.querySelector('#cert-name');
-    if(nameField){
-      nameField.textContent = name;
-      // إزالة الـ contenteditable علشان ما يأثر على الطباعة
-      nameField.removeAttribute('contenteditable');
-      nameField.removeAttribute('id');
+      hideProgress();
+      showToast(`✅ تم تحميل ${names.length} شهادة في ملف ZIP`);
     }
-    // إزالة كل الـ IDs من الـ clone لتجنب التكرار
-    tempDiv.querySelectorAll('[id]').forEach(el => el.removeAttribute('id'));
-    tempDiv.querySelectorAll('[contenteditable]').forEach(el => el.removeAttribute('contenteditable'));
-
-    // print-page-wrap (للـ page break) + print-page (الشهادة) + كلاس الثيم
-    pages += `<div class="print-page-wrap"><div class="print-page ${themeClass}">${tempDiv.innerHTML}</div></div>`;
-  });
-
-  // نفتح نافذة جديدة فيها الصفحات
-  const printWindow = window.open('', '_blank', 'width=1200,height=800');
-  if(!printWindow){
-    throw new Error('Pop-up blocker prevented opening print window');
-  }
-
-  printWindow.document.write(`<!DOCTYPE html>
-<html lang="ar" dir="rtl">
-<head>
-<meta charset="UTF-8">
-<title>الشهادات (${names.length})</title>
-${fontLinks}
-<style>
-${styles}
-
-/* تخصيصات للصفحات المتعددة */
-body{
-  background:#e8e2d0;
-  padding:20px 0;
-  margin:0;
-  font-family:'Tajawal','Tahoma','Arial',sans-serif;
-}
-
-/* المعاينة على الشاشة - شكل landscape */
-.print-page-wrap{
-  width:840px;
-  max-width:calc(100vw - 40px);
-  margin:0 auto 20px;
-}
-
-/* الشهادة الفعلية - landscape ratio */
-.print-page{
-  width:100%;
-  aspect-ratio:1.414 / 1;
-  position:relative;
-  background:#fdfcf8;
-  box-shadow:0 10px 30px rgba(0,0,0,0.18);
-  display:flex;
-  flex-direction:column;
-  align-items:center;
-  justify-content:space-between;
-  padding:3% 4%;
-  overflow:hidden;
-  page-break-after:always;
-  page-break-inside:avoid;
-}
-.print-page-wrap:last-child .print-page{page-break-after:auto;}
-
-/* الإطار المزدوج */
-.print-page::before{
-  content:"";
-  position:absolute;
-  top:1.5%; left:1.5%; right:1.5%; bottom:1.5%;
-  border:3px double currentColor;
-  border-radius:6px;
-  pointer-events:none;
-  opacity:0.85;
-}
-.print-page::after{
-  content:"";
-  position:absolute;
-  top:2.5%; left:2.5%; right:2.5%; bottom:2.5%;
-  border:1px solid currentColor;
-  border-radius:4px;
-  pointer-events:none;
-  opacity:0.4;
-}
-
-/* تطبيق ثيمات الألوان على .print-page */
-.print-page.cp-theme-teal{color:#1a3c4e; background:linear-gradient(135deg,#fdfcf8 0%,#f0e6c4 100%);}
-.print-page.cp-theme-gold{color:#5d2e0e; background:linear-gradient(135deg,#fdfcf8 0%,#f5e8c4 100%);}
-.print-page.cp-theme-green{color:#1a4d2e; background:linear-gradient(135deg,#fdfcf8 0%,#d4e8d4 100%);}
-.print-page.cp-theme-purple{color:#4a1a4d; background:linear-gradient(135deg,#fdfcf8 0%,#f0e0f0 100%);}
-.print-page.cp-theme-blue{color:#1a2a4d; background:linear-gradient(135deg,#fdfcf8 0%,#d4e0f0 100%);}
-.print-page.cp-theme-red{color:#5d1a1a; background:linear-gradient(135deg,#fdfcf8 0%,#f0d4d4 100%);}
-.print-page.cp-theme-ocean{color:#0d4d5d; background:linear-gradient(135deg,#fdfcf8 0%,#d4eaf0 100%);}
-
-.print-page .cert-seal-wrap{background:currentColor;}
-.print-page.cp-theme-gold .cert-seal-wrap{background:linear-gradient(135deg,#c9a45b,#8b6428);}
-
-.print-toolbar{
-  position:fixed;
-  top:14px;
-  left:50%;
-  transform:translateX(-50%);
-  background:linear-gradient(135deg,#1a3c4e,#2a5d6e);
-  padding:10px 18px;
-  border-radius:40px;
-  box-shadow:0 8px 24px rgba(0,0,0,0.3);
-  display:flex;
-  gap:10px;
-  z-index:9999;
-}
-.print-toolbar button{
-  padding:9px 18px;
-  border:none;
-  border-radius:30px;
-  background:linear-gradient(135deg,#c9a45b,#b8923d);
-  color:#fff;
-  font-family:'Tajawal',sans-serif;
-  font-weight:800;
-  font-size:0.85rem;
-  cursor:pointer;
-  display:inline-flex;
-  align-items:center;
-  gap:6px;
-  box-shadow:0 4px 10px rgba(184,146,61,0.4);
-}
-.print-toolbar button.ghost{
-  background:transparent;
-  border:1.5px solid rgba(255,255,255,0.3);
-  color:#fff;
-  box-shadow:none;
-}
-.print-toolbar button:active{transform:scale(0.96);}
-.print-info{
-  text-align:center;
-  color:#1a3c4e;
-  padding:14px;
-  font-weight:700;
-  font-size:0.9rem;
-  margin-top:60px;
-  margin-bottom:10px;
-}
-
-@media print{
-  @page{
-    size:A4 landscape;
-    margin:0;
-  }
-  html, body{
-    background:#fff !important;
-    padding:0 !important;
-    margin:0 !important;
-    width:100% !important;
-    height:auto !important;
-  }
-  .print-toolbar, .print-info{display:none !important;}
-
-  /* كل wrap = صفحة منفصلة */
-  .print-page-wrap{
-    width:100% !important;
-    max-width:none !important;
-    margin:0 !important;
-    padding:0 !important;
-    page-break-after:always !important;
-    page-break-inside:avoid !important;
-    break-after:page !important;
-    break-inside:avoid !important;
-    display:block !important;
-  }
-  .print-page-wrap:last-child{
-    page-break-after:auto !important;
-    break-after:auto !important;
-  }
-
-  /* الشهادة تأخذ كامل صفحة A4 landscape */
-  .print-page{
-    width:100% !important;
-    height:100vh !important;
-    aspect-ratio:auto !important;
-    max-width:none !important;
-    margin:0 !important;
-    padding:3% 4% !important;
-    box-shadow:none !important;
-    page-break-inside:avoid !important;
-    break-inside:avoid !important;
-    overflow:hidden !important;
+  } catch(err){
+    console.error('Bulk download error:', err);
+    hideProgress();
+    showToast('❌ خطأ: ' + (err.message || 'فشل التحميل'));
+  } finally{
+    nameEl.textContent = originalName;
   }
 }
-</style>
-</head>
-<body>
-<div class="print-toolbar">
-  <button onclick="window.print()">
-    <span>🖨️</span><span>طباعة / حفظ PDF</span>
-  </button>
-  <button class="ghost" onclick="window.close()">
-    <span>✕</span><span>إغلاق</span>
-  </button>
-</div>
-<div class="print-info">
-  ✨ تم تجهيز ${names.length} شهادة - اضغط "طباعة / حفظ PDF" لطباعتها أو حفظها كملف PDF واحد
-</div>
-${pages}
-<script>
-// طباعة تلقائية بعد تحميل كل الخطوط
-window.addEventListener('load', function(){
-  if(document.fonts && document.fonts.ready){
-    document.fonts.ready.then(function(){
-      setTimeout(function(){ window.print(); }, 400);
+
+/* ─────────────────────────────────────────────
+   التحويل: DOM → SVG (foreignObject) → PNG
+   هذي الطريقة تحفظ الحروف العربية متصلة لأنها
+   تستخدم محرّك الرسم الكامل للمتصفح (HarfBuzz)
+   ───────────────────────────────────────────── */
+async function renderPaperToPng(element){
+  const rect = element.getBoundingClientRect();
+  const width = Math.ceil(rect.width);
+  const height = Math.ceil(rect.height);
+  const scale = 2; // دقة عالية للطباعة
+
+  // نجمع كل الـ CSS من الصفحة لنحقنها في الـ SVG
+  let allCss = '';
+  for(const sheet of document.styleSheets){
+    try{
+      for(const rule of sheet.cssRules){
+        allCss += rule.cssText + '\n';
+      }
+    } catch(e){
+      // CORS - تجاهل
+    }
+  }
+
+  // تحميل الخطوط من Google Fonts كـ base64 (لتعمل في SVG)
+  const fontFaces = await getFontFacesCSS();
+
+  // نسخ من الـ element مع إزالة contenteditable
+  const clone = element.cloneNode(true);
+  clone.querySelectorAll('[contenteditable]').forEach(el => el.removeAttribute('contenteditable'));
+  clone.removeAttribute('id');
+  clone.style.margin = '0';
+  clone.style.boxShadow = 'none';
+
+  // serialize HTML
+  const xhtml = new XMLSerializer().serializeToString(clone);
+
+  // نبني الـ SVG مع foreignObject
+  const svgString = `<svg xmlns="http://www.w3.org/2000/svg" width="${width}" height="${height}" viewBox="0 0 ${width} ${height}">
+    <defs>
+      <style type="text/css"><![CDATA[
+        ${fontFaces}
+        ${allCss}
+        .cert-paper{
+          width:${width}px !important;
+          height:${height}px !important;
+          max-width:none !important;
+          aspect-ratio:auto !important;
+        }
+      ]]></style>
+    </defs>
+    <foreignObject x="0" y="0" width="${width}" height="${height}">
+      <div xmlns="http://www.w3.org/1999/xhtml" dir="rtl" lang="ar">
+        ${xhtml}
+      </div>
+    </foreignObject>
+  </svg>`;
+
+  // SVG → Image → Canvas → PNG
+  const svgBlob = new Blob([svgString], {type:'image/svg+xml;charset=utf-8'});
+  const svgUrl = URL.createObjectURL(svgBlob);
+
+  try{
+    const img = new Image();
+    img.crossOrigin = 'anonymous';
+    await new Promise((resolve, reject) => {
+      img.onload = resolve;
+      img.onerror = () => reject(new Error('SVG image load failed'));
+      img.src = svgUrl;
     });
-  } else {
-    setTimeout(function(){ window.print(); }, 800);
+
+    const canvas = document.createElement('canvas');
+    canvas.width = width * scale;
+    canvas.height = height * scale;
+    const ctx = canvas.getContext('2d');
+    ctx.fillStyle = '#fdfcf8';
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+    ctx.scale(scale, scale);
+    ctx.drawImage(img, 0, 0, width, height);
+
+    return await new Promise(resolve => {
+      canvas.toBlob(resolve, 'image/png', 0.95);
+    });
+  } finally{
+    URL.revokeObjectURL(svgUrl);
   }
-});
-<\/script>
-</body>
-</html>`);
-  printWindow.document.close();
+}
+
+/* تحميل الخطوط كـ @font-face inline (base64) ليعمل SVG بدون اتصال */
+let _cachedFontFaces = null;
+async function getFontFacesCSS(){
+  if(_cachedFontFaces !== null) return _cachedFontFaces;
+
+  const fontFaceRules = [];
+  for(const sheet of document.styleSheets){
+    try{
+      for(const rule of sheet.cssRules){
+        if(rule instanceof CSSFontFaceRule){
+          fontFaceRules.push(rule.cssText);
+        }
+      }
+    } catch(e){
+      // CORS sheets - نتجاهلها (Google Fonts)
+    }
+  }
+
+  // لو ما حصلنا font-face rules (Google Fonts CORS)، نحاول نحملها كـ data URLs
+  try{
+    const fontUrls = await extractFontUrls();
+    const inlineFontCss = await inlineFontsToBase64(fontUrls);
+    _cachedFontFaces = inlineFontCss + '\n' + fontFaceRules.join('\n');
+  } catch(e){
+    console.warn('Font inlining failed:', e);
+    _cachedFontFaces = fontFaceRules.join('\n');
+  }
+
+  return _cachedFontFaces;
+}
+
+/* استخراج URLs الخطوط من stylesheets الـ Google Fonts */
+async function extractFontUrls(){
+  const fontLinks = Array.from(document.querySelectorAll('link[rel="stylesheet"]'))
+    .map(l => l.href).filter(h => h.includes('fonts.googleapis.com'));
+
+  const allRules = [];
+  for(const url of fontLinks){
+    try{
+      const resp = await fetch(url);
+      const text = await resp.text();
+      allRules.push(text);
+    } catch(e){}
+  }
+  return allRules.join('\n');
+}
+
+/* تحويل URLs خطوط لـ base64 لتُحقن في SVG */
+async function inlineFontsToBase64(cssText){
+  const urlRegex = /url\((https:\/\/[^)]+\.woff2?)\)/g;
+  const matches = [...cssText.matchAll(urlRegex)];
+  const uniqueUrls = [...new Set(matches.map(m => m[1]))];
+
+  // نحمل أول 8 خطوط فقط (لتسريع)
+  const limited = uniqueUrls.slice(0, 8);
+
+  for(const url of limited){
+    try{
+      const resp = await fetch(url);
+      const blob = await resp.blob();
+      const base64 = await blobToBase64(blob);
+      cssText = cssText.replaceAll(url, base64);
+    } catch(e){
+      // تجاهل
+    }
+  }
+  return cssText;
+}
+
+function blobToBase64(blob){
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onload = () => resolve(reader.result);
+    reader.onerror = reject;
+    reader.readAsDataURL(blob);
+  });
+}
+
+function downloadBlob(blob, filename){
+  const url = URL.createObjectURL(blob);
+  const link = document.createElement('a');
+  link.href = url;
+  link.download = filename;
+  document.body.appendChild(link);
+  link.click();
+  document.body.removeChild(link);
+  setTimeout(() => URL.revokeObjectURL(url), 1000);
+}
+
+function sanitize(name){
+  return name.replace(/[\/\\:*?"<>|]/g, '_').substring(0, 80).trim() || 'cert';
 }
 
 /* ═══════════════════════════════════════════════
