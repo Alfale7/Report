@@ -11,993 +11,260 @@
 <link href="https://fonts.googleapis.com/css2?family=Amiri:wght@400;700&family=Tajawal:wght@400;500;700;800;900&family=Reem+Kufi:wght@400;500;600;700&family=Aref+Ruqaa:wght@400;700&display=swap" rel="stylesheet">
 <style>
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
-
-html,body{
-  font-family:'Tajawal','Tahoma','Arial',sans-serif;
-  background:linear-gradient(135deg, #f4f1e8 0%, #ebe5d3 100%);
-  color:#1c2820;
-  width:100%;
-  overflow-x:hidden;
-  min-height:100vh;
-  -webkit-font-smoothing:antialiased;
-}
-
-.app{
-  max-width:1100px;
-  margin:0 auto;
-  padding:14px;
-  position:relative;
-  z-index:1;
-}
-
-/* ═══════════════════════════════════════════════
-   HEADER الصفحة الرئيسية
-   ═══════════════════════════════════════════════ */
-.page-header{
-  text-align:center;
-  padding:18px 14px 20px;
-  background:linear-gradient(135deg, #1a3c4e 0%, #2a6878 100%);
-  border-radius:20px;
-  margin-bottom:20px;
-  box-shadow:0 8px 28px rgba(26,60,78,0.25);
-  position:relative;
-  overflow:hidden;
-}
-.page-header::before{
-  content:"";
-  position:absolute;
-  top:0; left:0; right:0; bottom:0;
-  background-image:
-    repeating-linear-gradient(45deg,
-      transparent 0, transparent 20px,
-      rgba(212,165,72,0.05) 20px, rgba(212,165,72,0.05) 21px);
-  pointer-events:none;
-}
-.page-header .crown-icon{
-  font-size:2.2rem;
-  margin-bottom:6px;
-  position:relative;
-  z-index:1;
-}
-.page-header h1{
-  font-family:'Reem Kufi','Tajawal',sans-serif;
-  font-size:1.55rem;
-  font-weight:700;
-  color:#fff;
-  margin-bottom:4px;
-  position:relative;
-  z-index:1;
-  letter-spacing:0.5px;
-}
-.page-header p{
-  font-size:0.82rem;
-  color:#e6c068;
-  font-weight:600;
-  position:relative;
-  z-index:1;
-}
-
-/* ═══════════════════════════════════════════════
-   GALLERY GRID
-   ═══════════════════════════════════════════════ */
-.gallery{
-  display:grid;
-  grid-template-columns:repeat(auto-fill, minmax(280px, 1fr));
-  gap:16px;
-  margin-bottom:24px;
-}
-
-.cert-card{
-  background:#fff;
-  border-radius:16px;
-  overflow:hidden;
-  box-shadow:0 6px 18px rgba(0,0,0,0.08);
-  cursor:pointer;
-  transition:all 0.3s ease;
-  position:relative;
-  border:1px solid rgba(0,0,0,0.05);
-}
-.cert-card:hover{
-  transform:translateY(-4px);
-  box-shadow:0 14px 32px rgba(0,0,0,0.15);
-}
+html,body{font-family:'Tajawal','Tahoma','Arial',sans-serif;background:linear-gradient(135deg, #f4f1e8 0%, #ebe5d3 100%);color:#1c2820;width:100%;overflow-x:hidden;min-height:100vh;-webkit-font-smoothing:antialiased;}
+.app{max-width:1100px;margin:0 auto;padding:14px;position:relative;z-index:1;}
+.page-header{text-align:center;padding:18px 14px 20px;background:linear-gradient(135deg, #1a3c4e 0%, #2a6878 100%);border-radius:20px;margin-bottom:20px;box-shadow:0 8px 28px rgba(26,60,78,0.25);position:relative;overflow:hidden;}
+.page-header::before{content:"";position:absolute;top:0;left:0;right:0;bottom:0;background-image:repeating-linear-gradient(45deg,transparent 0,transparent 20px,rgba(212,165,72,0.05) 20px,rgba(212,165,72,0.05) 21px);pointer-events:none;}
+.page-header .crown-icon{font-size:2.2rem;margin-bottom:6px;position:relative;z-index:1;}
+.page-header h1{font-family:'Reem Kufi','Tajawal',sans-serif;font-size:1.55rem;font-weight:700;color:#fff;margin-bottom:4px;position:relative;z-index:1;letter-spacing:0.5px;}
+.page-header p{font-size:0.82rem;color:#e6c068;font-weight:600;position:relative;z-index:1;}
+.gallery{display:grid;grid-template-columns:repeat(auto-fill, minmax(280px, 1fr));gap:16px;margin-bottom:24px;}
+.cert-card{background:#fff;border-radius:16px;overflow:hidden;box-shadow:0 6px 18px rgba(0,0,0,0.08);cursor:pointer;transition:all 0.3s ease;position:relative;border:1px solid rgba(0,0,0,0.05);}
+.cert-card:hover{transform:translateY(-4px);box-shadow:0 14px 32px rgba(0,0,0,0.15);}
 .cert-card:active{transform:translateY(-2px);}
-
-.cert-preview{
-  aspect-ratio:1.4 / 1;
-  position:relative;
-  overflow:hidden;
-  padding:14px;
-  display:flex;
-  flex-direction:column;
-  align-items:center;
-  justify-content:center;
-  text-align:center;
-}
-
-/* زخارف عامة لكل الشهادات */
-.cert-preview::before{
-  content:"";
-  position:absolute;
-  top:8px; left:8px; right:8px; bottom:8px;
-  border:2px solid;
-  border-radius:8px;
-  pointer-events:none;
-}
-.cert-preview::after{
-  content:"";
-  position:absolute;
-  top:12px; left:12px; right:12px; bottom:12px;
-  border:1px solid;
-  border-radius:6px;
-  pointer-events:none;
-  opacity:0.5;
-}
-
-.cert-preview .seal{
-  font-size:1.6rem;
-  margin-bottom:4px;
-  position:relative;
-  z-index:1;
-}
-.cert-preview .title-mini{
-  font-family:'Aref Ruqaa','Amiri',serif;
-  font-size:1.15rem;
-  font-weight:700;
-  margin-bottom:4px;
-  position:relative;
-  z-index:1;
-}
-.cert-preview .for-mini{
-  font-size:0.7rem;
-  font-weight:700;
-  letter-spacing:1px;
-  position:relative;
-  z-index:1;
-  margin-bottom:6px;
-}
-.cert-preview .lines{
-  width:60%;
-  position:relative;
-  z-index:1;
-}
-.cert-preview .lines .line{
-  height:2px;
-  background:currentColor;
-  opacity:0.3;
-  margin:3px 0;
-  border-radius:1px;
-}
-.cert-preview .lines .line.short{width:60%; margin:3px auto;}
-
-/* ─── ثيمات الشهادات ─── */
-.theme-teacher .cert-preview{
-  background:linear-gradient(135deg, #fdfcf8 0%, #f5e8c4 100%);
-  color:#1a3c4e;
-}
+.cert-preview{aspect-ratio:1.4 / 1;position:relative;overflow:hidden;padding:14px;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;}
+.cert-preview::before{content:"";position:absolute;top:8px;left:8px;right:8px;bottom:8px;border:2px solid;border-radius:8px;pointer-events:none;}
+.cert-preview::after{content:"";position:absolute;top:12px;left:12px;right:12px;bottom:12px;border:1px solid;border-radius:6px;pointer-events:none;opacity:0.5;}
+.cert-preview .seal{margin-bottom:4px;position:relative;z-index:1;display:flex;align-items:center;justify-content:center;min-height:32px;}
+.cert-preview .seal img{width:46px;height:auto;max-height:34px;object-fit:contain;display:block;opacity:0.92;filter:drop-shadow(0 1px 1px rgba(0,0,0,0.08));}
+.cert-preview .title-mini{font-family:'Aref Ruqaa','Amiri',serif;font-size:1.15rem;font-weight:700;margin-bottom:4px;position:relative;z-index:1;}
+.cert-preview .for-mini{font-size:0.7rem;font-weight:700;letter-spacing:1px;position:relative;z-index:1;margin-bottom:6px;}
+.cert-preview .lines{width:60%;position:relative;z-index:1;}
+.cert-preview .lines .line{height:2px;background:currentColor;opacity:0.3;margin:3px 0;border-radius:1px;}
+.cert-preview .lines .line.short{width:60%;margin:3px auto;}
+.theme-teacher .cert-preview{background:linear-gradient(135deg, #fdfcf8 0%, #f5e8c4 100%);color:#1a3c4e;}
 .theme-teacher .cert-preview::before{border-color:#1a3c4e;}
 .theme-teacher .cert-preview::after{border-color:#c9a45b;}
-
-.theme-excellence .cert-preview{
-  background:linear-gradient(135deg, #fdfcf8 0%, #e8dcc0 100%);
-  color:#5d2e0e;
-}
+.theme-excellence .cert-preview{background:linear-gradient(135deg, #fdfcf8 0%, #e8dcc0 100%);color:#5d2e0e;}
 .theme-excellence .cert-preview::before{border-color:#5d2e0e;}
 .theme-excellence .cert-preview::after{border-color:#c9a45b;}
-
-.theme-behavior .cert-preview{
-  background:linear-gradient(135deg, #fdfcf8 0%, #d4e8d4 100%);
-  color:#1a4d2e;
-}
+.theme-behavior .cert-preview{background:linear-gradient(135deg, #fdfcf8 0%, #d4e8d4 100%);color:#1a4d2e;}
 .theme-behavior .cert-preview::before{border-color:#1a4d2e;}
 .theme-behavior .cert-preview::after{border-color:#4caf50;}
-
-.theme-parent .cert-preview{
-  background:linear-gradient(135deg, #fdfcf8 0%, #e8d4e8 100%);
-  color:#4a1a4d;
-}
+.theme-parent .cert-preview{background:linear-gradient(135deg, #fdfcf8 0%, #e8d4e8 100%);color:#4a1a4d;}
 .theme-parent .cert-preview::before{border-color:#4a1a4d;}
 .theme-parent .cert-preview::after{border-color:#9c27b0;}
-
-.theme-staff .cert-preview{
-  background:linear-gradient(135deg, #fdfcf8 0%, #c4d8e8 100%);
-  color:#1a2a4d;
-}
+.theme-staff .cert-preview{background:linear-gradient(135deg, #fdfcf8 0%, #c4d8e8 100%);color:#1a2a4d;}
 .theme-staff .cert-preview::before{border-color:#1a2a4d;}
 .theme-staff .cert-preview::after{border-color:#3b6db5;}
-
-.theme-general .cert-preview{
-  background:linear-gradient(135deg, #fdfcf8 0%, #e8c8c0 100%);
-  color:#5d1a1a;
-}
+.theme-general .cert-preview{background:linear-gradient(135deg, #fdfcf8 0%, #e8c8c0 100%);color:#5d1a1a;}
 .theme-general .cert-preview::before{border-color:#5d1a1a;}
 .theme-general .cert-preview::after{border-color:#c54a4a;}
-
-.theme-participation .cert-preview{
-  background:linear-gradient(135deg, #fdfcf8 0%, #c0d8e8 100%);
-  color:#0d4d5d;
-}
+.theme-participation .cert-preview{background:linear-gradient(135deg, #fdfcf8 0%, #c0d8e8 100%);color:#0d4d5d;}
 .theme-participation .cert-preview::before{border-color:#0d4d5d;}
 .theme-participation .cert-preview::after{border-color:#2a9d8f;}
-
-.cert-info{
-  padding:14px 16px;
-  border-top:1px solid rgba(0,0,0,0.06);
-}
-.cert-info h3{
-  font-family:'Reem Kufi','Tajawal',sans-serif;
-  font-size:1rem;
-  font-weight:700;
-  color:#1c2820;
-  margin-bottom:4px;
-}
-.cert-info p{
-  font-size:0.74rem;
-  color:#4a5c50;
-  line-height:1.5;
-}
-.cert-action{
-  display:inline-flex;
-  align-items:center;
-  gap:5px;
-  margin-top:8px;
-  padding:6px 14px;
-  background:linear-gradient(135deg, #c9a45b, #b8923d);
-  color:#fff;
-  font-size:0.75rem;
-  font-weight:800;
-  border-radius:40px;
-  box-shadow:0 3px 8px rgba(184,146,61,0.3);
-}
-
-/* ═══════════════════════════════════════════════
-   EDITOR VIEW (Full-screen overlay)
-   ═══════════════════════════════════════════════ */
-.editor-view{
-  display:none;
-  position:fixed;
-  top:0; left:0; right:0; bottom:0;
-  background:#f0ece0;
-  z-index:100;
-  overflow-y:auto;
-  -webkit-overflow-scrolling:touch;
-}
+.cert-info{padding:14px 16px;border-top:1px solid rgba(0,0,0,0.06);}
+.cert-info h3{font-family:'Reem Kufi','Tajawal',sans-serif;font-size:1rem;font-weight:700;color:#1c2820;margin-bottom:4px;}
+.cert-info p{font-size:0.74rem;color:#4a5c50;line-height:1.5;}
+.cert-action{display:inline-flex;align-items:center;gap:5px;margin-top:8px;padding:6px 14px;background:linear-gradient(135deg, #c9a45b, #b8923d);color:#fff;font-size:0.75rem;font-weight:800;border-radius:40px;box-shadow:0 3px 8px rgba(184,146,61,0.3);}
+.editor-view{display:none;position:fixed;top:0;left:0;right:0;bottom:0;background:#f0ece0;z-index:100;overflow-y:auto;-webkit-overflow-scrolling:touch;}
 .editor-view.active{display:block;}
-
-.editor-header{
-  background:linear-gradient(135deg, #1a3c4e 0%, #2a6878 100%);
-  padding:14px 18px;
-  display:flex;
-  align-items:center;
-  justify-content:space-between;
-  gap:10px;
-  box-shadow:0 4px 14px rgba(0,0,0,0.15);
-  position:sticky;
-  top:0;
-  z-index:10;
-}
-.editor-header h2{
-  font-family:'Reem Kufi','Tajawal',sans-serif;
-  color:#fff;
-  font-size:1rem;
-  font-weight:700;
-  flex:1;
-  text-align:center;
-}
-.btn-back{
-  background:rgba(255,255,255,0.15);
-  color:#fff;
-  border:1.5px solid rgba(255,255,255,0.25);
-  padding:8px 14px;
-  border-radius:40px;
-  font-family:inherit;
-  font-weight:700;
-  font-size:0.78rem;
-  cursor:pointer;
-  display:flex;
-  align-items:center;
-  gap:5px;
-}
+.editor-header{background:linear-gradient(135deg, #1a3c4e 0%, #2a6878 100%);padding:14px 18px;display:flex;align-items:center;justify-content:space-between;gap:10px;box-shadow:0 4px 14px rgba(0,0,0,0.15);position:sticky;top:0;z-index:10;}
+.editor-header h2{font-family:'Reem Kufi','Tajawal',sans-serif;color:#fff;font-size:1rem;font-weight:700;flex:1;text-align:center;}
+.btn-back{background:rgba(255,255,255,0.15);color:#fff;border:1.5px solid rgba(255,255,255,0.25);padding:8px 14px;border-radius:40px;font-family:inherit;font-weight:700;font-size:0.78rem;cursor:pointer;display:flex;align-items:center;gap:5px;}
 .btn-back:hover{background:rgba(255,255,255,0.25);}
-
-.editor-body{
-  padding:16px;
-  max-width:900px;
-  margin:0 auto;
-}
-
-/* ─── الشهادة (مكان العرض الفعلي) ─── */
-.cert-paper-wrap{
-  margin-bottom:20px;
-  overflow-x:auto;
-  -webkit-overflow-scrolling:touch;
-}
-.cert-paper{
-  width:100%;
-  aspect-ratio:1.414 / 1;  /* A4 landscape */
-  max-width:840px;
-  margin:0 auto;
-  background:#fdfcf8;
-  position:relative;
-  box-shadow:0 10px 30px rgba(0,0,0,0.18);
-  padding:30px 36px;
-  display:flex;
-  flex-direction:column;
-  align-items:center;
-  justify-content:space-between;
-  overflow:hidden;
-}
-
-/* الإطار الزخرفي الخارجي */
-.cert-paper::before{
-  content:"";
-  position:absolute;
-  top:14px; left:14px; right:14px; bottom:14px;
-  border:3px double currentColor;
-  border-radius:6px;
-  pointer-events:none;
-  opacity:0.85;
-}
-.cert-paper::after{
-  content:"";
-  position:absolute;
-  top:22px; left:22px; right:22px; bottom:22px;
-  border:1px solid currentColor;
-  border-radius:4px;
-  pointer-events:none;
-  opacity:0.4;
-}
-
-/* زوايا زخرفية */
-.cert-corner{
-  position:absolute;
-  width:50px;
-  height:50px;
-  pointer-events:none;
-  z-index:2;
-}
-.cert-corner.tl{top:8px; right:8px;}
-.cert-corner.tr{top:8px; left:8px;}
-.cert-corner.bl{bottom:8px; right:8px;}
-.cert-corner.br{bottom:8px; left:8px;}
-.cert-corner svg{width:100%; height:100%;}
-
-/* الهيدر الداخلي للشهادة */
-.cert-head{
-  text-align:center;
-  margin-bottom:8px;
-  position:relative;
-  z-index:1;
-  width:100%;
-}
-.cert-seal-wrap{
-  display:inline-flex;
-  align-items:center;
-  justify-content:center;
-  width:60px;
-  height:60px;
-  border-radius:50%;
-  background:currentColor;
-  position:relative;
-  margin-bottom:8px;
-}
-.cert-seal-wrap::before{
-  content:"";
-  position:absolute;
-  top:-4px; left:-4px; right:-4px; bottom:-4px;
-  border:2px dashed currentColor;
-  border-radius:50%;
-  opacity:0.5;
-}
-.cert-seal-icon{
-  font-size:1.8rem;
-  color:#fff;
-  z-index:1;
-}
-.cert-org{
-  font-size:0.72rem;
-  font-weight:700;
-  letter-spacing:1px;
-  opacity:0.75;
-  margin-bottom:3px;
-}
-
-.cert-title{
-  font-family:'Aref Ruqaa','Amiri',serif;
-  font-size:2.3rem;
-  font-weight:700;
-  letter-spacing:2px;
-  line-height:1.2;
-  margin-bottom:4px;
-  position:relative;
-}
-.cert-title::after{
-  content:"";
-  display:block;
-  width:80px;
-  height:2px;
-  background:currentColor;
-  margin:6px auto 0;
-  opacity:0.6;
-}
-.cert-subtitle{
-  font-size:0.85rem;
-  font-weight:600;
-  letter-spacing:3px;
-  opacity:0.65;
-  text-transform:uppercase;
-}
-
-/* جسم الشهادة */
-.cert-body{
-  text-align:center;
-  flex:1;
-  display:flex;
-  flex-direction:column;
-  justify-content:center;
-  align-items:center;
-  width:100%;
-  position:relative;
-  z-index:1;
-  padding:6px 60px;
-  box-sizing:border-box;
-}
-
-.cert-pretext{
-  font-family:'Amiri','Tajawal',serif;
-  font-size:1.05rem;
-  font-weight:400;
-  margin-bottom:10px;
-  opacity:0.85;
-}
-
-.cert-name{
-  font-family:'Aref Ruqaa','Amiri',serif;
-  font-size:2rem;
-  font-weight:700;
-  border-bottom:2px solid currentColor;
-  padding:4px 30px 8px;
-  min-width:60%;
-  margin-bottom:14px;
-  letter-spacing:1px;
-}
-.cert-name[contenteditable="true"]{outline:none; cursor:text;}
-.cert-name[contenteditable="true"]:focus{
-  background:rgba(255,255,255,0.7);
-  border-radius:4px;
-}
-.cert-name:empty::before{
-  content:attr(data-placeholder);
-  opacity:0.35;
-  font-style:italic;
-}
-
-.cert-reason{
-  font-family:'Amiri','Tajawal',serif;
-  font-size:0.95rem;
-  line-height:1.7;
-  max-width:78%;
-  min-width:50%;
-  margin:0 auto 12px;
-  opacity:0.9;
-  outline:none;
-  cursor:text;
-  padding:4px 12px;
-  border-radius:4px;
-  word-wrap:break-word;
-  overflow-wrap:break-word;
-  word-break:normal;
-  text-align:center;
-  direction:rtl;
-  unicode-bidi:embed;
-  box-sizing:border-box;
-  hyphens:auto;
-}
+.editor-body{padding:16px;max-width:900px;margin:0 auto;}
+.cert-paper-wrap{margin-bottom:20px;overflow-x:auto;-webkit-overflow-scrolling:touch;}
+#hidden-render-container{position:absolute;top:-10000px;left:-10000px;width:840px;height:594px;overflow:hidden;z-index:-9999;}
+.cert-paper{width:100%;aspect-ratio:1.414 / 1;max-width:840px;margin:0 auto;background:#fdfcf8;position:relative;box-shadow:0 10px 30px rgba(0,0,0,0.18);padding:30px 36px;display:flex;flex-direction:column;align-items:center;justify-content:space-between;overflow:hidden;box-sizing:border-box;}
+.cert-border-outer{position:absolute;top:14px;left:14px;right:14px;bottom:14px;border:3px double currentColor;border-radius:6px;pointer-events:none;opacity:0.85;z-index:1;}
+.cert-border-inner{position:absolute;top:22px;left:22px;right:22px;bottom:22px;border:1px solid currentColor;border-radius:4px;pointer-events:none;opacity:0.4;z-index:1;}
+.cert-corner{position:absolute;width:50px;height:50px;pointer-events:none;z-index:2;}
+.cert-corner.tl{top:8px;right:8px;}
+.cert-corner.tr{top:8px;left:8px;}
+.cert-corner.bl{bottom:8px;right:8px;}
+.cert-corner.br{bottom:8px;left:8px;}
+.cert-corner svg{width:100%;height:100%;}
+.cert-head{text-align:center;margin-bottom:8px;position:relative;z-index:2;width:100%;}
+.cert-seal-wrap{display:inline-flex;align-items:center;justify-content:center;width:60px;height:60px;border-radius:50%;background:currentColor;position:relative;margin-bottom:8px;}
+.cert-seal-wrap::before{content:"";position:absolute;top:-4px;left:-4px;right:-4px;bottom:-4px;border:2px dashed currentColor;border-radius:50%;opacity:0.5;}
+.cert-seal-icon{color:#fff;z-index:1;display:flex;align-items:center;justify-content:center;width:100%;height:100%;}
+.cert-seal-icon img{width:70%;height:auto;max-height:70%;object-fit:contain;display:block;filter:drop-shadow(0 1px 2px rgba(0,0,0,0.15));}
+.cert-org{font-size:0.72rem;font-weight:700;letter-spacing:1px;opacity:0.75;margin-bottom:3px;}
+.cert-title{font-family:'Aref Ruqaa','Amiri',serif;font-size:2.3rem;font-weight:700;letter-spacing:2px;line-height:1.2;margin-bottom:4px;position:relative;}
+.cert-title::after{content:"";display:block;width:80px;height:2px;background:currentColor;margin:6px auto 0;opacity:0.6;}
+.cert-subtitle{font-size:0.85rem;font-weight:600;letter-spacing:3px;opacity:0.65;text-transform:uppercase;}
+.cert-body{text-align:center;flex:1;display:flex;flex-direction:column;justify-content:center;align-items:center;width:100%;position:relative;z-index:2;padding:6px 60px;box-sizing:border-box;}
+.cert-pretext{font-family:'Amiri','Tajawal',serif;font-size:1.05rem;font-weight:400;margin-bottom:10px;opacity:0.85;}
+.cert-name{font-family:'Aref Ruqaa','Amiri',serif;font-size:2rem;font-weight:700;border-bottom:2px solid currentColor;padding:4px 30px 8px;min-width:60%;margin-bottom:14px;letter-spacing:1px;}
+.cert-name[contenteditable="true"]{outline:none;cursor:text;}
+.cert-name[contenteditable="true"]:focus{background:rgba(255,255,255,0.7);border-radius:4px;}
+.cert-name:empty::before{content:attr(data-placeholder);opacity:0.35;font-style:italic;}
+.cert-reason{font-family:'Amiri','Tajawal',serif;font-size:0.95rem;line-height:1.7;max-width:85%;min-width:50%;margin:0 auto 12px;opacity:0.9;outline:none;cursor:text;padding:4px 12px;border-radius:4px;word-wrap:break-word;overflow-wrap:break-word;word-break:normal;text-align:center;direction:rtl;unicode-bidi:embed;box-sizing:border-box;hyphens:auto;}
 .cert-reason:focus{background:rgba(255,255,255,0.7);}
-.cert-reason:empty::before{
-  content:attr(data-placeholder);
-  opacity:0.35;
-  font-style:italic;
-}
-
-/* ذيل الشهادة - التوقيعات والتاريخ */
-.cert-footer{
-  display:flex;
-  justify-content:space-between;
-  align-items:flex-end;
-  width:100%;
-  padding:0 24px;
-  position:relative;
-  z-index:1;
-  gap:14px;
-}
-.cert-sig{
-  flex:1;
-  text-align:center;
-  max-width:200px;
-}
-.cert-sig-line{
-  width:100%;
-  height:1.5px;
-  background:currentColor;
-  margin-bottom:5px;
-  opacity:0.75;
-}
-.cert-sig-name{
-  font-size:0.9rem;
-  font-weight:700;
-  margin-bottom:2px;
-  outline:none;
-  cursor:text;
-  padding:1px 6px;
-  border-radius:3px;
-  min-width:60px;
-  display:inline-block;
-}
+.cert-reason:empty::before{content:attr(data-placeholder);opacity:0.35;font-style:italic;}
+.cert-footer{display:flex;justify-content:space-between;align-items:flex-end;width:100%;padding:0 24px;position:relative;z-index:2;gap:14px;}
+.cert-sig{flex:1;text-align:center;max-width:200px;}
+.cert-sig-line{width:100%;height:1.5px;background:currentColor;margin-bottom:5px;opacity:0.75;}
+.cert-sig-name{font-size:0.9rem;font-weight:700;margin-bottom:2px;outline:none;cursor:text;padding:1px 6px;border-radius:3px;min-width:60px;display:inline-block;}
 .cert-sig-name:focus{background:rgba(255,255,255,0.7);}
-.cert-sig-name:empty::before{
-  content:attr(data-placeholder);
-  opacity:0.35;
-  font-style:italic;
-}
-.cert-sig-role{
-  font-size:0.7rem;
-  opacity:0.7;
-  font-weight:600;
-}
-.cert-date{
-  text-align:center;
-  flex-shrink:0;
-}
-.cert-date-icon{
-  font-size:1.4rem;
-  margin-bottom:2px;
-  opacity:0.7;
-}
-.cert-date-value{
-  font-size:0.85rem;
-  font-weight:800;
-  outline:none;
-  cursor:text;
-  padding:1px 6px;
-  border-radius:3px;
-  display:inline-block;
-}
+.cert-sig-name:empty::before{content:attr(data-placeholder);opacity:0.35;font-style:italic;}
+.cert-sig-role{font-size:0.7rem;opacity:0.7;font-weight:600;}
+.cert-date{text-align:center;flex-shrink:0;}
+.cert-date-icon{font-size:1.4rem;margin-bottom:2px;opacity:0.7;}
+.cert-date-value{font-size:0.85rem;font-weight:800;outline:none;cursor:text;padding:1px 6px;border-radius:3px;display:inline-block;}
 .cert-date-value:focus{background:rgba(255,255,255,0.7);}
-.cert-date-label{
-  font-size:0.65rem;
-  opacity:0.7;
-  font-weight:600;
-  margin-top:1px;
-}
-
-/* ─── ثيمات الشهادة (الألوان) ─── */
+.cert-date-label{font-size:0.65rem;opacity:0.7;font-weight:600;margin-top:1px;}
 .cp-theme-teal{color:#1a3c4e;}
 .cp-theme-teal .cert-paper{background:linear-gradient(135deg, #fdfcf8 0%, #f0e6c4 100%);}
 .cp-theme-teal .cert-seal-wrap{background:#1a3c4e;}
-
 .cp-theme-gold{color:#5d2e0e;}
 .cp-theme-gold .cert-paper{background:linear-gradient(135deg, #fdfcf8 0%, #f5e8c4 100%);}
 .cp-theme-gold .cert-seal-wrap{background:linear-gradient(135deg,#c9a45b,#8b6428);}
-
 .cp-theme-green{color:#1a4d2e;}
 .cp-theme-green .cert-paper{background:linear-gradient(135deg, #fdfcf8 0%, #d4e8d4 100%);}
 .cp-theme-green .cert-seal-wrap{background:#1a4d2e;}
-
 .cp-theme-purple{color:#4a1a4d;}
 .cp-theme-purple .cert-paper{background:linear-gradient(135deg, #fdfcf8 0%, #f0e0f0 100%);}
 .cp-theme-purple .cert-seal-wrap{background:#4a1a4d;}
-
 .cp-theme-blue{color:#1a2a4d;}
 .cp-theme-blue .cert-paper{background:linear-gradient(135deg, #fdfcf8 0%, #d4e0f0 100%);}
 .cp-theme-blue .cert-seal-wrap{background:#1a2a4d;}
-
 .cp-theme-red{color:#5d1a1a;}
 .cp-theme-red .cert-paper{background:linear-gradient(135deg, #fdfcf8 0%, #f0d4d4 100%);}
 .cp-theme-red .cert-seal-wrap{background:#5d1a1a;}
-
 .cp-theme-ocean{color:#0d4d5d;}
 .cp-theme-ocean .cert-paper{background:linear-gradient(135deg, #fdfcf8 0%, #d4eaf0 100%);}
 .cp-theme-ocean .cert-seal-wrap{background:#0d4d5d;}
-
-/* ═══════════════════════════════════════════════
-   لوحة التحكم في المحرّر
-   ═══════════════════════════════════════════════ */
-.controls{
-  background:#fff;
-  border-radius:16px;
-  padding:18px;
-  margin-bottom:18px;
-  box-shadow:0 4px 14px rgba(0,0,0,0.06);
-  border:1px solid rgba(0,0,0,0.05);
-}
-.controls h3{
-  font-family:'Reem Kufi','Tajawal',sans-serif;
-  font-size:0.95rem;
-  font-weight:700;
-  color:#1a3c4e;
-  margin-bottom:12px;
-  display:flex;
-  align-items:center;
-  gap:8px;
-}
-.controls h3::before{
-  content:"";
-  width:4px;
-  height:18px;
-  background:#c9a45b;
-  border-radius:2px;
-}
-
-/* ثيمات الألوان */
-.themes-row{
-  display:flex;
-  flex-wrap:wrap;
-  gap:8px;
-  margin-bottom:8px;
-}
-.theme-pill{
-  display:flex;
-  align-items:center;
-  gap:6px;
-  padding:7px 12px;
-  border-radius:40px;
-  border:2px solid transparent;
-  cursor:pointer;
-  font-family:inherit;
-  font-size:0.78rem;
-  font-weight:700;
-  background:#f4f1e8;
-  color:#1c2820;
-  transition:all 0.2s;
-}
+.controls{background:#fff;border-radius:16px;padding:18px;margin-bottom:18px;box-shadow:0 4px 14px rgba(0,0,0,0.06);border:1px solid rgba(0,0,0,0.05);}
+.controls h3{font-family:'Reem Kufi','Tajawal',sans-serif;font-size:0.95rem;font-weight:700;color:#1a3c4e;margin-bottom:12px;display:flex;align-items:center;gap:8px;}
+.controls h3::before{content:"";width:4px;height:18px;background:#c9a45b;border-radius:2px;}
+.themes-row{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:8px;}
+.theme-pill{display:flex;align-items:center;gap:6px;padding:7px 12px;border-radius:40px;border:2px solid transparent;cursor:pointer;font-family:inherit;font-size:0.78rem;font-weight:700;background:#f4f1e8;color:#1c2820;transition:all 0.2s;}
 .theme-pill:hover{transform:translateY(-1px);}
-.theme-pill.active{
-  border-color:#1a3c4e;
-  background:#fff;
-  box-shadow:0 3px 10px rgba(26,60,78,0.2);
-}
-.theme-pill .swatch{
-  width:16px;
-  height:16px;
-  border-radius:50%;
-  border:1.5px solid #fff;
-  box-shadow:0 1px 3px rgba(0,0,0,0.2);
-}
-
-/* صف الحقول السريعة */
-.quick-fields{
-  display:grid;
-  grid-template-columns:1fr 1fr;
-  gap:10px;
-}
-.quick-field{
-  display:flex;
-  flex-direction:column;
-  gap:4px;
-}
-.quick-field label{
-  font-size:0.72rem;
-  font-weight:800;
-  color:#1a3c4e;
-  letter-spacing:0.2px;
-}
-.quick-field input{
-  padding:9px 12px;
-  border:1.5px solid rgba(184,146,61,0.3);
-  border-right:3px solid #c9a45b;
-  border-radius:8px;
-  font-family:inherit;
-  font-size:0.85rem;
-  font-weight:600;
-  color:#1c2820;
-  background:#faf6ec;
-  outline:none;
-}
-.quick-field input:focus{
-  border-color:#1a3c4e;
-  border-right-color:#1a3c4e;
-  background:#fff;
-}
-
-/* قسم النسخ المتعددة */
-.bulk-section{
-  background:linear-gradient(135deg, rgba(201,164,91,0.06), rgba(26,60,78,0.04));
-  border-radius:12px;
-  padding:14px;
-  margin-top:14px;
-  border:1px dashed rgba(184,146,61,0.4);
-}
-.bulk-section .hint{
-  font-size:0.75rem;
-  color:#4a5c50;
-  margin-bottom:8px;
-  font-weight:600;
-  line-height:1.5;
-}
-.bulk-section textarea{
-  width:100%;
-  min-height:90px;
-  padding:10px 12px;
-  border:1.5px solid rgba(184,146,61,0.3);
-  border-radius:8px;
-  font-family:inherit;
-  font-size:0.85rem;
-  font-weight:600;
-  color:#1c2820;
-  background:#fff;
-  outline:none;
-  resize:vertical;
-  line-height:1.7;
-}
+.theme-pill.active{border-color:#1a3c4e;background:#fff;box-shadow:0 3px 10px rgba(26,60,78,0.2);}
+.theme-pill .swatch{width:16px;height:16px;border-radius:50%;border:1.5px solid #fff;box-shadow:0 1px 3px rgba(0,0,0,0.2);}
+.quick-fields{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
+.quick-field{display:flex;flex-direction:column;gap:4px;}
+.quick-field label{font-size:0.72rem;font-weight:800;color:#1a3c4e;letter-spacing:0.2px;}
+.quick-field input{padding:9px 12px;border:1.5px solid rgba(184,146,61,0.3);border-right:3px solid #c9a45b;border-radius:8px;font-family:inherit;font-size:0.85rem;font-weight:600;color:#1c2820;background:#faf6ec;outline:none;}
+.quick-field input:focus{border-color:#1a3c4e;border-right-color:#1a3c4e;background:#fff;}
+.bulk-section{background:linear-gradient(135deg, rgba(201,164,91,0.06), rgba(26,60,78,0.04));border-radius:12px;padding:14px;margin-top:14px;border:1px dashed rgba(184,146,61,0.4);}
+.bulk-section .hint{font-size:0.75rem;color:#4a5c50;margin-bottom:8px;font-weight:600;line-height:1.5;}
+.bulk-section textarea{width:100%;min-height:90px;padding:10px 12px;border:1.5px solid rgba(184,146,61,0.3);border-radius:8px;font-family:inherit;font-size:0.85rem;font-weight:600;color:#1c2820;background:#fff;outline:none;resize:vertical;line-height:1.7;}
 .bulk-section textarea:focus{border-color:#1a3c4e;}
-.bulk-count{
-  font-size:0.72rem;
-  color:#1a3c4e;
-  margin-top:6px;
-  font-weight:700;
-}
-
-/* أزرار الأكشن */
-.editor-actions{
-  display:flex;
-  gap:10px;
-  flex-wrap:wrap;
-  justify-content:center;
-  margin:18px 0 12px;
-}
-.btn{
-  padding:12px 22px;
-  border:none;
-  border-radius:40px;
-  font-family:inherit;
-  font-size:0.85rem;
-  font-weight:800;
-  cursor:pointer;
-  display:inline-flex;
-  align-items:center;
-  gap:6px;
-  transition:all 0.2s;
-  white-space:nowrap;
-}
+.bulk-count{font-size:0.72rem;color:#1a3c4e;margin-top:6px;font-weight:700;}
+.editor-actions{display:flex;gap:10px;flex-wrap:wrap;justify-content:center;margin:18px 0 12px;}
+.btn{padding:12px 22px;border:none;border-radius:40px;font-family:inherit;font-size:0.85rem;font-weight:800;cursor:pointer;display:inline-flex;align-items:center;gap:6px;transition:all 0.2s;white-space:nowrap;}
 .btn:active{transform:scale(0.97);}
-.btn-primary{
-  background:linear-gradient(135deg, #c9a45b, #b8923d);
-  color:#fff;
-  box-shadow:0 5px 14px rgba(184,146,61,0.35);
-}
+.btn-primary{background:linear-gradient(135deg, #c9a45b, #b8923d);color:#fff;box-shadow:0 5px 14px rgba(184,146,61,0.35);}
 .btn-primary:hover{box-shadow:0 7px 18px rgba(184,146,61,0.45);}
-.btn-secondary{
-  background:linear-gradient(135deg, #1a3c4e, #2a5d6e);
-  color:#fff;
-  box-shadow:0 5px 14px rgba(26,60,78,0.3);
-}
+.btn-secondary{background:linear-gradient(135deg, #1a3c4e, #2a5d6e);color:#fff;box-shadow:0 5px 14px rgba(26,60,78,0.3);}
 .btn-secondary:hover{box-shadow:0 7px 18px rgba(26,60,78,0.4);}
-.btn-ghost{
-  background:#fff;
-  color:#1a3c4e;
-  border:1.5px solid rgba(26,60,78,0.2);
-}
+.btn-ghost{background:#fff;color:#1a3c4e;border:1.5px solid rgba(26,60,78,0.2);}
 .btn-ghost:hover{background:#f4f1e8;}
-
-/* ═══════════════════════════════════════════════
-   TOAST & PROGRESS
-   ═══════════════════════════════════════════════ */
-#toast{
-  position:fixed;
-  top:20px;
-  left:50%;
-  transform:translateX(-50%);
-  background:#1a3c4e;
-  color:#fff;
-  padding:12px 22px;
-  border-radius:30px;
-  font-weight:700;
-  font-size:0.85rem;
-  box-shadow:0 6px 20px rgba(0,0,0,0.3), 0 0 0 1px #c9a45b;
-  opacity:0;
-  pointer-events:none;
-  transition:opacity 0.3s;
-  z-index:2000;
-}
+#toast{position:fixed;top:20px;left:50%;transform:translateX(-50%);background:#1a3c4e;color:#fff;padding:12px 22px;border-radius:30px;font-weight:700;font-size:0.85rem;box-shadow:0 6px 20px rgba(0,0,0,0.3), 0 0 0 1px #c9a45b;opacity:0;pointer-events:none;transition:opacity 0.3s;z-index:2000;}
 #toast.show{opacity:1;}
-
-#progress-overlay{
-  display:none;
-  position:fixed;
-  top:0; left:0; right:0; bottom:0;
-  background:rgba(0,30,40,0.7);
-  backdrop-filter:blur(6px);
-  z-index:1500;
-  align-items:center;
-  justify-content:center;
-}
+#progress-overlay{display:none;position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,30,40,0.7);backdrop-filter:blur(6px);z-index:1500;align-items:center;justify-content:center;}
 #progress-overlay.show{display:flex;}
-.progress-box{
-  background:#fff;
-  border-radius:16px;
-  padding:30px 26px;
-  max-width:340px;
-  width:90%;
-  text-align:center;
-  box-shadow:0 14px 40px rgba(0,0,0,0.4);
-}
-.progress-box .ico{
-  font-size:2.5rem;
-  margin-bottom:10px;
-  animation:spin 1.4s linear infinite;
-  display:inline-block;
-}
+.progress-box{background:#fff;border-radius:16px;padding:30px 26px;max-width:340px;width:90%;text-align:center;box-shadow:0 14px 40px rgba(0,0,0,0.4);}
+.progress-box .ico{font-size:2.5rem;margin-bottom:10px;animation:spin 1.4s linear infinite;display:inline-block;}
 @keyframes spin{from{transform:rotate(0)} to{transform:rotate(360deg)}}
-.progress-box h4{
-  font-size:1rem;
-  font-weight:800;
-  color:#1a3c4e;
-  margin-bottom:10px;
-}
-.progress-bar{
-  width:100%;
-  height:8px;
-  background:#f4f1e8;
-  border-radius:4px;
-  overflow:hidden;
-  margin-bottom:8px;
-}
-.progress-fill{
-  height:100%;
-  background:linear-gradient(90deg, #c9a45b, #b8923d);
-  width:0%;
-  transition:width 0.3s;
-  border-radius:4px;
-}
-.progress-text{
-  font-size:0.8rem;
-  color:#4a5c50;
-  font-weight:600;
-}
-
-/* ═══════════════════════════════════════════════
-   Responsive
-   ═══════════════════════════════════════════════ */
+.progress-box h4{font-size:1rem;font-weight:800;color:#1a3c4e;margin-bottom:10px;}
+.progress-bar{width:100%;height:8px;background:#f4f1e8;border-radius:4px;overflow:hidden;margin-bottom:8px;}
+.progress-fill{height:100%;background:linear-gradient(90deg, #c9a45b, #b8923d);width:0%;transition:width 0.3s;border-radius:4px;}
+.progress-text{font-size:0.8rem;color:#4a5c50;font-weight:600;}
 @media (max-width:600px){
-  .gallery{grid-template-columns:1fr 1fr; gap:10px;}
+  .gallery{grid-template-columns:1fr 1fr;gap:10px;}
   .cert-card{border-radius:12px;}
-  .cert-preview{padding:8px; aspect-ratio:1.2/1;}
+  .cert-preview{padding:8px;aspect-ratio:1.2/1;}
   .cert-preview .title-mini{font-size:0.85rem;}
   .cert-preview .for-mini{font-size:0.55rem;}
-  .cert-preview .seal{font-size:1.2rem;}
+  .cert-preview .seal{min-height:24px;}
+  .cert-preview .seal img{width:32px;max-height:24px;}
   .cert-preview .lines{width:70%;}
   .cert-info{padding:10px 12px;}
   .cert-info h3{font-size:0.82rem;}
   .cert-info p{font-size:0.66rem;}
-  .cert-action{font-size:0.65rem; padding:4px 10px; margin-top:5px;}
+  .cert-action{font-size:0.65rem;padding:4px 10px;margin-top:5px;}
   .page-header h1{font-size:1.2rem;}
   .page-header p{font-size:0.72rem;}
-
-  .cert-paper{padding:18px 14px;}
-  .cert-body{padding:6px 28px;}
-  .cert-title{font-size:1.3rem;}
-  .cert-name{font-size:1.1rem; padding:3px 14px 6px;}
-  .cert-pretext{font-size:0.7rem; margin-bottom:5px;}
-  .cert-reason{font-size:0.68rem; max-width:82%; min-width:auto; padding:2px 6px;}
-  .cert-subtitle{font-size:0.6rem; letter-spacing:1.5px;}
-  .cert-seal-wrap{width:42px; height:42px;}
-  .cert-seal-icon{font-size:1.3rem;}
-  .cert-org{font-size:0.6rem;}
-  .cert-sig-name{font-size:0.7rem;}
-  .cert-sig-role{font-size:0.55rem;}
-  .cert-date-value{font-size:0.7rem;}
-  .cert-date-label{font-size:0.55rem;}
-  .cert-date-icon{font-size:1rem;}
-  .cert-footer{padding:0 8px; gap:8px;}
-
+  .cert-paper{padding:14px 16px;aspect-ratio:auto;min-height:250px;}
+  .cert-body{padding:4px 16px;flex:1;justify-content:center;}
+  .cert-title{font-size:1.1rem;}
+  .cert-name{font-size:0.95rem;padding:2px 8px 4px;min-width:75%;margin-bottom:6px;}
+  .cert-pretext{font-size:0.65rem;margin-bottom:3px;}
+  .cert-reason{font-size:0.58rem;max-width:90%;min-width:auto;padding:2px 4px;margin-bottom:6px;line-height:1.5;}
+  .cert-subtitle{font-size:0.5rem;letter-spacing:1px;}
+  .cert-seal-wrap{width:36px;height:36px;margin-bottom:4px;}
+  .cert-seal-icon img{width:65%;max-height:65%;}
+  .cert-org{font-size:0.52rem;}
+  .cert-sig-name{font-size:0.6rem;min-width:45px;}
+  .cert-sig-role{font-size:0.5rem;}
+  .cert-date-value{font-size:0.6rem;}
+  .cert-date-label{font-size:0.5rem;}
+  .cert-date-icon{font-size:0.85rem;}
+  .cert-footer{padding:0 4px;gap:4px;}
+  .cert-border-outer{top:6px;left:6px;right:6px;bottom:6px;}
+  .cert-border-inner{top:10px;left:10px;right:10px;bottom:10px;}
   .quick-fields{grid-template-columns:1fr;}
   .editor-header h2{font-size:0.85rem;}
-  .btn-back{padding:6px 11px; font-size:0.7rem;}
+  .btn-back{padding:6px 11px;font-size:0.7rem;}
   .editor-body{padding:10px;}
   .controls{padding:14px;}
-  .btn{padding:10px 16px; font-size:0.78rem;}
+  .btn{padding:10px 16px;font-size:0.78rem;}
 }
-
-/* ═══════════════════════════════════════════════
-   Print
-   ═══════════════════════════════════════════════ */
 @media print{
-  @page{size:A4 landscape; margin:0;}
-  *{
-    -webkit-print-color-adjust:exact !important;
-    print-color-adjust:exact !important;
-    color-adjust:exact !important;
-  }
-  body{background:#fff !important; padding:0 !important;}
-  .app, .page-header, .gallery, .editor-header, .controls,
-  .editor-actions, #toast, #progress-overlay{display:none !important;}
-  .editor-view{position:static !important; background:#fff !important;}
+  @page{size:A4 landscape;margin:0;}
+  *{-webkit-print-color-adjust:exact !important;print-color-adjust:exact !important;color-adjust:exact !important;}
+  body{background:#fff !important;padding:0 !important;}
+  .app, .page-header, .gallery, .editor-header, .controls, .editor-actions, #toast, #progress-overlay{display:none !important;}
+  .editor-view{position:static !important;background:#fff !important;}
   .editor-view.active{display:block !important;}
-  .editor-body{padding:0 !important; max-width:100% !important;}
-  .cert-paper-wrap{margin:0 !important; overflow:visible !important;}
-  .cert-paper{
-    width:100% !important;
-    max-width:100% !important;
-    height:100vh !important;
-    box-shadow:none !important;
-    margin:0 !important;
-    page-break-inside:avoid;
-  }
+  .editor-body{padding:0 !important;max-width:100% !important;}
+  .cert-paper-wrap{margin:0 !important;overflow:visible !important;}
+  .cert-paper{width:100% !important;max-width:100% !important;height:100vh !important;box-shadow:none !important;margin:0 !important;page-break-inside:avoid;aspect-ratio:1.414 / 1 !important;padding:30px 36px !important;}
+  .cert-border-outer{top:14px!important;left:14px!important;right:14px!important;bottom:14px!important;}
+  .cert-border-inner{top:22px!important;left:22px!important;right:22px!important;bottom:22px!important;}
+  .cert-reason{font-size:0.95rem !important;}
 }
 </style>
 </head>
 <body>
-
 <div id="toast"></div>
-
+<div id="hidden-render-container"></div>
 <div id="progress-overlay">
   <div class="progress-box">
     <div class="ico">⏳</div>
     <h4 id="progress-title">جاري التحميل...</h4>
-    <div class="progress-bar">
-      <div class="progress-fill" id="progress-fill"></div>
-    </div>
+    <div class="progress-bar"><div class="progress-fill" id="progress-fill"></div></div>
     <div class="progress-text" id="progress-text">0 من 0</div>
   </div>
 </div>
-
-<!-- ═══════════════════════════════════════════════
-     GALLERY VIEW (الصفحة الرئيسية)
-     ═══════════════════════════════════════════════ -->
 <div class="app" id="gallery-view">
-
   <div class="page-header">
     <div class="crown-icon">🏆</div>
     <h1>شهادات الشكر والتقدير</h1>
     <p>اختر نوع الشهادة المناسبة لتحريرها وطباعتها</p>
   </div>
-
-  <div class="gallery" id="gallery-grid">
-    <!-- سيتم حقن البطاقات هنا بالـ JavaScript -->
-  </div>
-
+  <div class="gallery" id="gallery-grid"></div>
 </div>
-
-<!-- ═══════════════════════════════════════════════
-     EDITOR VIEW (محرر الشهادة)
-     ═══════════════════════════════════════════════ -->
 <div class="editor-view" id="editor-view">
-
   <div class="editor-header">
-    <button class="btn-back" onclick="backToGallery()">
-      <span>›</span><span>رجوع</span>
-    </button>
-    <h2 id="editor-title">تحرير الشهادة</h2>
+    <button class="btn-back" onclick="backToGallery()"><span>›</span><span>رجوع</span></button>
+    <h2 id="editor-top-title">تحرير الشهادة</h2>
     <div style="width:80px"></div>
   </div>
-
   <div class="editor-body">
-
-    <!-- معاينة الشهادة -->
     <div class="cert-paper-wrap">
       <div class="cert-paper" id="cert-paper">
-        <!-- زوايا زخرفية -->
+        <div class="cert-border-outer"></div>
+        <div class="cert-border-inner"></div>
         <div class="cert-corner tl"><svg viewBox="0 0 50 50"><path d="M5 5 L25 5 M5 5 L5 25 M5 5 Q15 5 15 15 Q15 25 25 25 M15 15 L25 15" stroke="currentColor" stroke-width="1.5" fill="none" opacity="0.6"/></svg></div>
         <div class="cert-corner tr"><svg viewBox="0 0 50 50"><path d="M45 5 L25 5 M45 5 L45 25 M45 5 Q35 5 35 15 Q35 25 25 25 M35 15 L25 15" stroke="currentColor" stroke-width="1.5" fill="none" opacity="0.6"/></svg></div>
         <div class="cert-corner bl"><svg viewBox="0 0 50 50"><path d="M5 45 L25 45 M5 45 L5 25 M5 45 Q15 45 15 35 Q15 25 25 25 M15 35 L25 35" stroke="currentColor" stroke-width="1.5" fill="none" opacity="0.6"/></svg></div>
         <div class="cert-corner br"><svg viewBox="0 0 50 50"><path d="M45 45 L25 45 M45 45 L45 25 M45 45 Q35 45 35 35 Q35 25 25 25 M35 35 L25 35" stroke="currentColor" stroke-width="1.5" fill="none" opacity="0.6"/></svg></div>
-
         <div class="cert-head">
-          <div class="cert-seal-wrap">
-            <div class="cert-seal-icon" id="cert-seal">🏆</div>
-          </div>
+          <div class="cert-seal-wrap"><div class="cert-seal-icon" id="cert-seal"></div></div>
           <div class="cert-org" id="cert-org">المملكة العربية السعودية · وزارة التعليم</div>
           <h2 class="cert-title" id="cert-title">شهادة شكر</h2>
           <div class="cert-subtitle" id="cert-subtitle">CERTIFICATE OF APPRECIATION</div>
         </div>
-
         <div class="cert-body">
           <div class="cert-pretext" id="cert-pretext">تتقدم إدارة المدرسة بأطيب الشكر والتقدير إلى</div>
           <div class="cert-name" id="cert-name" contenteditable="true" data-placeholder="اكتب الاسم هنا"></div>
           <div class="cert-reason" id="cert-reason" contenteditable="true" data-placeholder="اكتب سبب التكريم..."></div>
         </div>
-
         <div class="cert-footer">
           <div class="cert-sig">
             <div class="cert-sig-line"></div>
@@ -1017,205 +284,71 @@ html,body{
         </div>
       </div>
     </div>
-
-    <!-- لوحة التحكم في الألوان -->
     <div class="controls">
       <h3>🎨 الألوان والثيم</h3>
       <div class="themes-row" id="themes-row">
-        <button class="theme-pill active" data-theme="teal">
-          <span class="swatch" style="background:#1a3c4e"></span>
-          <span>كلاسيكي</span>
-        </button>
-        <button class="theme-pill" data-theme="gold">
-          <span class="swatch" style="background:linear-gradient(135deg,#c9a45b,#8b6428)"></span>
-          <span>ذهبي</span>
-        </button>
-        <button class="theme-pill" data-theme="green">
-          <span class="swatch" style="background:#1a4d2e"></span>
-          <span>أخضر</span>
-        </button>
-        <button class="theme-pill" data-theme="purple">
-          <span class="swatch" style="background:#4a1a4d"></span>
-          <span>بنفسجي</span>
-        </button>
-        <button class="theme-pill" data-theme="blue">
-          <span class="swatch" style="background:#1a2a4d"></span>
-          <span>أزرق</span>
-        </button>
-        <button class="theme-pill" data-theme="red">
-          <span class="swatch" style="background:#5d1a1a"></span>
-          <span>أحمر</span>
-        </button>
-        <button class="theme-pill" data-theme="ocean">
-          <span class="swatch" style="background:#0d4d5d"></span>
-          <span>محيطي</span>
-        </button>
+        <button class="theme-pill active" data-theme="teal"><span class="swatch" style="background:#1a3c4e"></span><span>كلاسيكي</span></button>
+        <button class="theme-pill" data-theme="gold"><span class="swatch" style="background:linear-gradient(135deg,#c9a45b,#8b6428)"></span><span>ذهبي</span></button>
+        <button class="theme-pill" data-theme="green"><span class="swatch" style="background:#1a4d2e"></span><span>أخضر</span></button>
+        <button class="theme-pill" data-theme="purple"><span class="swatch" style="background:#4a1a4d"></span><span>بنفسجي</span></button>
+        <button class="theme-pill" data-theme="blue"><span class="swatch" style="background:#1a2a4d"></span><span>أزرق</span></button>
+        <button class="theme-pill" data-theme="red"><span class="swatch" style="background:#5d1a1a"></span><span>أحمر</span></button>
+        <button class="theme-pill" data-theme="ocean"><span class="swatch" style="background:#0d4d5d"></span><span>محيطي</span></button>
       </div>
     </div>
-
-    <!-- التعبئة السريعة -->
+    <div class="controls">
+      <h3>✒️ نوع خط الاسم المكرم</h3>
+      <div class="themes-row" id="fonts-row">
+        <button class="theme-pill active" onclick="changeFont('Aref Ruqaa', this)">خط الرقاع</button>
+        <button class="theme-pill" onclick="changeFont('Amiri', this)">خط أميري</button>
+        <button class="theme-pill" onclick="changeFont('Reem Kufi', this)">ريم كوفي</button>
+        <button class="theme-pill" onclick="changeFont('Tajawal', this)">خط تجوّل</button>
+      </div>
+    </div>
     <div class="controls">
       <h3>✍️ التعبئة السريعة</h3>
       <div class="quick-fields">
-        <div class="quick-field">
-          <label>الاسم</label>
-          <input type="text" id="q-name" placeholder="اكتب الاسم">
-        </div>
-        <div class="quick-field">
-          <label>سبب التكريم</label>
-          <input type="text" id="q-reason" placeholder="اكتب السبب">
-        </div>
-        <div class="quick-field">
-          <label>التاريخ</label>
-          <input type="text" id="q-date" placeholder="١٤٤٧/٣/١١">
-        </div>
-        <div class="quick-field">
-          <label>قائد/ة المدرسة</label>
-          <input type="text" id="q-principal" placeholder="اسم القائد/ة">
-        </div>
+        <div class="quick-field"><label>الاسم</label><input type="text" id="q-name" placeholder="اكتب الاسم"></div>
+        <div class="quick-field"><label>سبب التكريم</label><input type="text" id="q-reason" placeholder="اكتب السبب"></div>
+        <div class="quick-field"><label>التاريخ</label><input type="text" id="q-date" placeholder="١٤٤٧/٣/١١"></div>
+        <div class="quick-field"><label>قائد/ة المدرسة</label><input type="text" id="q-principal" placeholder="اسم القائد/ة"></div>
+        <div class="quick-field"><label>ختم المدرسة (نصي)</label><input type="text" id="q-seal-text" placeholder="ختم المدرسة"></div>
       </div>
     </div>
-
-    <!-- النسخ المتعددة -->
     <div class="controls">
       <h3>📋 طباعة عدة شهادات (للأسماء المتعددة)</h3>
       <div class="bulk-section">
-        <div class="hint">
-          💡 اكتب أسماء عدة أشخاص — كل اسم في سطر منفصل — ستحصل على شهادة لكل واحد منهم كصور PNG عالية الجودة داخل ملف <strong>ZIP</strong> واحد.
-        </div>
+        <div class="hint">💡 اكتب أسماء عدة أشخاص — كل اسم في سطر منفصل — ستحصل على شهادة لكل واحد منهم كصور PNG عالية الجودة داخل ملف <strong>ZIP</strong> واحد.</div>
         <textarea id="bulk-names" placeholder="مثال:&#10;الأستاذ محمد العتيبي&#10;الأستاذة فاطمة الزهراني&#10;الأستاذ خالد القحطاني"></textarea>
         <div class="bulk-count" id="bulk-count">عدد الأسماء: 0</div>
       </div>
     </div>
-
-    <!-- أزرار الأكشن -->
     <div class="editor-actions">
-      <button class="btn btn-ghost" onclick="resetForm()">
-        <span>🔄</span><span>تفريغ</span>
-      </button>
-      <button class="btn btn-secondary" onclick="printSingle()">
-        <span>🖨️</span><span>طباعة الشهادة الحالية</span>
-      </button>
-      <button class="btn btn-primary" onclick="downloadBulk()">
-        <span>📥</span><span>تحميل الكل (ZIP)</span>
-      </button>
+      <button class="btn btn-ghost" onclick="resetForm()"><span>🔄</span><span>تفريغ</span></button>
+      <button class="btn btn-secondary" onclick="printSingle()"><span>🖨️</span><span>طباعة الشهادة الحالية</span></button>
+      <button class="btn btn-primary" onclick="downloadBulk()"><span>📥</span><span>تحميل الكل (ZIP)</span></button>
     </div>
-
   </div>
 </div>
-
-<!-- مكتبة dom-to-image-more لتحويل DOM إلى صورة (تدعم العربية بشكل صحيح) -->
 <script src="https://cdn.jsdelivr.net/npm/dom-to-image-more@3.4.4/dist/dom-to-image-more.min.js"></script>
-<!-- مكتبة JSZip لتغليف الصور -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
-
 <script>
-/* ═══════════════════════════════════════════════
-   بيانات الشهادات
-   ═══════════════════════════════════════════════ */
+const MOE_LOGO_HTML = '<img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAJYAAAByCAYAAACx1Ch2AAAf9klEQVR42u1de7hVVbX/jbU3IKCCgKBm+QpfmErioweVmmKaGqaR5SO9fpXpvabZw5tm9jALtatmpvYwK017mJn2lsSSwlIz09RUfKFcFFAEDpy99+/+sX/znMFkrbXX3vuAyF3j+/a3z1l7rrnmHHPM8R5zAQBIJvoeTfJ/SM4huYjkQyQ/T3KofjdEQNJIVt2nktauhLUXtIaV6FoS6CK6XtH3FJK/I7lAnz+QPKSvjSOqrUj+k+nwR5Kj9DDzD88bbLlkrwyicn+PJDme5Li0NXa0cjrJRgatnOEpcxDJv+mHFe6mhv4nyR9HFBseMorkR0heIW53SCviElcrOdzq5UDVgFfhuJJFVCKoy0n+L8k6yRdI3kRyR0cjYd0PEj3USdYcQdUc3RwUHvAuR1RpEDqYoPaD9P1Gko+ntL+F5IgUDmc5xJaUJDGwHCgPx1qLhOT6JGdnrPtzJLf3opLkLBFQbwadNEj+MTzkwpzG1PUGyWMdBW+mBweC7NUnEOc1EYfzBPY2kmeS/CzJdzruV3KuASAqksNJforkTJJ/J3kjycMiSVPV9zlarx6tcfgs1/WbXf9jxM2YIwpJcnG44ZKChHWce0gY0PKobcNxuO3DJESMG5L8WUr/s0huWXKuQiIuk+PrszHJv2as45edaAwc636JtXrKOjZILiG5qe7blOTiAoS1JCzivQDyuIXpc5+7tgcAAqiktKU+E8M1M2sAuArAoQBq7tMLYC8APyc5LIW7mdPFKl53+P9mtZkZzYxeEni8C8cXAdgNwHIAdQANh+tPkDzQzOq6ZwiAkQCSjPU3AMMAbKT/5wOYoz4bKe3D9X+FQY8mOT9S3sOnR9dvC4usif0i4k5pOtkRDjl7OO4XQ+B6x3s23akusQ5bbeuRHJNipQUR+Crhsp7CUXp1/edOihjJe1IU8cCR6nI7beSe+R9uzWqOTmpubaclABIzex7A0QB6AAxyHMpE1U8AOF59By43U7/XU6gW2iF/cYh5s7hYGiS67y0ZCP0AyetJ/pTkKSSHmhnXdeJyBDOU5PkAHgDwIMm7SX7AzBoirrAmWwEY7LhNjOMEwNaOxRHA1bpe0xpQ3yt0/QYzWyhpkZjZtwB8U8+pODqpAKgCuNDMrosp//Ukf0zyGZIvyVF6GcnNvIzXZ5R+p1Pce52sDvJ8iL4/lqPHBR3uqmB1OjfIT1La/1kmsq3LxBXMfJI3Z+gyJ0ZW+gTHQdKkSJ3krEgnGyzpkwb3SGdL3LoHWjlB1uQCks+TvIPk0avoyZEpuqHY6tAWjrIdSN6ZMoFL3MArzjWRJQqDJXlCYPn6Psmx3V71HUTzV4uKzVcoUQW8HepwUHebs65FHeEU8SrJe1NcR16l+bQXhU6ZP11K/1Mk7yP5JZIj0tSOSJqMITk6V0XxhBA5My3LJ6Lfp5A8leSHSO6U0a+5ndGb4p54QGayJ8Y/pMj/YME85naqZez0ZG0nHucoTqLfqs4VVE/ZkEEyvFHtBut7b/dbI7L2/iGmYY6oYtwNj42nPMLPCwtlWSFJKzGTtXApSApsdKQ8ujHcRXJbT4T6e3aKgRBY/dy0GGbKs5O1lKishaIeCOvzGSpEIJiJcWyP5H4SYwGWkrwuhGrSOFDM+Yta31nqSNbkwmI0gnnbAkHeXG3I7F2lnTOV95UyPxjA3wDcZGa9oQ3JqpnVSH4dwIkynYNS2qu/f2tm+0uhbPhnSCfcAcBTZvagf/baojtJ8Z4CYAqAhQCuNrPH3RxCm0kA7pSRRGcwDZYyv6twgui+BMAuADYE8LiZzYnXIY+wi+BL7T2XSl17ZMSTKt2w9HYcfCmicyvnBol1sr2iUEPizOFFTuSevzZxLjfeM6I5zSO5Y6Qgh++zU3CwkOQbMsRSJUsdabGGFaerJQMhrfwPm5B8K8k9nRKdtEMorYixSBDaIXWCrKKFJF9UpsVbozbhe7yziHrd34cW3SRryH2wmVPGV5BcpnFeG4/Tze0Akt9THPZ8kq8tsDZd6ZqtiEcW44kkv6qNMqHvdzeARJbAQrcr/k3yva12vCy+j5A8huSri3KIVu6CiIttHEILKb8FfeR4t1g+hnnp2mBBOm61Z6Qn1fSZ3Y6e2GJNklbZI5ESf6xiijNEKNvkjUV63NwUt9Hp8WSvTLG8AhwetQ3EOIzkj6LOXyD5wRYIKWR5xkqpf3bGgr0j8goHTnDWWkJYwYjZyG3gFS7y8PWscRYVVWn4yVoLp3J8L0XUPk9y91gyqP14xRDjBIQA08ID3pSSi+XFyRyFEyzSa76e4j4IMDmDiDyRjCM5vNsArJv0YIWePDwtn1yW2O7b2QPoQqhkiSC3SNPkhA7wV6khA+L0JTmR5FESoUNSrM6whu+JNqP3Fd7rEgh8OO/yjDSrEOK5LzzkvByveCMya6tONL3kPLqMiPOH8e5zSD1UiFwoh9xFwX/SKVIdS99Ayu5NctRunWPeD6hropULIWWsW5E8muTBzg9lXXDDhOQQkt+N1vC+4F9MSZv5YQs/2S6xVJFTPCtOTJLLwqAuyejcP+ANUfhg15ykwL5kL+9IdbI5DW7KyrNenT4jkpMUntiz24XV91Q5gq+XqwBtiCZrdx4pHOgLkd4WuMq/FHOMpc6NOUFoknyTI6ywlrdn3BPu68vHOjqDtYWbF4eouhvQWMnZWiQ+A8e6LmofBjXTsd5GpGy/Nc/t0YZLo+ra5xUEfDia76mdWI+uv/1T9M0t8vSeIunZkfMzrfAhEPUQZfTGUiQwjP08LvX3f0eJfj6u2JfZEInCT6fc4+nnlnDDcJIPpyhjYUBfiRBYSZG1sY71thQWOoTkkymhhhAHPDlNeS0ixjrgLMPlO6LTKRaRHNku53II/64zGoLhcFI3hkOkFw3NuG4uxvtcSiA6xBaP8l51fca4ZALmbTR3z4YSr0xJ+ltIcoLnJDsqlhTDVVKKfajF50v/PGq/lOR/pSjq4Z5/RLk7ntIPzfHjTCF5KcnpJHftVGy5OWwkv1ivC3IvJblxF4T1JUeoYX6HdepDc3PfS6VWcySG9s5xKs+KJILH9YQc/9+vNf+6nvPRrPCc88X9xG2gXvkYd0trvB7JI5R2fEaQrwV20tuVY30yyfEZAwpUf2KUwhzk9INyX3jfSrjntJTEwCldLFjF6ZYeruhQFIadvKnLLqDyxwZ3wl2j6MOL0Th7XJFDrMPum8F9LssjFP29hTJWhrYIQPt7tpQfc/tUaZLnhCviYCvieXdI+KJ2R4DZJHeI2pizPpe4UrQeF7hOOlw0cxz0JJJXK4Gw2iLsZAU44TAViOxdVClvwQVjHSjM/9wcq3uK3C5PK6f9v50T3IqscYHoSWF/WZ9i6MMt3aZ/5CzAlnJovjEthcMhaVIkx4N+9mw7O2sAHJuVPIR2ID4tb2M4wvqi5rs8ysu6KEMf9eJxg3Y2Xh7xtbinddioaMpMN4jNCpJmEOAoV3K03O3YGS08yklsJudYkNUiaSLB11SECPM2ZRF/lyPkPVJcPysZRxkb3dpJJIiIpF3CymYqGWZsOxwr0xxuMYlKq2QyksdFPpN5SqO2FjpDtUtxFETmejIcHiX52yw9sgMrbzeSr88hrsS5Rf5X3Hp+mnHUSbSiG1FYiEFEk92Y5HYhLbWdCHi3C9lCdO5K8pMk/5Pkq1osxJ4igIfkWd68E0Jw4ujslLMskg768yb+ra6/GcK7ZaUBi3PvEtKABxq/LpPkDc5n2TJBQEbESTLc+q11N9n1SX5DwcdeFVSckycaXecHu4W83VdMD9DkWyqJkWW2ICKE2aFAo0Pr8VaJ4SUSxYtIrt+FW+JrUYyVJL+RF4DuRJK04c7Y1qWBh9L6T7XCvTwBccHyBYGwgoz8TYaZekHe5EgemXHfmQWti0rRxLI8We4W7VhnRfkw1evbXRTX5+nR3G7MU+ILcN+/Oqdw8DPd28oQKZgu7gt7KwW45wiSj2RktXwoxa8Y1v0IZ0zFFVp9qTPvjpxqjBZl29gVoM8wBZGDK6DuEFZ3AeCiufFJF7svEMFhkZMyzGHHDsVhUMY/Ka58iURZ2wFztyhXuTH2ZCX5DVBMtJXV+YGUoxICkTwsTu99i8G/NjslvhwI8+lWQegQB5wWDSYQ2C4Zdfwh3ebIVuEMkruTfL8L2HYT3Q/hqbuj8Vw7kKK5G9GjMW4RnUX2gByhxi6zPUm+T4UTVzkPvbVwZ8SRkIaLdY6JDQEZM0/nnOGwPDwkK22m5s87Sgkob5sS9/NBz3dl+Vo00Mui+77WJXLDxMeQPFee74/Huy7H5ZCnrFZbmeOOuyU5TmIfq5wqDrt+l5sqrMtnUhb53RmqTNVZ3DHHCiL6MUUOLCWcd09OaV4fx9orUiZr7kHz0qqOnTNtViR6lrsMxFEp98WFmDX3zK7z07u1ltZEZXXRvK02N9NYF+vzWan/TNsMUUne4xFBBS708RQdKxDkCdH6eR3rVM99zkuh9p6YW6Ww3gkph68tdudRZhVifjUqWA0ZEhd3kw0QcaHM02miEMxx8hV1ZMo7DjyO5DcVTjm9VXiolR+vTRG4U0aEYn4WR4zu/Vu07he2CtuQ/HIKzUxPazhVOey36ujHiS0UQC96TpW74uw8B6IjrI+6Sfh02I8V0Mu6Os4ocnzOjHSd0e0q5o6wbomQ/JFuNkl8hFOLuQwj+URKhOLWgmuYKEX9oFBIUZBTTtRanhoyG1bCXadHOLZbQeIQMdrlgAV4pJXFlXeOQAc6yT5uIUL6x7HtEEOUEv2iFnSJ+rx5gP1OrSIU73A1lVT6y+ta6a2Fg8md3tdu0WJOzK1oIHpTOdR+qYNxNy8SVCY5WdbPyE5FV0qAO+h4UzvwdwV98/Zoo3yqE44VnehzkaTI3gU5z2tUtHsUyVFF8ROJ5nYD19V26GWNK7AFd+WpUZHAqA59SonT9QL8qJP8qehI859pXBfEFlUHovWGSO/ZpkV2RUecZ50Dx+la1so5hD8hJT+UTr13AJT9CSHOtbZsOKVxPy+CWhy5byoFOUh5WHAbu/jWSNzs0aV7IhlAV0WcrtOtX+rKqD5y3Lp+2NzLSVjjdZbD3S6WlQwUQRSMwdnq5lr6DNLRBZ9zJe8lUa1LIrscx/8PzpUMpBlfUOc5TDG4s/xxA2tIB62yPP9+nSLi2N8V4LxuDYZ1HcpdkA+BI+2H5ml6i9A8pnofXW+UKCoJqyOmpe+bRWQj0Tyi8YaI8EoooWMda295wU8oTf4SSmvsZdYhSiimyBsAmFmtxEgJJZRQQgkllFBCCSWUUEIJJZRQQgkllFBCCSWUUEIJJZRQQgkllFBCCSWUEMHLko+lipMEWW89X8tA4zUzq+v/CgCmjd1VDjXCm+CVKJjE1ws+2xyuGI+lzXn0jSO+v5t+Syhh3QSXP76H6vQm+utr8Xh3ILmPu/52d+CvP0ZxqI4mn0pyM9d+lK69i+QGReYcHY90oDs8bUIYSxtvAvGn/k3VGNdznCoc+7nPK5WwQp3eTarP+77+r67FRLWJe+XKPjqYjHpTxKhoXlu62sMjXV+T3fVCpze7PsPL3L+lo7OXtHvckuvrQDeOV7mNMVon//lDVroqBn65yr+WAKjre23nsHUAi3VpOYAe/f0igHrENRpqW0ez/jBATdd60X4t4ov6fkn3vohmWVpPB1Pq1TheQH9pWxj3S/q7ZyBwV3UILMJW2UrxdH3ltU0AVFYnYbcxp9R5SVE2M5uvE202NrO/q+/dAMw1sxf0HH9vRR+LjKRKm8ZSIMATAVwO4B4zW6GxjDaze8T1wjiZoowjMjDMja9vLcxsod5NuYmZ3ZWm3LeBU5pZUwRpUGxjwSoA6mmE005fa8CC62ocjrjmApjrrt8Vt1kNU0lINsxsBYDZ7nlPAngyhWjisRfljFT7leaYQ6Rsh2MNAzBWNzVyBrDUzBaItSNjp2wIYBSAFRrsGiWqgFCNY8MWO4z6fbGZLcohrsBZBwHYRJx2rpktX43zCK6NsQCGunVJHEcL7oPnzWxxWA+9x3Gc5je3lfiVPrW5GMY8M1vi+vI4HQFggwychrEsNrPnQ8eH6zDWpcyHJST/rFNyq5GSG/4/RX3dm/K21KBEXq/+rhwo5T16W8Z17kXiReCCvHG4ce+uuS33Srh79muccn24u/+N7oD97fOUd9fX4TrReUnOuJdqLB/WPUP0fYB7qdR41/f+7rh0b7VuImNkOckjAi7cWCbKiJifM5Zluv+KPo4lShssCn9EClwaVW4EYE99DpRlsoxkzAUHAxiypjkVyf0B/BTAcO3SB6WsZkFdu/QZLxZaOJQHry7nspvHmQA+r8sLAczJGMvWGk9swVV0vVpwnBXhzPdVMbOa3r19g7hmHcC/Mjjgq8XNBnnCCnrRcgD7mdljGRMfCuBIABejeQLL2Wb2icg0DX3V1xBRmRTYjQF8Xwj6LYCTATzcjpe7oNeZq2keFTOrk5zsiGo6gC+Z2cKU9oMAPCDiaqSMsd01qLv7AKBX79H5nojq1wBOAvBoGk51nvzbgpqURDugz+Wfwap7zOzbIqwGgKNIrq8FsZS+1gRUNNH3AdhYOsU0M3toNT1vdc/tw1rcGWb2CVlsFvvXtE55Y2l3nCu1l141TTh9FsCRZvZIlr/PcUfzhFV0F4Y3JNyie8cB2GJ1iYY2YZLmMUuLMagdbvVyg+OW2wmXM6S/vZzzmCic3imcVouOperYYN81KbEJyUaKLK5H/qhhaj9I7RNHaFVdMzYVsUrkC0l0bzXS09riWLp3mPqtS0wkA+jRrzg3i79WdRy+4fDZDQyKfH0VroycgMs1Ea0YLJzWHE5X2RMaj6URlofnck5TCW4GL/MXqn34LXhwa/LBpN0fzPRl/t4OIfQZPMbLzax3gBEcnrHAXVsQ44nkcwOgg4X7l2geWXOppWx8zwDa1QeZQhPh2opWOCXZm0dYCYBPknxefzNFDjcAvMYRwykkn9JO6wXwJv02iuQZUR/h/glqM4nkJ4WITtNn4j53Up/JACra4RmvdvM+jeS8SJ0Y4QiR0QLV1AcLLHANwL5SO2LcBE9/VVZYLWOd8vqutZhrvKm2y8FpwM1KKlEaYX28TaSfnHF9UwDntrg3uC4GWi+YuAbExKktfh8SibdqjpTwMFZtDtCnCAxvQ7RV0Tzyskg4baTa76pP0U24yiQJ4NsAFridkXVz1YsJd3/FUXYth1UnovSBckusjj5bzZsZ3ucEwD/d9ccBnK/281uIqUvQ9O7XWnC3oKtWAPzFeeNTF1o64sMALpCf8sW0yIlrnwD4MYDHWowlcLhp8t73+09Ivkfe0wVS0kp4BUJ4zYryvoI3fMss91EUMVjqIwYdvLFspt6idikAVOWU21EUeTeABsnBBXWeuku/TXzgszwDfSXceIuynmey+yMp24CQ4j3IzHrkLG6gGaye2991/zhkeASLeqREdwPAfaHPAmPxFv5m+vvu8LTJJJ8Tte7nJpdHneFdLxvpNWo36g2fbyD5J/cu4fK47zXHrbwT9fdaz7OKbHL32uZftbNuLoZ6gO5fpCxVg8uGPLZopxlvbNhZx1VThFotj61eo4SV6LXJ/wxEos2epL0LWmtzjHub2r9bvQ8xQ+ye4QLih4Xfqmi+ZeFuM1sUi7M81qvBzgLwP7p2P4BLAYwG8AsFMJNXQhXOugAKXu8qQ+E8AD/QtVQFXb+Nl8V6OoDvmNkCtS+yZlRazUgAXwNwmZnd71N+UET8lfDKFo9FuV63XLOPckVQjU7jUYEgZQSEwCjK+rSXRxw6hbpeMI08Kdo+55mvmBrREkoooYQSSiihhBJKKCECC17ZvDdaOc3fhykyT1wpakUWaFvt1FoZQHM9WE2rWD05Hm3mzU/3rXErKm3NQphntb3RrPSQl/gYaI51KpoFj1fHXlpXjjQRzQqMG8xsjn47BMB8M5sVSr2xasCScZBaJVp1M/u9u+aDnQ1dGwzg3QD+BOApcbl4p/WV8gdCiMa/yrUU4rGUsYZizeFopoNsA+AnZnaXq6ZJAPwHmsHX9dCfZpSgWfR5YQrnI5q5UycA+JWZPZDF+bPGHpe5Z+Bk5UXuLzg9FE3P/L1Qtbg859MAXBMVvabiJuc5Kx9T4GJ9kxT7qXjC0ufvanOI++1+kt9uIRJ8XDEUtP6e5C3hWhZnUICboYAyrc8uOVJaGknFxdE2J/kQyZtJnkRyh2g+ieJj95D8NMnP6PtMV0C6StxNRxqR5AndjrddnOjUnAujazuQfIbk1m5elQ7772tTBfA8mvG9z5rZO0OyvCoyalrYndF/YkqY5FT0nxZTJ7kJmqmyoahhuZk94HZ30DlOcTsp5JJPRrPKpgLgDjO7Q32sAPBqVQ+/YGbPROXn2+k5c1SKnpjZs27XjdNz5sW73u3iCeI4T+gAkDDvkwFsZmbbRvhrBC5AcgmacdEvpooDnWOhI4PG6t4xwmWPnr+JdJynozFuKi7wbFTmvh2adX5BQjyEZu1AXWdebYv+ZMRlAF7SeQ9AM8lwFMnX6Z5/A3gUwFug8yAC99SxC6/VmPvWUb+NRfP4guFunR70baoa5HMADiK5F4C/BOVSFHg2gKsBHIP+YwYb4lYPADhBi3ijkPcnEUhVu+AsM7tFfdYAXKjf99W1qwC8H8CtaB7RMw/AHWim0faiGSD9EIDvAjhXz54K4Bw0M11n6O8rRNj7ohlYXYFmNmwVwBQvwtTH2wBcJMQuArALyTvQn3K8E4C7ImKMRWqo+o45S0VzHQngW2hmhM5RkyG6Lyz+dAC7A9g+iExtnB9p407ReN+MZj3nU2hWRwdOf46ZPULyNOHpfvQflzRJYxqvsdcB7I1mpue9AE4DsAeA3wB4M4C/aS0/BuA4APdonDuR/KKZXatn/hDNMrUZ6D+95rUkzzOz60kmUNbfuSSfJXmbBjJI3x+QOHi92PeBDoGPkrzB/f8wyesiJL9P/W/tzm+YRfJO/T1J/Z4YcxSSY/Tb0SSHqAobJLfQ9S9E99xM8k/6e7C+f6MKXZ/mEfpeRnK6uz/0+zn9/1uSs3XS3TZu/ObGOI/kT0nup0PN9gupKu75j4TT+HRthJ5znP6/juSjrs8gameT/IP+fpXE7oUZImiq+jwoun6FCmPC/8+Q/LIXre5QuL2ivia7+07UtV30/99J/i56VjjUbWc4U/oRcaa36AF1TfBzAD6L/sO/PKzAyqVJdaigVYSQmNk1AJYCeL/b7b5K5Dn9/Q4t4FAnQsKO7NWpLkGUvlnfX9WEhjgRFetrcYVLqJo+SOJvuhZzPTN7HMD1aFYiQ3PeXhznK1i1PiCIgG0BHAHgcH1vIA6zGZrHEHzdzF7SMZIVcdW4nzTXhJ/PVEmWizTeQcLzYBH6KQCeNLObpSMN0bMGpfQd9FrPaX1p/UcA3G9mt+s5iZldJtF9jGufuDEkZnaLpM1xgbCAZtnSN9E8je58yfP3Axgi4hidpkJg1bL64J+qC7lVTWxc1C6cyTRHi/E6AHcCmEPygpBxofZJdOrwWK/ruO+so3XSYDONYUUQEXrGk27hh6F52NlkAEfEdXXC0foAbjKzD5rZ8foO+lxIDw7jrws3jTQ8phgxHr+jNN6wMUJfvfp/LIAXgoXpfkeO9ca0NdG454mjBQvdxATGRTjwa52ISYz1hLWeGk0H8CaxwY+jv3yr0wKLBnKqfaQo/0zyeg9xyNOkVy109/nT/xpu13ioaYEScc48K6pH9w/SYoSK5qz6xrw6veHatcP0PUjP7lGfvaFvPSseVy+axb2hwqmSkmu+LHCV0EcYtxa9B6pfiPpopOAocfWKaXPsBTBcGyeRbkqnNyLDUGl47huoLOzGSwA8DeBnanS5n3y0mLWIzdYzWHotmqBvFzjXCjN70MwuFZL20kBXANjZzGpmtjRFlHp4BMD2ZtYws2W6fxusfBZoGP8dmvvOZlZX+7p8dXe3mA+iubyk8S/Vd6+ePUdqwIToGYsinMyAij01zxVq1+PmOUvj3Vx91fQdONZMAONdH8vVxzZoHjMViGYugIm6d6nDicfnTAC7qa9eGTwboVknOrPoWgfrJOg2i0ieL/3lFDPrcdZPbAGNQX/lb2DXI1IetpFEhv8/cW609wLYQaLnMCH0fCHjLADnkHxGYuk2tas6Igms+hsAjiH5PTTPc9ofzYptf8xisAr/ohObv0/yo3K5vAvAVrKagnqwQQvP/AgAu+kMqWD1mkz52+Sr+g7JJyXqg7uh6qTAdwFMk2/vSrWpSXd7TOP+o+Z1LclPSSwFLjMLwBfQPK9sBpqp4jUAhwB4q/SewG3OAfBTGT5/lDVYdRwbaKY1H0zyl2I0gwGcCeB2AD9Qmw0zOHsfTVTRLGC83SHrO/JP/MiZ2E+qnT8a6EL0H1gWuN0zKeJqul9cKcPebbG5kLhMiL3GzJ4QAUwn+WcR3AYAbkOzOPPi4AcSsZiZPSyL5AQAU+RGuCuFOMK5okeTfI+MgUTEtbOZPaF2V0nBR4YoNwCfkd5xoBP5BuBZkjPN7FqS/wLwXgAHO9xcLFM+GCdvl5X4FrdprpFLIEQtjlHN32RHlCYf0xySuwM4Hs3q6SqAfwD4IIBN5ZczuX12A3CUNt7vRbwXu+jGfJKThMcDNJbL0cyJD5ztcvSfruxxcwGaRbFrbZwuKeJtbhXbI/nrYBbHnuMcj38y0PNY3bHLNl4kkHTznHagGkfa005FzrhW9VH8rKyFlP5XapeiqPa1jeKIdF78JI7Gu/iWL8jcBMC/0xRwtc98dpEsjFbZDc5aSlvQesq7diwrSyJjvH39pByzFLiJBVzF4wmczK9tTl9xZkvWWnOdrHeQH6eq15LQHdZaViGV0DFRBe/6J0g+SPK/BloklVAM/g/DC5Qp6OwtGgAAAABJRU5ErkJggg==" alt="وزارة التعليم">';
+
 const CERTIFICATES = [
-  {
-    id:'teacher',
-    title:'شهادة شكر للمعلم/ة',
-    desc:'تكريم للمعلم على عطائه وجهوده',
-    seal:'👨‍🏫',
-    themeClass:'theme-teacher',
-    defaultColor:'teal',
-    titleAr:'شهادة شكر وتقدير',
-    subtitle:'CERTIFICATE OF APPRECIATION',
-    pretext:'تتقدم إدارة المدرسة بأطيب الشكر والتقدير إلى المعلم القدير',
-    reason:'تقديراً لجهوده المتميزة في العملية التعليمية، وعطائه الدؤوب في خدمة الطلاب وتربية الأجيال',
-    sigRole:'قائد/ة المدرسة'
-  },
-  {
-    id:'excellence',
-    title:'شهادة تفوّق دراسي',
-    desc:'للطالب/ة المتفوّق في الدراسة',
-    seal:'🏆',
-    themeClass:'theme-excellence',
-    defaultColor:'gold',
-    titleAr:'شهادة تفوّق',
-    subtitle:'CERTIFICATE OF EXCELLENCE',
-    pretext:'تفتخر إدارة المدرسة بتكريم الطالب/ة المتفوّق/ة',
-    reason:'لتحقيقه/ا أعلى المعدلات الدراسية وتميّزه/ا الأكاديمي خلال الفصل الدراسي',
-    sigRole:'قائد/ة المدرسة'
-  },
-  {
-    id:'behavior',
-    title:'شهادة شكر على السلوك',
-    desc:'تكريم الطالب/ة على حسن السلوك',
-    seal:'⭐',
-    themeClass:'theme-behavior',
-    defaultColor:'green',
-    titleAr:'شهادة شكر وتقدير',
-    subtitle:'CERTIFICATE OF GOOD CONDUCT',
-    pretext:'تتقدم إدارة المدرسة بالشكر والتقدير للطالب/ة',
-    reason:'تقديراً لحسن سلوكه/ا وتعاملاتـ/ها الراقية مع المعلمين والزملاء، والتزامه/ا بقيم المدرسة',
-    sigRole:'قائد/ة المدرسة'
-  },
-  {
-    id:'parent',
-    title:'شهادة شكر لولي الأمر',
-    desc:'تكريم لولي الأمر على متابعته',
-    seal:'🌹',
-    themeClass:'theme-parent',
-    defaultColor:'purple',
-    titleAr:'شهادة شكر وتقدير',
-    subtitle:'CERTIFICATE OF GRATITUDE',
-    pretext:'تتقدم إدارة المدرسة بأسمى آيات الشكر والتقدير إلى ولي الأمر',
-    reason:'تقديراً لمتابعته/ا الحثيثة وحرصه/ا على تربية ابنه/ابنتها، ولدعمه/ا المستمر لإدارة المدرسة',
-    sigRole:'قائد/ة المدرسة'
-  },
-  {
-    id:'staff',
-    title:'شهادة شكر للموظف الإداري',
-    desc:'تكريم الموظف على إنجازاته',
-    seal:'💼',
-    themeClass:'theme-staff',
-    defaultColor:'blue',
-    titleAr:'شهادة شكر وتقدير',
-    subtitle:'CERTIFICATE OF APPRECIATION',
-    pretext:'تتقدم إدارة المدرسة بالشكر والتقدير إلى الموظف/ة',
-    reason:'تقديراً لجهوده/ا المخلصة في خدمة العمل الإداري والمدرسي، والتزامه/ا بأعلى معايير المهنية',
-    sigRole:'قائد/ة المدرسة'
-  },
-  {
-    id:'general',
-    title:'شهادة تقدير عامة',
-    desc:'شهادة مرنة لأي مناسبة',
-    seal:'🎖️',
-    themeClass:'theme-general',
-    defaultColor:'red',
-    titleAr:'شهادة تقدير',
-    subtitle:'CERTIFICATE OF HONOR',
-    pretext:'تتشرف إدارة المدرسة بتقديم هذه الشهادة إلى',
-    reason:'تقديراً لجهوده/ا المميزة وإنجازاته/ا اللافتة',
-    sigRole:'قائد/ة المدرسة'
-  },
-  {
-    id:'participation',
-    title:'شهادة مشاركة في فعالية',
-    desc:'للمشاركين في الفعاليات',
-    seal:'🎯',
-    themeClass:'theme-participation',
-    defaultColor:'ocean',
-    titleAr:'شهادة مشاركة',
-    subtitle:'CERTIFICATE OF PARTICIPATION',
-    pretext:'تشهد إدارة المدرسة بمشاركة',
-    reason:'في فعاليات اليوم الدراسي وأنشطته المختلفة، شاكرين له/ا حضوره/ا الفعّال',
-    sigRole:'قائد/ة المدرسة'
-  }
+  { id:'teacher', title:'شهادة شكر للمعلم/ة', desc:'تكريم للمعلم على عطائه وجهوده', themeClass:'theme-teacher', defaultColor:'teal', titleAr:'شهادة شكر وتقدير', subtitle:'CERTIFICATE OF APPRECIATION', pretext:'تتقدم إدارة المدرسة بأطيب الشكر والتقدير إلى المعلم القدير', reason:'تقديراً لجهوده المتميزة في العملية التعليمية، وعطائه الدؤوب في خدمة الطلاب وتربية الأجيال', sigRole:'قائد/ة المدرسة' },
+  { id:'excellence', title:'شهادة تفوّق دراسي', desc:'للطالب/ة المتفوّق في الدراسة', themeClass:'theme-excellence', defaultColor:'gold', titleAr:'شهادة تفوّق', subtitle:'CERTIFICATE OF EXCELLENCE', pretext:'تفتخر إدارة المدرسة بتكريم الطالب/ة المتفوّق/ة', reason:'لتحقيقه/ا أعلى المعدلات الدراسية وتميّزه/ا الأكاديمي خلال الفصل الدراسي', sigRole:'قائد/ة المدرسة' },
+  { id:'behavior', title:'شهادة شكر على السلوك', desc:'تكريم الطالب/ة على حسن السلوك', themeClass:'theme-behavior', defaultColor:'green', titleAr:'شهادة شكر وتقدير', subtitle:'CERTIFICATE OF GOOD CONDUCT', pretext:'تتقدم إدارة المدرسة بالشكر والتقدير للطالب/ة', reason:'تقديراً لحسن سلوكه/ا وتعاملاتـ/ها الراقية مع المعلمين والزملاء، والتزامه/ا بقيم المدرسة', sigRole:'قائد/ة المدرسة' },
+  { id:'parent', title:'شهادة شكر لولي الأمر', desc:'تكريم لولي الأمر على متابعته', themeClass:'theme-parent', defaultColor:'purple', titleAr:'شهادة شكر وتقدير', subtitle:'CERTIFICATE OF GRATITUDE', pretext:'تتقدم إدارة المدرسة بأسمى آيات الشكر والتقدير إلى ولي الأمر', reason:'تقديراً لمتابعته/ا الحثيثة وحرصه/ا على تربية ابنه/ابنتها، ولدعمه/ا المستمر لإدارة المدرسة', sigRole:'قائد/ة المدرسة' },
+  { id:'staff', title:'شهادة شكر للموظف الإداري', desc:'تكريم الموظف على إنجازاته', themeClass:'theme-staff', defaultColor:'blue', titleAr:'شهادة شكر وتقدير', subtitle:'CERTIFICATE OF APPRECIATION', pretext:'تتقدم إدارة المدرسة بالشكر والتقدير إلى الموظف/ة', reason:'تقديراً لجهوده/ا المخلصة في خدمة العمل الإداري والمدرسي، والتزامه/ا بأعلى معايير المهنية', sigRole:'قائد/ة المدرسة' },
+  { id:'general', title:'شهادة تقدير عامة', desc:'شهادة مرنة لأي مناسبة', themeClass:'theme-general', defaultColor:'red', titleAr:'شهادة تقدير', subtitle:'CERTIFICATE OF HONOR', pretext:'تتقدم إدارة المدرسة بتقديم هذه الشهادة إلى', reason:'تقديراً لجهوده/ا المميزة وإنجازاته/ا اللافتة', sigRole:'قائد/ة المدرسة' },
+  { id:'participation', title:'شهادة مشاركة في فعالية', desc:'للمشاركين في الفعاليات', themeClass:'theme-participation', defaultColor:'ocean', titleAr:'شهادة مشاركة', subtitle:'CERTIFICATE OF PARTICIPATION', pretext:'تشهد إدارة المدرسة بمشاركة', reason:'في فعاليات اليوم الدراسي وأنشطته المختلفة، شاكرين له/ا حضوره/ا الفعّال', sigRole:'قائد/ة المدرسة' }
 ];
 
-/* ═══════════════════════════════════════════════
-   حالة التطبيق
-   ═══════════════════════════════════════════════ */
 let currentCert = null;
 let currentTheme = 'teal';
+let selectedFontFamily = "'Aref Ruqaa', serif";
 
-/* ═══════════════════════════════════════════════
-   بناء المعرض
-   ═══════════════════════════════════════════════ */
 function buildGallery(){
   const grid = document.getElementById('gallery-grid');
   grid.innerHTML = '';
@@ -1225,39 +358,28 @@ function buildGallery(){
     card.onclick = () => openEditor(cert.id);
     card.innerHTML = `
       <div class="cert-preview">
-        <div class="seal">${cert.seal}</div>
+        <div class="seal">${MOE_LOGO_HTML}</div>
         <div class="title-mini">${cert.titleAr}</div>
         <div class="for-mini">${cert.subtitle}</div>
-        <div class="lines">
-          <div class="line"></div>
-          <div class="line short"></div>
-          <div class="line"></div>
-        </div>
+        <div class="lines"><div class="line"></div><div class="line short"></div><div class="line"></div></div>
       </div>
       <div class="cert-info">
-        <h3>${cert.title}</h3>
-        <p>${cert.desc}</p>
-        <div class="cert-action">
-          <span>✨</span><span>اختر هذه</span>
-        </div>
+        <h3>${cert.title}</h3><p>${cert.desc}</p>
+        <div class="cert-action"><span>✨</span><span>اختر هذه</span></div>
       </div>
     `;
     grid.appendChild(card);
   });
 }
 
-/* ═══════════════════════════════════════════════
-   فتح المحرّر
-   ═══════════════════════════════════════════════ */
 function openEditor(certId){
   const cert = CERTIFICATES.find(c => c.id === certId);
   if(!cert) return;
   currentCert = cert;
   currentTheme = cert.defaultColor;
 
-  // تعبئة بيانات الشهادة
-  document.getElementById('editor-title').textContent = cert.title;
-  document.getElementById('cert-seal').textContent = cert.seal;
+  document.getElementById('editor-top-title').textContent = cert.title;
+  document.getElementById('cert-seal').innerHTML = MOE_LOGO_HTML;
   document.getElementById('cert-title').textContent = cert.titleAr;
   document.getElementById('cert-subtitle').textContent = cert.subtitle;
   document.getElementById('cert-pretext').textContent = cert.pretext;
@@ -1267,20 +389,21 @@ function openEditor(certId){
   document.getElementById('cert-sig-name-2').textContent = '';
   document.getElementById('cert-sig-role').textContent = cert.sigRole;
 
-  // مزامنة الحقول السريعة
+  selectedFontFamily = "'Aref Ruqaa', serif";
+  document.getElementById('cert-name').style.fontFamily = selectedFontFamily;
+  document.querySelectorAll('#fonts-row .theme-pill').forEach((btn, idx) => {
+    btn.classList.toggle('active', idx === 0);
+  });
+
   document.getElementById('q-name').value = '';
   document.getElementById('q-reason').value = cert.reason;
   document.getElementById('q-date').value = document.getElementById('cert-date').textContent;
   document.getElementById('q-principal').value = '';
-
-  // مسح خانة الأسماء المتعددة
+  document.getElementById('q-seal-text').value = '';
   document.getElementById('bulk-names').value = '';
   updateBulkCount();
 
-  // طبق الثيم الافتراضي
   applyTheme(cert.defaultColor);
-
-  // إظهار المحرّر
   document.getElementById('gallery-view').style.display = 'none';
   document.getElementById('editor-view').classList.add('active');
   window.scrollTo(0, 0);
@@ -1292,68 +415,56 @@ function backToGallery(){
   window.scrollTo(0, 0);
 }
 
-/* ═══════════════════════════════════════════════
-   تطبيق الثيم
-   ═══════════════════════════════════════════════ */
 function applyTheme(theme){
   currentTheme = theme;
   const paper = document.getElementById('cert-paper');
-  paper.parentElement.parentElement.className = 'editor-body';
-  paper.className = 'cert-paper';
-  paper.classList.add('cp-theme-' + theme);
-
-  // تحديث الـ active في الـ pills
-  document.querySelectorAll('.theme-pill').forEach(p => {
+  paper.className = 'cert-paper cp-theme-' + theme;
+  document.querySelectorAll('#themes-row .theme-pill').forEach(p => {
     p.classList.toggle('active', p.dataset.theme === theme);
   });
 }
 
-document.querySelectorAll('.theme-pill').forEach(p => {
+document.querySelectorAll('#themes-row .theme-pill').forEach(p => {
   p.addEventListener('click', () => applyTheme(p.dataset.theme));
 });
 
-/* ═══════════════════════════════════════════════
-   مزامنة الحقول السريعة مع الشهادة
-   ═══════════════════════════════════════════════ */
+function changeFont(fontName, element) {
+  selectedFontFamily = `'${fontName}', serif`;
+  document.getElementById('cert-name').style.fontFamily = selectedFontFamily;
+  document.querySelectorAll('#fonts-row .theme-pill').forEach(btn => btn.classList.remove('active'));
+  element.classList.add('active');
+  showToast(`✅ تم الاعتماد: ${fontName}`);
+}
+
 function syncField(fieldId, certElId){
   const field = document.getElementById(fieldId);
   const certEl = document.getElementById(certElId);
-  field.addEventListener('input', () => {
-    certEl.textContent = field.value;
-  });
+  field.addEventListener('input', () => { certEl.textContent = field.value; });
 }
-
 syncField('q-name', 'cert-name');
 syncField('q-reason', 'cert-reason');
 syncField('q-date', 'cert-date');
 syncField('q-principal', 'cert-sig-name');
+syncField('q-seal-text', 'cert-sig-name-2');
 
-// عكسي: لو حرّر الشهادة مباشرة، ينعكس على الحقل
 function reverseSync(certElId, fieldId){
   const certEl = document.getElementById(certElId);
   const field = document.getElementById(fieldId);
-  certEl.addEventListener('input', () => {
-    field.value = certEl.textContent;
-  });
+  certEl.addEventListener('input', () => { field.value = certEl.textContent; });
 }
 reverseSync('cert-name', 'q-name');
 reverseSync('cert-reason', 'q-reason');
 reverseSync('cert-date', 'q-date');
 reverseSync('cert-sig-name', 'q-principal');
+reverseSync('cert-sig-name-2', 'q-seal-text');
 
-/* ═══════════════════════════════════════════════
-   النسخ المتعددة (Bulk Names)
-   ═══════════════════════════════════════════════ */
 const bulkTextarea = document.getElementById('bulk-names');
 bulkTextarea.addEventListener('input', updateBulkCount);
 function updateBulkCount(){
   const names = bulkTextarea.value.split('\n').map(s => s.trim()).filter(s => s.length > 0);
-  document.getElementById('bulk-count').textContent = `عدد الأسماء: ${names.length}`;
+  document.getElementById('bulk-count').textContent = `عدد الأسماء الحقيقية: ${names.length} شهادة جاهزة`;
 }
 
-/* ═══════════════════════════════════════════════
-   التفريغ
-   ═══════════════════════════════════════════════ */
 function resetForm(){
   if(!currentCert) return;
   document.getElementById('cert-name').textContent = '';
@@ -1363,184 +474,118 @@ function resetForm(){
   document.getElementById('q-name').value = '';
   document.getElementById('q-reason').value = currentCert.reason;
   document.getElementById('q-principal').value = '';
+  document.getElementById('q-seal-text').value = '';
   bulkTextarea.value = '';
   updateBulkCount();
-  showToast('✅ تم التفريغ');
+  showToast('✅ تم التفريغ بنجاح');
 }
 
-/* ═══════════════════════════════════════════════
-   Toast
-   ═══════════════════════════════════════════════ */
 function showToast(msg){
   const t = document.getElementById('toast');
   t.textContent = msg;
   t.classList.add('show');
-  setTimeout(() => t.classList.remove('show'), 2400);
+  setTimeout(() => t.classList.remove('show'), 2200);
 }
 
-/* ═══════════════════════════════════════════════
-   طباعة شهادة واحدة
-   ═══════════════════════════════════════════════ */
 function printSingle(){
-  // التحقق من تعبئة الاسم
   const name = document.getElementById('cert-name').textContent.trim();
-  if(!name){
-    showToast('❌ يرجى إدخال الاسم أولاً');
-    return;
-  }
+  if(!name){ showToast('❌ يرجى إدخال الاسم أولاً'); return; }
   window.print();
 }
 
-/* ═══════════════════════════════════════════════
-   تحميل شهادات متعددة باستخدام dom-to-image-more
-   مكتبة محسّنة تستخدم SVG foreignObject وتدعم العربية
-   ═══════════════════════════════════════════════ */
 async function downloadBulk(){
   const namesRaw = bulkTextarea.value.trim();
-  let names;
-
-  if(namesRaw){
-    names = namesRaw.split('\n').map(s => s.trim()).filter(s => s.length > 0);
-  } else {
+  let names = namesRaw ? namesRaw.split('\n').map(s => s.trim()).filter(s => s.length > 0) : [];
+  if(names.length === 0){
     const singleName = document.getElementById('cert-name').textContent.trim();
-    if(!singleName){
-      showToast('❌ يرجى إدخال الاسم في الحقل أو قائمة الأسماء');
-      return;
-    }
+    if(!singleName){ showToast('❌ يرجى إدخال الاسم'); return; }
     names = [singleName];
   }
-
-  if(names.length === 0){
-    showToast('❌ لا توجد أسماء للطباعة');
+  if(typeof domtoimage === 'undefined' || (names.length > 1 && typeof JSZip === 'undefined')){
+    showToast('❌ جاري تحميل ملفات النظام، انتظر ثانية واحدة');
     return;
   }
+  showProgress('📥 جاري تهيئة الحاوية القياسية المانعة للتشويه...', 0, names.length);
+  await new Promise(r => setTimeout(r, 200));
 
-  // تأكد من تحميل المكتبات
-  if(typeof domtoimage === 'undefined'){
-    showToast('❌ المكتبة لم تُحمّل بعد، انتظر ثانيتين وأعد المحاولة');
-    return;
+  const originalPaper = document.getElementById('cert-paper');
+  const clonePaper = originalPaper.cloneNode(true);
+  clonePaper.removeAttribute('id');
+  clonePaper.querySelectorAll('[contenteditable]').forEach(el => el.removeAttribute('contenteditable'));
+  clonePaper.style.position = 'absolute';
+  clonePaper.style.width = '840px';
+  clonePaper.style.height = '594px';
+  clonePaper.style.maxWidth = '840px';
+  clonePaper.style.maxHeight = '594px';
+  clonePaper.style.padding = '30px 36px';
+  clonePaper.style.aspectRatio = '1.414 / 1';
+  clonePaper.style.display = 'flex';
+  clonePaper.style.flexDirection = 'column';
+  clonePaper.style.justifyContent = 'between';
+
+  const cloneReason = clonePaper.querySelector('.cert-reason');
+  if(cloneReason) {
+    cloneReason.style.fontSize = '0.95rem';
+    cloneReason.style.lineHeight = '1.7';
+    cloneReason.style.maxWidth = '85%';
   }
-  if(names.length > 1 && typeof JSZip === 'undefined'){
-    showToast('❌ مكتبة ZIP لم تُحمّل بعد، أعد المحاولة');
-    return;
+  const cloneName = clonePaper.querySelector('.cert-name');
+  if(cloneName) {
+    cloneName.style.fontSize = '2rem';
+    cloneName.style.fontFamily = selectedFontFamily;
   }
 
-  showProgress('📥 جاري تحضير الشهادات...', 0, names.length);
-  await new Promise(r => setTimeout(r, 150));
-
-  const paper = document.getElementById('cert-paper');
-  const nameEl = document.getElementById('cert-name');
-  const originalName = nameEl.textContent;
-
-  // إخفاء contenteditable مؤقتاً لتجنّب أي تشويش
-  const editables = paper.querySelectorAll('[contenteditable]');
-  editables.forEach(el => el.setAttribute('data-was-editable', 'true'));
-  editables.forEach(el => el.removeAttribute('contenteditable'));
+  const renderContainer = document.getElementById('hidden-render-container');
+  renderContainer.innerHTML = '';
+  renderContainer.appendChild(clonePaper);
+  const targetNameEl = clonePaper.querySelector('.cert-name');
 
   try{
     if(names.length === 1){
-      nameEl.textContent = names[0];
-      await new Promise(r => setTimeout(r, 200));
-
-      const blob = await renderToBlob(paper);
-      if(!blob) throw new Error('Failed to generate image');
+      targetNameEl.textContent = names[0];
+      await new Promise(r => setTimeout(r, 150));
+      const blob = await domtoimage.toBlob(clonePaper, { quality: 1.0, bgcolor: '#fdfcf8', width: 840, height: 594, cacheBust: true });
       downloadBlob(blob, `شهادة_${sanitize(names[0])}.png`);
-
       updateProgress(1, 1);
-      hideProgress();
-      showToast('✅ تم تحميل الشهادة');
+      showToast('✅ تم استخراج الشهادة بنجاح تام');
     } else {
       const zip = new JSZip();
-
       for(let i = 0; i < names.length; i++){
-        nameEl.textContent = names[i];
-        await new Promise(r => setTimeout(r, 150));
-
+        showProgress('📥 جاري صياغة الشهادات الرسمية...', i, names.length);
+        targetNameEl.textContent = names[i];
+        await new Promise(r => setTimeout(r, 120));
         try{
-          const blob = await renderToBlob(paper);
+          const blob = await domtoimage.toBlob(clonePaper, { quality: 1.0, bgcolor: '#fdfcf8', width: 840, height: 594, cacheBust: true });
           if(blob){
             zip.file(`شهادة_${(i+1).toString().padStart(2,'0')}_${sanitize(names[i])}.png`, blob);
-          } else {
-            console.warn('Failed for name:', names[i]);
           }
-        } catch(e){
-          console.error('Error on', names[i], e);
-        }
-
+        } catch(e){ console.error(e); }
         updateProgress(i + 1, names.length);
       }
-
-      showProgress('📦 جاري ضغط الملفات...', names.length, names.length);
+      showProgress('📦 جاري ضغط ملف الـ ZIP...', names.length, names.length);
       const zipBlob = await zip.generateAsync({type:'blob'});
-      downloadBlob(zipBlob, 'الشهادات.zip');
-
-      hideProgress();
-      showToast(`✅ تم تحميل ${names.length} شهادة في ملف ZIP`);
+      downloadBlob(zipBlob, 'مجموعة_الشهادات_الرسمية.zip');
+      showToast(`✅ تم حفظ ${names.length} شهادة دفعة واحدة`);
     }
   } catch(err){
-    console.error('Bulk download error:', err);
-    hideProgress();
-    showToast('❌ خطأ: ' + (err.message || 'فشل التحميل'));
+    console.error(err);
+    showToast('❌ حدث خطأ أثناء التصدير');
   } finally{
-    // ارجاع الـ contenteditable
-    editables.forEach(el => {
-      if(el.getAttribute('data-was-editable')){
-        el.setAttribute('contenteditable', 'true');
-        el.removeAttribute('data-was-editable');
-      }
-    });
-    nameEl.textContent = originalName;
-  }
-}
-
-/* استخدام dom-to-image-more مع إعدادات تحافظ على العربية */
-async function renderToBlob(element){
-  const rect = element.getBoundingClientRect();
-  const width = Math.ceil(rect.width);
-  const height = Math.ceil(rect.height);
-
-  console.log('[Cert] Rendering size:', width, 'x', height);
-
-  const options = {
-    quality: 0.95,
-    bgcolor: '#fdfcf8',
-    width: width,
-    height: height,
-    style: {
-      transform: 'scale(1)',
-      transformOrigin: 'top left'
-    },
-    cacheBust: true
-  };
-
-  try{
-    const blob = await domtoimage.toBlob(element, options);
-    console.log('[Cert] Blob created, size:', blob ? blob.size : 'null');
-    return blob;
-  } catch(err){
-    console.error('[Cert] domtoimage error:', err);
-    throw err;
+    renderContainer.innerHTML = '';
+    hideProgress();
   }
 }
 
 function downloadBlob(blob, filename){
   const url = URL.createObjectURL(blob);
   const link = document.createElement('a');
-  link.href = url;
-  link.download = filename;
-  document.body.appendChild(link);
-  link.click();
-  document.body.removeChild(link);
+  link.href = url; link.download = filename;
+  document.body.appendChild(link); link.click(); document.body.removeChild(link);
   setTimeout(() => URL.revokeObjectURL(url), 1500);
 }
 
-function sanitize(name){
-  return (name || '').replace(/[\/\\:*?"<>|]/g, '_').substring(0, 80).trim() || 'cert';
-}
+function sanitize(name){ return (name || '').replace(/[\/\\:*?"<>|]/g, '_').substring(0, 60).trim() || 'cert'; }
 
-/* ═══════════════════════════════════════════════
-   Progress Overlay
-   ═══════════════════════════════════════════════ */
 function showProgress(title, current, total){
   document.getElementById('progress-title').textContent = title;
   updateProgress(current, total);
@@ -1551,15 +596,10 @@ function updateProgress(current, total){
   document.getElementById('progress-fill').style.width = pct + '%';
   document.getElementById('progress-text').textContent = `${current} من ${total}`;
 }
-function hideProgress(){
-  document.getElementById('progress-overlay').classList.remove('show');
-}
+function hideProgress(){ document.getElementById('progress-overlay').classList.remove('show'); }
 
-/* ═══════════════════════════════════════════════
-   التهيئة الأولى
-   ═══════════════════════════════════════════════ */
 buildGallery();
+document.getElementById('cert-seal').innerHTML = MOE_LOGO_HTML;
 </script>
-
 </body>
 </html>
