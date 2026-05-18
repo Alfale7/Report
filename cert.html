@@ -1093,6 +1093,8 @@ html,body{
   </div>
 </div>
 
+<!-- مكتبة dom-to-image-more لتحويل DOM إلى صورة (تدعم العربية بشكل صحيح) -->
+<script src="https://cdn.jsdelivr.net/npm/dom-to-image-more@3.4.4/dist/dom-to-image-more.min.js"></script>
 <!-- مكتبة JSZip لتغليف الصور -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
 
@@ -1379,8 +1381,8 @@ function printSingle(){
 }
 
 /* ═══════════════════════════════════════════════
-   تحميل شهادات متعددة (ZIP من SVG → PNG)
-   تستخدم foreignObject ليحافظ على الحروف العربية
+   تحميل شهادات متعددة باستخدام dom-to-image-more
+   مكتبة محسّنة تستخدم SVG foreignObject وتدعم العربية
    ═══════════════════════════════════════════════ */
 async function downloadBulk(){
   const namesRaw = bulkTextarea.value.trim();
@@ -1402,41 +1404,63 @@ async function downloadBulk(){
     return;
   }
 
+  // تأكد من تحميل المكتبات
+  if(typeof domtoimage === 'undefined'){
+    showToast('❌ المكتبة لم تُحمّل بعد، انتظر ثانيتين وأعد المحاولة');
+    return;
+  }
+  if(names.length > 1 && typeof JSZip === 'undefined'){
+    showToast('❌ مكتبة ZIP لم تُحمّل بعد، أعد المحاولة');
+    return;
+  }
+
   showProgress('📥 جاري تحضير الشهادات...', 0, names.length);
-  await new Promise(r => setTimeout(r, 100));
+  await new Promise(r => setTimeout(r, 150));
 
   const paper = document.getElementById('cert-paper');
   const nameEl = document.getElementById('cert-name');
   const originalName = nameEl.textContent;
 
+  // إخفاء contenteditable مؤقتاً لتجنّب أي تشويش
+  const editables = paper.querySelectorAll('[contenteditable]');
+  editables.forEach(el => el.setAttribute('data-was-editable', 'true'));
+  editables.forEach(el => el.removeAttribute('contenteditable'));
+
   try{
     if(names.length === 1){
-      // شهادة واحدة - PNG مباشر
       nameEl.textContent = names[0];
       await new Promise(r => setTimeout(r, 200));
-      const blob = await renderPaperToPng(paper);
+
+      const blob = await renderToBlob(paper);
+      if(!blob) throw new Error('Failed to generate image');
       downloadBlob(blob, `شهادة_${sanitize(names[0])}.png`);
+
       updateProgress(1, 1);
       hideProgress();
       showToast('✅ تم تحميل الشهادة');
     } else {
-      // عدة شهادات - ZIP
       const zip = new JSZip();
-      const folder = zip.folder('الشهادات');
 
       for(let i = 0; i < names.length; i++){
         nameEl.textContent = names[i];
-        // انتظر شوي ليتم تحديث الـ DOM والخطوط
         await new Promise(r => setTimeout(r, 150));
 
-        const blob = await renderPaperToPng(paper);
-        folder.file(`شهادة_${(i+1).toString().padStart(2,'0')}_${sanitize(names[i])}.png`, blob);
+        try{
+          const blob = await renderToBlob(paper);
+          if(blob){
+            zip.file(`شهادة_${(i+1).toString().padStart(2,'0')}_${sanitize(names[i])}.png`, blob);
+          } else {
+            console.warn('Failed for name:', names[i]);
+          }
+        } catch(e){
+          console.error('Error on', names[i], e);
+        }
 
         updateProgress(i + 1, names.length);
       }
 
       showProgress('📦 جاري ضغط الملفات...', names.length, names.length);
-      const zipBlob = await zip.generateAsync({type:'blob', compression:'DEFLATE', compressionOptions:{level:6}});
+      const zipBlob = await zip.generateAsync({type:'blob'});
       downloadBlob(zipBlob, 'الشهادات.zip');
 
       hideProgress();
@@ -1447,173 +1471,45 @@ async function downloadBulk(){
     hideProgress();
     showToast('❌ خطأ: ' + (err.message || 'فشل التحميل'));
   } finally{
+    // ارجاع الـ contenteditable
+    editables.forEach(el => {
+      if(el.getAttribute('data-was-editable')){
+        el.setAttribute('contenteditable', 'true');
+        el.removeAttribute('data-was-editable');
+      }
+    });
     nameEl.textContent = originalName;
   }
 }
 
-/* ─────────────────────────────────────────────
-   التحويل: DOM → SVG (foreignObject) → PNG
-   هذي الطريقة تحفظ الحروف العربية متصلة لأنها
-   تستخدم محرّك الرسم الكامل للمتصفح (HarfBuzz)
-   ───────────────────────────────────────────── */
-async function renderPaperToPng(element){
+/* استخدام dom-to-image-more مع إعدادات تحافظ على العربية */
+async function renderToBlob(element){
   const rect = element.getBoundingClientRect();
   const width = Math.ceil(rect.width);
   const height = Math.ceil(rect.height);
-  const scale = 2; // دقة عالية للطباعة
 
-  // نجمع كل الـ CSS من الصفحة لنحقنها في الـ SVG
-  let allCss = '';
-  for(const sheet of document.styleSheets){
-    try{
-      for(const rule of sheet.cssRules){
-        allCss += rule.cssText + '\n';
-      }
-    } catch(e){
-      // CORS - تجاهل
-    }
-  }
+  console.log('[Cert] Rendering size:', width, 'x', height);
 
-  // تحميل الخطوط من Google Fonts كـ base64 (لتعمل في SVG)
-  const fontFaces = await getFontFacesCSS();
-
-  // نسخ من الـ element مع إزالة contenteditable
-  const clone = element.cloneNode(true);
-  clone.querySelectorAll('[contenteditable]').forEach(el => el.removeAttribute('contenteditable'));
-  clone.removeAttribute('id');
-  clone.style.margin = '0';
-  clone.style.boxShadow = 'none';
-
-  // serialize HTML
-  const xhtml = new XMLSerializer().serializeToString(clone);
-
-  // نبني الـ SVG مع foreignObject
-  const svgString = `<svg xmlns="http://www.w3.org/2000/svg" width="${width}" height="${height}" viewBox="0 0 ${width} ${height}">
-    <defs>
-      <style type="text/css"><![CDATA[
-        ${fontFaces}
-        ${allCss}
-        .cert-paper{
-          width:${width}px !important;
-          height:${height}px !important;
-          max-width:none !important;
-          aspect-ratio:auto !important;
-        }
-      ]]></style>
-    </defs>
-    <foreignObject x="0" y="0" width="${width}" height="${height}">
-      <div xmlns="http://www.w3.org/1999/xhtml" dir="rtl" lang="ar">
-        ${xhtml}
-      </div>
-    </foreignObject>
-  </svg>`;
-
-  // SVG → Image → Canvas → PNG
-  const svgBlob = new Blob([svgString], {type:'image/svg+xml;charset=utf-8'});
-  const svgUrl = URL.createObjectURL(svgBlob);
+  const options = {
+    quality: 0.95,
+    bgcolor: '#fdfcf8',
+    width: width,
+    height: height,
+    style: {
+      transform: 'scale(1)',
+      transformOrigin: 'top left'
+    },
+    cacheBust: true
+  };
 
   try{
-    const img = new Image();
-    img.crossOrigin = 'anonymous';
-    await new Promise((resolve, reject) => {
-      img.onload = resolve;
-      img.onerror = () => reject(new Error('SVG image load failed'));
-      img.src = svgUrl;
-    });
-
-    const canvas = document.createElement('canvas');
-    canvas.width = width * scale;
-    canvas.height = height * scale;
-    const ctx = canvas.getContext('2d');
-    ctx.fillStyle = '#fdfcf8';
-    ctx.fillRect(0, 0, canvas.width, canvas.height);
-    ctx.scale(scale, scale);
-    ctx.drawImage(img, 0, 0, width, height);
-
-    return await new Promise(resolve => {
-      canvas.toBlob(resolve, 'image/png', 0.95);
-    });
-  } finally{
-    URL.revokeObjectURL(svgUrl);
+    const blob = await domtoimage.toBlob(element, options);
+    console.log('[Cert] Blob created, size:', blob ? blob.size : 'null');
+    return blob;
+  } catch(err){
+    console.error('[Cert] domtoimage error:', err);
+    throw err;
   }
-}
-
-/* تحميل الخطوط كـ @font-face inline (base64) ليعمل SVG بدون اتصال */
-let _cachedFontFaces = null;
-async function getFontFacesCSS(){
-  if(_cachedFontFaces !== null) return _cachedFontFaces;
-
-  const fontFaceRules = [];
-  for(const sheet of document.styleSheets){
-    try{
-      for(const rule of sheet.cssRules){
-        if(rule instanceof CSSFontFaceRule){
-          fontFaceRules.push(rule.cssText);
-        }
-      }
-    } catch(e){
-      // CORS sheets - نتجاهلها (Google Fonts)
-    }
-  }
-
-  // لو ما حصلنا font-face rules (Google Fonts CORS)، نحاول نحملها كـ data URLs
-  try{
-    const fontUrls = await extractFontUrls();
-    const inlineFontCss = await inlineFontsToBase64(fontUrls);
-    _cachedFontFaces = inlineFontCss + '\n' + fontFaceRules.join('\n');
-  } catch(e){
-    console.warn('Font inlining failed:', e);
-    _cachedFontFaces = fontFaceRules.join('\n');
-  }
-
-  return _cachedFontFaces;
-}
-
-/* استخراج URLs الخطوط من stylesheets الـ Google Fonts */
-async function extractFontUrls(){
-  const fontLinks = Array.from(document.querySelectorAll('link[rel="stylesheet"]'))
-    .map(l => l.href).filter(h => h.includes('fonts.googleapis.com'));
-
-  const allRules = [];
-  for(const url of fontLinks){
-    try{
-      const resp = await fetch(url);
-      const text = await resp.text();
-      allRules.push(text);
-    } catch(e){}
-  }
-  return allRules.join('\n');
-}
-
-/* تحويل URLs خطوط لـ base64 لتُحقن في SVG */
-async function inlineFontsToBase64(cssText){
-  const urlRegex = /url\((https:\/\/[^)]+\.woff2?)\)/g;
-  const matches = [...cssText.matchAll(urlRegex)];
-  const uniqueUrls = [...new Set(matches.map(m => m[1]))];
-
-  // نحمل أول 8 خطوط فقط (لتسريع)
-  const limited = uniqueUrls.slice(0, 8);
-
-  for(const url of limited){
-    try{
-      const resp = await fetch(url);
-      const blob = await resp.blob();
-      const base64 = await blobToBase64(blob);
-      cssText = cssText.replaceAll(url, base64);
-    } catch(e){
-      // تجاهل
-    }
-  }
-  return cssText;
-}
-
-function blobToBase64(blob){
-  return new Promise((resolve, reject) => {
-    const reader = new FileReader();
-    reader.onload = () => resolve(reader.result);
-    reader.onerror = reject;
-    reader.readAsDataURL(blob);
-  });
 }
 
 function downloadBlob(blob, filename){
@@ -1624,11 +1520,11 @@ function downloadBlob(blob, filename){
   document.body.appendChild(link);
   link.click();
   document.body.removeChild(link);
-  setTimeout(() => URL.revokeObjectURL(url), 1000);
+  setTimeout(() => URL.revokeObjectURL(url), 1500);
 }
 
 function sanitize(name){
-  return name.replace(/[\/\\:*?"<>|]/g, '_').substring(0, 80).trim() || 'cert';
+  return (name || '').replace(/[\/\\:*?"<>|]/g, '_').substring(0, 80).trim() || 'cert';
 }
 
 /* ═══════════════════════════════════════════════
