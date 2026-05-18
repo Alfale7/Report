@@ -1460,8 +1460,8 @@ async function printMultipleCertificates(names){
     tempDiv.querySelectorAll('[id]').forEach(el => el.removeAttribute('id'));
     tempDiv.querySelectorAll('[contenteditable]').forEach(el => el.removeAttribute('contenteditable'));
 
-    // print-page بدل cert-paper + كلاس الثيم
-    pages += `<div class="print-page ${themeClass}">${tempDiv.innerHTML}</div>`;
+    // print-page-wrap (للـ page break) + print-page (الشهادة) + كلاس الثيم
+    pages += `<div class="print-page-wrap"><div class="print-page ${themeClass}">${tempDiv.innerHTML}</div></div>`;
   });
 
   // نفتح نافذة جديدة فيها الصفحات
@@ -1482,33 +1482,41 @@ ${styles}
 /* تخصيصات للصفحات المتعددة */
 body{
   background:#e8e2d0;
-  padding:20px;
+  padding:20px 0;
   margin:0;
   font-family:'Tajawal','Tahoma','Arial',sans-serif;
 }
+
+/* المعاينة على الشاشة - شكل landscape */
+.print-page-wrap{
+  width:840px;
+  max-width:calc(100vw - 40px);
+  margin:0 auto 20px;
+}
+
+/* الشهادة الفعلية - landscape ratio */
 .print-page{
-  width:297mm;            /* عرض A4 landscape */
-  height:210mm;           /* ارتفاع A4 landscape */
-  margin:0 auto 24px;
-  box-shadow:0 10px 30px rgba(0,0,0,0.18);
-  page-break-after:always;
-  page-break-inside:avoid;
+  width:100%;
+  aspect-ratio:1.414 / 1;
   position:relative;
   background:#fdfcf8;
+  box-shadow:0 10px 30px rgba(0,0,0,0.18);
   display:flex;
   flex-direction:column;
   align-items:center;
   justify-content:space-between;
-  padding:30px 36px;
+  padding:3% 4%;
   overflow:hidden;
+  page-break-after:always;
+  page-break-inside:avoid;
 }
-.print-page:last-child{page-break-after:auto;}
+.print-page-wrap:last-child .print-page{page-break-after:auto;}
 
-/* الإطار المزدوج (نسخة من cert-paper) */
+/* الإطار المزدوج */
 .print-page::before{
   content:"";
   position:absolute;
-  top:14px; left:14px; right:14px; bottom:14px;
+  top:1.5%; left:1.5%; right:1.5%; bottom:1.5%;
   border:3px double currentColor;
   border-radius:6px;
   pointer-events:none;
@@ -1517,14 +1525,14 @@ body{
 .print-page::after{
   content:"";
   position:absolute;
-  top:22px; left:22px; right:22px; bottom:22px;
+  top:2.5%; left:2.5%; right:2.5%; bottom:2.5%;
   border:1px solid currentColor;
   border-radius:4px;
   pointer-events:none;
   opacity:0.4;
 }
 
-/* تطبيق ثيمات الألوان على .print-page (مثل .cert-paper) */
+/* تطبيق ثيمات الألوان على .print-page */
 .print-page.cp-theme-teal{color:#1a3c4e; background:linear-gradient(135deg,#fdfcf8 0%,#f0e6c4 100%);}
 .print-page.cp-theme-gold{color:#5d2e0e; background:linear-gradient(135deg,#fdfcf8 0%,#f5e8c4 100%);}
 .print-page.cp-theme-green{color:#1a4d2e; background:linear-gradient(135deg,#fdfcf8 0%,#d4e8d4 100%);}
@@ -1582,31 +1590,48 @@ body{
 }
 
 @media print{
-  @page{size:A4 landscape; margin:0;}
+  @page{
+    size:A4 landscape;
+    margin:0;
+  }
   html, body{
     background:#fff !important;
     padding:0 !important;
     margin:0 !important;
-    width:297mm;
-    height:210mm;
+    width:100% !important;
+    height:auto !important;
   }
   .print-toolbar, .print-info{display:none !important;}
-  .print-page{
-    width:297mm !important;
-    height:210mm !important;
+
+  /* كل wrap = صفحة منفصلة */
+  .print-page-wrap{
+    width:100% !important;
     max-width:none !important;
     margin:0 !important;
-    padding:30px 36px !important;
-    box-shadow:none !important;
+    padding:0 !important;
     page-break-after:always !important;
     page-break-inside:avoid !important;
-    break-after:page;
-    break-inside:avoid;
-    overflow:hidden !important;
+    break-after:page !important;
+    break-inside:avoid !important;
+    display:block !important;
   }
-  .print-page:last-child{
+  .print-page-wrap:last-child{
     page-break-after:auto !important;
-    break-after:auto;
+    break-after:auto !important;
+  }
+
+  /* الشهادة تأخذ كامل صفحة A4 landscape */
+  .print-page{
+    width:100% !important;
+    height:100vh !important;
+    aspect-ratio:auto !important;
+    max-width:none !important;
+    margin:0 !important;
+    padding:3% 4% !important;
+    box-shadow:none !important;
+    page-break-inside:avoid !important;
+    break-inside:avoid !important;
+    overflow:hidden !important;
   }
 }
 </style>
