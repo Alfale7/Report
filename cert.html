@@ -439,7 +439,7 @@ html,body{
   width:100%;
   position:relative;
   z-index:1;
-  padding:6px 30px;
+  padding:6px 40px;
 }
 
 .cert-pretext{
@@ -475,13 +475,16 @@ html,body{
   font-family:'Amiri','Tajawal',serif;
   font-size:1rem;
   line-height:1.7;
-  max-width:600px;
+  max-width:75%;
+  width:75%;
   margin-bottom:12px;
   opacity:0.9;
   outline:none;
   cursor:text;
   padding:4px 12px;
   border-radius:4px;
+  word-wrap:break-word;
+  overflow-wrap:break-word;
 }
 .cert-reason:focus{background:rgba(255,255,255,0.7);}
 .cert-reason:empty::before{
@@ -865,10 +868,11 @@ html,body{
   .page-header p{font-size:0.72rem;}
 
   .cert-paper{padding:18px 14px;}
+  .cert-body{padding:6px 20px;}
   .cert-title{font-size:1.3rem;}
   .cert-name{font-size:1.1rem; padding:3px 14px 6px;}
   .cert-pretext{font-size:0.7rem; margin-bottom:5px;}
-  .cert-reason{font-size:0.7rem;}
+  .cert-reason{font-size:0.7rem; max-width:80%; width:80%; padding:2px 6px;}
   .cert-subtitle{font-size:0.6rem; letter-spacing:1.5px;}
   .cert-seal-wrap{width:42px; height:42px;}
   .cert-seal-icon{font-size:1.3rem;}
