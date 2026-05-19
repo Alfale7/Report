@@ -389,6 +389,398 @@ backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);
 .badge-pop{background:linear-gradient(135deg,#e8c547,#d4a83a);color:#1a3c2a;box-shadow:0 4px 12px rgba(232,197,71,0.4);}
 .badge-premium{background:linear-gradient(135deg,#9c27b0,#673ab7);color:#fff;box-shadow:0 4px 12px rgba(156,39,176,0.4);}
 
+/* ═══════════════════════════════════════════════
+   نظام التجربة المجانية
+   ═══════════════════════════════════════════════ */
+.badge-free{
+  background:linear-gradient(135deg,#ff6b6b,#ee5a52);
+  color:#fff;
+  box-shadow:0 4px 14px rgba(238,90,82,0.5);
+  animation:pulse-badge 2s ease-in-out infinite;
+}
+@keyframes pulse-badge{
+  0%,100%{transform:scale(1); box-shadow:0 4px 14px rgba(238,90,82,0.5);}
+  50%{transform:scale(1.05); box-shadow:0 6px 20px rgba(238,90,82,0.7);}
+}
+
+.preview-card.free-trial{
+  position:relative;
+  border:2px solid #ff6b6b;
+  box-shadow:0 8px 28px rgba(238,90,82,0.25);
+}
+.preview-card.free-trial::before{
+  content:"";
+  position:absolute;
+  inset:-2px;
+  border-radius:18px;
+  background:linear-gradient(135deg, transparent 30%, rgba(255,107,107,0.3) 50%, transparent 70%);
+  animation:shine 3s linear infinite;
+  pointer-events:none;
+  z-index:1;
+}
+@keyframes shine{
+  0%{transform:translateX(-100%);}
+  100%{transform:translateX(100%);}
+}
+
+.free-overlay{
+  position:absolute;top:0;left:0;right:0;bottom:0;
+  background:linear-gradient(180deg,rgba(0,0,0,0) 0%,rgba(238,90,82,0.05) 60%,rgba(238,90,82,0.55) 100%);
+  display:flex;align-items:flex-end;justify-content:center;padding:14px;
+  z-index:10;
+}
+.free-cta{
+  display:inline-flex;align-items:center;gap:6px;
+  padding:9px 18px;
+  background:linear-gradient(135deg,#ff6b6b,#ee5a52);
+  color:#fff;border-radius:99px;
+  font-size:0.82rem;font-weight:800;
+  box-shadow:0 6px 20px rgba(238,90,82,0.5), 0 0 0 2px rgba(255,255,255,0.9);
+  animation:pulse-cta 2s ease-in-out infinite;
+}
+@keyframes pulse-cta{
+  0%,100%{transform:scale(1);}
+  50%{transform:scale(1.08);}
+}
+
+/* عدّاد التحميلات المجانية */
+.free-counter{
+  background:linear-gradient(135deg, rgba(255,107,107,0.15), rgba(255,159,67,0.15));
+  border:1.5px solid rgba(255,107,107,0.4);
+  border-radius:12px;
+  padding:10px 14px;
+  margin:14px 4px 0;
+  display:flex;
+  align-items:center;
+  gap:10px;
+  backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);
+}
+.free-counter.exhausted{
+  background:linear-gradient(135deg, rgba(220,53,69,0.15), rgba(220,53,69,0.08));
+  border-color:rgba(220,53,69,0.5);
+}
+.free-counter-icon{
+  font-size:1.4rem;
+  flex-shrink:0;
+}
+.free-counter-text{
+  flex:1;
+  color:#fff;
+  font-size:0.8rem;
+  font-weight:700;
+  line-height:1.4;
+}
+.free-counter-text strong{
+  color:#ffb86b;
+  font-size:0.9rem;
+}
+.free-counter.exhausted .free-counter-text strong{
+  color:#ff6b6b;
+}
+.free-counter-btn{
+  background:linear-gradient(135deg,#ff6b6b,#ee5a52);
+  color:#fff;
+  border:none;
+  padding:7px 14px;
+  border-radius:99px;
+  font-family:inherit;
+  font-size:0.75rem;
+  font-weight:800;
+  cursor:pointer;
+  flex-shrink:0;
+  white-space:nowrap;
+  box-shadow:0 3px 10px rgba(238,90,82,0.4);
+}
+.free-counter-btn:hover{transform:translateY(-1px);}
+.free-counter-btn:active{transform:scale(0.95);}
+
+@media (max-width:480px){
+  .free-counter{padding:9px 11px; gap:8px;}
+  .free-counter-text{font-size:0.72rem;}
+  .free-counter-text strong{font-size:0.82rem;}
+  .free-counter-btn{font-size:0.68rem; padding:6px 11px;}
+  .free-counter-icon{font-size:1.2rem;}
+}
+
+/* ═══════════════════════════════════════════════
+   Upgrade Modal (الترقية)
+   ═══════════════════════════════════════════════ */
+.upgrade-overlay{
+  display:none;
+  position:fixed;
+  top:0; left:0; right:0; bottom:0;
+  background:rgba(0,15,30,0.85);
+  backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);
+  z-index:9999;
+  align-items:center;
+  justify-content:center;
+  padding:20px;
+  overflow-y:auto;
+  animation:upgrade-fade-in 0.3s ease-out;
+}
+.upgrade-overlay.show{display:flex;}
+@keyframes upgrade-fade-in{
+  from{opacity:0;}
+  to{opacity:1;}
+}
+
+.upgrade-card{
+  background:linear-gradient(135deg, #1a1f2e 0%, #2a3a4e 100%);
+  border:2px solid rgba(255,107,107,0.4);
+  border-radius:24px;
+  padding:30px 22px 24px;
+  max-width:420px;
+  width:100%;
+  text-align:center;
+  position:relative;
+  box-shadow:0 20px 60px rgba(0,0,0,0.6), 0 0 0 1px rgba(255,255,255,0.05),
+             inset 0 1px 0 rgba(255,255,255,0.1);
+  max-height:92vh;
+  overflow-y:auto;
+  animation:upgrade-slide-up 0.4s cubic-bezier(0.34,1.56,0.64,1);
+}
+@keyframes upgrade-slide-up{
+  from{transform:translateY(30px) scale(0.95); opacity:0;}
+  to{transform:translateY(0) scale(1); opacity:1;}
+}
+
+.upgrade-card::before{
+  content:"";
+  position:absolute;
+  top:0; left:0; right:0; height:80px;
+  background:radial-gradient(ellipse at center top, rgba(255,107,107,0.25), transparent 70%);
+  pointer-events:none;
+  border-radius:24px 24px 0 0;
+}
+
+.upgrade-close{
+  position:absolute;
+  top:14px;
+  left:14px;
+  background:rgba(255,255,255,0.08);
+  border:1px solid rgba(255,255,255,0.15);
+  color:#fff;
+  width:36px; height:36px;
+  border-radius:50%;
+  cursor:pointer;
+  font-size:1rem;
+  font-weight:700;
+  display:flex; align-items:center; justify-content:center;
+  transition:all 0.2s;
+}
+.upgrade-close:hover{
+  background:rgba(255,255,255,0.15);
+  transform:rotate(90deg);
+}
+
+.upgrade-icon{
+  font-size:3rem;
+  margin-bottom:8px;
+  display:inline-block;
+  animation:upgrade-icon-bounce 2s ease-in-out infinite;
+}
+@keyframes upgrade-icon-bounce{
+  0%,100%{transform:translateY(0);}
+  50%{transform:translateY(-8px);}
+}
+
+.upgrade-title{
+  font-family:'Reem Kufi','Tajawal',sans-serif;
+  font-size:1.35rem;
+  font-weight:900;
+  color:#fff;
+  margin-bottom:6px;
+  line-height:1.3;
+}
+.upgrade-subtitle{
+  font-size:0.85rem;
+  color:rgba(255,255,255,0.65);
+  font-weight:600;
+  margin-bottom:18px;
+  line-height:1.5;
+}
+
+.upgrade-features{
+  background:rgba(255,255,255,0.04);
+  border:1px solid rgba(255,255,255,0.08);
+  border-radius:14px;
+  padding:14px 16px;
+  margin-bottom:16px;
+  text-align:right;
+}
+.upgrade-feature{
+  display:flex;
+  align-items:center;
+  gap:9px;
+  padding:5px 0;
+  font-size:0.85rem;
+  font-weight:600;
+  color:rgba(255,255,255,0.92);
+}
+.up-check{
+  color:#4caf50;
+  font-size:0.95rem;
+  flex-shrink:0;
+}
+
+.upgrade-price-block{
+  background:linear-gradient(135deg, rgba(255,193,7,0.12), rgba(255,107,107,0.08));
+  border:2px solid rgba(255,193,7,0.3);
+  border-radius:16px;
+  padding:14px 16px 12px;
+  margin-bottom:14px;
+  position:relative;
+  overflow:hidden;
+}
+.upgrade-price-block::before{
+  content:"";
+  position:absolute;
+  inset:0;
+  background:linear-gradient(135deg, transparent 30%, rgba(255,255,255,0.05) 50%, transparent 70%);
+  animation:price-shimmer 3s linear infinite;
+  pointer-events:none;
+}
+@keyframes price-shimmer{
+  0%{transform:translateX(-100%);}
+  100%{transform:translateX(100%);}
+}
+
+.upgrade-price-old{
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  gap:10px;
+  margin-bottom:4px;
+}
+.price-strike{
+  color:rgba(255,255,255,0.5);
+  font-size:0.85rem;
+  font-weight:700;
+  text-decoration:line-through;
+  text-decoration-color:#ff6b6b;
+  text-decoration-thickness:2px;
+}
+.discount-badge{
+  background:linear-gradient(135deg, #ff6b6b, #ee5a52);
+  color:#fff;
+  padding:2px 9px;
+  border-radius:99px;
+  font-size:0.7rem;
+  font-weight:900;
+  box-shadow:0 2px 6px rgba(238,90,82,0.4);
+}
+
+.upgrade-price-new{
+  display:flex;
+  align-items:baseline;
+  justify-content:center;
+  gap:5px;
+  margin-bottom:3px;
+}
+.price-amount{
+  font-family:'Reem Kufi','Tajawal',sans-serif;
+  font-size:2.6rem;
+  font-weight:900;
+  color:#ffc107;
+  line-height:1;
+  text-shadow:0 2px 14px rgba(255,193,7,0.4);
+}
+.price-currency{
+  font-size:1rem;
+  font-weight:800;
+  color:#ffc107;
+}
+.upgrade-price-note{
+  font-size:0.72rem;
+  color:rgba(255,255,255,0.6);
+  font-weight:600;
+}
+
+.upgrade-social-proof{
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  gap:6px;
+  background:rgba(255,107,107,0.1);
+  border:1px solid rgba(255,107,107,0.3);
+  color:#ffb86b;
+  padding:7px 12px;
+  border-radius:99px;
+  font-size:0.74rem;
+  font-weight:700;
+  margin-bottom:10px;
+}
+.social-icon{
+  font-size:0.85rem;
+  animation:fire-flicker 1.5s ease-in-out infinite;
+}
+@keyframes fire-flicker{
+  0%,100%{opacity:1; transform:scale(1);}
+  50%{opacity:0.7; transform:scale(1.1);}
+}
+
+.upgrade-guarantee{
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  gap:6px;
+  color:rgba(255,255,255,0.7);
+  font-size:0.74rem;
+  font-weight:600;
+  margin-bottom:16px;
+}
+
+.upgrade-cta-btn{
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  gap:8px;
+  width:100%;
+  padding:14px 20px;
+  background:linear-gradient(135deg, #25d366 0%, #128c7e 100%);
+  color:#fff;
+  border:none;
+  border-radius:14px;
+  font-family:inherit;
+  font-size:0.95rem;
+  font-weight:800;
+  cursor:pointer;
+  text-decoration:none;
+  box-shadow:0 8px 24px rgba(37,211,102,0.4), inset 0 1px 0 rgba(255,255,255,0.2);
+  transition:all 0.2s;
+  margin-bottom:8px;
+}
+.upgrade-cta-btn:hover{
+  transform:translateY(-2px);
+  box-shadow:0 12px 30px rgba(37,211,102,0.55);
+}
+.upgrade-cta-btn:active{transform:scale(0.97);}
+.wa-icon{font-size:1.2rem;}
+
+.upgrade-later{
+  background:transparent;
+  border:none;
+  color:rgba(255,255,255,0.5);
+  font-family:inherit;
+  font-size:0.8rem;
+  font-weight:600;
+  cursor:pointer;
+  padding:8px;
+  text-decoration:underline;
+  text-underline-offset:3px;
+}
+.upgrade-later:hover{color:rgba(255,255,255,0.8);}
+
+@media (max-width:480px){
+  .upgrade-card{padding:24px 18px 20px; border-radius:20px;}
+  .upgrade-icon{font-size:2.5rem;}
+  .upgrade-title{font-size:1.15rem;}
+  .upgrade-subtitle{font-size:0.78rem;}
+  .upgrade-feature{font-size:0.78rem;}
+  .price-amount{font-size:2.2rem;}
+  .upgrade-cta-btn{font-size:0.88rem; padding:12px 16px;}
+}
+
 .thumb{height:210px;position:relative;overflow:hidden;background:#fff;}
 
 /* Thumb يوم التأسيس */
@@ -451,6 +843,301 @@ border-radius:2px;position:relative;
 .thumb-tasis .obj-mini::before{
 content:"";position:absolute;right:3px;top:3px;
 width:30%;height:2px;background:#6b4a2b;opacity:0.5;
+}
+
+
+/* ═══════════════════════════════════════════════
+   نظام المعاينة الحقيقية المصغّرة (Real Snapshot)
+   للمناسبات الوطنية - يحاكي التقرير الفعلي
+   ═══════════════════════════════════════════════ */
+.real-snap{
+  width:100%; height:100%;
+  position:relative;
+  overflow:hidden;
+  display:flex;
+  flex-direction:column;
+}
+
+/* الهيدر العام للمعاينة */
+.rs-header{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  padding:8px 10px;
+  gap:6px;
+  position:relative;
+}
+.rs-h-side{
+  font-size:7px;
+  font-weight:900;
+  line-height:1.2;
+  flex:1;
+}
+.rs-h-side .l1{font-weight:900;}
+.rs-h-side .l2{opacity:0.7; font-weight:600; font-size:6px;}
+.rs-h-side.left{text-align:left;}
+.rs-h-side.right{text-align:right;}
+.rs-h-center{
+  width:30px;
+  height:30px;
+  border-radius:50%;
+  flex-shrink:0;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  font-size:6px;
+  font-weight:900;
+  text-align:center;
+  line-height:1.1;
+}
+
+/* العنوان الرئيسي */
+.rs-title{
+  text-align:center;
+  font-size:9px;
+  font-weight:900;
+  padding:4px 8px;
+  margin:2px 14px;
+  border-radius:3px;
+  letter-spacing:0.3px;
+}
+.rs-subtitle{
+  text-align:center;
+  font-size:7px;
+  font-weight:700;
+  padding:3px 8px;
+  margin:0 18px 6px;
+  border-radius:3px;
+  opacity:0.8;
+}
+
+/* المنطقة الرئيسية بصورة + حقول */
+.rs-body{
+  flex:1;
+  display:flex;
+  gap:6px;
+  padding:0 10px 8px;
+}
+.rs-photos{
+  flex:1;
+  display:flex;
+  flex-direction:column;
+  gap:3px;
+}
+.rs-photo{
+  flex:1;
+  min-height:18px;
+  border:1.5px solid;
+  border-radius:2px;
+  position:relative;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  font-size:5px;
+  font-weight:900;
+  opacity:0.85;
+}
+.rs-photo::after{
+  content:"📷";
+  font-size:10px;
+  opacity:0.4;
+}
+.rs-fields{
+  flex:1;
+  display:flex;
+  flex-direction:column;
+  gap:3px;
+}
+.rs-field{
+  min-height:10px;
+  background:#fff;
+  border:1.2px solid;
+  border-radius:2px;
+  padding:2px 4px;
+  font-size:5px;
+  font-weight:700;
+  display:flex;
+  align-items:center;
+  position:relative;
+}
+.rs-field::after{
+  content:"";
+  position:absolute;
+  right:3px; top:50%;
+  transform:translateY(-50%);
+  width:30%;
+  height:1.5px;
+  background:currentColor;
+  opacity:0.35;
+  border-radius:1px;
+}
+
+/* الفوتر */
+.rs-footer{
+  text-align:center;
+  font-size:6px;
+  font-weight:800;
+  padding:3px 0;
+  letter-spacing:0.5px;
+}
+
+/* ═══ الهويات البصرية لكل تقرير ═══ */
+
+/* يوم التأسيس - بني/ذهبي */
+.snap-tasis{background:linear-gradient(180deg, #f5ede0 0%, #ebd9b8 100%);}
+.snap-tasis .rs-header{background:linear-gradient(180deg, #efe2cd, #e6d5b8);}
+.snap-tasis .rs-h-side{color:#6b4a2b;}
+.snap-tasis .rs-h-center{
+  background:linear-gradient(135deg, #8b6a47, #6b4a2b);
+  color:#f5ede0;
+  border:1.5px solid #d8c19a;
+}
+.snap-tasis .rs-title{background:#6b4a2b; color:#f5ede0;}
+.snap-tasis .rs-subtitle{background:linear-gradient(180deg,#d4b893,#c9a878); color:#fff;}
+.snap-tasis .rs-photo{background:linear-gradient(135deg,#d4b893,#c9a878); border-color:#b8915a; color:#fff;}
+.snap-tasis .rs-field{border-color:#6b4a2b; color:#6b4a2b;}
+.snap-tasis .rs-footer{color:#6b4a2b;}
+
+/* يوم المعلم - تركواز/ذهبي فخم */
+.snap-teacher{background:linear-gradient(180deg, #fdfbf5 0%, #f0e4cc 100%);}
+.snap-teacher .rs-header{background:linear-gradient(135deg, #1a3c4e, #2a5d6e); color:#fff;}
+.snap-teacher .rs-h-side{color:#fff;}
+.snap-teacher .rs-h-side .l2{color:#c9a45b;}
+.snap-teacher .rs-h-center{
+  background:linear-gradient(135deg, #c9a45b, #b8923d);
+  color:#fff;
+  border:1.5px solid #f4e4b0;
+}
+.snap-teacher .rs-title{background:linear-gradient(135deg,#c9a45b,#b8923d); color:#1a3c4e;}
+.snap-teacher .rs-subtitle{background:#1a3c4e; color:#c9a45b;}
+.snap-teacher .rs-photo{background:#fff; border-color:#1a3c4e; color:#1a3c4e;}
+.snap-teacher .rs-field{border-color:#1a3c4e; color:#1a3c4e;}
+.snap-teacher .rs-footer{color:#1a3c4e;}
+
+/* اليوم الوطني - أخضر سعودي */
+.snap-national{background:linear-gradient(180deg, #fff 0%, #d4e8d4 100%);}
+.snap-national .rs-header{background:linear-gradient(135deg, #006c35, #228b22); color:#fff;}
+.snap-national .rs-h-side{color:#fff;}
+.snap-national .rs-h-side .l2{color:#fff; opacity:0.85;}
+.snap-national .rs-h-center{
+  background:#fff;
+  color:#006c35;
+  border:1.5px solid #006c35;
+}
+.snap-national .rs-title{background:#006c35; color:#fff;}
+.snap-national .rs-subtitle{background:#fff; color:#006c35; border:1px solid #006c35;}
+.snap-national .rs-photo{background:#f0f8f0; border-color:#006c35; color:#006c35;}
+.snap-national .rs-field{border-color:#006c35; color:#006c35;}
+.snap-national .rs-footer{color:#006c35;}
+
+/* يوم العَلَم - أخضر مع ذهبي ملكي */
+.snap-flag{background:linear-gradient(180deg, #fdfcf0 0%, #f4e4b0 100%);}
+.snap-flag .rs-header{background:linear-gradient(135deg, #006c35 0%, #c9a45b 100%); color:#fff;}
+.snap-flag .rs-h-side{color:#fff;}
+.snap-flag .rs-h-side .l2{color:#fff; opacity:0.85;}
+.snap-flag .rs-h-center{
+  background:linear-gradient(135deg, #c9a45b, #b8923d);
+  color:#fff;
+  border:2px solid #006c35;
+}
+.snap-flag .rs-title{background:linear-gradient(135deg, #006c35, #054d28); color:#fff;}
+.snap-flag .rs-subtitle{background:linear-gradient(135deg, #c9a45b, #b8923d); color:#fff;}
+.snap-flag .rs-photo{background:linear-gradient(135deg,#e8d99a,#c9a45b); border-color:#8b6428; color:#fff;}
+.snap-flag .rs-field{border-color:#006c35; color:#006c35;}
+.snap-flag .rs-footer{color:#8b6428;}
+
+/* Mobile responsive */
+@media (max-width:480px){
+  .rs-header{padding:6px 8px;}
+  .rs-h-side{font-size:6px;}
+  .rs-h-side .l2{font-size:5px;}
+  .rs-h-center{width:24px; height:24px; font-size:5px;}
+  .rs-title{font-size:8px; padding:3px 6px; margin:2px 10px;}
+  .rs-subtitle{font-size:6px; margin:0 14px 4px;}
+  .rs-body{padding:0 8px 6px; gap:5px;}
+  .rs-photo{font-size:4px;}
+  .rs-photo::after{font-size:9px;}
+  .rs-field{font-size:4px; min-height:9px;}
+  .rs-footer{font-size:5px;}
+}
+
+
+/* ═══════════════════════════════════════════════
+   نظام iframe Live Preview - معاينة حقيقية للتقرير
+   ═══════════════════════════════════════════════ */
+.iframe-snap-wrap{
+  width:100%;
+  height:100%;
+  position:relative;
+  overflow:hidden;
+  background:#f4f1e8;
+}
+/* طبقة شفافة فوق الـ iframe تمنع أي تفاعل معه */
+.iframe-snap-wrap::after{
+  content:"";
+  position:absolute;
+  top:0; left:0; right:0; bottom:0;
+  z-index:5;
+  background:transparent;
+  pointer-events:auto;
+  cursor:pointer;
+}
+.iframe-snap-wrap iframe{
+  /* الـ iframe يُحمّل بالحجم الكامل */
+  width:540px;
+  height:760px;
+  border:0;
+  /* ثم يُصغّر بنسبة 39% تقريباً ليناسب 210px ارتفاع */
+  transform:scale(0.39);
+  transform-origin:top right;
+  position:absolute;
+  top:0;
+  right:0;
+  pointer-events:none; /* لا يستجيب للنقر */
+  -webkit-user-select:none;
+  user-select:none;
+  background:#fff;
+  display:block;
+  opacity:1;
+}
+/* عند تحميل الـ iframe، نُخفي placeholder ونُظهر الـ iframe */
+.iframe-snap-wrap iframe{opacity:0; transition:opacity 0.4s;}
+.iframe-snap-wrap.loaded iframe{opacity:1;}
+/* لاحقة - للشاشات الكبيرة الـ iframe قد يحتاج scale مختلف */
+@media (min-width:480px){
+  .iframe-snap-wrap iframe{transform:scale(0.42); width:520px;}
+}
+@media (max-width:380px){
+  .iframe-snap-wrap iframe{transform:scale(0.35);}
+}
+
+/* placeholder قبل تحميل الـ iframe */
+.iframe-snap-wrap .iframe-loading{
+  position:absolute;
+  top:0; left:0; right:0; bottom:0;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  background:linear-gradient(135deg, #f4f1e8, #ebe5d3);
+  color:#1a3c4e;
+  font-weight:800;
+  font-size:0.85rem;
+  z-index:1;
+  transition:opacity 0.4s;
+}
+.iframe-snap-wrap.loaded .iframe-loading{
+  opacity:0;
+  pointer-events:none;
+}
+.iframe-snap-wrap .iframe-loading::before{
+  content:"⏳";
+  font-size:1.6rem;
+  margin-left:8px;
+  animation:iframespin 1.4s linear infinite;
+}
+@keyframes iframespin{
+  from{transform:rotate(0)}
+  to{transform:rotate(360deg)}
 }
 
 /* Thumb يوم المعلم */
@@ -623,18 +1310,20 @@ background:#3a8a52;border-radius:1px;opacity:0.5;
 /* Lock overlay فاخر */
 .lock-overlay{
 position:absolute;top:0;left:0;right:0;bottom:0;
-background:linear-gradient(180deg,rgba(0,0,0,0) 0%,rgba(5,10,18,0.3) 40%,rgba(5,10,18,0.88) 100%);
+background:linear-gradient(180deg,rgba(0,0,0,0) 0%,rgba(5,10,18,0.05) 50%,rgba(5,10,18,0.65) 100%);
 display:flex;align-items:flex-end;justify-content:center;padding:14px;
+backdrop-filter:blur(0.5px);-webkit-backdrop-filter:blur(0.5px);
+z-index:10;
 }
 .preview-card:not(.locked) .lock-overlay{display:none;}
 .lock-cta{
 display:inline-flex;align-items:center;gap:6px;
 padding:8px 16px;
-background:rgba(255,255,255,0.95);
+background:rgba(255,255,255,0.97);
 color:#1a3c4e;border-radius:99px;
 font-size:0.78rem;font-weight:800;
 backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);
-box-shadow:0 6px 20px rgba(0,0,0,0.3);
+box-shadow:0 6px 20px rgba(0,0,0,0.4), 0 0 0 1px rgba(201,164,91,0.4);
 }
 
 /* Card content */
@@ -1321,6 +2010,19 @@ font-size:0.78rem;text-align:center;margin-top:12px;display:none;
 
   <div class="previews">
 
+    <!-- ═══ عدّاد التجربة المجانية ═══ -->
+    <div class="free-counter" id="freeCounter">
+      <div class="free-counter-icon">🎁</div>
+      <div class="free-counter-text">
+        <span data-i18n="freeCounterPrefix">لديك</span>
+        <strong id="freeCounterValue">3</strong>
+        <span data-i18n="freeCounterSuffix">تحميل مجاني متبقي · جرّب التقرير العام الآن</span>
+      </div>
+      <button class="free-counter-btn" onclick="document.querySelector('.r-general').scrollIntoView({behavior:'smooth',block:'center'})">
+        <span data-i18n="freeCounterBtn">جرّب الآن</span>
+      </button>
+    </div>
+
     <!-- ═══ تصنيف: المناسبات الوطنية ═══ -->
     <div class="cat-section open" data-cat="events">
       <div class="cat-header" onclick="toggleCategory(this)">
@@ -1340,30 +2042,33 @@ font-size:0.78rem;text-align:center;margin-top:12px;display:none;
     <div class="preview-card r-tasis locked" data-target="tasis.html" onclick="handleCardClick(this)">
       <span class="card-badge badge-pop">🔥 <span data-i18n="badgePop">الأكثر طلباً</span></span>
       <div class="thumb thumb-tasis">
-        <div class="t-header">
-          <div class="tt-right">
-            <div class="seal-mini">يوم<br>التأسيس</div>
-            <div class="tt-text">يوم التأسيس<br><span style="opacity:0.6">١١٣٩هـ/١٧٢٧م</span></div>
+        <div class="real-snap snap-tasis">
+          <div class="rs-header">
+            <div class="rs-h-side right">
+              <div class="l1" data-i18n="snapTasisTitle">يوم التأسيس</div>
+              <div class="l2">١١٣٩هـ / ١٧٢٧م</div>
+            </div>
+            <div class="rs-h-center">يوم<br>التأسيس</div>
+            <div class="rs-h-side left">
+              <div class="l1" data-i18n="snapMoE">وزارة التعليم</div>
+              <div class="l2">Ministry of Edu.</div>
+            </div>
           </div>
-          <div class="center-emblem"></div>
-          <div class="tt-left">
-            <div class="tt-text" style="text-align:left">وزارة التعليم<br><span style="opacity:0.6">Ministry of Edu.</span></div>
-          </div>
-        </div>
-        <div class="ribbon-1"></div>
-        <div class="ribbon-2"></div>
-        <div class="body-grid">
-          <div class="frames-col">
-            <div class="frame-mini"></div>
-            <div class="frame-mini"></div>
-            <div class="frame-mini"></div>
-          </div>
-          <div class="fields-col">
-            <div class="field-mini"></div>
-            <div class="field-mini"></div>
-            <div class="field-mini"></div>
-            <div class="field-mini"></div>
-            <div class="obj-mini"></div>
+          <div class="rs-title" data-i18n="snapTasisEvent">عنوان الفعالية</div>
+          <div class="rs-subtitle" data-i18n="snapTasisSub">يوم بدينا · OUR STORY</div>
+          <div class="rs-body">
+            <div class="rs-photos">
+              <div class="rs-photo"></div>
+              <div class="rs-photo"></div>
+              <div class="rs-photo"></div>
+            </div>
+            <div class="rs-fields">
+              <div class="rs-field" data-i18n="snapTasisF1">المنفذ/ة</div>
+              <div class="rs-field" data-i18n="snapTasisF2">مكان التنفيذ</div>
+              <div class="rs-field" data-i18n="snapTasisF3">المستفيدون</div>
+              <div class="rs-field" data-i18n="snapTasisF4">العدد</div>
+              <div class="rs-field" data-i18n="snapTasisF5">التاريخ</div>
+            </div>
           </div>
         </div>
         <div class="lock-overlay">
@@ -1392,26 +2097,33 @@ font-size:0.78rem;text-align:center;margin-top:12px;display:none;
     <div class="preview-card r-teacher locked" data-target="teacher.html" onclick="handleCardClick(this)">
       <span class="card-badge badge-new">✨ <span data-i18n="badgeNew">جديد</span></span>
       <div class="thumb thumb-teacher">
-        <div class="t-top">
-          <div class="muh-bar-mini"></div>
-          <div class="logos-mini">
-            <div class="tday">يوم المعلم</div>
-            <div class="teacher-en">TEACHER DAY</div>
+        <div class="real-snap snap-teacher">
+          <div class="rs-header">
+            <div class="rs-h-side right">
+              <div class="l1" data-i18n="snapTeacherTitle">يوم المعلم</div>
+              <div class="l2">Teacher's Day</div>
+            </div>
+            <div class="rs-h-center">★</div>
+            <div class="rs-h-side left">
+              <div class="l1" data-i18n="snapMoE">وزارة التعليم</div>
+              <div class="l2">١٤٤٧هـ</div>
+            </div>
           </div>
-        </div>
-        <div class="stripe-mini"></div>
-        <div class="body-grid">
-          <div class="frames-col">
-            <div class="frame-mini"></div>
-            <div class="frame-mini"></div>
-            <div class="frame-mini"></div>
-          </div>
-          <div class="fields-col">
-            <div class="field-mini"></div>
-            <div class="field-mini"></div>
-            <div class="field-mini"></div>
-            <div class="field-mini"></div>
-            <div class="field-mini"></div>
+          <div class="rs-title" data-i18n="snapTeacherEvent">شكراً معلمي</div>
+          <div class="rs-subtitle" data-i18n="snapTeacherSub">CELEBRATING OUR TEACHERS</div>
+          <div class="rs-body">
+            <div class="rs-photos">
+              <div class="rs-photo"></div>
+              <div class="rs-photo"></div>
+              <div class="rs-photo"></div>
+            </div>
+            <div class="rs-fields">
+              <div class="rs-field" data-i18n="snapTeacherF1">اسم المنفذ</div>
+              <div class="rs-field" data-i18n="snapTeacherF2">مكان التنفيذ</div>
+              <div class="rs-field" data-i18n="snapTeacherF3">المستفيدون</div>
+              <div class="rs-field" data-i18n="snapTeacherF4">عدد المعلمين</div>
+              <div class="rs-field" data-i18n="snapTeacherF5">الأهداف</div>
+            </div>
           </div>
         </div>
         <div class="lock-overlay">
@@ -1440,28 +2152,33 @@ font-size:0.78rem;text-align:center;margin-top:12px;display:none;
     <div class="preview-card r-national locked" data-target="watny.html" onclick="handleCardClick(this)">
       <span class="card-badge badge-hot">🇸🇦 <span data-i18n="badgeNational">وطني</span></span>
       <div class="thumb thumb-national">
-        <div class="teeth"></div>
-        <div class="t-header">
-          <div class="nd-text">الإدارة العامة للتعليم<br><span class="sub">اسم المحافظة</span></div>
-          <div class="nd-logo-mini">
-            <div class="a">عزّنا بطبعنا</div>
-            <div class="b">SAUDI ND 95</div>
+        <div class="real-snap snap-national">
+          <div class="rs-header">
+            <div class="rs-h-side right">
+              <div class="l1" data-i18n="snapNationalTitle">اليوم الوطني</div>
+              <div class="l2">National Day ٩٥</div>
+            </div>
+            <div class="rs-h-center">★</div>
+            <div class="rs-h-side left">
+              <div class="l1" data-i18n="snapMoE">وزارة التعليم</div>
+              <div class="l2">١٤٤٧هـ</div>
+            </div>
           </div>
-        </div>
-        <div class="nd-muh-bar"></div>
-        <div class="nd-stripe"></div>
-        <div class="body-grid">
-          <div class="frames-col">
-            <div class="frame-mini"></div>
-            <div class="frame-mini"></div>
-            <div class="frame-mini"></div>
-          </div>
-          <div class="fields-col">
-            <div class="field-mini"></div>
-            <div class="field-mini"></div>
-            <div class="field-mini"></div>
-            <div class="field-mini"></div>
-            <div class="field-mini"></div>
+          <div class="rs-title" data-i18n="snapNationalEvent">عنوان الفعالية الوطنية</div>
+          <div class="rs-subtitle" data-i18n="snapNationalSub">سعوديتنا فخر · ٢٣ سبتمبر</div>
+          <div class="rs-body">
+            <div class="rs-photos">
+              <div class="rs-photo"></div>
+              <div class="rs-photo"></div>
+              <div class="rs-photo"></div>
+            </div>
+            <div class="rs-fields">
+              <div class="rs-field" data-i18n="snapNationalF1">المنفذ/ة</div>
+              <div class="rs-field" data-i18n="snapNationalF2">المكان</div>
+              <div class="rs-field" data-i18n="snapNationalF3">المستفيدون</div>
+              <div class="rs-field" data-i18n="snapNationalF4">العدد</div>
+              <div class="rs-field" data-i18n="snapNationalF5">التاريخ</div>
+            </div>
           </div>
         </div>
         <div class="lock-overlay">
@@ -1490,44 +2207,32 @@ font-size:0.78rem;text-align:center;margin-top:12px;display:none;
     <div class="preview-card r-flag locked" data-target="alm.html" onclick="handleCardClick(this)">
       <span class="card-badge badge-hot">🇸🇦 <span data-i18n="badgeFlag">يوم العلم</span></span>
       <div class="thumb thumb-flag">
-        <div class="flag-gold-strip"></div>
-        <div class="flag-header-mini">
-          <div class="flag-moe-mini">
-            <div class="flag-moe-text-mini">
-              المملكة العربية السعودية
-              <div class="gold">وزارة التعليم</div>
+        <div class="real-snap snap-flag">
+          <div class="rs-header">
+            <div class="rs-h-side right">
+              <div class="l1" data-i18n="snapFlagTitle">يوم العَلَم</div>
+              <div class="l2">Flag Day · ١١ مارس</div>
             </div>
-            <div class="moe-dots-mini">
-              <span></span><span></span><span></span><span></span>
-              <span></span><span></span><span></span><span></span>
-              <span></span><span></span><span></span><span></span>
-            </div>
-          </div>
-          <div class="flag-title-mini">
-            <div class="ar">يَوْمُ العَلَم</div>
-            <div class="date">١١ مَارِس · ١١٥٧هـ</div>
-          </div>
-          <div class="saudi-flag-mini"></div>
-        </div>
-        <div class="quote-bar-mini">
-          <div class="q">❖ رايةُ التَّوحيدِ خَفّاقَةٌ بِعِزِّ السُّعُودِيَّة ❖</div>
-        </div>
-        <div class="flag-region-mini">
-          <div class="bar"></div>
-        </div>
-        <div class="flag-zones-mini">
-          <div class="zone-mini">
-            <div class="zone-head-mini"></div>
-            <div class="zone-body-mini">
-              <div class="zone-field-mini"></div>
-              <div class="zone-field-mini"></div>
+            <div class="rs-h-center">⚔️</div>
+            <div class="rs-h-side left">
+              <div class="l1" data-i18n="snapMoE">وزارة التعليم</div>
+              <div class="l2">١٤٤٧هـ</div>
             </div>
           </div>
-          <div class="zone-mini">
-            <div class="zone-head-mini"></div>
-            <div class="zone-body-mini">
-              <div class="zone-field-mini"></div>
-              <div class="zone-field-mini"></div>
+          <div class="rs-title" data-i18n="snapFlagEvent">رايتنا عزّنا</div>
+          <div class="rs-subtitle" data-i18n="snapFlagSub">شموخ راية · مجد وطن</div>
+          <div class="rs-body">
+            <div class="rs-photos">
+              <div class="rs-photo"></div>
+              <div class="rs-photo"></div>
+              <div class="rs-photo"></div>
+            </div>
+            <div class="rs-fields">
+              <div class="rs-field" data-i18n="snapFlagF1">القائد/ة</div>
+              <div class="rs-field" data-i18n="snapFlagF2">المنفذ/ة</div>
+              <div class="rs-field" data-i18n="snapFlagF3">المكان</div>
+              <div class="rs-field" data-i18n="snapFlagF4">المشاركون</div>
+              <div class="rs-field" data-i18n="snapFlagF5">التاريخ</div>
             </div>
           </div>
         </div>
@@ -1882,41 +2587,17 @@ font-size:0.78rem;text-align:center;margin-top:12px;display:none;
       <div class="cat-body">
         <div class="cat-cards">
 
-    <div class="preview-card r-general locked" data-target="report.html" onclick="handleCardClick(this)">
-      <span class="card-badge badge-premium">💎 <span data-i18n="badgePremium">احترافي</span></span>
+    <div class="preview-card r-general free-trial" data-target="report.html" onclick="handleCardClick(this)">
+      <span class="card-badge badge-free">🎁 <span data-i18n="badgeFree">جرّبني مجاناً</span></span>
       <div class="thumb thumb-general">
-        <div class="t-header">
-          <div class="gen-title">الإدارة العامة للتعليم<br><span>بمحافظة ...</span></div>
-          <div class="moe-dots-mini">
-            <div class="dot-m"></div><div class="dot-m"></div><div class="dot-m"></div><div class="dot-m"></div><div class="dot-m"></div>
-            <div class="dot-m"></div><div class="dot-m"></div><div class="dot-m"></div><div class="dot-m"></div><div class="dot-m"></div>
-            <div class="dot-m"></div><div class="dot-m"></div><div class="dot-m"></div><div class="dot-m"></div><div class="dot-m"></div>
-            <div class="dot-m"></div><div class="dot-m"></div><div class="dot-m"></div><div class="dot-m"></div><div class="dot-m"></div>
-          </div>
+        <div class="iframe-snap-wrap" id="iframe-report">
+          <div class="iframe-loading" data-i18n="loadingPreview">جاري تحميل المعاينة</div>
+          <iframe src="report.html" loading="lazy" scrolling="no" sandbox="allow-same-origin allow-scripts" title="معاينة التقرير العام" onload="this.parentElement.classList.add('loaded')"></iframe>
         </div>
-        <div class="stripe-mini"></div>
-        <div class="titles-section">
-          <div class="tbar-mini"></div>
-          <div class="sbar-mini"></div>
-        </div>
-        <div class="body-grid">
-          <div class="photos-panel">
-            <div class="photo-mini"></div>
-            <div class="photo-mini"></div>
-            <div class="photo-mini"></div>
-          </div>
-          <div class="fields-col">
-            <div class="field-mini"></div>
-            <div class="field-mini"></div>
-            <div class="field-mini"></div>
-            <div class="field-mini"></div>
-            <div class="tall-mini"></div>
-          </div>
-        </div>
-        <div class="lock-overlay">
-          <div class="lock-cta">
-            <span>🔑</span>
-            <span data-i18n="lockCta">سجّل الدخول للوصول</span>
+        <div class="free-overlay">
+          <div class="free-cta">
+            <span>🎁</span>
+            <span data-i18n="freeCta">اضغط للتجربة المجانية</span>
           </div>
         </div>
       </div>
@@ -2187,6 +2868,74 @@ font-size:0.78rem;text-align:center;margin-top:12px;display:none;
   </div>
 </div>
 
+<!-- ═══════════════════════════════════════════════
+     Upgrade Modal - مودال الترقية
+     ═══════════════════════════════════════════════ -->
+<div class="upgrade-overlay" id="upgradeModal">
+  <div class="upgrade-card">
+    <button class="upgrade-close" onclick="closeUpgradeModal()">✕</button>
+
+    <div class="upgrade-icon">✨</div>
+
+    <h2 class="upgrade-title" data-i18n="upgradeTitle">انتهت تحميلاتك المجانية!</h2>
+    <p class="upgrade-subtitle" data-i18n="upgradeSubtitle">احصل على الباقة الكاملة واستفد من جميع القوالب</p>
+
+    <div class="upgrade-features">
+      <div class="upgrade-feature">
+        <span class="up-check">✅</span>
+        <span data-i18n="upFeat1">13 قالب احترافي معتمد</span>
+      </div>
+      <div class="upgrade-feature">
+        <span class="up-check">✅</span>
+        <span data-i18n="upFeat2">تحميلات بلا حدود</span>
+      </div>
+      <div class="upgrade-feature">
+        <span class="up-check">✅</span>
+        <span data-i18n="upFeat3">كل الألوان والثيمات</span>
+      </div>
+      <div class="upgrade-feature">
+        <span class="up-check">✅</span>
+        <span data-i18n="upFeat4">تحديثات مدى الحياة</span>
+      </div>
+      <div class="upgrade-feature">
+        <span class="up-check">✅</span>
+        <span data-i18n="upFeat5">دعم فني عبر الواتساب</span>
+      </div>
+    </div>
+
+    <div class="upgrade-price-block">
+      <div class="upgrade-price-old">
+        <span class="price-strike">59 <span data-i18n="upCurrency">ريال</span></span>
+        <span class="discount-badge" data-i18n="upDiscount">خصم 17%</span>
+      </div>
+      <div class="upgrade-price-new">
+        <span class="price-amount">49</span>
+        <span class="price-currency" data-i18n="upCurrency">ريال</span>
+      </div>
+      <div class="upgrade-price-note" data-i18n="upPriceNote">دفعة واحدة · مدى الحياة</div>
+    </div>
+
+    <div class="upgrade-social-proof">
+      <span class="social-icon">🔥</span>
+      <span data-i18n="upSocial">انضم لأكثر من 500+ معلم اشتركوا هذا الشهر</span>
+    </div>
+
+    <div class="upgrade-guarantee">
+      <span>🛡️</span>
+      <span data-i18n="upGuarantee">ضمان استرداد كامل خلال 7 أيام</span>
+    </div>
+
+    <a href="https://wa.me/966502517217?text=السلام%20عليكم%2C%20أرغب%20في%20الاشتراك%20بمنصة%20التقارير%20المدرسية" target="_blank" rel="noopener" class="upgrade-cta-btn">
+      <span class="wa-icon">📱</span>
+      <span data-i18n="upCtaWa">اشترك عبر الواتساب الآن</span>
+    </a>
+
+    <button class="upgrade-later" onclick="closeUpgradeModal()">
+      <span data-i18n="upLater">ربما لاحقاً</span>
+    </button>
+  </div>
+</div>
+
 <script>
 const users = {
     "0504854223": "1234",
@@ -2264,6 +3013,59 @@ const I18N = {
     catDocs: "الجداول والوثائق",
     catDocsSub: "جداول الاختبارات وشهايد الشكر",
     comingSoon: "تقارير قادمة قريباً",
+    loadingPreview: "جاري تحميل المعاينة",
+    badgeFree: "جرّبني مجاناً",
+    freeCta: "اضغط للتجربة المجانية",
+    freeCounterPrefix: "لديك",
+    freeCounterSuffix: "تحميل مجاني متبقي · جرّب التقرير العام الآن",
+    freeCounterBtn: "جرّب الآن",
+    upgradeTitle: "انتهت تحميلاتك المجانية!",
+    upgradeSubtitle: "احصل على الباقة الكاملة واستفد من جميع القوالب",
+    upFeat1: "13 قالب احترافي معتمد",
+    upFeat2: "تحميلات بلا حدود",
+    upFeat3: "كل الألوان والثيمات",
+    upFeat4: "تحديثات مدى الحياة",
+    upFeat5: "دعم فني عبر الواتساب",
+    upCurrency: "ريال",
+    upDiscount: "خصم 17%",
+    upPriceNote: "دفعة واحدة · مدى الحياة",
+    upSocial: "انضم لأكثر من 500+ معلم اشتركوا هذا الشهر",
+    upGuarantee: "ضمان استرداد كامل خلال 7 أيام",
+    upCtaWa: "اشترك عبر الواتساب الآن",
+    upLater: "ربما لاحقاً",
+    snapMoE: "وزارة التعليم",
+    snapTasisTitle: "يوم التأسيس",
+    snapTasisEvent: "عنوان الفعالية",
+    snapTasisSub: "يوم بدينا · OUR STORY",
+    snapTasisF1: "المنفذ/ة",
+    snapTasisF2: "مكان التنفيذ",
+    snapTasisF3: "المستفيدون",
+    snapTasisF4: "العدد",
+    snapTasisF5: "التاريخ",
+    snapTeacherTitle: "يوم المعلم",
+    snapTeacherEvent: "شكراً معلمي",
+    snapTeacherSub: "CELEBRATING OUR TEACHERS",
+    snapTeacherF1: "اسم المنفذ",
+    snapTeacherF2: "مكان التنفيذ",
+    snapTeacherF3: "المستفيدون",
+    snapTeacherF4: "عدد المعلمين",
+    snapTeacherF5: "الأهداف",
+    snapNationalTitle: "اليوم الوطني",
+    snapNationalEvent: "عنوان الفعالية الوطنية",
+    snapNationalSub: "سعوديتنا فخر · ٢٣ سبتمبر",
+    snapNationalF1: "المنفذ/ة",
+    snapNationalF2: "المكان",
+    snapNationalF3: "المستفيدون",
+    snapNationalF4: "العدد",
+    snapNationalF5: "التاريخ",
+    snapFlagTitle: "يوم العَلَم",
+    snapFlagEvent: "رايتنا عزّنا",
+    snapFlagSub: "شموخ راية · مجد وطن",
+    snapFlagF1: "القائد/ة",
+    snapFlagF2: "المنفذ/ة",
+    snapFlagF3: "المكان",
+    snapFlagF4: "المشاركون",
+    snapFlagF5: "التاريخ",
     badgeNew2: "جديد",
     badgeFormal: "رسمي",
     badgeWeekly: "أسبوعي",
@@ -2381,6 +3183,59 @@ const I18N = {
     catDocs: "Schedules & Documents",
     catDocsSub: "Exam schedules and certificates",
     comingSoon: "Coming Soon",
+    loadingPreview: "Loading preview",
+    badgeFree: "Try Free",
+    freeCta: "Tap for free trial",
+    freeCounterPrefix: "You have",
+    freeCounterSuffix: "free downloads left · Try the General Report now",
+    freeCounterBtn: "Try Now",
+    upgradeTitle: "Free downloads ended!",
+    upgradeSubtitle: "Get the full package and access all templates",
+    upFeat1: "13 professional templates",
+    upFeat2: "Unlimited downloads",
+    upFeat3: "All colors and themes",
+    upFeat4: "Lifetime updates",
+    upFeat5: "WhatsApp support",
+    upCurrency: "SAR",
+    upDiscount: "17% OFF",
+    upPriceNote: "One-time payment · Lifetime",
+    upSocial: "Join 500+ teachers who subscribed this month",
+    upGuarantee: "Full 7-day money-back guarantee",
+    upCtaWa: "Subscribe via WhatsApp Now",
+    upLater: "Maybe later",
+    snapMoE: "Ministry of Education",
+    snapTasisTitle: "Founding Day",
+    snapTasisEvent: "Event Title",
+    snapTasisSub: "Our Story · ١١٣٩H/١٧٢٧",
+    snapTasisF1: "Organizer",
+    snapTasisF2: "Location",
+    snapTasisF3: "Beneficiaries",
+    snapTasisF4: "Count",
+    snapTasisF5: "Date",
+    snapTeacherTitle: "Teacher's Day",
+    snapTeacherEvent: "Thank you Teacher",
+    snapTeacherSub: "CELEBRATING OUR TEACHERS",
+    snapTeacherF1: "Organizer",
+    snapTeacherF2: "Location",
+    snapTeacherF3: "Beneficiaries",
+    snapTeacherF4: "Teachers count",
+    snapTeacherF5: "Goals",
+    snapNationalTitle: "National Day",
+    snapNationalEvent: "National Event Title",
+    snapNationalSub: "Saudi Pride · Sep 23",
+    snapNationalF1: "Organizer",
+    snapNationalF2: "Location",
+    snapNationalF3: "Beneficiaries",
+    snapNationalF4: "Count",
+    snapNationalF5: "Date",
+    snapFlagTitle: "Flag Day",
+    snapFlagEvent: "Our Pride",
+    snapFlagSub: "Glory of the Banner",
+    snapFlagF1: "Principal",
+    snapFlagF2: "Organizer",
+    snapFlagF3: "Location",
+    snapFlagF4: "Participants",
+    snapFlagF5: "Date",
     badgeNew2: "New",
     badgeFormal: "Formal",
     badgeWeekly: "Weekly",
@@ -2472,6 +3327,8 @@ function toggleLang(){
   const current = getCurrentLang();
   const next = (current === 'ar') ? 'en' : 'ar';
   applyLang(next);
+  // تحديث العدّاد بعد تغيير اللغة
+  if(typeof updateFreeCounter === 'function') updateFreeCounter();
 }
 
 // طبّق اللغة المحفوظة عند تحميل الصفحة (قبل DOMContentLoaded الرئيسي)
@@ -2550,6 +3407,13 @@ function logout(){
 }
 
 function handleCardClick(card){
+  // الكروت المجانية للتجربة - يدخل مباشرة
+  if(card.classList.contains('free-trial')){
+    const target = card.getAttribute('data-target');
+    if(target) window.location.href = target;
+    return;
+  }
+  // الكروت المقفولة
   if(card.classList.contains('locked')){
     openLogin();
   } else {
@@ -2557,6 +3421,67 @@ function handleCardClick(card){
     if(target) window.location.href = target;
   }
 }
+
+// ═══════════════════════════════════════════════
+// نظام التجربة المجانية - عدّ التحميلات
+// ═══════════════════════════════════════════════
+const FREE_DOWNLOADS_LIMIT = 3;
+
+function getFreeDownloadsLeft(){
+  const used = parseInt(localStorage.getItem('free_downloads_used') || '0');
+  return Math.max(0, FREE_DOWNLOADS_LIMIT - used);
+}
+
+function updateFreeCounter(){
+  const counter = document.getElementById('freeCounter');
+  if(!counter) return;
+  const left = getFreeDownloadsLeft();
+  const valueEl = document.getElementById('freeCounterValue');
+  if(valueEl) valueEl.textContent = left;
+
+  if(left === 0){
+    counter.classList.add('exhausted');
+    const lang = localStorage.getItem('site_lang') || 'ar';
+    const textEl = counter.querySelector('.free-counter-text');
+    const btnEl = counter.querySelector('.free-counter-btn');
+    if(lang === 'ar'){
+      textEl.innerHTML = '<span>انتهت تحميلاتك المجانية!</span> <strong>اشترك للوصول الكامل</strong>';
+      btnEl.innerHTML = '<span>اشترك الآن</span>';
+    } else {
+      textEl.innerHTML = '<span>Free downloads ended!</span> <strong>Subscribe for full access</strong>';
+      btnEl.innerHTML = '<span>Subscribe</span>';
+    }
+    btnEl.onclick = openUpgradeModal;
+  }
+}
+
+function openUpgradeModal(){
+  document.getElementById('upgradeModal').classList.add('show');
+  document.body.style.overflow = 'hidden';
+}
+
+function closeUpgradeModal(){
+  document.getElementById('upgradeModal').classList.remove('show');
+  document.body.style.overflow = '';
+}
+
+// إغلاق المودال عند النقر على الخلفية
+document.addEventListener('DOMContentLoaded', function(){
+  const upModal = document.getElementById('upgradeModal');
+  if(upModal){
+    upModal.addEventListener('click', function(e){
+      if(e.target === upModal) closeUpgradeModal();
+    });
+  }
+  // تحديث العدّاد عند تحميل الصفحة
+  updateFreeCounter();
+
+  // لو رجع المستخدم من report.html وكان انتهى من الـ 3 تحميلات → افتح المودال
+  if(getFreeDownloadsLeft() === 0 && localStorage.getItem('show_upgrade_now') === '1'){
+    localStorage.removeItem('show_upgrade_now');
+    setTimeout(openUpgradeModal, 600);
+  }
+});
 
 function toggleCategory(headerEl){
   const section = headerEl.closest('.cat-section');

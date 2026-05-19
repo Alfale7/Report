@@ -1,5 +1,4 @@
 <!DOCTYPE html>
-
 <html lang="ar" dir="rtl">
 <head>
 <meta charset="UTF-8">
@@ -13,12 +12,12 @@
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
 
 html,body{
-font-family:‘Tajawal’,‘Tahoma’,‘Arial’,sans-serif;
+font-family:'Tajawal','Tahoma','Arial',sans-serif;
 background:#dde8ea;
 width:100%;
 overflow-x:hidden;
 text-rendering:optimizeLegibility;
-font-feature-settings:“liga”,“calt”,“kern”;
+font-feature-settings:"liga","calt","kern";
 }
 
 #page{
@@ -208,7 +207,7 @@ min-height:22px;
 }
 .princ-box input{
 border:none;outline:none;
-font-family:‘Tajawal’,‘Tahoma’,‘Arial’,sans-serif;
+font-family:'Tajawal','Tahoma','Arial',sans-serif;
 font-size:0.62rem;
 color:#1a3c4e;
 background:transparent;
@@ -242,7 +241,7 @@ flex-shrink:0;
 }
 .fi{
 border:none;outline:none;
-font-family:‘Tajawal’,‘Tahoma’,‘Arial’,sans-serif;
+font-family:'Tajawal','Tahoma','Arial',sans-serif;
 font-size:0.6rem;
 color:#1a3c4e;
 background:transparent;
@@ -256,7 +255,7 @@ caret-color:#2a9d8f;
 
 .fp{
 display:none;
-font-family:‘Tajawal’,‘Tahoma’,‘Arial’,sans-serif;
+font-family:'Tajawal','Tahoma','Arial',sans-serif;
 font-size:0.6rem;
 color:#1a3c4e;
 flex:1;
@@ -264,7 +263,7 @@ text-align:right;
 direction:rtl;
 unicode-bidi:embed;
 text-rendering:optimizeLegibility;
-font-feature-settings:“liga”,“calt”,“kern”;
+font-feature-settings:"liga","calt","kern";
 }
 
 .fr-tall{
@@ -281,7 +280,7 @@ width:100%;
 .fr-tall .fl{margin-bottom:2px;}
 .fr-tall textarea{
 border:none;outline:none;
-font-family:‘Tajawal’,‘Tahoma’,‘Arial’,sans-serif;
+font-family:'Tajawal','Tahoma','Arial',sans-serif;
 font-size:0.6rem;
 color:#1a3c4e;
 background:transparent;
@@ -296,7 +295,7 @@ caret-color:#2a9d8f;
 
 .fp-blk{
 display:none;
-font-family:‘Tajawal’,‘Tahoma’,‘Arial’,sans-serif;
+font-family:'Tajawal','Tahoma','Arial',sans-serif;
 font-size:0.6rem;
 color:#1a3c4e;
 white-space:pre-wrap;
@@ -309,7 +308,7 @@ line-height:1.7;
 direction:rtl;
 unicode-bidi:embed;
 text-rendering:optimizeLegibility;
-font-feature-settings:“liga”,“calt”,“kern”;
+font-feature-settings:"liga","calt","kern";
 font-variant-ligatures:common-ligatures contextual;
 }
 
@@ -329,7 +328,7 @@ flex:1;
 padding:13px 8px;
 border:none;
 border-radius:10px;
-font-family:‘Tajawal’,‘Tahoma’,‘Arial’,sans-serif;
+font-family:'Tajawal','Tahoma','Arial',sans-serif;
 font-weight:700;
 cursor:pointer;
 font-size:0.85rem;
@@ -355,7 +354,7 @@ color:#fff;
 padding:7px 18px;
 border-radius:30px;
 font-size:0.75rem;
-font-family:‘Tajawal’,‘Tahoma’,‘Arial’,sans-serif;
+font-family:'Tajawal','Tahoma','Arial',sans-serif;
 opacity:0;
 pointer-events:none;
 transition:opacity .3s,transform .3s;
@@ -382,11 +381,13 @@ padding:20px 16px;
 text-align:center;
 max-width:260px;
 width:88%;
-font-family:‘Tajawal’,‘Tahoma’,‘Arial’,sans-serif;
+font-family:'Tajawal','Tahoma','Arial',sans-serif;
 }
 .mbox p{margin:0 0 14px;font-size:0.85rem;color:#1a3c4e;line-height:1.5;}
 .mbox-btns{display:flex;gap:8px;}
 .mbox-btns .btn{padding:10px;font-size:0.78rem;}
+
+
 
 /* ═══ زر تغيير اللغة داخل شريط الأزرار ═══ */
 .action-bar .btn-lang{
@@ -402,7 +403,7 @@ background:#1a3c4e;
 color:#fff;
 border:1.5px solid rgba(255,255,255,0.2);
 border-radius:14px;
-font-family:‘Tajawal’,‘Tahoma’,‘Arial’,sans-serif;
+font-family:'Tajawal','Tahoma','Arial',sans-serif;
 font-size:0.7rem;
 font-weight:800;
 cursor:pointer;
@@ -418,11 +419,13 @@ transition:all 0.2s;
 </head>
 <body>
 
+
+
 <div id="page">
 
   <div class="hdr">
     <div class="hdr-text">
-      <h2><span data-i18n="moeLabel">الإدارة العامة للتعليم</span><br><span id="muhafaza" data-i18n="moeRegion">بمنطقة ...</span></h2>
+      <h2><span data-i18n="moeLabel">الإدارة العامة للتعليم</span><br><span id="muhafaza" data-i18n="moeRegion">بمحافظة ...</span></h2>
     </div>
     <!-- شعار وزارة التعليم الرسمي (بالأبيض بسبب filter) -->
     <div class="moe">
@@ -436,95 +439,93 @@ transition:all 0.2s;
 
   <div class="tbl">
 
-```
-<!-- RIGHT (in RTL): photos column -->
-<div class="col-L">
-  <div class="ppanel">
-    <div class="phdr"><div class="phdr-dot"></div><span data-i18n="evidence">شـواهد</span></div>
-    <div class="pinner">
+    <!-- RIGHT (in RTL): photos column -->
+    <div class="col-L">
+      <div class="ppanel">
+        <div class="phdr"><div class="phdr-dot"></div><span data-i18n="evidence">شـواهد</span></div>
+        <div class="pinner">
 
-      <div class="pf" onclick="openF(1)">
-        <img id="p1">
-        <div class="pwm"><svg viewBox="0 0 100 100" fill="none"><circle cx="50" cy="38" r="24" stroke="white" stroke-width="4"/><circle cx="50" cy="38" r="12" stroke="white" stroke-width="4"/><path d="M18 70 Q34 54 50 65 Q66 54 82 70" stroke="white" stroke-width="4" fill="none"/></svg></div>
-        <div class="padd" data-i18n="addPhoto">+ أضف صورة</div>
-        <div class="psp" id="sp1"></div>
-        <input type="file" id="i1" hidden accept="image/*" onchange="prev(this,1)">
+          <div class="pf" onclick="openF(1)">
+            <img id="p1">
+            <div class="pwm"><svg viewBox="0 0 100 100" fill="none"><circle cx="50" cy="38" r="24" stroke="white" stroke-width="4"/><circle cx="50" cy="38" r="12" stroke="white" stroke-width="4"/><path d="M18 70 Q34 54 50 65 Q66 54 82 70" stroke="white" stroke-width="4" fill="none"/></svg></div>
+            <div class="padd" data-i18n="addPhoto">+ أضف صورة</div>
+            <div class="psp" id="sp1"></div>
+            <input type="file" id="i1" hidden accept="image/*" onchange="prev(this,1)">
+          </div>
+
+          <div class="pf" onclick="openF(2)">
+            <img id="p2">
+            <div class="pwm"><svg viewBox="0 0 100 100" fill="none"><circle cx="50" cy="38" r="24" stroke="white" stroke-width="4"/><circle cx="50" cy="38" r="12" stroke="white" stroke-width="4"/><path d="M18 70 Q34 54 50 65 Q66 54 82 70" stroke="white" stroke-width="4" fill="none"/></svg></div>
+            <div class="padd" data-i18n="addPhoto">+ أضف صورة</div>
+            <div class="psp" id="sp2"></div>
+            <input type="file" id="i2" hidden accept="image/*" onchange="prev(this,2)">
+          </div>
+
+          <div class="pf" onclick="openF(3)">
+            <img id="p3">
+            <div class="pwm"><svg viewBox="0 0 100 100" fill="none"><circle cx="50" cy="38" r="24" stroke="white" stroke-width="4"/><circle cx="50" cy="38" r="12" stroke="white" stroke-width="4"/><path d="M18 70 Q34 54 50 65 Q66 54 82 70" stroke="white" stroke-width="4" fill="none"/></svg></div>
+            <div class="padd" data-i18n="addPhoto">+ أضف صورة</div>
+            <div class="psp" id="sp3"></div>
+            <input type="file" id="i3" hidden accept="image/*" onchange="prev(this,3)">
+          </div>
+
+        </div>
+        <div class="princ-wrap">
+          <div class="princ-lbl" data-i18n="lblPrincipal">مدير المدرسة</div>
+          <div class="princ-box">
+            <input type="text" id="f-princ" placeholder="اسم المدير/ة..." data-i18n-placeholder="phPrincipalName">
+            <span class="fp" id="pt-princ" style="text-align:center;"></span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- LEFT (in RTL): fields column -->
+    <div class="col-R">
+
+      <div class="fr">
+        <span class="fl" data-i18n="lblExec">المنفذ:</span>
+        <input class="fi" id="f-exec" type="text" placeholder="الاسم..." data-i18n-placeholder="phName">
+        <span class="fp" id="pt-exec"></span>
       </div>
 
-      <div class="pf" onclick="openF(2)">
-        <img id="p2">
-        <div class="pwm"><svg viewBox="0 0 100 100" fill="none"><circle cx="50" cy="38" r="24" stroke="white" stroke-width="4"/><circle cx="50" cy="38" r="12" stroke="white" stroke-width="4"/><path d="M18 70 Q34 54 50 65 Q66 54 82 70" stroke="white" stroke-width="4" fill="none"/></svg></div>
-        <div class="padd" data-i18n="addPhoto">+ أضف صورة</div>
-        <div class="psp" id="sp2"></div>
-        <input type="file" id="i2" hidden accept="image/*" onchange="prev(this,2)">
+      <div class="fr">
+        <span class="fl" data-i18n="lblPlace">مكان التنفيذ:</span>
+        <input class="fi" id="f-place" type="text" placeholder="..." data-i18n-placeholder="phDots">
+        <span class="fp" id="pt-place"></span>
       </div>
 
-      <div class="pf" onclick="openF(3)">
-        <img id="p3">
-        <div class="pwm"><svg viewBox="0 0 100 100" fill="none"><circle cx="50" cy="38" r="24" stroke="white" stroke-width="4"/><circle cx="50" cy="38" r="12" stroke="white" stroke-width="4"/><path d="M18 70 Q34 54 50 65 Q66 54 82 70" stroke="white" stroke-width="4" fill="none"/></svg></div>
-        <div class="padd" data-i18n="addPhoto">+ أضف صورة</div>
-        <div class="psp" id="sp3"></div>
-        <input type="file" id="i3" hidden accept="image/*" onchange="prev(this,3)">
+      <div class="fr">
+        <span class="fl" data-i18n="lblBene">المستفيدون:</span>
+        <input class="fi" id="f-bene" type="text" placeholder="..." data-i18n-placeholder="phDots">
+        <span class="fp" id="pt-bene"></span>
+      </div>
+
+      <div class="fr">
+        <span class="fl" data-i18n="lblCount">العدد:</span>
+        <input class="fi" id="f-count" type="number" min="0" placeholder="0">
+        <span class="fp" id="pt-count"></span>
+      </div>
+
+      <div class="fr">
+        <span class="fl" data-i18n="lblDate">التاريخ:</span>
+        <input class="fi" id="f-date" type="text" placeholder="YYYY/MM/DD">
+        <span class="fp" id="pt-date"></span>
+      </div>
+
+      <div class="fr-tall">
+        <span class="fl" data-i18n="lblGoals">الأهـداف:</span>
+        <textarea id="f-goals" placeholder="اكتب الأهداف..." data-i18n-placeholder="phGoalsShort"></textarea>
+        <div class="fp-blk" id="pt-goals"></div>
+      </div>
+
+      <div class="fr-tall">
+        <span class="fl" data-i18n="lblDesc">وصف البرنامج:</span>
+        <textarea id="f-desc" placeholder="اكتب الوصف..." data-i18n-placeholder="phDescShort"></textarea>
+        <div class="fp-blk" id="pt-desc"></div>
       </div>
 
     </div>
-    <div class="princ-wrap">
-      <div class="princ-lbl" data-i18n="lblPrincipal">مدير المدرسة</div>
-      <div class="princ-box">
-        <input type="text" id="f-princ" placeholder="اسم المدير/ة..." data-i18n-placeholder="phPrincipalName">
-        <span class="fp" id="pt-princ" style="text-align:center;"></span>
-      </div>
-    </div>
-  </div>
-</div>
-
-<!-- LEFT (in RTL): fields column -->
-<div class="col-R">
-
-  <div class="fr">
-    <span class="fl" data-i18n="lblExec">المنفذ:</span>
-    <input class="fi" id="f-exec" type="text" placeholder="الاسم..." data-i18n-placeholder="phName">
-    <span class="fp" id="pt-exec"></span>
-  </div>
-
-  <div class="fr">
-    <span class="fl" data-i18n="lblPlace">مكان التنفيذ:</span>
-    <input class="fi" id="f-place" type="text" placeholder="..." data-i18n-placeholder="phDots">
-    <span class="fp" id="pt-place"></span>
-  </div>
-
-  <div class="fr">
-    <span class="fl" data-i18n="lblBene">المستفيدون:</span>
-    <input class="fi" id="f-bene" type="text" placeholder="..." data-i18n-placeholder="phDots">
-    <span class="fp" id="pt-bene"></span>
-  </div>
-
-  <div class="fr">
-    <span class="fl" data-i18n="lblCount">العدد:</span>
-    <input class="fi" id="f-count" type="number" min="0" placeholder="0">
-    <span class="fp" id="pt-count"></span>
-  </div>
-
-  <div class="fr">
-    <span class="fl" data-i18n="lblDate">التاريخ:</span>
-    <input class="fi" id="f-date" type="text" placeholder="YYYY/MM/DD">
-    <span class="fp" id="pt-date"></span>
-  </div>
-
-  <div class="fr-tall">
-    <span class="fl" data-i18n="lblGoals">الأهـداف:</span>
-    <textarea id="f-goals" placeholder="اكتب الأهداف..." data-i18n-placeholder="phGoalsShort"></textarea>
-    <div class="fp-blk" id="pt-goals"></div>
-  </div>
-
-  <div class="fr-tall">
-    <span class="fl" data-i18n="lblDesc">وصف البرنامج:</span>
-    <textarea id="f-desc" placeholder="اكتب الوصف..." data-i18n-placeholder="phDescShort"></textarea>
-    <div class="fp-blk" id="pt-desc"></div>
-  </div>
-
-</div>
-```
 
   </div>
 
@@ -710,6 +711,17 @@ function doClear(){
 }
 
 async function saveImg(){
+  // ═══ نظام التجربة المجانية ═══
+  const FREE_DOWNLOADS_LIMIT = 3;
+  const used = parseInt(localStorage.getItem('free_downloads_used') || '0');
+  const left = Math.max(0, FREE_DOWNLOADS_LIMIT - used);
+
+  if(left === 0){
+    // انتهت التحميلات - افتح modal الترقية
+    showUpgradeModalInReport();
+    return;
+  }
+
   const page=document.getElementById('page');
 
   // الحقول السطرية (سطر واحد)
@@ -784,6 +796,19 @@ async function saveImg(){
     l.href=c.toDataURL('image/png');
     l.click();
     toast(I18N[getCurrentLang()].toastDone);
+
+    // ═══ زيادة عدّاد التحميلات المجانية ═══
+    const usedNow = parseInt(localStorage.getItem('free_downloads_used') || '0') + 1;
+    localStorage.setItem('free_downloads_used', usedNow);
+    const remaining = Math.max(0, 3 - usedNow);
+    setTimeout(() => {
+      if(remaining === 0){
+        // انتهت التحميلات - افتح Modal
+        showUpgradeModalInReport();
+      } else {
+        toast(`🎁 تبقّى لك ${remaining} ${remaining === 1 ? 'تحميل' : 'تحميلات'} مجانية`);
+      }
+    }, 2000);
   }catch(e){
     toast(I18N[getCurrentLang()].toastError);
   }
@@ -797,6 +822,99 @@ async function saveImg(){
     document.getElementById(id).style.display='';
     document.getElementById(blockPts[idx]).style.display='none';
   });
+}
+
+// ═══════════════════════════════════════════════
+// Upgrade Modal داخل report.html
+// ═══════════════════════════════════════════════
+function showUpgradeModalInReport(){
+  // إنشاء الـ modal لو ما كان موجود
+  let modal = document.getElementById('reportUpgradeModal');
+  if(!modal){
+    modal = document.createElement('div');
+    modal.id = 'reportUpgradeModal';
+    modal.innerHTML = `
+      <div class="rum-overlay" onclick="if(event.target===this)closeReportUpgrade()">
+        <div class="rum-card">
+          <button class="rum-close" onclick="closeReportUpgrade()">✕</button>
+          <div class="rum-icon">✨</div>
+          <h2 class="rum-title">انتهت تحميلاتك المجانية!</h2>
+          <p class="rum-subtitle">استمتعت بالتقرير العام؟ احصل على الباقة الكاملة</p>
+          <div class="rum-features">
+            <div class="rum-feat">✅ 13 قالب احترافي معتمد</div>
+            <div class="rum-feat">✅ تحميلات بلا حدود</div>
+            <div class="rum-feat">✅ كل الألوان والثيمات</div>
+            <div class="rum-feat">✅ تحديثات مدى الحياة</div>
+            <div class="rum-feat">✅ دعم فني عبر الواتساب</div>
+          </div>
+          <div class="rum-price-block">
+            <div class="rum-price-old">
+              <span class="rum-strike">59 ريال</span>
+              <span class="rum-discount">خصم 17%</span>
+            </div>
+            <div class="rum-price-new">
+              <span class="rum-amount">49</span>
+              <span class="rum-currency">ريال</span>
+            </div>
+            <div class="rum-note">دفعة واحدة · مدى الحياة</div>
+          </div>
+          <div class="rum-social">🔥 انضم لأكثر من 500+ معلم اشتركوا هذا الشهر</div>
+          <div class="rum-guarantee">🛡️ ضمان استرداد كامل خلال 7 أيام</div>
+          <a href="https://wa.me/966502517217?text=السلام%20عليكم%2C%20أرغب%20في%20الاشتراك%20بمنصة%20التقارير%20المدرسية" target="_blank" rel="noopener" class="rum-cta">
+            <span style="font-size:1.2rem">📱</span>
+            <span>اشترك عبر الواتساب الآن</span>
+          </a>
+          <button class="rum-later" onclick="closeReportUpgrade()">ربما لاحقاً</button>
+        </div>
+      </div>
+    `;
+    document.body.appendChild(modal);
+
+    // CSS
+    const style = document.createElement('style');
+    style.textContent = `
+      .rum-overlay{position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,15,30,0.85);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);z-index:99999;display:flex;align-items:center;justify-content:center;padding:20px;overflow-y:auto;animation:rum-fade 0.3s;}
+      @keyframes rum-fade{from{opacity:0;}to{opacity:1;}}
+      .rum-card{background:linear-gradient(135deg,#1a1f2e 0%,#2a3a4e 100%);border:2px solid rgba(255,107,107,0.4);border-radius:24px;padding:30px 22px 24px;max-width:420px;width:100%;text-align:center;position:relative;box-shadow:0 20px 60px rgba(0,0,0,0.6);max-height:92vh;overflow-y:auto;animation:rum-slide 0.4s cubic-bezier(0.34,1.56,0.64,1);}
+      @keyframes rum-slide{from{transform:translateY(30px) scale(0.95);opacity:0;}to{transform:translateY(0) scale(1);opacity:1;}}
+      .rum-close{position:absolute;top:14px;left:14px;background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.15);color:#fff;width:36px;height:36px;border-radius:50%;cursor:pointer;font-size:1rem;font-weight:700;display:flex;align-items:center;justify-content:center;transition:all 0.2s;font-family:inherit;}
+      .rum-close:hover{background:rgba(255,255,255,0.15);transform:rotate(90deg);}
+      .rum-icon{font-size:3rem;margin-bottom:8px;display:inline-block;animation:rum-bounce 2s ease-in-out infinite;}
+      @keyframes rum-bounce{0%,100%{transform:translateY(0);}50%{transform:translateY(-8px);}}
+      .rum-title{font-family:'Reem Kufi','Tajawal',sans-serif;font-size:1.35rem;font-weight:900;color:#fff;margin-bottom:6px;line-height:1.3;}
+      .rum-subtitle{font-size:0.85rem;color:rgba(255,255,255,0.65);font-weight:600;margin-bottom:18px;line-height:1.5;}
+      .rum-features{background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.08);border-radius:14px;padding:14px 16px;margin-bottom:16px;text-align:right;}
+      .rum-feat{padding:5px 0;font-size:0.85rem;font-weight:600;color:rgba(255,255,255,0.92);}
+      .rum-price-block{background:linear-gradient(135deg,rgba(255,193,7,0.12),rgba(255,107,107,0.08));border:2px solid rgba(255,193,7,0.3);border-radius:16px;padding:14px 16px 12px;margin-bottom:14px;}
+      .rum-price-old{display:flex;align-items:center;justify-content:center;gap:10px;margin-bottom:4px;}
+      .rum-strike{color:rgba(255,255,255,0.5);font-size:0.85rem;font-weight:700;text-decoration:line-through;text-decoration-color:#ff6b6b;text-decoration-thickness:2px;}
+      .rum-discount{background:linear-gradient(135deg,#ff6b6b,#ee5a52);color:#fff;padding:2px 9px;border-radius:99px;font-size:0.7rem;font-weight:900;}
+      .rum-price-new{display:flex;align-items:baseline;justify-content:center;gap:5px;margin-bottom:3px;}
+      .rum-amount{font-family:'Reem Kufi','Tajawal',sans-serif;font-size:2.6rem;font-weight:900;color:#ffc107;line-height:1;text-shadow:0 2px 14px rgba(255,193,7,0.4);}
+      .rum-currency{font-size:1rem;font-weight:800;color:#ffc107;}
+      .rum-note{font-size:0.72rem;color:rgba(255,255,255,0.6);font-weight:600;}
+      .rum-social{background:rgba(255,107,107,0.1);border:1px solid rgba(255,107,107,0.3);color:#ffb86b;padding:7px 12px;border-radius:99px;font-size:0.74rem;font-weight:700;margin-bottom:10px;}
+      .rum-guarantee{color:rgba(255,255,255,0.7);font-size:0.74rem;font-weight:600;margin-bottom:16px;}
+      .rum-cta{display:flex;align-items:center;justify-content:center;gap:8px;width:100%;padding:14px 20px;background:linear-gradient(135deg,#25d366 0%,#128c7e 100%);color:#fff;border:none;border-radius:14px;font-family:inherit;font-size:0.95rem;font-weight:800;cursor:pointer;text-decoration:none;box-shadow:0 8px 24px rgba(37,211,102,0.4);transition:all 0.2s;margin-bottom:8px;box-sizing:border-box;}
+      .rum-cta:hover{transform:translateY(-2px);box-shadow:0 12px 30px rgba(37,211,102,0.55);}
+      .rum-later{background:transparent;border:none;color:rgba(255,255,255,0.5);font-family:inherit;font-size:0.8rem;font-weight:600;cursor:pointer;padding:8px;text-decoration:underline;text-underline-offset:3px;}
+      .rum-later:hover{color:rgba(255,255,255,0.8);}
+      @media (max-width:480px){.rum-card{padding:24px 18px 20px;border-radius:20px;}.rum-icon{font-size:2.5rem;}.rum-title{font-size:1.15rem;}.rum-subtitle{font-size:0.78rem;}.rum-feat{font-size:0.78rem;}.rum-amount{font-size:2.2rem;}.rum-cta{font-size:0.88rem;padding:12px 16px;}}
+    `;
+    document.head.appendChild(style);
+  }
+
+  document.body.style.overflow = 'hidden';
+  modal.style.display = 'block';
+
+  // علامة للـ index.html ليفتح Modal لما يرجع المستخدم
+  localStorage.setItem('show_upgrade_now', '1');
+}
+
+function closeReportUpgrade(){
+  const modal = document.getElementById('reportUpgradeModal');
+  if(modal) modal.style.display = 'none';
+  document.body.style.overflow = '';
 }
 </script>
 
