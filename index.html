@@ -301,6 +301,7 @@ flex-shrink:0;
 box-shadow:0 4px 12px rgba(0,0,0,0.2),inset 0 1px 0 rgba(255,255,255,0.2);
 }
 .cat-icon.events{background:linear-gradient(135deg,#3a8a52,#1a3d2a);}
+.cat-icon.cultural{background:linear-gradient(135deg,#2a8aab,#1e6b8a);}
 .cat-icon.admin{background:linear-gradient(135deg,#9c27b0,#673ab7);}
 .cat-icon.school{background:linear-gradient(135deg,#2a9d8f,#1a3c4e);}
 .cat-icon.docs{background:linear-gradient(135deg,#c9a45b,#8b6428);}
@@ -1068,6 +1069,22 @@ width:30%;height:2px;background:#6b4a2b;opacity:0.5;
 .snap-flag .rs-field{border-color:#006c35; color:#006c35;}
 .snap-flag .rs-footer{color:#8b6428;}
 
+/* يوم اللغة العربية - أزرق سماوي + ذهبي (الهوية الرسمية) */
+.snap-arabic{background:linear-gradient(180deg, #e8f4f8 0%, #f5e9d4 100%);}
+.snap-arabic .rs-header{background:linear-gradient(135deg, #1e6b8a, #2a8aab); color:#fff;}
+.snap-arabic .rs-h-side{color:#fff;}
+.snap-arabic .rs-h-side .l2{color:#f4d690; opacity:0.95;}
+.snap-arabic .rs-h-center{
+  background:linear-gradient(135deg, #d4a657, #b8923d);
+  color:#fff;
+  border:2px solid #fff;
+}
+.snap-arabic .rs-title{background:linear-gradient(135deg, #1e6b8a, #2a8aab); color:#f4d690;}
+.snap-arabic .rs-subtitle{background:linear-gradient(135deg, #d4a657, #b8923d); color:#fff;}
+.snap-arabic .rs-photo{background:linear-gradient(135deg,#e8f4f8,#fbf6ec); border-color:#1e6b8a; color:#1e6b8a;}
+.snap-arabic .rs-field{border-color:#1e6b8a; color:#1e6b8a;}
+.snap-arabic .rs-footer{color:#1e6b8a;}
+
 /* Mobile responsive */
 @media (max-width:480px){
   .rs-header{padding:6px 8px;}
@@ -1383,6 +1400,8 @@ display:block;
 filter:drop-shadow(0 1px 1px rgba(107,74,43,0.25));
 }
 .r-teacher .card-icon{background:linear-gradient(135deg,#4caf50,#2a5d6e);}
+.r-arabic .card-icon{background:linear-gradient(135deg,#1e6b8a,#2a8aab); color:#fff;}
+.r-arabic .card-icon-wrap::after{background:#d4a657;}
 .r-general .card-icon{background:linear-gradient(135deg,#2a9d8f,#1a3c4e);}
 .r-national .card-icon{background:linear-gradient(135deg,#3a8a52,#1a3d2a);}
 .r-exam .card-icon{background:linear-gradient(135deg,#c9a45b,#9a7a3d);color:#fff;}
@@ -2048,13 +2067,13 @@ font-size:0.78rem;text-align:center;margin-top:12px;display:none;
     <!-- ═══ تصنيف: المناسبات الوطنية ═══ -->
     <div class="cat-section open" data-cat="events">
       <div class="cat-header" onclick="toggleCategory(this)">
-        <div class="cat-icon events">🎉</div>
+        <div class="cat-icon events">🇸🇦</div>
         <div class="cat-text">
           <div class="cat-title">
             <span data-i18n="catEvents">المناسبات الوطنية</span>
-            <span class="cat-count">4</span>
+            <span class="cat-count">3</span>
           </div>
-          <div class="cat-sub" data-i18n="catEventsSub">يوم التأسيس، المعلم، الوطني، العَلَم</div>
+          <div class="cat-sub" data-i18n="catEventsSub">يوم التأسيس، اليوم الوطني، يوم العَلَم</div>
         </div>
         <div class="cat-chevron">▼</div>
       </div>
@@ -2107,61 +2126,6 @@ font-size:0.78rem;text-align:center;margin-top:12px;display:none;
         <div class="card-text">
           <div class="title" data-i18n="card1Title">يوم التأسيس</div>
           <div class="desc" data-i18n="card1Desc">١١٣٩هـ — ١٧٢٧م · يوم بدينا</div>
-          <div class="meta">
-            <span class="meta-pill">📷 <span data-i18n="metaPhotos">3 صور</span></span>
-            <span class="meta-sep"></span>
-            <span class="meta-pill">📝 <span data-i18n="metaFields">7 حقول</span></span>
-          </div>
-        </div>
-        <div class="card-action">‹</div>
-      </div>
-    </div>
-    <div class="preview-card r-teacher locked" data-target="teacher.html" onclick="handleCardClick(this)">
-      <span class="card-badge badge-new">✨ <span data-i18n="badgeNew">جديد</span></span>
-      <div class="thumb thumb-teacher">
-        <div class="real-snap snap-teacher">
-          <div class="rs-header">
-            <div class="rs-h-side right">
-              <div class="l1" data-i18n="snapTeacherTitle">يوم المعلم</div>
-              <div class="l2">Teacher's Day</div>
-            </div>
-            <div class="rs-h-center">★</div>
-            <div class="rs-h-side left">
-              <div class="l1" data-i18n="snapMoE">وزارة التعليم</div>
-              <div class="l2">١٤٤٧هـ</div>
-            </div>
-          </div>
-          <div class="rs-title" data-i18n="snapTeacherEvent">شكراً معلمي</div>
-          <div class="rs-subtitle" data-i18n="snapTeacherSub">CELEBRATING OUR TEACHERS</div>
-          <div class="rs-body">
-            <div class="rs-photos">
-              <div class="rs-photo"></div>
-              <div class="rs-photo"></div>
-              <div class="rs-photo"></div>
-            </div>
-            <div class="rs-fields">
-              <div class="rs-field" data-i18n="snapTeacherF1">اسم المنفذ</div>
-              <div class="rs-field" data-i18n="snapTeacherF2">مكان التنفيذ</div>
-              <div class="rs-field" data-i18n="snapTeacherF3">المستفيدون</div>
-              <div class="rs-field" data-i18n="snapTeacherF4">عدد المعلمين</div>
-              <div class="rs-field" data-i18n="snapTeacherF5">الأهداف</div>
-            </div>
-          </div>
-        </div>
-        <div class="lock-overlay">
-          <div class="lock-cta">
-            <span>🔑</span>
-            <span data-i18n="lockCta">سجّل الدخول للوصول</span>
-          </div>
-        </div>
-      </div>
-      <div class="card-content">
-        <div class="card-icon-wrap">
-          <div class="card-icon">🎓</div>
-        </div>
-        <div class="card-text">
-          <div class="title" data-i18n="card2Title">يوم المعلم</div>
-          <div class="desc" data-i18n="card2Desc">احتفاءً برسالة المعلم · Teacher Day</div>
           <div class="meta">
             <span class="meta-pill">📷 <span data-i18n="metaPhotos">3 صور</span></span>
             <span class="meta-sep"></span>
@@ -2276,6 +2240,139 @@ font-size:0.78rem;text-align:center;margin-top:12px;display:none;
             <span class="meta-pill">📷 <span data-i18n="metaPhotos">3 صور</span></span>
             <span class="meta-sep"></span>
             <span class="meta-pill">📝 <span data-i18n="metaFields">7 حقول</span></span>
+          </div>
+        </div>
+        <div class="card-action">‹</div>
+      </div>
+    </div>
+
+        </div>
+      </div>
+    </div>
+
+
+    <!-- ═══ تصنيف: المناسبات التعليمية والثقافية ═══ -->
+    <div class="cat-section" data-cat="cultural">
+      <div class="cat-header" onclick="toggleCategory(this)">
+        <div class="cat-icon cultural">📚</div>
+        <div class="cat-text">
+          <div class="cat-title">
+            <span data-i18n="catCultural">المناسبات التعليمية والثقافية</span>
+            <span class="cat-count">2</span>
+          </div>
+          <div class="cat-sub" data-i18n="catCulturalSub">يوم المعلم، يوم اللغة العربية</div>
+        </div>
+        <div class="cat-chevron">▼</div>
+      </div>
+      <div class="cat-body">
+        <div class="cat-cards">
+
+    <div class="preview-card r-teacher locked" data-target="teacher.html" onclick="handleCardClick(this)">
+      <span class="card-badge badge-new">✨ <span data-i18n="badgeNew">جديد</span></span>
+      <div class="thumb thumb-teacher">
+        <div class="real-snap snap-teacher">
+          <div class="rs-header">
+            <div class="rs-h-side right">
+              <div class="l1" data-i18n="snapTeacherTitle">يوم المعلم</div>
+              <div class="l2">Teacher's Day</div>
+            </div>
+            <div class="rs-h-center">★</div>
+            <div class="rs-h-side left">
+              <div class="l1" data-i18n="snapMoE">وزارة التعليم</div>
+              <div class="l2">١٤٤٧هـ</div>
+            </div>
+          </div>
+          <div class="rs-title" data-i18n="snapTeacherEvent">شكراً معلمي</div>
+          <div class="rs-subtitle" data-i18n="snapTeacherSub">CELEBRATING OUR TEACHERS</div>
+          <div class="rs-body">
+            <div class="rs-photos">
+              <div class="rs-photo"></div>
+              <div class="rs-photo"></div>
+              <div class="rs-photo"></div>
+            </div>
+            <div class="rs-fields">
+              <div class="rs-field" data-i18n="snapTeacherF1">اسم المنفذ</div>
+              <div class="rs-field" data-i18n="snapTeacherF2">مكان التنفيذ</div>
+              <div class="rs-field" data-i18n="snapTeacherF3">المستفيدون</div>
+              <div class="rs-field" data-i18n="snapTeacherF4">عدد المعلمين</div>
+              <div class="rs-field" data-i18n="snapTeacherF5">الأهداف</div>
+            </div>
+          </div>
+        </div>
+        <div class="lock-overlay">
+          <div class="lock-cta">
+            <span>🔑</span>
+            <span data-i18n="lockCta">سجّل الدخول للوصول</span>
+          </div>
+        </div>
+      </div>
+      <div class="card-content">
+        <div class="card-icon-wrap">
+          <div class="card-icon">🎓</div>
+        </div>
+        <div class="card-text">
+          <div class="title" data-i18n="card2Title">يوم المعلم</div>
+          <div class="desc" data-i18n="card2Desc">احتفاءً برسالة المعلم · Teacher Day</div>
+          <div class="meta">
+            <span class="meta-pill">📷 <span data-i18n="metaPhotos">3 صور</span></span>
+            <span class="meta-sep"></span>
+            <span class="meta-pill">📝 <span data-i18n="metaFields">7 حقول</span></span>
+          </div>
+        </div>
+        <div class="card-action">‹</div>
+      </div>
+    </div>
+
+    <div class="preview-card r-arabic locked" data-target="arabic.html" onclick="handleCardClick(this)">
+      <span class="card-badge badge-new">✨ <span data-i18n="badgeNew">جديد</span></span>
+      <div class="thumb thumb-arabic">
+        <div class="real-snap snap-arabic">
+          <div class="rs-header">
+            <div class="rs-h-side right">
+              <div class="l1" data-i18n="snapArabicTitle">يوم اللغة العربية</div>
+              <div class="l2">١٨ ديسمبر</div>
+            </div>
+            <div class="rs-h-center">📚</div>
+            <div class="rs-h-side left">
+              <div class="l1" data-i18n="snapMoE">وزارة التعليم</div>
+              <div class="l2">UNESCO</div>
+            </div>
+          </div>
+          <div class="rs-title" data-i18n="snapArabicEvent">لغتي عنواني</div>
+          <div class="rs-subtitle" data-i18n="snapArabicSub">فخر العربية · لغة الضاد</div>
+          <div class="rs-body">
+            <div class="rs-photos">
+              <div class="rs-photo"></div>
+              <div class="rs-photo"></div>
+              <div class="rs-photo"></div>
+            </div>
+            <div class="rs-fields">
+              <div class="rs-field" data-i18n="snapArabicF1">المنفذ/ة</div>
+              <div class="rs-field" data-i18n="snapArabicF2">مكان التنفيذ</div>
+              <div class="rs-field" data-i18n="snapArabicF3">المستفيدون</div>
+              <div class="rs-field" data-i18n="snapArabicF4">العدد</div>
+              <div class="rs-field" data-i18n="snapArabicF5">التاريخ</div>
+            </div>
+          </div>
+        </div>
+        <div class="lock-overlay">
+          <div class="lock-cta">
+            <span>🔑</span>
+            <span data-i18n="lockCta">سجّل الدخول للوصول</span>
+          </div>
+        </div>
+      </div>
+      <div class="card-content">
+        <div class="card-icon-wrap">
+          <div class="card-icon">📚</div>
+        </div>
+        <div class="card-text">
+          <div class="title" data-i18n="cardArabicTitle">يوم اللغة العربية</div>
+          <div class="desc" data-i18n="cardArabicDesc">١٨ ديسمبر · يوم اليونسكو للغة الضاد</div>
+          <div class="meta">
+            <span class="meta-pill">📷 <span data-i18n="metaPhotos">3 صور</span></span>
+            <span class="meta-sep"></span>
+            <span class="meta-pill">📝 <span data-i18n="meta8Fields">8 حقول</span></span>
           </div>
         </div>
         <div class="card-action">‹</div>
@@ -3027,7 +3124,20 @@ const I18N = {
     metaCertCount: "7 شهادات",
     metaThemes: "7 ألوان",
     catEvents: "المناسبات الوطنية",
-    catEventsSub: "يوم التأسيس، المعلم، الوطني، العَلَم",
+    catEventsSub: "يوم التأسيس، اليوم الوطني، يوم العَلَم",
+    catCultural: "المناسبات التعليمية والثقافية",
+    catCulturalSub: "يوم المعلم، يوم اللغة العربية",
+    cardArabicTitle: "يوم اللغة العربية",
+    cardArabicDesc: "١٨ ديسمبر · يوم اليونسكو للغة الضاد",
+    meta8Fields: "8 حقول",
+    snapArabicTitle: "يوم اللغة العربية",
+    snapArabicEvent: "لغتي عنواني",
+    snapArabicSub: "فخر العربية · لغة الضاد",
+    snapArabicF1: "المنفذ/ة",
+    snapArabicF2: "مكان التنفيذ",
+    snapArabicF3: "المستفيدون",
+    snapArabicF4: "العدد",
+    snapArabicF5: "التاريخ",
     catAdmin: "التقارير الإدارية",
     catAdminSub: "زيارة صفية، اجتماعات، خطط، محاضر",
     catSchool: "التقارير المدرسية",
@@ -3197,7 +3307,20 @@ const I18N = {
     metaCertCount: "7 certificates",
     metaThemes: "7 themes",
     catEvents: "National Events",
-    catEventsSub: "Founding Day, Teacher's Day, National Day, Flag Day",
+    catEventsSub: "Founding Day, National Day, Flag Day",
+    catCultural: "Educational & Cultural Events",
+    catCulturalSub: "Teacher's Day, Arabic Language Day",
+    cardArabicTitle: "Arabic Language Day",
+    cardArabicDesc: "December 18 · UNESCO Arabic Language Day",
+    meta8Fields: "8 fields",
+    snapArabicTitle: "Arabic Language Day",
+    snapArabicEvent: "My Language, My Identity",
+    snapArabicSub: "Pride of Arabic · Language of Dhad",
+    snapArabicF1: "Organizer",
+    snapArabicF2: "Location",
+    snapArabicF3: "Beneficiaries",
+    snapArabicF4: "Count",
+    snapArabicF5: "Date",
     catAdmin: "Administrative Reports",
     catAdminSub: "Class visits, meetings, plans, minutes",
     catSchool: "School Reports",
