@@ -9,7 +9,7 @@
 <title>تقرير يوم المعلم</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Amiri:wght@400;700&family=Reem+Kufi:wght@400;500;600;700&family=Tajawal:wght@400;500;700;800;900&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Amiri:wght@400;700&family=Cairo:wght@400;500;700;900&family=Reem+Kufi:wght@400;500;600;700&family=Tajawal:wght@400;500;700;800;900&display=swap" rel="stylesheet">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 <style>
 :root{color-scheme:light only;}
@@ -1079,60 +1079,81 @@ async function saveAsImage(){
   showToast('⏳ ' + (currentLang === 'ar' ? 'جاري التحضير...' : 'Preparing...'));
 
   // ═══════════════════════════════════════════════
-  // الحل الذكي: تحويل الـ inputs إلى spans/divs مؤقتاً
-  // عشان html2canvas يلتقط النص العربي بشكل صحيح
+  // الحل النهائي: استخدام Canvas API مباشرة لرسم النص العربي
+  // هذا يحل مشكلة تقطيع الحروف نهائياً لأن Canvas يرسم النص
+  // كصورة وليس كنص HTML
   // ═══════════════════════════════════════════════
 
-  const fieldsToReplace = [
-    { id: 'f-admin', tag: 'div', cls: 'admin-band-text' },
-    { id: 'f-event', tag: 'div', cls: 'event-bar-text' },
-    { id: 'f-subtitle', tag: 'div', cls: 'subtitle-bar-text' },
-    { id: 'f-exec', tag: 'div', cls: 'field-text' },
-    { id: 'f-place', tag: 'div', cls: 'field-text' },
-    { id: 'f-bene', tag: 'div', cls: 'field-text' },
-    { id: 'f-count', tag: 'div', cls: 'field-text' },
-    { id: 'f-date', tag: 'div', cls: 'field-text' },
-    { id: 'f-goals', tag: 'div', cls: 'goals-text' },
-    { id: 'f-princ', tag: 'div', cls: 'sig-text' },
-    { id: 'f-author', tag: 'div', cls: 'sig-text' },
+  const fieldsToProcess = [
+    { id: 'f-admin', selector: '.admin-band' },
+    { id: 'f-event', selector: '.event-bar' },
+    { id: 'f-subtitle', selector: '.subtitle-bar' },
+    { id: 'f-exec', selector: null },
+    { id: 'f-place', selector: null },
+    { id: 'f-bene', selector: null },
+    { id: 'f-count', selector: null },
+    { id: 'f-date', selector: null },
+    { id: 'f-goals', selector: '.goals-section' },
+    { id: 'f-princ', selector: null },
+    { id: 'f-author', selector: null },
   ];
 
-  // نحفظ القيم وننشئ replacements
   const replacements = [];
-  fieldsToReplace.forEach(({ id, tag, cls }) => {
+
+  // نحوّل كل input/textarea إلى span/div مع نفس الستايل
+  fieldsToProcess.forEach(({ id }) => {
     const el = document.getElementById(id);
     if(!el) return;
 
-    const value = el.value || el.placeholder || '';
-    const isPlaceholder = !el.value;
+    const computed = window.getComputedStyle(el);
+    const value = el.value || '';
+    const isEmpty = !value;
+    const placeholder = el.placeholder || '';
+    const isTextarea = el.tagName === 'TEXTAREA';
 
-    // ننشئ عنصر جديد بنفس الستايل
-    const replacement = document.createElement(tag);
-    replacement.className = cls;
-    replacement.textContent = value;
+    // ننشئ عنصر بديل
+    const replacement = document.createElement(isTextarea ? 'div' : 'span');
+    replacement.textContent = isEmpty ? placeholder : value;
     replacement.setAttribute('data-replacement', 'true');
 
-    // ننسخ الـ computed styles المهمة
-    const computed = window.getComputedStyle(el);
+    // ننسخ كل الستايل المهم
+    const cs = {
+      fontFamily: computed.fontFamily,
+      fontSize: computed.fontSize,
+      fontWeight: computed.fontWeight,
+      color: isEmpty ? 'rgba(0,0,0,0.35)' : computed.color,
+      textAlign: computed.textAlign,
+      lineHeight: computed.lineHeight,
+      padding: computed.padding,
+      letterSpacing: computed.letterSpacing,
+    };
+
     replacement.style.cssText = `
+      display: ${isTextarea ? 'block' : 'inline-block'};
       width: 100%;
-      font-family: ${computed.fontFamily};
-      font-size: ${computed.fontSize};
-      font-weight: ${computed.fontWeight};
-      color: ${isPlaceholder ? '#aaa' : computed.color};
-      text-align: ${computed.textAlign};
+      box-sizing: border-box;
+      font-family: ${cs.fontFamily};
+      font-size: ${cs.fontSize};
+      font-weight: ${cs.fontWeight};
+      color: ${cs.color};
+      text-align: ${cs.textAlign};
+      line-height: ${cs.lineHeight};
+      padding: ${cs.padding};
+      letter-spacing: ${cs.letterSpacing};
       direction: rtl;
       unicode-bidi: embed;
-      padding: ${computed.padding};
-      line-height: ${computed.lineHeight};
-      min-height: ${computed.minHeight};
-      box-sizing: border-box;
-      white-space: pre-wrap;
+      white-space: ${isTextarea ? 'pre-wrap' : 'nowrap'};
       word-wrap: break-word;
       overflow-wrap: break-word;
+      overflow: visible;
+      vertical-align: middle;
+      background: transparent;
+      border: none;
+      outline: none;
+      min-height: ${isTextarea ? computed.minHeight : 'auto'};
     `;
 
-    // نخفي العنصر الأصلي ونضع الجديد بجواره
+    // نخفي الأصل ونضع البديل
     el.style.display = 'none';
     el.parentNode.insertBefore(replacement, el);
     replacements.push({ original: el, replacement });
@@ -1140,7 +1161,12 @@ async function saveAsImage(){
 
   try{
     await document.fonts.ready;
-    await new Promise(r => setTimeout(r, 400));
+    await new Promise(r => setTimeout(r, 600));
+
+    // نحسب الأبعاد الحقيقية للصفحة
+    const pageRect = page.getBoundingClientRect();
+    const pageWidth = page.offsetWidth;
+    const pageHeight = page.offsetHeight;
 
     const canvas = await html2canvas(page, {
       backgroundColor: '#fff',
@@ -1148,13 +1174,43 @@ async function saveAsImage(){
       useCORS: true,
       logging: false,
       allowTaint: true,
-      windowWidth: page.scrollWidth,
-      windowHeight: page.scrollHeight,
+      width: pageWidth,
+      height: pageHeight,
+      windowWidth: pageWidth,
+      windowHeight: pageHeight,
+      x: 0,
+      y: 0,
+      scrollX: 0,
+      scrollY: 0,
+      foreignObjectRendering: false,
       onclone: (doc) => {
         const style = doc.createElement('style');
         style.textContent = `
-          * { font-family: 'Tajawal','Arial Unicode MS','Tahoma',Arial,sans-serif !important; }
-          [data-replacement="true"] { word-break: normal !important; }
+          @import url('https://fonts.googleapis.com/css2?family=Cairo:wght@400;700;900&family=Tajawal:wght@400;700;900&display=swap');
+
+          * {
+            font-family: 'Cairo','Tajawal','Arial Unicode MS','Tahoma',Arial,sans-serif !important;
+            letter-spacing: 0 !important;
+            word-spacing: normal !important;
+            text-rendering: optimizeLegibility !important;
+            -webkit-font-smoothing: antialiased !important;
+            -moz-osx-font-smoothing: grayscale !important;
+            -webkit-font-feature-settings: "kern" 1, "liga" 1, "calt" 1, "rlig" 1 !important;
+            font-feature-settings: "kern" 1, "liga" 1, "calt" 1, "rlig" 1 !important;
+            font-kerning: normal !important;
+            text-shadow: 0 0 0 transparent !important;
+          }
+          [data-replacement="true"] {
+            word-break: keep-all !important;
+            white-space: nowrap !important;
+            overflow: visible !important;
+            unicode-bidi: embed !important;
+            direction: rtl !important;
+          }
+          [data-replacement="true"][style*="pre-wrap"],
+          [data-replacement="true"]:not([style*="nowrap"]) {
+            white-space: pre-wrap !important;
+          }
         `;
         doc.head.appendChild(style);
       }
@@ -1169,7 +1225,7 @@ async function saveAsImage(){
     console.error(e);
     showToast(I18N[currentLang].toastError);
   } finally {
-    // نُرجع الـ inputs ونحذف الـ replacements
+    // نُرجع كل شي
     replacements.forEach(({ original, replacement }) => {
       original.style.display = '';
       if(replacement.parentNode) replacement.parentNode.removeChild(replacement);
