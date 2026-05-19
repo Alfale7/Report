@@ -228,6 +228,7 @@ html,body{
   outline:none;
   border-bottom:1.5px dotted #503cb4;
   padding:2px 8px;
+  direction:rtl;
 }
 .admin-band input::placeholder{
   color:#5a4070;
@@ -277,6 +278,8 @@ html,body{
   font-size:0.95rem;
   font-weight:700;
   outline:none;
+  text-align:right;
+  direction:rtl;
 }
 .event-bar input::placeholder{
   color:rgba(255,255,255,0.55);
@@ -300,6 +303,7 @@ html,body{
   color:#1e5a3a;
   outline:none;
   text-align:center;
+  direction:rtl;
 }
 .subtitle-bar input::placeholder{
   color:#3c7050;
@@ -357,6 +361,8 @@ html,body{
   font-weight:700;
   color:#143c50;
   outline:none;
+  text-align:right;
+  direction:rtl;
 }
 .field-row input::placeholder{
   color:#6a5080;
@@ -369,8 +375,8 @@ html,body{
   gap:8px;
 }
 .photo-slot{
-  flex:1;
-  min-height:80px;
+  height:110px;
+  max-height:110px;
   background:linear-gradient(135deg, #f0e7f5 0%, #e8f5ec 100%);
   border:2px dashed rgba(80,60,180,0.4);
   border-radius:8px;
@@ -381,6 +387,7 @@ html,body{
   align-items:center;
   justify-content:center;
   transition:all 0.2s;
+  flex-shrink:0;
 }
 .photo-slot:hover{
   border-color:#3c2864;
@@ -394,6 +401,7 @@ html,body{
 .photo-slot img{
   width:100%;
   height:100%;
+  max-height:100%;
   object-fit:cover;
   border-radius:5px;
   display:none;
@@ -496,6 +504,8 @@ html,body{
   resize:vertical;
   line-height:1.7;
   padding:6px 0;
+  text-align:right;
+  direction:rtl;
 }
 .goals-section textarea::placeholder{
   color:#6a5080;
@@ -554,6 +564,7 @@ html,body{
   color:#143c50;
   text-align:center;
   outline:none;
+  direction:rtl;
 }
 .sig-line input::placeholder{
   color:#6a5080;
@@ -720,7 +731,7 @@ html,body{
   <!-- ═══ الإدارة ═══ -->
   <div class="admin-band">
     <div class="label" data-i18n="adminLabel">الإدارة التعليمية</div>
-    <input type="text" id="f-admin" data-i18n-placeholder="adminPh" placeholder="الإدارة العامة  للتعليم بمنطقة ...">
+    <input type="text" id="f-admin" data-i18n-placeholder="adminPh" placeholder="الإدارة العامة للتعليم بمحافظة ...">
   </div>
 
   <!-- ═══ عنوان الفعالية ═══ -->
@@ -1067,6 +1078,66 @@ async function saveAsImage(){
   const page = document.getElementById('page');
   showToast('⏳ ' + (currentLang === 'ar' ? 'جاري التحضير...' : 'Preparing...'));
 
+  // ═══════════════════════════════════════════════
+  // الحل الذكي: تحويل الـ inputs إلى spans/divs مؤقتاً
+  // عشان html2canvas يلتقط النص العربي بشكل صحيح
+  // ═══════════════════════════════════════════════
+
+  const fieldsToReplace = [
+    { id: 'f-admin', tag: 'div', cls: 'admin-band-text' },
+    { id: 'f-event', tag: 'div', cls: 'event-bar-text' },
+    { id: 'f-subtitle', tag: 'div', cls: 'subtitle-bar-text' },
+    { id: 'f-exec', tag: 'div', cls: 'field-text' },
+    { id: 'f-place', tag: 'div', cls: 'field-text' },
+    { id: 'f-bene', tag: 'div', cls: 'field-text' },
+    { id: 'f-count', tag: 'div', cls: 'field-text' },
+    { id: 'f-date', tag: 'div', cls: 'field-text' },
+    { id: 'f-goals', tag: 'div', cls: 'goals-text' },
+    { id: 'f-princ', tag: 'div', cls: 'sig-text' },
+    { id: 'f-author', tag: 'div', cls: 'sig-text' },
+  ];
+
+  // نحفظ القيم وننشئ replacements
+  const replacements = [];
+  fieldsToReplace.forEach(({ id, tag, cls }) => {
+    const el = document.getElementById(id);
+    if(!el) return;
+
+    const value = el.value || el.placeholder || '';
+    const isPlaceholder = !el.value;
+
+    // ننشئ عنصر جديد بنفس الستايل
+    const replacement = document.createElement(tag);
+    replacement.className = cls;
+    replacement.textContent = value;
+    replacement.setAttribute('data-replacement', 'true');
+
+    // ننسخ الـ computed styles المهمة
+    const computed = window.getComputedStyle(el);
+    replacement.style.cssText = `
+      width: 100%;
+      font-family: ${computed.fontFamily};
+      font-size: ${computed.fontSize};
+      font-weight: ${computed.fontWeight};
+      color: ${isPlaceholder ? '#aaa' : computed.color};
+      text-align: ${computed.textAlign};
+      direction: rtl;
+      unicode-bidi: embed;
+      padding: ${computed.padding};
+      line-height: ${computed.lineHeight};
+      min-height: ${computed.minHeight};
+      box-sizing: border-box;
+      white-space: pre-wrap;
+      word-wrap: break-word;
+      overflow-wrap: break-word;
+    `;
+
+    // نخفي العنصر الأصلي ونضع الجديد بجواره
+    el.style.display = 'none';
+    el.parentNode.insertBefore(replacement, el);
+    replacements.push({ original: el, replacement });
+  });
+
   try{
     await document.fonts.ready;
     await new Promise(r => setTimeout(r, 400));
@@ -1077,9 +1148,14 @@ async function saveAsImage(){
       useCORS: true,
       logging: false,
       allowTaint: true,
+      windowWidth: page.scrollWidth,
+      windowHeight: page.scrollHeight,
       onclone: (doc) => {
         const style = doc.createElement('style');
-        style.textContent = "* { font-family: 'Tajawal','Arial Unicode MS','Tahoma',Arial,sans-serif !important; }";
+        style.textContent = `
+          * { font-family: 'Tajawal','Arial Unicode MS','Tahoma',Arial,sans-serif !important; }
+          [data-replacement="true"] { word-break: normal !important; }
+        `;
         doc.head.appendChild(style);
       }
     });
@@ -1092,6 +1168,12 @@ async function saveAsImage(){
   } catch(e){
     console.error(e);
     showToast(I18N[currentLang].toastError);
+  } finally {
+    // نُرجع الـ inputs ونحذف الـ replacements
+    replacements.forEach(({ original, replacement }) => {
+      original.style.display = '';
+      if(replacement.parentNode) replacement.parentNode.removeChild(replacement);
+    });
   }
 }
 
