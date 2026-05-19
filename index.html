@@ -423,6 +423,28 @@ backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);
   100%{transform:translateX(100%);}
 }
 
+/* حالة بعد انتهاء التحميلات */
+.preview-card.free-trial.trial-exhausted{
+  border-color:#c9a45b;
+  box-shadow:0 8px 28px rgba(201,164,91,0.3);
+}
+.preview-card.free-trial.trial-exhausted::before{
+  background:linear-gradient(135deg, transparent 30%, rgba(201,164,91,0.4) 50%, transparent 70%);
+}
+.badge-locked-trial{
+  background:linear-gradient(135deg, #c9a45b, #b8923d);
+  color:#fff;
+  box-shadow:0 4px 14px rgba(201,164,91,0.5);
+  animation:pulse-badge 2s ease-in-out infinite;
+}
+.preview-card.free-trial.trial-exhausted .free-overlay{
+  background:linear-gradient(180deg,rgba(0,0,0,0) 0%,rgba(60,40,5,0.15) 50%,rgba(60,40,5,0.75) 100%);
+}
+.preview-card.free-trial.trial-exhausted .free-cta{
+  background:linear-gradient(135deg, #c9a45b, #b8923d);
+  box-shadow:0 6px 20px rgba(201,164,91,0.5), 0 0 0 2px rgba(255,255,255,0.9);
+}
+
 .free-overlay{
   position:absolute;top:0;left:0;right:0;bottom:0;
   background:linear-gradient(180deg,rgba(0,0,0,0) 0%,rgba(238,90,82,0.05) 60%,rgba(238,90,82,0.55) 100%);
@@ -3407,8 +3429,14 @@ function logout(){
 }
 
 function handleCardClick(card){
-  // الكروت المجانية للتجربة - يدخل مباشرة
+  // الكروت المجانية للتجربة
   if(card.classList.contains('free-trial')){
+    // تحقق من العدّاد قبل السماح بالدخول
+    if(getFreeDownloadsLeft() === 0){
+      // انتهت التحميلات → افتح Modal الترقية مباشرة بدون دخول
+      openUpgradeModal();
+      return;
+    }
     const target = card.getAttribute('data-target');
     if(target) window.location.href = target;
     return;
@@ -3439,7 +3467,11 @@ function updateFreeCounter(){
   const valueEl = document.getElementById('freeCounterValue');
   if(valueEl) valueEl.textContent = left;
 
+  // البحث عن كرت يوم التأسيس
+  const freeCard = document.querySelector('.preview-card.free-trial');
+
   if(left === 0){
+    // ═══ انتهت التحميلات ═══
     counter.classList.add('exhausted');
     const lang = localStorage.getItem('site_lang') || 'ar';
     const textEl = counter.querySelector('.free-counter-text');
@@ -3452,6 +3484,33 @@ function updateFreeCounter(){
       btnEl.innerHTML = '<span>Subscribe</span>';
     }
     btnEl.onclick = openUpgradeModal;
+
+    // تحديث مظهر الكرت
+    if(freeCard){
+      freeCard.classList.add('trial-exhausted');
+      // تحديث الشارة من "جرّبني مجاناً" إلى "🔒 اشترك للوصول"
+      const badge = freeCard.querySelector('.card-badge');
+      if(badge){
+        badge.classList.remove('badge-free');
+        badge.classList.add('badge-locked-trial');
+        badge.innerHTML = lang === 'ar'
+          ? '🔒 <span>اشترك للوصول</span>'
+          : '🔒 <span>Subscribe</span>';
+      }
+      // تحديث الـ overlay CTA
+      const cta = freeCard.querySelector('.free-cta');
+      if(cta){
+        cta.innerHTML = lang === 'ar'
+          ? '<span>💎</span><span>اشترك للحصول على كل القوالب</span>'
+          : '<span>💎</span><span>Subscribe for full access</span>';
+      }
+    }
+  } else {
+    // ═══ التحميلات لم تنته ═══
+    counter.classList.remove('exhausted');
+    if(freeCard){
+      freeCard.classList.remove('trial-exhausted');
+    }
   }
 }
 
