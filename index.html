@@ -1022,20 +1022,21 @@ width:30%;height:2px;background:#6b4a2b;opacity:0.5;
 .snap-tasis .rs-footer{color:#6b4a2b;}
 
 /* يوم المعلم - تركواز/ذهبي فخم */
-.snap-teacher{background:linear-gradient(180deg, #fdfbf5 0%, #f0e4cc 100%);}
-.snap-teacher .rs-header{background:linear-gradient(135deg, #1a3c4e, #2a5d6e); color:#fff;}
+/* يوم المعلم - ألوان شعار يوم المعلم (أزرق + بنفسجي + أخضر + أصفر) */
+.snap-teacher{background:linear-gradient(180deg, #f0e7f5 0%, #e8f5ec 100%);}
+.snap-teacher .rs-header{background:linear-gradient(135deg, #143c50 0%, #3c2864 50%, #5ba87a 100%); color:#fff;}
 .snap-teacher .rs-h-side{color:#fff;}
-.snap-teacher .rs-h-side .l2{color:#c9a45b;}
+.snap-teacher .rs-h-side .l2{color:#f4c842;}
 .snap-teacher .rs-h-center{
-  background:linear-gradient(135deg, #c9a45b, #b8923d);
-  color:#fff;
-  border:1.5px solid #f4e4b0;
+  background:linear-gradient(135deg, #f4c842, #e8a92a);
+  color:#143c50;
+  border:1.5px solid #fff;
 }
-.snap-teacher .rs-title{background:linear-gradient(135deg,#c9a45b,#b8923d); color:#1a3c4e;}
-.snap-teacher .rs-subtitle{background:#1a3c4e; color:#c9a45b;}
-.snap-teacher .rs-photo{background:#fff; border-color:#1a3c4e; color:#1a3c4e;}
-.snap-teacher .rs-field{border-color:#1a3c4e; color:#1a3c4e;}
-.snap-teacher .rs-footer{color:#1a3c4e;}
+.snap-teacher .rs-title{background:linear-gradient(135deg, #143c50, #3c2864); color:#f4c842;}
+.snap-teacher .rs-subtitle{background:linear-gradient(135deg, #f4c842, #e8a92a); color:#143c50;}
+.snap-teacher .rs-photo{background:linear-gradient(135deg,#f0e7f5,#e8f5ec); border-color:#3c2864; color:#143c50;}
+.snap-teacher .rs-field{border-color:#3c2864; color:#143c50;}
+.snap-teacher .rs-footer{color:#143c50;}
 
 /* اليوم الوطني - أخضر سعودي */
 .snap-national{background:linear-gradient(180deg, #fff 0%, #d4e8d4 100%);}
@@ -1399,7 +1400,8 @@ object-fit:contain;
 display:block;
 filter:drop-shadow(0 1px 1px rgba(107,74,43,0.25));
 }
-.r-teacher .card-icon{background:linear-gradient(135deg,#4caf50,#2a5d6e);}
+.r-teacher .card-icon{background:linear-gradient(135deg,#143c50,#3c2864); color:#fff;}
+.r-teacher .card-icon-wrap::after{background:#f4c842;}
 .r-arabic .card-icon{background:linear-gradient(135deg,#1e6b8a,#2a8aab); color:#fff;}
 .r-arabic .card-icon-wrap::after{background:#d4a657;}
 .r-general .card-icon{background:linear-gradient(135deg,#2a9d8f,#1a3c4e);}
