@@ -2015,10 +2015,10 @@ font-size:0.78rem;text-align:center;margin-top:12px;display:none;
       <div class="free-counter-icon">🎁</div>
       <div class="free-counter-text">
         <span data-i18n="freeCounterPrefix">لديك</span>
-        <strong id="freeCounterValue">3</strong>
-        <span data-i18n="freeCounterSuffix">تحميل مجاني متبقي · جرّب التقرير العام الآن</span>
+        <strong id="freeCounterValue">2</strong>
+        <span data-i18n="freeCounterSuffix">تحميل مجاني متبقي · جرّب تقرير يوم التأسيس الآن</span>
       </div>
-      <button class="free-counter-btn" onclick="document.querySelector('.r-general').scrollIntoView({behavior:'smooth',block:'center'})">
+      <button class="free-counter-btn" onclick="document.querySelector('.r-tasis').scrollIntoView({behavior:'smooth',block:'center'})">
         <span data-i18n="freeCounterBtn">جرّب الآن</span>
       </button>
     </div>
@@ -2039,8 +2039,8 @@ font-size:0.78rem;text-align:center;margin-top:12px;display:none;
       <div class="cat-body">
         <div class="cat-cards">
 
-    <div class="preview-card r-tasis locked" data-target="tasis.html" onclick="handleCardClick(this)">
-      <span class="card-badge badge-pop">🔥 <span data-i18n="badgePop">الأكثر طلباً</span></span>
+    <div class="preview-card r-tasis free-trial" data-target="tasis.html" onclick="handleCardClick(this)">
+      <span class="card-badge badge-free">🎁 <span data-i18n="badgeFree">جرّبني مجاناً</span></span>
       <div class="thumb thumb-tasis">
         <div class="real-snap snap-tasis">
           <div class="rs-header">
@@ -2071,10 +2071,10 @@ font-size:0.78rem;text-align:center;margin-top:12px;display:none;
             </div>
           </div>
         </div>
-        <div class="lock-overlay">
-          <div class="lock-cta">
-            <span>🔑</span>
-            <span data-i18n="lockCta">سجّل الدخول للوصول</span>
+        <div class="free-overlay">
+          <div class="free-cta">
+            <span>🎁</span>
+            <span data-i18n="freeCta">اضغط للتجربة المجانية</span>
           </div>
         </div>
       </div>
@@ -2587,17 +2587,17 @@ font-size:0.78rem;text-align:center;margin-top:12px;display:none;
       <div class="cat-body">
         <div class="cat-cards">
 
-    <div class="preview-card r-general free-trial" data-target="report.html" onclick="handleCardClick(this)">
-      <span class="card-badge badge-free">🎁 <span data-i18n="badgeFree">جرّبني مجاناً</span></span>
+    <div class="preview-card r-general locked" data-target="report.html" onclick="handleCardClick(this)">
+      <span class="card-badge badge-premium">💎 <span data-i18n="badgePremium">احترافي</span></span>
       <div class="thumb thumb-general">
         <div class="iframe-snap-wrap" id="iframe-report">
           <div class="iframe-loading" data-i18n="loadingPreview">جاري تحميل المعاينة</div>
           <iframe src="report.html" loading="lazy" scrolling="no" sandbox="allow-same-origin allow-scripts" title="معاينة التقرير العام" onload="this.parentElement.classList.add('loaded')"></iframe>
         </div>
-        <div class="free-overlay">
-          <div class="free-cta">
-            <span>🎁</span>
-            <span data-i18n="freeCta">اضغط للتجربة المجانية</span>
+        <div class="lock-overlay">
+          <div class="lock-cta">
+            <span>🔑</span>
+            <span data-i18n="lockCta">سجّل الدخول للوصول</span>
           </div>
         </div>
       </div>
@@ -3017,7 +3017,7 @@ const I18N = {
     badgeFree: "جرّبني مجاناً",
     freeCta: "اضغط للتجربة المجانية",
     freeCounterPrefix: "لديك",
-    freeCounterSuffix: "تحميل مجاني متبقي · جرّب التقرير العام الآن",
+    freeCounterSuffix: "تحميل مجاني متبقي · جرّب تقرير يوم التأسيس الآن",
     freeCounterBtn: "جرّب الآن",
     upgradeTitle: "انتهت تحميلاتك المجانية!",
     upgradeSubtitle: "احصل على الباقة الكاملة واستفد من جميع القوالب",
@@ -3187,7 +3187,7 @@ const I18N = {
     badgeFree: "Try Free",
     freeCta: "Tap for free trial",
     freeCounterPrefix: "You have",
-    freeCounterSuffix: "free downloads left · Try the General Report now",
+    freeCounterSuffix: "free downloads left · Try Founding Day report now",
     freeCounterBtn: "Try Now",
     upgradeTitle: "Free downloads ended!",
     upgradeSubtitle: "Get the full package and access all templates",
@@ -3425,7 +3425,7 @@ function handleCardClick(card){
 // ═══════════════════════════════════════════════
 // نظام التجربة المجانية - عدّ التحميلات
 // ═══════════════════════════════════════════════
-const FREE_DOWNLOADS_LIMIT = 3;
+const FREE_DOWNLOADS_LIMIT = 2;
 
 function getFreeDownloadsLeft(){
   const used = parseInt(localStorage.getItem('free_downloads_used') || '0');
