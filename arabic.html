@@ -1132,12 +1132,19 @@ document.querySelectorAll('input, textarea').forEach(el => {
 async function saveAsImage(){
   // ═══ نظام التجربة المجانية ═══
   const FREE_DOWNLOADS_LIMIT = 2;
-  const used = parseInt(localStorage.getItem('free_downloads_used') || '0');
-  const left = Math.max(0, FREE_DOWNLOADS_LIMIT - used);
 
-  if(left === 0){
-    showUpgradeModal();
-    return;
+  // المشتركون: تخطي كل القيود
+  const loggedUser = localStorage.getItem('loggedUser');
+  const isSubscribed = localStorage.getItem('isSubscribed') === '1' || !!loggedUser;
+
+  if(!isSubscribed){
+    const used = parseInt(localStorage.getItem('free_downloads_used') || '0');
+    const left = Math.max(0, FREE_DOWNLOADS_LIMIT - used);
+
+    if(left === 0){
+      showUpgradeModal();
+      return;
+    }
   }
 
   const page = document.getElementById('page');
@@ -1166,17 +1173,22 @@ async function saveAsImage(){
     link.click();
     showToast(I18N[currentLang].toastDone);
 
-    // زيادة العدّاد
-    const usedNow = parseInt(localStorage.getItem('free_downloads_used') || '0') + 1;
-    localStorage.setItem('free_downloads_used', usedNow);
-    const remaining = Math.max(0, FREE_DOWNLOADS_LIMIT - usedNow);
-    setTimeout(() => {
-      if(remaining === 0){
-        showUpgradeModal();
-      } else {
-        showToast(`🎁 ${currentLang === 'ar' ? 'تبقّى لك' : 'You have'} ${remaining} ${currentLang === 'ar' ? 'تحميل مجاني' : 'free downloads'}`);
-      }
-    }, 2000);
+    // زيادة العدّاد (للزوار فقط)
+    const loggedUserAfter = localStorage.getItem('loggedUser');
+    const isSubscribedAfter = localStorage.getItem('isSubscribed') === '1' || !!loggedUserAfter;
+
+    if(!isSubscribedAfter){
+      const usedNow = parseInt(localStorage.getItem('free_downloads_used') || '0') + 1;
+      localStorage.setItem('free_downloads_used', usedNow);
+      const remaining = Math.max(0, FREE_DOWNLOADS_LIMIT - usedNow);
+      setTimeout(() => {
+        if(remaining === 0){
+          showUpgradeModal();
+        } else {
+          showToast(`🎁 ${currentLang === 'ar' ? 'تبقّى لك' : 'You have'} ${remaining} ${currentLang === 'ar' ? 'تحميل مجاني' : 'free downloads'}`);
+        }
+      }, 2000);
+    }
   } catch(e){
     console.error(e);
     showToast(I18N[currentLang].toastError);

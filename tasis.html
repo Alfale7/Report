@@ -772,14 +772,20 @@ function doClear(){
 
 async function saveAsImage(){
   // ═══ نظام التجربة المجانية ═══
-  const FREE_DOWNLOADS_LIMIT = 2;
-  const used = parseInt(localStorage.getItem('free_downloads_used') || '0');
-  const left = Math.max(0, FREE_DOWNLOADS_LIMIT - used);
+  // المشتركون: تخطي كل القيود
+  const loggedUser = localStorage.getItem('loggedUser');
+  const isSubscribed = localStorage.getItem('isSubscribed') === '1' || !!loggedUser;
 
-  if(left === 0){
-    // انتهت التحميلات - افتح modal الترقية
-    showUpgradeModalInTasis();
-    return;
+  if(!isSubscribed){
+    const FREE_DOWNLOADS_LIMIT = 2;
+    const used = parseInt(localStorage.getItem('free_downloads_used') || '0');
+    const left = Math.max(0, FREE_DOWNLOADS_LIMIT - used);
+
+    if(left === 0){
+      // انتهت التحميلات - افتح modal الترقية
+      showUpgradeModalInTasis();
+      return;
+    }
   }
 
   const page=document.getElementById('page');
@@ -857,18 +863,23 @@ async function saveAsImage(){
     link.click();
     showToast(I18N[getCurrentLang()].toastDone);
 
-    // ═══ زيادة عدّاد التحميلات المجانية ═══
-    const usedNow = parseInt(localStorage.getItem('free_downloads_used') || '0') + 1;
-    localStorage.setItem('free_downloads_used', usedNow);
-    const remaining = Math.max(0, 2 - usedNow);
-    setTimeout(() => {
-      if(remaining === 0){
-        // انتهت التحميلات - افتح Modal
-        showUpgradeModalInTasis();
-      } else {
-        showToast(`🎁 تبقّى لك ${remaining} ${remaining === 1 ? 'تحميل' : 'تحميلات'} مجانية`);
-      }
-    }, 2000);
+    // ═══ زيادة عدّاد التحميلات المجانية (للزوار فقط) ═══
+    const loggedUserAfter = localStorage.getItem('loggedUser');
+    const isSubscribedAfter = localStorage.getItem('isSubscribed') === '1' || !!loggedUserAfter;
+
+    if(!isSubscribedAfter){
+      const usedNow = parseInt(localStorage.getItem('free_downloads_used') || '0') + 1;
+      localStorage.setItem('free_downloads_used', usedNow);
+      const remaining = Math.max(0, 2 - usedNow);
+      setTimeout(() => {
+        if(remaining === 0){
+          // انتهت التحميلات - افتح Modal
+          showUpgradeModalInTasis();
+        } else {
+          showToast(`🎁 تبقّى لك ${remaining} ${remaining === 1 ? 'تحميل' : 'تحميلات'} مجانية`);
+        }
+      }, 2000);
+    }
   }catch(e){
     showToast(I18N[getCurrentLang()].toastError);
   }
@@ -972,8 +983,17 @@ function closeTasisUpgrade(){
 
 // ═══════════════════════════════════════════════
 // فحص عند تحميل الصفحة - لمنع الدخول بعد انتهاء التحميلات
+// (للزوار فقط، المشتركون يدخلون بحرية)
 // ═══════════════════════════════════════════════
 window.addEventListener('DOMContentLoaded', function(){
+  // التحقق من الاشتراك أولاً
+  const loggedUser = localStorage.getItem('loggedUser');
+  const isSubscribed = localStorage.getItem('isSubscribed') === '1' || !!loggedUser;
+
+  // المشتركون: دخول حر بدون أي فحص
+  if(isSubscribed) return;
+
+  // الزوار: فحص العدّاد
   const FREE_DOWNLOADS_LIMIT_CHECK = 2;
   const usedCheck = parseInt(localStorage.getItem('free_downloads_used') || '0');
   const leftCheck = Math.max(0, FREE_DOWNLOADS_LIMIT_CHECK - usedCheck);
@@ -981,7 +1001,6 @@ window.addEventListener('DOMContentLoaded', function(){
   if(leftCheck === 0){
     // انتهت التحميلات → ارجع للصفحة الرئيسية مع علامة لفتح الـ Modal
     localStorage.setItem('show_upgrade_now', '1');
-    // إظهار رسالة تحميل قبل الرجوع
     document.body.innerHTML = '<div style="position:fixed;top:0;left:0;right:0;bottom:0;background:linear-gradient(135deg,#0f1923,#1a2530);display:flex;flex-direction:column;align-items:center;justify-content:center;color:#fff;font-family:Tajawal,sans-serif;padding:20px;text-align:center;"><div style="font-size:3.5rem;margin-bottom:14px;animation:pulse 1.4s ease-in-out infinite;">🎁</div><h2 style="font-size:1.3rem;font-weight:900;margin-bottom:8px;color:#ff8a8a;">انتهت تحميلاتك المجانية</h2><p style="font-size:0.95rem;color:rgba(255,255,255,0.7);font-weight:600;max-width:300px;line-height:1.6;">جاري توجيهك للصفحة الرئيسية للاشتراك في الباقة الكاملة...</p><style>@keyframes pulse{0%,100%{transform:scale(1);opacity:1;}50%{transform:scale(1.1);opacity:0.7;}}</style></div>';
     setTimeout(() => {
       window.location.href = 'index.html';

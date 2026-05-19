@@ -3483,8 +3483,20 @@ document.addEventListener('DOMContentLoaded', function(){
 /* ═══════════════════ نهاية نظام الترجمة ═══════════════════ */
 
 window.addEventListener('DOMContentLoaded', function(){
-  const savedUser = sessionStorage.getItem('loggedUser');
+  // التحقق من الـ session القديمة (sessionStorage)
+  const oldSession = sessionStorage.getItem('loggedUser');
+  if(oldSession && users[oldSession]){
+    // نقلها إلى localStorage (دائمة)
+    localStorage.setItem('loggedUser', oldSession);
+    localStorage.setItem('isSubscribed', '1');
+    sessionStorage.removeItem('loggedUser');
+  }
+
+  // التحقق من الـ login الدائم
+  const savedUser = localStorage.getItem('loggedUser');
   if(savedUser && users[savedUser]){
+    // التأكد من تحديث isSubscribed (لو كان مفقود من قبل)
+    localStorage.setItem('isSubscribed', '1');
     enterLoggedInMode(savedUser);
   }
 });
@@ -3514,7 +3526,8 @@ function login(){
   }
 
   if(users[phone] && users[phone] === password){
-    sessionStorage.setItem('loggedUser', phone);
+    localStorage.setItem('loggedUser', phone);
+    localStorage.setItem('isSubscribed', '1');
     errorMsg.classList.remove('show');
     closeLogin();
     enterLoggedInMode(phone);
@@ -3541,11 +3554,36 @@ function enterLoggedInMode(phone){
   document.querySelectorAll('.preview-card.locked').forEach(function(card){
     card.classList.remove('locked');
   });
+
+  // ═══ للمشتركين: حوّل كرت free-trial لكرت عادي مفتوح ═══
+  document.querySelectorAll('.preview-card.free-trial').forEach(function(card){
+    card.classList.remove('free-trial');
+    card.classList.remove('trial-exhausted');
+    // إزالة الـ free-overlay
+    const overlay = card.querySelector('.free-overlay');
+    if(overlay) overlay.remove();
+    // تحديث الشارة - من "جرّبني مجاناً" إلى "الأكثر طلباً"
+    const badge = card.querySelector('.card-badge');
+    if(badge){
+      badge.classList.remove('badge-free', 'badge-locked-trial');
+      badge.classList.add('badge-pop');
+      const lang = getCurrentLang();
+      badge.innerHTML = lang === 'ar'
+        ? '🔥 <span data-i18n="badgePop">الأكثر طلباً</span>'
+        : '🔥 <span data-i18n="badgePop">Most Popular</span>';
+    }
+  });
+
+  // ═══ إخفاء عدّاد التجربة المجانية تماماً للمشتركين ═══
+  const freeCounter = document.getElementById('freeCounter');
+  if(freeCounter) freeCounter.style.display = 'none';
 }
 
 function logout(){
   const dict = I18N[getCurrentLang()];
   if(confirm(dict.confirmLogout)){
+    localStorage.removeItem('loggedUser');
+    localStorage.removeItem('isSubscribed');
     sessionStorage.removeItem('loggedUser');
     location.reload();
   }
@@ -3578,7 +3616,21 @@ function handleCardClick(card){
 // ═══════════════════════════════════════════════
 const FREE_DOWNLOADS_LIMIT = 2;
 
+function isUserSubscribed(){
+  // المستخدم مشترك إذا:
+  // 1. عنده isSubscribed = '1' في localStorage
+  // 2. أو عنده loggedUser في localStorage وموجود في users
+  const loggedUser = localStorage.getItem('loggedUser');
+  const isSubFlag = localStorage.getItem('isSubscribed');
+  if(isSubFlag === '1') return true;
+  if(loggedUser && typeof users !== 'undefined' && users[loggedUser]) return true;
+  return false;
+}
+
 function getFreeDownloadsLeft(){
+  // المشتركون: تحميلات بلا حدود
+  if(isUserSubscribed()) return 999999;
+  // غير المشتركين: العداد الطبيعي
   const used = parseInt(localStorage.getItem('free_downloads_used') || '0');
   return Math.max(0, FREE_DOWNLOADS_LIMIT - used);
 }
@@ -3586,6 +3638,13 @@ function getFreeDownloadsLeft(){
 function updateFreeCounter(){
   const counter = document.getElementById('freeCounter');
   if(!counter) return;
+
+  // ═══ للمشتركين: إخفاء العداد كلياً ═══
+  if(isUserSubscribed()){
+    counter.style.display = 'none';
+    return;
+  }
+
   const left = getFreeDownloadsLeft();
   const valueEl = document.getElementById('freeCounterValue');
   if(valueEl) valueEl.textContent = left;
