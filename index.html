@@ -391,6 +391,164 @@ backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);
 .badge-premium{background:linear-gradient(135deg,#9c27b0,#673ab7);color:#fff;box-shadow:0 4px 12px rgba(156,39,176,0.4);}
 
 /* ═══════════════════════════════════════════════
+   بانر التقويم الدراسي - هدية مجانية
+   ═══════════════════════════════════════════════ */
+.gift-banner{
+  display:flex;
+  align-items:center;
+  gap:12px;
+  background:linear-gradient(135deg, #1e5631 0%, #2d7a47 50%, #c9a45b 100%);
+  border-radius:18px;
+  padding:14px 16px;
+  margin:14px 4px 12px;
+  position:relative;
+  overflow:hidden;
+  text-decoration:none;
+  color:#fff;
+  box-shadow:0 8px 24px rgba(30,86,49,0.35), 0 0 0 1px rgba(212,164,91,0.4);
+  cursor:pointer;
+  transition:all 0.25s;
+  border:1.5px solid rgba(212,164,91,0.6);
+}
+.gift-banner:hover{
+  transform:translateY(-2px);
+  box-shadow:0 12px 32px rgba(30,86,49,0.45), 0 0 0 1px rgba(212,164,91,0.7);
+}
+.gift-banner:active{transform:scale(0.98);}
+
+/* تأثير اللمعان المتحرك */
+.gift-shine{
+  position:absolute;
+  top:0; left:-100%;
+  width:50%; height:100%;
+  background:linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+  animation:gift-shine 3s ease-in-out infinite;
+  pointer-events:none;
+}
+@keyframes gift-shine{
+  0%{left:-100%;}
+  50%, 100%{left:200%;}
+}
+
+.gift-icon-wrap{
+  position:relative;
+  flex-shrink:0;
+}
+.gift-icon{
+  width:54px;
+  height:54px;
+  background:linear-gradient(135deg, #fff 0%, #f4e4a8 100%);
+  border-radius:14px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  font-size:1.8rem;
+  box-shadow:0 4px 12px rgba(0,0,0,0.2), inset 0 1px 0 rgba(255,255,255,0.5);
+  animation:gift-bounce 2.5s ease-in-out infinite;
+}
+@keyframes gift-bounce{
+  0%, 100%{transform:translateY(0) rotate(-3deg);}
+  50%{transform:translateY(-4px) rotate(3deg);}
+}
+.gift-pdf-badge{
+  position:absolute;
+  bottom:-4px; right:-4px;
+  background:linear-gradient(135deg, #d32f2f, #b71c1c);
+  color:#fff;
+  font-size:0.55rem;
+  font-weight:900;
+  padding:2px 6px;
+  border-radius:6px;
+  letter-spacing:0.5px;
+  border:1.5px solid #fff;
+  box-shadow:0 2px 6px rgba(0,0,0,0.3);
+}
+
+.gift-content{
+  flex:1;
+  min-width:0;
+}
+.gift-row1{
+  display:flex;
+  align-items:center;
+  gap:6px;
+  margin-bottom:3px;
+}
+.gift-tag{
+  background:rgba(255,255,255,0.2);
+  color:#fff;
+  font-size:0.62rem;
+  font-weight:900;
+  padding:2px 8px;
+  border-radius:30px;
+  letter-spacing:0.5px;
+  border:1px solid rgba(255,255,255,0.3);
+  backdrop-filter:blur(10px);
+}
+.gift-sparkle{
+  font-size:0.85rem;
+  animation:gift-twinkle 1.5s ease-in-out infinite;
+}
+@keyframes gift-twinkle{
+  0%, 100%{opacity:1; transform:scale(1) rotate(0deg);}
+  50%{opacity:0.7; transform:scale(1.2) rotate(15deg);}
+}
+.gift-title{
+  font-family:'Reem Kufi','Tajawal',sans-serif;
+  font-size:0.95rem;
+  font-weight:900;
+  color:#fff;
+  margin-bottom:2px;
+  text-shadow:0 1px 3px rgba(0,0,0,0.25);
+  letter-spacing:0.3px;
+}
+.gift-sub{
+  font-size:0.7rem;
+  font-weight:700;
+  color:rgba(255,255,255,0.88);
+}
+
+.gift-cta{
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  gap:2px;
+  flex-shrink:0;
+  background:rgba(255,255,255,0.15);
+  border:1.5px solid rgba(255,255,255,0.35);
+  border-radius:14px;
+  padding:8px 12px;
+  backdrop-filter:blur(10px);
+}
+.gift-cta-icon{
+  font-size:1.2rem;
+  color:#fff;
+  animation:gift-arrow 1.8s ease-in-out infinite;
+}
+@keyframes gift-arrow{
+  0%, 100%{transform:translateY(0);}
+  50%{transform:translateY(3px);}
+}
+.gift-cta-text{
+  font-size:0.65rem;
+  font-weight:900;
+  color:#fff;
+  letter-spacing:0.5px;
+}
+
+@media (max-width:480px){
+  .gift-banner{padding:11px 12px; gap:10px; margin:12px 2px 10px;}
+  .gift-icon{width:46px; height:46px; font-size:1.5rem;}
+  .gift-pdf-badge{font-size:0.5rem; padding:1px 5px;}
+  .gift-tag{font-size:0.58rem; padding:1px 7px;}
+  .gift-title{font-size:0.85rem;}
+  .gift-sub{font-size:0.64rem;}
+  .gift-cta{padding:6px 10px;}
+  .gift-cta-icon{font-size:1.05rem;}
+  .gift-cta-text{font-size:0.6rem;}
+}
+
+/* ═══════════════════════════════════════════════
    نظام التجربة المجانية
    ═══════════════════════════════════════════════ */
 .badge-free{
@@ -2053,6 +2211,27 @@ font-size:0.78rem;text-align:center;margin-top:12px;display:none;
 
   <div class="previews">
 
+    <!-- ═══ بانر التقويم الدراسي - هدية مجانية ═══ -->
+    <a href="downloads/Taqwym.pdf" download="التقويم_الدراسي_1448_1449.pdf" class="gift-banner" id="giftBanner">
+      <div class="gift-shine"></div>
+      <div class="gift-icon-wrap">
+        <div class="gift-icon">🎁</div>
+        <div class="gift-pdf-badge">PDF</div>
+      </div>
+      <div class="gift-content">
+        <div class="gift-row1">
+          <span class="gift-tag" data-i18n="giftTag">هدية مجانية</span>
+          <span class="gift-sparkle">✨</span>
+        </div>
+        <div class="gift-title" data-i18n="giftTitle">التقويم الدراسي الجديد</div>
+        <div class="gift-sub" data-i18n="giftSub">للعام ١٤٤٨هـ - ١٤٤٩هـ · جاهز للتحميل</div>
+      </div>
+      <div class="gift-cta">
+        <span class="gift-cta-icon">⬇</span>
+        <span class="gift-cta-text" data-i18n="giftCta">حمّل</span>
+      </div>
+    </a>
+
     <!-- ═══ عدّاد التجربة المجانية ═══ -->
     <div class="free-counter" id="freeCounter">
       <div class="free-counter-icon">🎁</div>
@@ -3151,6 +3330,10 @@ const I18N = {
     badgeFree: "جرّبني مجاناً",
     freeCta: "اضغط للتجربة المجانية",
     freeCounterPrefix: "لديك",
+    giftTag: "هدية مجانية",
+    giftTitle: "التقويم الدراسي الجديد",
+    giftSub: "للعام ١٤٤٨هـ - ١٤٤٩هـ · جاهز للتحميل",
+    giftCta: "حمّل",
     freeCounterSuffix: "تحميل مجاني متبقي · جرّب تقرير يوم التأسيس الآن",
     freeCounterBtn: "جرّب الآن",
     upgradeTitle: "انتهت تحميلاتك المجانية!",
@@ -3334,6 +3517,10 @@ const I18N = {
     badgeFree: "Try Free",
     freeCta: "Tap for free trial",
     freeCounterPrefix: "You have",
+    giftTag: "FREE GIFT",
+    giftTitle: "New Academic Calendar",
+    giftSub: "For 1448H - 1449H · Ready to download",
+    giftCta: "Get",
     freeCounterSuffix: "free downloads left · Try Founding Day report now",
     freeCounterBtn: "Try Now",
     upgradeTitle: "Free downloads ended!",
