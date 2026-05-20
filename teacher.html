@@ -1107,8 +1107,32 @@ async function saveAsImage(){
     const isTextarea = el.tagName === 'TEXTAREA';
 
     const replacement = document.createElement(isTextarea ? 'div' : 'span');
-    replacement.textContent = isEmpty ? placeholder : value;
     replacement.setAttribute('data-replacement', 'true');
+
+    // ═══ المحتوى: نلفّ كل كلمة في span مستقل ═══
+    const textContent = isEmpty ? placeholder : value;
+    if(isTextarea){
+      // textarea: نحافظ على الأسطر الجديدة ونلفّ كل كلمة
+      const lines = textContent.split('\n');
+      const wrappedHTML = lines.map(line => {
+        const words = line.split(/(\s+)/);
+        return words.map(part => {
+          if(!part) return '';
+          if(/^\s+$/.test(part)) return part;
+          return `<span style="display:inline-block !important; white-space:nowrap !important; letter-spacing:0 !important; direction:rtl !important; unicode-bidi:embed !important; vertical-align:baseline !important;">${part}</span>`;
+        }).join('');
+      }).join('<br>');
+      replacement.innerHTML = wrappedHTML || '&nbsp;';
+    } else {
+      // input: كلمة كلمة في spans
+      const words = textContent.split(/(\s+)/);
+      const wrappedHTML = words.map(part => {
+        if(!part) return '';
+        if(/^\s+$/.test(part)) return part;
+        return `<span style="display:inline-block !important; white-space:nowrap !important; letter-spacing:0 !important; direction:rtl !important; unicode-bidi:embed !important; vertical-align:baseline !important;">${part}</span>`;
+      }).join('');
+      replacement.innerHTML = wrappedHTML || '&nbsp;';
+    }
 
     replacement.style.cssText = `
       display: ${isTextarea ? 'block' : 'inline-block'};
@@ -1123,7 +1147,7 @@ async function saveAsImage(){
       padding: ${computed.padding};
       direction: rtl;
       unicode-bidi: embed;
-      white-space: ${isTextarea ? 'pre-wrap' : 'nowrap'};
+      white-space: normal;
       word-wrap: break-word;
       overflow-wrap: break-word;
       overflow: visible;
