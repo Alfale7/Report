@@ -1079,28 +1079,23 @@ async function saveAsImage(){
   showToast('⏳ ' + (currentLang === 'ar' ? 'جاري التحضير...' : 'Preparing...'));
 
   // ═══════════════════════════════════════════════
-  // الحل النهائي: استخدام Canvas API مباشرة لرسم النص العربي
-  // هذا يحل مشكلة تقطيع الحروف نهائياً لأن Canvas يرسم النص
-  // كصورة وليس كنص HTML
+  // الحل الشامل: معالجة جميع النصوص العربية في التقرير
+  // 1. الـ inputs/textareas → تتحول لـ spans/divs
+  // 2. النصوص الثابتة → نلفّها بـ word-by-word spans
+  //    عشان html2canvas يحافظ على ترابط الأحرف
   // ═══════════════════════════════════════════════
 
   const fieldsToProcess = [
-    { id: 'f-admin', selector: '.admin-band' },
-    { id: 'f-event', selector: '.event-bar' },
-    { id: 'f-subtitle', selector: '.subtitle-bar' },
-    { id: 'f-exec', selector: null },
-    { id: 'f-place', selector: null },
-    { id: 'f-bene', selector: null },
-    { id: 'f-count', selector: null },
-    { id: 'f-date', selector: null },
-    { id: 'f-goals', selector: '.goals-section' },
-    { id: 'f-princ', selector: null },
-    { id: 'f-author', selector: null },
+    { id: 'f-admin' }, { id: 'f-event' }, { id: 'f-subtitle' },
+    { id: 'f-exec' }, { id: 'f-place' }, { id: 'f-bene' },
+    { id: 'f-count' }, { id: 'f-date' }, { id: 'f-goals' },
+    { id: 'f-princ' }, { id: 'f-author' },
   ];
 
   const replacements = [];
+  const textWraps = []; // للنصوص الثابتة
 
-  // نحوّل كل input/textarea إلى span/div مع نفس الستايل
+  // ═══ الجزء 1: تحويل الـ inputs ═══
   fieldsToProcess.forEach(({ id }) => {
     const el = document.getElementById(id);
     if(!el) return;
@@ -1111,35 +1106,21 @@ async function saveAsImage(){
     const placeholder = el.placeholder || '';
     const isTextarea = el.tagName === 'TEXTAREA';
 
-    // ننشئ عنصر بديل
     const replacement = document.createElement(isTextarea ? 'div' : 'span');
     replacement.textContent = isEmpty ? placeholder : value;
     replacement.setAttribute('data-replacement', 'true');
-
-    // ننسخ كل الستايل المهم
-    const cs = {
-      fontFamily: computed.fontFamily,
-      fontSize: computed.fontSize,
-      fontWeight: computed.fontWeight,
-      color: isEmpty ? 'rgba(0,0,0,0.35)' : computed.color,
-      textAlign: computed.textAlign,
-      lineHeight: computed.lineHeight,
-      padding: computed.padding,
-      letterSpacing: computed.letterSpacing,
-    };
 
     replacement.style.cssText = `
       display: ${isTextarea ? 'block' : 'inline-block'};
       width: 100%;
       box-sizing: border-box;
-      font-family: ${cs.fontFamily};
-      font-size: ${cs.fontSize};
-      font-weight: ${cs.fontWeight};
-      color: ${cs.color};
-      text-align: ${cs.textAlign};
-      line-height: ${cs.lineHeight};
-      padding: ${cs.padding};
-      letter-spacing: ${cs.letterSpacing};
+      font-family: ${computed.fontFamily};
+      font-size: ${computed.fontSize};
+      font-weight: ${computed.fontWeight};
+      color: ${isEmpty ? 'rgba(0,0,0,0.35)' : computed.color};
+      text-align: ${computed.textAlign};
+      line-height: ${computed.lineHeight};
+      padding: ${computed.padding};
       direction: rtl;
       unicode-bidi: embed;
       white-space: ${isTextarea ? 'pre-wrap' : 'nowrap'};
@@ -1150,21 +1131,57 @@ async function saveAsImage(){
       background: transparent;
       border: none;
       outline: none;
+      letter-spacing: 0;
       min-height: ${isTextarea ? computed.minHeight : 'auto'};
     `;
 
-    // نخفي الأصل ونضع البديل
     el.style.display = 'none';
     el.parentNode.insertBefore(replacement, el);
     replacements.push({ original: el, replacement });
+  });
+
+  // ═══ الجزء 2: لفّ كل النصوص الثابتة بـ spans ═══
+  // هذا يجبر html2canvas على الحفاظ على ترابط الأحرف
+  const arabicTextSelectors = [
+    '.moe-text .l1', '.moe-text .l2',
+    '.report-title', '.report-subtitle',
+    '.admin-band .label',
+    '.field-row label',
+    '.photo-text',
+    '.goals-title .text',
+    '.sig-role',
+    '.footer-band',
+  ];
+
+  arabicTextSelectors.forEach(selector => {
+    document.querySelectorAll(selector).forEach(el => {
+      const originalText = el.textContent;
+      const originalHTML = el.innerHTML;
+
+      // نتجاهل العناصر الفارغة أو اللي فيها HTML معقّد
+      if(!originalText.trim()) return;
+      if(el.children.length > 1) return; // لو فيه أكثر من ولد، نتجاهل
+
+      // نحفظ المحتوى الأصلي
+      textWraps.push({ el, originalHTML });
+
+      // نلفّ كل كلمة في span مستقل بـ display:inline-block
+      // هذا يجبر html2canvas على رسم كل كلمة كـ atomic unit
+      const words = originalText.split(/(\s+)/);
+      const wrappedHTML = words.map(part => {
+        if(!part) return '';
+        if(/^\s+$/.test(part)) return part;
+        return `<span data-arabic-word="1" style="display:inline-block !important; white-space:nowrap !important; letter-spacing:0 !important; word-spacing:0 !important; direction:rtl !important; unicode-bidi:embed !important; vertical-align:baseline !important;">${part}</span>`;
+      }).join('');
+
+      el.innerHTML = wrappedHTML;
+    });
   });
 
   try{
     await document.fonts.ready;
     await new Promise(r => setTimeout(r, 600));
 
-    // نحسب الأبعاد الحقيقية للصفحة
-    const pageRect = page.getBoundingClientRect();
     const pageWidth = page.offsetWidth;
     const pageHeight = page.offsetHeight;
 
@@ -1178,16 +1195,11 @@ async function saveAsImage(){
       height: pageHeight,
       windowWidth: pageWidth,
       windowHeight: pageHeight,
-      x: 0,
-      y: 0,
-      scrollX: 0,
-      scrollY: 0,
+      x: 0, y: 0, scrollX: 0, scrollY: 0,
       foreignObjectRendering: false,
       onclone: (doc) => {
         const style = doc.createElement('style');
         style.textContent = `
-          @import url('https://fonts.googleapis.com/css2?family=Cairo:wght@400;700;900&family=Tajawal:wght@400;700;900&display=swap');
-
           * {
             font-family: 'Cairo','Tajawal','Arial Unicode MS','Tahoma',Arial,sans-serif !important;
             letter-spacing: 0 !important;
@@ -1201,15 +1213,8 @@ async function saveAsImage(){
             text-shadow: 0 0 0 transparent !important;
           }
           [data-replacement="true"] {
-            word-break: keep-all !important;
-            white-space: nowrap !important;
-            overflow: visible !important;
             unicode-bidi: embed !important;
             direction: rtl !important;
-          }
-          [data-replacement="true"][style*="pre-wrap"],
-          [data-replacement="true"]:not([style*="nowrap"]) {
-            white-space: pre-wrap !important;
           }
         `;
         doc.head.appendChild(style);
@@ -1225,10 +1230,15 @@ async function saveAsImage(){
     console.error(e);
     showToast(I18N[currentLang].toastError);
   } finally {
-    // نُرجع كل شي
+    // ═══ إرجاع كل شي ═══
+    // 1. الـ inputs
     replacements.forEach(({ original, replacement }) => {
       original.style.display = '';
       if(replacement.parentNode) replacement.parentNode.removeChild(replacement);
+    });
+    // 2. النصوص الثابتة
+    textWraps.forEach(({ el, originalHTML }) => {
+      el.innerHTML = originalHTML;
     });
   }
 }
