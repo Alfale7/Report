@@ -10,6 +10,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;500;700;900&family=Reem+Kufi:wght@400;500;600;700&family=Tajawal:wght@400;500;700;800;900&display=swap" rel="stylesheet">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 <style>
 :root{
   color-scheme:light only;
@@ -1160,7 +1161,7 @@ html,body{
     <span>🌐</span><span id="langTxt">EN</span>
   </button>
   <button class="act-btn act-save" onclick="saveAsImage()">
-    <span>💾</span><span class="txt" data-i18n="btnSave">حفظ كصورة</span>
+    <span>📄</span><span class="txt" data-i18n="btnSave">حفظ PDF</span>
   </button>
 </div>
 
@@ -1205,7 +1206,7 @@ function updateNav(){
   document.getElementById('prevBtn').disabled = currentSlide === 1;
   const nextBtn = document.getElementById('nextBtn');
   if(currentSlide === totalSlides){
-    nextBtn.innerHTML = '<span>💾</span><span>' + I18N[currentLang].saveNow + '</span>';
+    nextBtn.innerHTML = '<span>📄</span><span>' + I18N[currentLang].saveNow + '</span>';
     nextBtn.onclick = saveAsImage;
   } else {
     nextBtn.innerHTML = '<span>' + I18N[currentLang].next + '</span><span>›</span>';
@@ -1255,8 +1256,8 @@ const I18N = {
     sigSub:'يُعتمد هذا التقرير بناءً على ما وُثّق فيه',
     sigPrinc:'مدير/ة المدرسة', sigAuth:'معدّ التقرير', namePh:'الاسم',
     credit1:'صُمم بـ', credit2:'دعماً لرؤية المملكة الخضراء',
-    prev:'السابق', next:'التالي', saveNow:'حفظ التقرير',
-    btnClear:'تفريغ', btnSave:'حفظ كصورة',
+    prev:'السابق', next:'التالي', saveNow:'حفظ PDF',
+    btnClear:'تفريغ', btnSave:'حفظ PDF',
     toastDone:'✅ تم حفظ التقرير بنجاح',
     toastError:'❌ حدث خطأ',
     toastCleared:'✅ تم تفريغ التقرير',
@@ -1299,8 +1300,8 @@ const I18N = {
     sigSub:'This report is approved based on its content',
     sigPrinc:'School Principal', sigAuth:'Report Author', namePh:'Name',
     credit1:'Designed with', credit2:'in support of Saudi Green Vision',
-    prev:'Previous', next:'Next', saveNow:'Save Report',
-    btnClear:'Clear', btnSave:'Save as Image',
+    prev:'Previous', next:'Next', saveNow:'Save PDF',
+    btnClear:'Clear', btnSave:'Save as PDF',
     toastDone:'✅ Report saved successfully',
     toastError:'❌ An error occurred',
     toastCleared:'✅ Report cleared',
@@ -1448,22 +1449,10 @@ document.querySelectorAll('input, textarea').forEach(el => {
 });
 
 // ═══════════════════════════════════════════════
-// Save as Image (كل السلايدات في صورة واحدة)
+// ═══════════════════════════════════════════════
+// Save as PDF (كل سلايد في صفحة A4 مستقلة)
 // ═══════════════════════════════════════════════
 async function saveAsImage(){
-  // التحقق من الاشتراك
-  const loggedUser = localStorage.getItem('loggedUser');
-  const isSubscribed = localStorage.getItem('isSubscribed') === '1' || !!loggedUser;
-
-  if(!isSubscribed){
-    const FREE_DOWNLOADS_LIMIT = 2;
-    const used = parseInt(localStorage.getItem('free_downloads_used') || '0');
-    if(Math.max(0, FREE_DOWNLOADS_LIMIT - used) === 0){
-      showUpgradeModal();
-      return;
-    }
-  }
-
   showToast(I18N[currentLang].toastPrep);
 
   const page = document.getElementById('page');
@@ -1565,47 +1554,95 @@ async function saveAsImage(){
     await document.fonts.ready;
     await new Promise(r => setTimeout(r, 500));
 
-    const canvas = await html2canvas(page, {
-      backgroundColor: '#f0fdf4',
-      scale: 2.5,
-      useCORS: true,
-      logging: false,
-      allowTaint: true,
-      width: page.offsetWidth,
-      height: page.offsetHeight,
-      windowWidth: page.offsetWidth,
-      windowHeight: page.offsetHeight,
-      onclone: (doc) => {
-        const style = doc.createElement('style');
-        style.textContent = `
-          * {
-            font-family: 'Cairo','Tajawal','Arial Unicode MS','Tahoma',Arial,sans-serif !important;
-            letter-spacing: 0 !important;
-            text-rendering: optimizeLegibility !important;
-            -webkit-font-feature-settings: "kern" 1, "liga" 1, "calt" 1, "rlig" 1 !important;
-            font-feature-settings: "kern" 1, "liga" 1, "calt" 1, "rlig" 1 !important;
-            font-kerning: normal !important;
-          }
-        `;
-        doc.head.appendChild(style);
-      }
+    // ═══════════════════════════════════════════════
+    // إنشاء PDF بحجم A4 - 5 سلايدات في 5 صفحات
+    // ═══════════════════════════════════════════════
+    const { jsPDF } = window.jspdf;
+    const pdf = new jsPDF({
+      orientation: 'portrait',
+      unit: 'mm',
+      format: 'a4',
+      compress: true
     });
 
-    const link = document.createElement('a');
-    link.download = 'تقرير_السعودية_الخضراء.png';
-    link.href = canvas.toDataURL('image/png');
-    link.click();
-    showToast(I18N[currentLang].toastDone);
+    // أبعاد A4: 210mm × 297mm
+    const pdfWidth = 210;
+    const pdfHeight = 297;
+    const marginX = 10;  // هامش جانبي
+    const marginY = 10;  // هامش علوي/سفلي
+    const contentWidth = pdfWidth - (marginX * 2);
+    const contentHeight = pdfHeight - (marginY * 2);
 
-    if(!isSubscribed){
-      const usedNow = parseInt(localStorage.getItem('free_downloads_used') || '0') + 1;
-      localStorage.setItem('free_downloads_used', usedNow);
-      const remaining = Math.max(0, 2 - usedNow);
-      setTimeout(() => {
-        if(remaining === 0) showUpgradeModal();
-        else showToast(`🎁 ${currentLang === 'ar' ? 'تبقّى لك' : 'You have'} ${remaining}`);
-      }, 2000);
+    // نلتقط كل سلايد منفصلاً
+    const slides = document.querySelectorAll('.slide');
+    let processedSlides = 0;
+
+    for(let i = 0; i < slides.length; i++){
+      const slide = slides[i];
+
+      showToast(`⏳ ${currentLang === 'ar' ? 'جاري معالجة السلايد' : 'Processing slide'} ${i + 1}/${slides.length}`);
+
+      // نلتقط السلايد كـ canvas
+      const canvas = await html2canvas(slide, {
+        backgroundColor: '#ffffff',
+        scale: 2.5,
+        useCORS: true,
+        logging: false,
+        allowTaint: true,
+        width: slide.offsetWidth,
+        height: slide.offsetHeight,
+        windowWidth: slide.offsetWidth,
+        windowHeight: slide.offsetHeight,
+        onclone: (doc) => {
+          const style = doc.createElement('style');
+          style.textContent = `
+            * {
+              font-family: 'Cairo','Tajawal','Arial Unicode MS','Tahoma',Arial,sans-serif !important;
+              letter-spacing: 0 !important;
+              text-rendering: optimizeLegibility !important;
+              -webkit-font-feature-settings: "kern" 1, "liga" 1, "calt" 1, "rlig" 1 !important;
+              font-feature-settings: "kern" 1, "liga" 1, "calt" 1, "rlig" 1 !important;
+              font-kerning: normal !important;
+            }
+          `;
+          doc.head.appendChild(style);
+        }
+      });
+
+      // نحسب الأبعاد بنسبة مناسبة مع الحفاظ على نسبة العرض/الارتفاع
+      const imgData = canvas.toDataURL('image/jpeg', 0.92);
+      const imgRatio = canvas.height / canvas.width;
+      let imgWidth = contentWidth;
+      let imgHeight = imgWidth * imgRatio;
+
+      // لو كان أطول من الصفحة، نضبطه بالارتفاع
+      if(imgHeight > contentHeight){
+        imgHeight = contentHeight;
+        imgWidth = imgHeight / imgRatio;
+      }
+
+      // نوسطه عمودياً وأفقياً
+      const xPos = (pdfWidth - imgWidth) / 2;
+      const yPos = (pdfHeight - imgHeight) / 2;
+
+      // الصفحة الأولى موجودة افتراضياً، باقي الصفحات نضيفها
+      if(i > 0) pdf.addPage();
+
+      pdf.addImage(imgData, 'JPEG', xPos, yPos, imgWidth, imgHeight, undefined, 'FAST');
+      processedSlides++;
     }
+
+    // إضافة metadata
+    pdf.setProperties({
+      title: 'تقرير يوم السعودية الخضراء',
+      subject: 'Saudi Green Day Report',
+      author: 'منصة التقارير الذكية',
+      creator: 'ksa2030.one'
+    });
+
+    // حفظ الملف
+    pdf.save('تقرير_السعودية_الخضراء.pdf');
+    showToast(I18N[currentLang].toastDone);
   } catch(e){
     console.error(e);
     showToast(I18N[currentLang].toastError);
@@ -1619,36 +1656,6 @@ async function saveAsImage(){
       el.innerHTML = originalHTML;
     });
   }
-}
-
-// ═══════════════════════════════════════════════
-// Upgrade Modal (للزوار)
-// ═══════════════════════════════════════════════
-function showUpgradeModal(){
-  let modal = document.getElementById('greenUpgrade');
-  if(!modal){
-    modal = document.createElement('div');
-    modal.id = 'greenUpgrade';
-    modal.innerHTML = `
-      <div style="position:fixed;inset:0;background:rgba(0,15,30,0.85);backdrop-filter:blur(10px);z-index:99999;display:flex;align-items:center;justify-content:center;padding:20px;overflow-y:auto;" onclick="if(event.target===this)this.parentElement.style.display='none'">
-        <div style="background:linear-gradient(135deg,#054d27,#00a651);border:2px solid rgba(38,208,124,0.5);border-radius:24px;padding:30px 22px;max-width:420px;width:100%;text-align:center;box-shadow:0 20px 60px rgba(0,0,0,0.6);">
-          <div style="font-size:3rem;margin-bottom:8px;">🌳</div>
-          <h2 style="font-family:'Reem Kufi',sans-serif;font-size:1.35rem;font-weight:900;color:#fff;margin-bottom:6px;">انتهت تحميلاتك المجانية!</h2>
-          <p style="font-size:0.85rem;color:rgba(255,255,255,0.7);margin-bottom:18px;">احصل على الباقة الكاملة</p>
-          <div style="background:rgba(244,200,66,0.15);border:2px solid rgba(244,200,66,0.4);border-radius:16px;padding:14px;margin-bottom:14px;">
-            <div style="color:rgba(255,255,255,0.5);font-size:0.85rem;text-decoration:line-through;">59 ريال</div>
-            <div style="font-family:'Reem Kufi',sans-serif;font-size:2.5rem;font-weight:900;color:#f4c842;">49 ريال</div>
-            <div style="font-size:0.72rem;color:rgba(255,255,255,0.7);">دفعة واحدة · مدى الحياة</div>
-          </div>
-          <a href="https://wa.me/966502517217" target="_blank" style="display:block;padding:14px;background:linear-gradient(135deg,#25d366,#128c7e);color:#fff;border-radius:14px;font-weight:800;text-decoration:none;margin-bottom:8px;">📱 اشترك عبر الواتساب</a>
-          <button onclick="document.getElementById('greenUpgrade').style.display='none'" style="background:transparent;border:none;color:rgba(255,255,255,0.5);font-family:inherit;font-size:0.8rem;cursor:pointer;">ربما لاحقاً</button>
-        </div>
-      </div>
-    `;
-    document.body.appendChild(modal);
-  }
-  modal.style.display = 'block';
-  localStorage.setItem('show_upgrade_now', '1');
 }
 
 // ═══════════════════════════════════════════════
