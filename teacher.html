@@ -695,6 +695,69 @@ html,body{
   .action-bar, #toast{display:none !important;}
   .logo-watermark{opacity:0.045 !important;}
 }
+
+/* ═══ قائمة خيارات التصدير ═══ */
+.export-menu-wrap{position:relative; display:inline-block;}
+.export-menu{
+  position:absolute;
+  bottom:100%;
+  right:0;
+  margin-bottom:8px;
+  background:#fff;
+  border-radius:14px;
+  box-shadow:0 12px 32px rgba(0,0,0,0.3), 0 0 0 1px rgba(0,0,0,0.08);
+  overflow:hidden;
+  min-width:200px;
+  display:none;
+  z-index:99999;
+  animation:menu-pop 0.2s cubic-bezier(0.34,1.56,0.64,1);
+}
+.export-menu.show{display:block;}
+@keyframes menu-pop{
+  from{opacity:0; transform:translateY(8px) scale(0.95);}
+  to{opacity:1; transform:translateY(0) scale(1);}
+}
+.export-option{
+  display:flex;
+  align-items:center;
+  gap:10px;
+  padding:13px 16px;
+  cursor:pointer;
+  transition:background 0.15s;
+  border:none;
+  background:transparent;
+  width:100%;
+  text-align:right;
+  font-family:inherit;
+  font-size:0.88rem;
+  font-weight:700;
+  color:#1a3c4e;
+  border-bottom:1px solid rgba(0,0,0,0.06);
+}
+.export-option:last-child{border-bottom:none;}
+.export-option:hover{background:#f5f5f5;}
+.export-option:active{background:#e8e8e8;}
+.export-option .ico{
+  font-size:1.1rem;
+  width:32px;
+  height:32px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  border-radius:8px;
+  flex-shrink:0;
+  color:#fff;
+}
+.export-option .ico.png{background:linear-gradient(135deg,#2a9d8f,#1a7a8a);}
+.export-option .ico.pdf{background:linear-gradient(135deg,#d32f2f,#b71c1c);}
+.export-option .ico.print{background:linear-gradient(135deg,#5a3a8e,#7b5cb2);}
+
+@media print {
+  .export-menu-wrap, .actions, .btn-bar, button, .action-bar{display:none !important;}
+  body{background:#fff !important; padding:0 !important;}
+  #page, .page{box-shadow:none !important; margin:0 !important;}
+}
+
 </style>
 </head>
 <body>
@@ -840,9 +903,23 @@ html,body{
   <button class="btn btn-lang" onclick="toggleLang()">
     <span>🌐</span><span id="langTxt">EN</span>
   </button>
-  <button class="btn btn-print" onclick="saveAsImage()">
-    <span>💾</span><span class="txt" data-i18n="btnSave">حفظ</span>
-  </button>
+  <div class="export-menu-wrap">
+    <button class="btn btn-print" onclick="toggleExportMenu(event)">⬇ <span data-i18n="btnDownload">تحميل التقرير</span></button>
+    <div class="export-menu" id="exportMenu">
+      <button class="export-option" onclick="exportAsImage()">
+        <span class="ico png">🖼</span>
+        <span data-i18n="optImage">حفظ كصورة</span>
+      </button>
+      <button class="export-option" onclick="exportAsPDFv2()">
+        <span class="ico pdf">📄</span>
+        <span data-i18n="optPDF">حفظ PDF</span>
+      </button>
+      <button class="export-option" onclick="printReport()">
+        <span class="ico print">🖨</span>
+        <span data-i18n="optPrint">طباعة مباشرة</span>
+      </button>
+    </div>
+  </div>
 </div>
 
 <script>
@@ -883,7 +960,7 @@ const I18N = {
     reportTitle:'تقرير فعالية يوم المعلم',
     reportSubtitle:'٥ أكتوبر · TEACHER\'S DAY',
     adminLabel:'الإدارة التعليمية',
-    adminPh:'الإدارة العامة للتعليم بمنطقة ...',
+    adminPh:'الإدارة العامة للتعليم بمحافظة ...',
     eventPh:'اكتب عنوان الفعالية الرئيسية...',
     subtitlePh:'الفعالية الفرعية أو الشعار...',
     fExec:'المنفذ/ة', execPh:'اكتب الاسم',
@@ -894,9 +971,9 @@ const I18N = {
     photoText:'إضافة صورة',
     goalsTitle:'الأهداف والوصف',
     goalsPh:'اكتب أهداف الفعالية ومحتواها بإيجاز...',
-    sigPrinc:'مدير/ة المدرسة', sigAuth:'مُعد/ة التقرير', namePh:'الاسم',
+    sigPrinc:'مدير/ة المدرسة', sigAuth:'معدّ التقرير', namePh:'الاسم',
     btnClear:'تفريغ', btnSave:'حفظ',
-    credit1:'صُمم بـ', credit2:'تكريماً لمعلمينا الأفاضل ',
+    credit1:'صُمم بـ', credit2:'تكريماً لمعلمينا الأفاضل · ١٤٤٧هـ',
     toastDone:'✅ تم حفظ التقرير بنجاح',
     toastError:'❌ حدث خطأ',
     toastCleared:'✅ تم تفريغ التقرير',
@@ -1270,6 +1347,138 @@ async function saveAsImage(){
 // تطبيق
 applyLang();
 loadData();
+
+
+// ═══ نظام تصدير متعدد الخيارات (PNG/PDF/Print) ═══
+function toggleExportMenu(e){
+  if(e) e.stopPropagation();
+  const menu = document.getElementById('exportMenu');
+  if(menu) menu.classList.toggle('show');
+}
+
+document.addEventListener('click', function(e){
+  const menu = document.getElementById('exportMenu');
+  if(!menu) return;
+  if(!e.target.closest('.export-menu-wrap')){
+    menu.classList.remove('show');
+  }
+});
+
+function exportAsImage(){
+  toggleExportMenu();
+  setTimeout(() => { saveAsImage(); }, 200);
+}
+
+function printReport(){
+  toggleExportMenu();
+  setTimeout(() => { window.print(); }, 300);
+}
+
+function loadJsPDF(){
+  return new Promise((resolve, reject) => {
+    if(typeof window.jspdf !== 'undefined'){ resolve(); return; }
+    const script = document.createElement('script');
+    script.src = 'https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js';
+    script.onload = () => resolve();
+    script.onerror = () => reject(new Error('jsPDF load failed'));
+    document.head.appendChild(script);
+  });
+}
+
+async function exportAsPDFv2(){
+  toggleExportMenu();
+  
+  if(typeof showToast === 'function'){
+    showToast('⏳ جاري تحضير PDF...');
+  }
+  
+  if(typeof window.jspdf === 'undefined'){
+    try { await loadJsPDF(); } catch(e){
+      if(typeof showToast === 'function') showToast('❌ فشل تحميل مكتبة PDF');
+      return;
+    }
+  }
+  
+  // نعترض الـ canvas + a.click عشان نمنع تحميل PNG
+  const _origToDataURL = HTMLCanvasElement.prototype.toDataURL;
+  let capturedCanvas = null;
+  HTMLCanvasElement.prototype.toDataURL = function(){
+    if(!capturedCanvas) capturedCanvas = this;
+    return _origToDataURL.apply(this, arguments);
+  };
+  
+  const _origClick = HTMLAnchorElement.prototype.click;
+  HTMLAnchorElement.prototype.click = function(){
+    if(this.download && /\.(png|jpg|jpeg)$/i.test(this.download)){
+      return;
+    }
+    return _origClick.apply(this, arguments);
+  };
+  
+  try {
+    await saveAsImage();
+    
+    if(!capturedCanvas){
+      throw new Error('No canvas captured');
+    }
+    
+    const { jsPDF } = window.jspdf;
+    const canvas = capturedCanvas;
+    
+    const pdfWidth = 210, pdfHeight = 297;
+    const marginX = 8, marginY = 8;
+    const contentWidth = pdfWidth - (marginX * 2);
+    const pageContentHeight = pdfHeight - (marginY * 2);
+    
+    const imgRatio = canvas.height / canvas.width;
+    const imgWidth = contentWidth;
+    const imgHeight = imgWidth * imgRatio;
+    
+    const pdf = new jsPDF({
+      orientation: 'portrait',
+      unit: 'mm',
+      format: 'a4',
+      compress: true
+    });
+    
+    if(imgHeight <= pageContentHeight + 5){
+      // صفحة واحدة - نوسطها
+      const imgData = canvas.toDataURL('image/jpeg', 0.92);
+      const yPos = (pdfHeight - imgHeight) / 2;
+      pdf.addImage(imgData, 'JPEG', marginX, yPos, imgWidth, imgHeight, undefined, 'FAST');
+    } else {
+      // صفحات متعددة - نقسّم
+      const totalPages = Math.ceil(imgHeight / pageContentHeight);
+      const pixelsPerPage = (pageContentHeight / imgHeight) * canvas.height;
+      
+      for(let i = 0; i < totalPages; i++){
+        if(i > 0) pdf.addPage();
+        const sourceY = i * pixelsPerPage;
+        const sourceHeight = Math.min(pixelsPerPage, canvas.height - sourceY);
+        
+        const partCanvas = document.createElement('canvas');
+        partCanvas.width = canvas.width;
+        partCanvas.height = sourceHeight;
+        const ctx = partCanvas.getContext('2d');
+        ctx.drawImage(canvas, 0, sourceY, canvas.width, sourceHeight, 0, 0, canvas.width, sourceHeight);
+        
+        const partData = partCanvas.toDataURL('image/jpeg', 0.92);
+        const partHeight = (sourceHeight / canvas.width) * imgWidth;
+        pdf.addImage(partData, 'JPEG', marginX, marginY, imgWidth, partHeight, undefined, 'FAST');
+      }
+    }
+    
+    pdf.save('تقرير_يوم_المعلم.pdf');
+    if(typeof showToast === 'function') showToast('✅ تم حفظ PDF بنجاح');
+  } catch(err){
+    console.error(err);
+    if(typeof showToast === 'function') showToast('❌ خطأ في إنشاء PDF');
+  } finally {
+    HTMLCanvasElement.prototype.toDataURL = _origToDataURL;
+    HTMLAnchorElement.prototype.click = _origClick;
+  }
+}
+
 </script>
 
 </body>
