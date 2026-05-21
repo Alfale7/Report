@@ -696,32 +696,69 @@ html,body{
   .logo-watermark{opacity:0.045 !important;}
 }
 
-/* ═══ قائمة خيارات التصدير ═══ */
-.export-menu-wrap{position:relative; display:inline-block;}
-.export-menu{
-  position:absolute;
-  bottom:100%;
-  right:0;
-  margin-bottom:8px;
-  background:#fff;
-  border-radius:14px;
-  box-shadow:0 12px 32px rgba(0,0,0,0.3), 0 0 0 1px rgba(0,0,0,0.08);
-  overflow:hidden;
-  min-width:200px;
-  display:none;
-  z-index:99999;
-  animation:menu-pop 0.2s cubic-bezier(0.34,1.56,0.64,1);
+/* قائمة التصدير - تم استبدالها بـ bottom sheet */
+  #page, .page{box-shadow:none !important; margin:0 !important;}
 }
-.export-menu.show{display:block;}
-@keyframes menu-pop{
-  from{opacity:0; transform:translateY(8px) scale(0.95);}
-  to{opacity:1; transform:translateY(0) scale(1);}
+
+
+/* ═══ Bottom Sheet لخيارات التصدير ═══ */
+.export-menu-wrap{display:inline-block;}
+.export-sheet-backdrop{
+  position:fixed;
+  inset:0;
+  background:rgba(0,0,0,0.55);
+  backdrop-filter:blur(6px);
+  -webkit-backdrop-filter:blur(6px);
+  z-index:9998;
+  display:none;
+  opacity:0;
+  transition:opacity 0.25s;
+}
+.export-sheet-backdrop.show{
+  display:block;
+  opacity:1;
+}
+.export-menu{
+  position:fixed;
+  bottom:0;
+  left:0;
+  right:0;
+  background:#fff;
+  border-radius:20px 20px 0 0;
+  box-shadow:0 -8px 32px rgba(0,0,0,0.3);
+  overflow:hidden;
+  z-index:9999;
+  transform:translateY(100%);
+  transition:transform 0.3s cubic-bezier(0.34,1.56,0.64,1);
+  padding-bottom:env(safe-area-inset-bottom);
+  max-width:480px;
+  margin:0 auto;
+}
+.export-menu.show{
+  transform:translateY(0);
+}
+.export-menu::before{
+  content:"";
+  display:block;
+  width:40px;
+  height:4px;
+  background:rgba(0,0,0,0.15);
+  border-radius:99px;
+  margin:10px auto 0;
+}
+.export-menu-title{
+  text-align:center;
+  font-size:0.95rem;
+  font-weight:900;
+  color:#1a3c4e;
+  padding:14px 16px 8px;
+  font-family:inherit;
 }
 .export-option{
   display:flex;
   align-items:center;
-  gap:10px;
-  padding:13px 16px;
+  gap:14px;
+  padding:16px 20px;
   cursor:pointer;
   transition:background 0.15s;
   border:none;
@@ -729,7 +766,7 @@ html,body{
   width:100%;
   text-align:right;
   font-family:inherit;
-  font-size:0.88rem;
+  font-size:0.95rem;
   font-weight:700;
   color:#1a3c4e;
   border-bottom:1px solid rgba(0,0,0,0.06);
@@ -738,24 +775,51 @@ html,body{
 .export-option:hover{background:#f5f5f5;}
 .export-option:active{background:#e8e8e8;}
 .export-option .ico{
-  font-size:1.1rem;
-  width:32px;
-  height:32px;
+  font-size:1.3rem;
+  width:42px;
+  height:42px;
   display:flex;
   align-items:center;
   justify-content:center;
-  border-radius:8px;
+  border-radius:12px;
   flex-shrink:0;
   color:#fff;
+  box-shadow:0 4px 10px rgba(0,0,0,0.15);
 }
 .export-option .ico.png{background:linear-gradient(135deg,#2a9d8f,#1a7a8a);}
 .export-option .ico.pdf{background:linear-gradient(135deg,#d32f2f,#b71c1c);}
 .export-option .ico.print{background:linear-gradient(135deg,#5a3a8e,#7b5cb2);}
+.export-option .opt-text{flex:1;}
+.export-option .opt-title{
+  font-weight:900;
+  font-size:0.92rem;
+  margin-bottom:2px;
+}
+.export-option .opt-desc{
+  font-weight:600;
+  font-size:0.74rem;
+  color:rgba(0,0,0,0.55);
+}
+.export-option .arrow{
+  font-size:1.1rem;
+  color:rgba(0,0,0,0.35);
+}
+.export-cancel-btn{
+  width:100%;
+  padding:14px;
+  border:none;
+  background:#f5f5f5;
+  color:#666;
+  font-family:inherit;
+  font-size:0.88rem;
+  font-weight:800;
+  cursor:pointer;
+  margin-top:4px;
+}
 
 @media print {
-  .export-menu-wrap, .actions, .btn-bar, button, .action-bar{display:none !important;}
+  .export-menu-wrap, .export-menu, .export-sheet-backdrop, .actions, .btn-bar, button, .action-bar{display:none !important;}
   body{background:#fff !important; padding:0 !important;}
-  #page, .page{box-shadow:none !important; margin:0 !important;}
 }
 
 </style>
@@ -903,23 +967,7 @@ html,body{
   <button class="btn btn-lang" onclick="toggleLang()">
     <span>🌐</span><span id="langTxt">EN</span>
   </button>
-  <div class="export-menu-wrap">
-    <button class="btn btn-print" onclick="toggleExportMenu(event)">⬇ <span data-i18n="btnDownload">تحميل التقرير</span></button>
-    <div class="export-menu" id="exportMenu">
-      <button class="export-option" onclick="exportAsImage()">
-        <span class="ico png">🖼</span>
-        <span data-i18n="optImage">حفظ كصورة</span>
-      </button>
-      <button class="export-option" onclick="exportAsPDFv2()">
-        <span class="ico pdf">📄</span>
-        <span data-i18n="optPDF">حفظ PDF</span>
-      </button>
-      <button class="export-option" onclick="printReport()">
-        <span class="ico print">🖨</span>
-        <span data-i18n="optPrint">طباعة مباشرة</span>
-      </button>
-    </div>
-  </div>
+  <div class="export-menu-wrap"><button class="btn btn-print" onclick="toggleExportMenu(event)">⬇ <span data-i18n="btnDownload">تحميل التقرير</span></button></div>
 </div>
 
 <script>
@@ -1353,16 +1401,22 @@ loadData();
 function toggleExportMenu(e){
   if(e) e.stopPropagation();
   const menu = document.getElementById('exportMenu');
-  if(menu) menu.classList.toggle('show');
-}
-
-document.addEventListener('click', function(e){
-  const menu = document.getElementById('exportMenu');
-  if(!menu) return;
-  if(!e.target.closest('.export-menu-wrap')){
-    menu.classList.remove('show');
+  const backdrop = document.getElementById('exportBackdrop');
+  if(menu && backdrop){
+    menu.classList.add('show');
+    backdrop.classList.add('show');
+    document.body.style.overflow = 'hidden';
   }
-});
+}
+function closeExportMenu(){
+  const menu = document.getElementById('exportMenu');
+  const backdrop = document.getElementById('exportBackdrop');
+  if(menu && backdrop){
+    menu.classList.remove('show');
+    backdrop.classList.remove('show');
+    document.body.style.overflow = '';
+  }
+}
 
 function exportAsImage(){
   toggleExportMenu();
@@ -1385,55 +1439,134 @@ function loadJsPDF(){
   });
 }
 
+// ═══════════════════════════════════════════════
+// دالة PDF مستقلة - تستخدم html2canvas مباشرة
+// ═══════════════════════════════════════════════
 async function exportAsPDFv2(){
-  toggleExportMenu();
+  closeExportMenu();
   
+  // toast
   if(typeof showToast === 'function'){
     showToast('⏳ جاري تحضير PDF...');
   }
   
+  // نتحقق من jsPDF أولاً
   if(typeof window.jspdf === 'undefined'){
-    try { await loadJsPDF(); } catch(e){
+    try {
+      await loadJsPDF();
+    } catch(e){
       if(typeof showToast === 'function') showToast('❌ فشل تحميل مكتبة PDF');
+      console.error('jsPDF load error:', e);
       return;
     }
   }
   
-  // نعترض الـ canvas + a.click عشان نمنع تحميل PNG
-  const _origToDataURL = HTMLCanvasElement.prototype.toDataURL;
-  let capturedCanvas = null;
-  HTMLCanvasElement.prototype.toDataURL = function(){
-    if(!capturedCanvas) capturedCanvas = this;
-    return _origToDataURL.apply(this, arguments);
-  };
+  const page = document.getElementById('page');
+  if(!page){
+    if(typeof showToast === 'function') showToast('❌ لم يتم العثور على المحتوى');
+    return;
+  }
   
-  const _origClick = HTMLAnchorElement.prototype.click;
-  HTMLAnchorElement.prototype.click = function(){
-    if(this.download && /\.(png|jpg|jpeg)$/i.test(this.download)){
-      return;
+  // ═══ نطبق نفس معالجة الأحرف العربية ═══
+  const replacements = [];
+  const textWraps = [];
+  
+  // 1) نحوّل الـ inputs لـ spans
+  const allInputs = page.querySelectorAll('input, textarea');
+  allInputs.forEach(el => {
+    const computed = window.getComputedStyle(el);
+    const value = el.value || '';
+    const isEmpty = !value;
+    const placeholder = el.placeholder || '';
+    const isTextarea = el.tagName === 'TEXTAREA';
+    const text = isEmpty ? placeholder : value;
+    
+    if(!text.trim() && !placeholder) return;
+    
+    const replacement = document.createElement(isTextarea ? 'div' : 'span');
+    
+    if(isTextarea){
+      const lines = text.split('\n');
+      replacement.innerHTML = lines.map(line => {
+        const words = line.split(/(\s+)/);
+        return words.map(part => {
+          if(!part) return '';
+          if(/^\s+$/.test(part)) return part;
+          return `<span style="display:inline-block;white-space:nowrap;letter-spacing:0;direction:rtl;unicode-bidi:embed;">${part}</span>`;
+        }).join('');
+      }).join('<br>') || '&nbsp;';
+    } else {
+      const words = text.split(/(\s+)/);
+      replacement.innerHTML = words.map(part => {
+        if(!part) return '';
+        if(/^\s+$/.test(part)) return part;
+        return `<span style="display:inline-block;white-space:nowrap;letter-spacing:0;direction:rtl;unicode-bidi:embed;">${part}</span>`;
+      }).join('') || '&nbsp;';
     }
-    return _origClick.apply(this, arguments);
-  };
+    
+    replacement.style.cssText = `
+      display: ${isTextarea ? 'block' : 'inline-block'};
+      width: 100%;
+      box-sizing: border-box;
+      font-family: ${computed.fontFamily};
+      font-size: ${computed.fontSize};
+      font-weight: ${computed.fontWeight};
+      color: ${isEmpty ? 'rgba(0,0,0,0.4)' : computed.color};
+      text-align: ${computed.textAlign};
+      line-height: ${computed.lineHeight};
+      padding: ${computed.padding};
+      direction: rtl;
+      unicode-bidi: embed;
+      white-space: normal;
+      overflow: visible;
+      vertical-align: middle;
+      background: transparent;
+      border: none;
+      outline: none;
+      letter-spacing: 0;
+    `;
+    
+    el.style.display = 'none';
+    el.parentNode.insertBefore(replacement, el);
+    replacements.push({ original: el, replacement });
+  });
   
   try {
-    await saveAsImage();
-    
-    if(!capturedCanvas){
-      throw new Error('No canvas captured');
+    // نتأكد من تحميل الخطوط
+    if(document.fonts && document.fonts.ready){
+      await document.fonts.ready;
     }
+    await new Promise(r => setTimeout(r, 400));
     
+    // ═══ التقاط الصفحة ═══
+    const canvas = await html2canvas(page, {
+      backgroundColor: '#fff',
+      scale: 2.5,
+      useCORS: true,
+      logging: false,
+      allowTaint: true,
+      width: page.offsetWidth,
+      height: page.offsetHeight,
+      windowWidth: page.offsetWidth,
+      windowHeight: page.offsetHeight,
+      onclone: (doc) => {
+        const style = doc.createElement('style');
+        style.textContent = `
+          * {
+            font-family: 'Cairo','Tajawal','Arial Unicode MS','Tahoma',Arial,sans-serif !important;
+            letter-spacing: 0 !important;
+            text-rendering: optimizeLegibility !important;
+            -webkit-font-feature-settings: "kern" 1, "liga" 1, "calt" 1, "rlig" 1 !important;
+            font-feature-settings: "kern" 1, "liga" 1, "calt" 1, "rlig" 1 !important;
+            font-kerning: normal !important;
+          }
+        `;
+        doc.head.appendChild(style);
+      }
+    });
+    
+    // ═══ إنشاء PDF بحجم A4 ═══
     const { jsPDF } = window.jspdf;
-    const canvas = capturedCanvas;
-    
-    const pdfWidth = 210, pdfHeight = 297;
-    const marginX = 8, marginY = 8;
-    const contentWidth = pdfWidth - (marginX * 2);
-    const pageContentHeight = pdfHeight - (marginY * 2);
-    
-    const imgRatio = canvas.height / canvas.width;
-    const imgWidth = contentWidth;
-    const imgHeight = imgWidth * imgRatio;
-    
     const pdf = new jsPDF({
       orientation: 'portrait',
       unit: 'mm',
@@ -1441,21 +1574,32 @@ async function exportAsPDFv2(){
       compress: true
     });
     
-    if(imgHeight <= pageContentHeight + 5){
-      // صفحة واحدة - نوسطها
+    const pdfWidth = 210, pdfHeight = 297;
+    const marginX = 8, marginY = 8;
+    const contentWidth = pdfWidth - (marginX * 2);
+    const contentHeight = pdfHeight - (marginY * 2);
+    
+    const imgRatio = canvas.height / canvas.width;
+    const imgWidthMM = contentWidth;
+    const imgHeightMM = imgWidthMM * imgRatio;
+    
+    if(imgHeightMM <= contentHeight + 5){
+      // ═══ صفحة واحدة - نوسطها ═══
       const imgData = canvas.toDataURL('image/jpeg', 0.92);
-      const yPos = (pdfHeight - imgHeight) / 2;
-      pdf.addImage(imgData, 'JPEG', marginX, yPos, imgWidth, imgHeight, undefined, 'FAST');
+      const yPos = (pdfHeight - imgHeightMM) / 2;
+      pdf.addImage(imgData, 'JPEG', marginX, yPos, imgWidthMM, imgHeightMM, undefined, 'FAST');
     } else {
-      // صفحات متعددة - نقسّم
-      const totalPages = Math.ceil(imgHeight / pageContentHeight);
-      const pixelsPerPage = (pageContentHeight / imgHeight) * canvas.height;
+      // ═══ صفحات متعددة - تقسيم ═══
+      const pixelsPerPage = (contentHeight / imgHeightMM) * canvas.height;
+      const totalPages = Math.ceil(canvas.height / pixelsPerPage);
       
       for(let i = 0; i < totalPages; i++){
         if(i > 0) pdf.addPage();
+        
         const sourceY = i * pixelsPerPage;
         const sourceHeight = Math.min(pixelsPerPage, canvas.height - sourceY);
         
+        // نقص جزء من الـ canvas
         const partCanvas = document.createElement('canvas');
         partCanvas.width = canvas.width;
         partCanvas.height = sourceHeight;
@@ -1463,23 +1607,70 @@ async function exportAsPDFv2(){
         ctx.drawImage(canvas, 0, sourceY, canvas.width, sourceHeight, 0, 0, canvas.width, sourceHeight);
         
         const partData = partCanvas.toDataURL('image/jpeg', 0.92);
-        const partHeight = (sourceHeight / canvas.width) * imgWidth;
-        pdf.addImage(partData, 'JPEG', marginX, marginY, imgWidth, partHeight, undefined, 'FAST');
+        const partHeightMM = (sourceHeight / canvas.width) * imgWidthMM;
+        pdf.addImage(partData, 'JPEG', marginX, marginY, imgWidthMM, partHeightMM, undefined, 'FAST');
       }
     }
     
+    // ═══ metadata ═══
+    pdf.setProperties({
+      title: 'تقرير يوم المعلم',
+      author: 'منصة التقارير - ksa2030.one',
+      creator: 'ksa2030.one'
+    });
+    
+    // ═══ حفظ ═══
     pdf.save('تقرير_يوم_المعلم.pdf');
-    if(typeof showToast === 'function') showToast('✅ تم حفظ PDF بنجاح');
+    
+    if(typeof showToast === 'function'){
+      showToast('✅ تم حفظ PDF بنجاح');
+    }
   } catch(err){
-    console.error(err);
-    if(typeof showToast === 'function') showToast('❌ خطأ في إنشاء PDF');
+    console.error('PDF Export Error:', err);
+    if(typeof showToast === 'function'){
+      showToast('❌ خطأ في إنشاء PDF: ' + (err.message || 'خطأ غير معروف'));
+    }
   } finally {
-    HTMLCanvasElement.prototype.toDataURL = _origToDataURL;
-    HTMLAnchorElement.prototype.click = _origClick;
+    // ═══ إرجاع الـ inputs ═══
+    replacements.forEach(({ original, replacement }) => {
+      original.style.display = '';
+      if(replacement.parentNode) replacement.parentNode.removeChild(replacement);
+    });
   }
 }
 
 </script>
+
+
+<div class="export-sheet-backdrop" id="exportBackdrop" onclick="closeExportMenu()"></div>
+<div class="export-menu" id="exportMenu">
+  <div class="export-menu-title">اختر طريقة التصدير</div>
+  <button class="export-option" onclick="exportAsImage()">
+    <span class="ico png">🖼</span>
+    <span class="opt-text">
+      <div class="opt-title">حفظ كصورة</div>
+      <div class="opt-desc">PNG عالي الجودة</div>
+    </span>
+    <span class="arrow">‹</span>
+  </button>
+  <button class="export-option" onclick="exportAsPDFv2()">
+    <span class="ico pdf">📄</span>
+    <span class="opt-text">
+      <div class="opt-title">حفظ PDF</div>
+      <div class="opt-desc">ملف PDF احترافي للطباعة</div>
+    </span>
+    <span class="arrow">‹</span>
+  </button>
+  <button class="export-option" onclick="printReport()">
+    <span class="ico print">🖨</span>
+    <span class="opt-text">
+      <div class="opt-title">طباعة مباشرة</div>
+      <div class="opt-desc">يفتح نافذة الطباعة فوراً</div>
+    </span>
+    <span class="arrow">‹</span>
+  </button>
+  <button class="export-cancel-btn" onclick="closeExportMenu()">إلغاء</button>
+</div>
 
 </body>
 </html>
