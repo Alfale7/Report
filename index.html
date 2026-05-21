@@ -1196,6 +1196,25 @@ width:30%;height:2px;background:#6b4a2b;opacity:0.5;
 .snap-teacher .rs-field{border-color:#3c2864; color:#143c50;}
 .snap-teacher .rs-footer{color:#143c50;}
 
+/* يوم السعودية الخضراء - تصميم سلايدي تفاعلي */
+.snap-green{background:linear-gradient(180deg, #f0fdf4 0%, #d4f5e0 100%);}
+.snap-green .rs-header{background:linear-gradient(135deg, #054d27, #00a651 50%, #26d07c); color:#fff;}
+.snap-green .rs-h-side{color:#fff;}
+.snap-green .rs-h-side .l2{color:#a7e8c4; opacity:0.95;}
+.snap-green .rs-h-center{
+  background:linear-gradient(135deg, #26d07c, #00a651);
+  color:#fff;
+  border:2px solid #fff;
+}
+.snap-green .rs-title{background:linear-gradient(135deg, #054d27, #00a651); color:#fff;}
+.snap-green .rs-subtitle{background:linear-gradient(135deg, #a7e8c4, #d4f5e0); color:#054d27;}
+.snap-green .rs-photo{background:linear-gradient(135deg,#fff,#d4f5e0); border-color:#00a651; color:#054d27;}
+.snap-green .rs-field{border-color:#00a651; color:#054d27;}
+.snap-green .rs-footer{color:#054d27;}
+
+.r-green .card-icon{background:linear-gradient(135deg,#054d27,#26d07c); color:#fff;}
+.r-green .card-icon-wrap::after{background:#26d07c;}
+
 /* اليوم الوطني - أخضر سعودي */
 .snap-national{background:linear-gradient(180deg, #fff 0%, #d4e8d4 100%);}
 .snap-national .rs-header{background:linear-gradient(135deg, #006c35, #228b22); color:#fff;}
@@ -2212,7 +2231,7 @@ font-size:0.78rem;text-align:center;margin-top:12px;display:none;
   <div class="previews">
 
     <!-- ═══ بانر التقويم الدراسي - هدية مجانية ═══ -->
-    <a href="downloads/Taqwym.pdf" download="التقويم_الدراسي_1448_1449.pdf" class="gift-banner" id="giftBanner">
+    <a href="download/taqwym.pdf" download="التقويم_الدراسي_1448_1449.pdf" class="gift-banner" id="giftBanner">
       <div class="gift-shine"></div>
       <div class="gift-icon-wrap">
         <div class="gift-icon">🎁</div>
@@ -2252,9 +2271,9 @@ font-size:0.78rem;text-align:center;margin-top:12px;display:none;
         <div class="cat-text">
           <div class="cat-title">
             <span data-i18n="catEvents">المناسبات الوطنية</span>
-            <span class="cat-count">3</span>
+            <span class="cat-count">4</span>
           </div>
-          <div class="cat-sub" data-i18n="catEventsSub">يوم التأسيس، اليوم الوطني، يوم العَلَم</div>
+          <div class="cat-sub" data-i18n="catEventsSub">يوم التأسيس، اليوم الوطني، يوم العَلَم، السعودية الخضراء</div>
         </div>
         <div class="cat-chevron">▼</div>
       </div>
@@ -2386,6 +2405,62 @@ font-size:0.78rem;text-align:center;margin-top:12px;display:none;
               <div class="l2">١٤٤٧هـ</div>
             </div>
           </div>
+
+    <div class="preview-card r-green locked" data-target="green.html" onclick="handleCardClick(this)">
+      <span class="card-badge badge-new">✨ <span data-i18n="badgeNew">جديد</span></span>
+      <div class="thumb thumb-green">
+        <div class="real-snap snap-green">
+          <div class="rs-header">
+            <div class="rs-h-side right">
+              <div class="l1" data-i18n="snapGreenTitle">السعودية الخضراء</div>
+              <div class="l2">SAUDI GREEN</div>
+            </div>
+            <div class="rs-h-center">🌳</div>
+            <div class="rs-h-side left">
+              <div class="l1" data-i18n="snapMoE">وزارة التعليم</div>
+              <div class="l2">2030</div>
+            </div>
+          </div>
+          <div class="rs-title" data-i18n="snapGreenEvent">تقرير الفعالية</div>
+          <div class="rs-subtitle" data-i18n="snapGreenSub">معاً نحو سعودية أكثر اخضراراً 🌱</div>
+          <div class="rs-body">
+            <div class="rs-photos">
+              <div class="rs-photo"></div>
+              <div class="rs-photo"></div>
+              <div class="rs-photo"></div>
+            </div>
+            <div class="rs-fields">
+              <div class="rs-field" data-i18n="snapGreenF1">5 سلايدات</div>
+              <div class="rs-field" data-i18n="snapGreenF2">تصميم تفاعلي</div>
+              <div class="rs-field" data-i18n="snapGreenF3">3 أهداف</div>
+              <div class="rs-field" data-i18n="snapGreenF4">3 صور</div>
+              <div class="rs-field" data-i18n="snapGreenF5">رؤية 2030</div>
+            </div>
+          </div>
+        </div>
+        <div class="lock-overlay">
+          <div class="lock-cta">
+            <span>🔑</span>
+            <span data-i18n="lockCta">سجّل الدخول للوصول</span>
+          </div>
+        </div>
+      </div>
+      <div class="card-content">
+        <div class="card-icon-wrap">
+          <div class="card-icon">🌳</div>
+        </div>
+        <div class="card-text">
+          <div class="title" data-i18n="cardGreenTitle">يوم السعودية الخضراء</div>
+          <div class="desc" data-i18n="cardGreenDesc">تصميم سلايدات تفاعلي · فريد من نوعه ✨</div>
+          <div class="meta">
+            <span class="meta-pill">🎴 <span data-i18n="meta5Slides">5 سلايدات</span></span>
+            <span class="meta-sep"></span>
+            <span class="meta-pill">📷 <span data-i18n="metaPhotos">3 صور</span></span>
+          </div>
+        </div>
+        <div class="card-action">‹</div>
+      </div>
+    </div>
           <div class="rs-title" data-i18n="snapFlagEvent">رايتنا عزّنا</div>
           <div class="rs-subtitle" data-i18n="snapFlagSub">شموخ راية · مجد وطن</div>
           <div class="rs-body">
@@ -3305,7 +3380,18 @@ const I18N = {
     metaCertCount: "7 شهادات",
     metaThemes: "7 ألوان",
     catEvents: "المناسبات الوطنية",
-    catEventsSub: "يوم التأسيس، اليوم الوطني، يوم العَلَم",
+    catEventsSub: "يوم التأسيس، اليوم الوطني، يوم العَلَم، السعودية الخضراء",
+    cardGreenTitle: "يوم السعودية الخضراء",
+    cardGreenDesc: "تصميم سلايدات تفاعلي · فريد من نوعه ✨",
+    meta5Slides: "5 سلايدات",
+    snapGreenTitle: "السعودية الخضراء",
+    snapGreenEvent: "تقرير الفعالية",
+    snapGreenSub: "معاً نحو سعودية أكثر اخضراراً 🌱",
+    snapGreenF1: "5 سلايدات",
+    snapGreenF2: "تصميم تفاعلي",
+    snapGreenF3: "3 أهداف",
+    snapGreenF4: "3 صور",
+    snapGreenF5: "رؤية 2030",
     catCultural: "المناسبات التعليمية والثقافية",
     catCulturalSub: "يوم المعلم، يوم اللغة العربية",
     cardArabicTitle: "يوم اللغة العربية",
@@ -3492,7 +3578,18 @@ const I18N = {
     metaCertCount: "7 certificates",
     metaThemes: "7 themes",
     catEvents: "National Events",
-    catEventsSub: "Founding Day, National Day, Flag Day",
+    catEventsSub: "Founding Day, National Day, Flag Day, Saudi Green",
+    cardGreenTitle: "Saudi Green Day",
+    cardGreenDesc: "Interactive slides · One of a kind ✨",
+    meta5Slides: "5 Slides",
+    snapGreenTitle: "Saudi Green",
+    snapGreenEvent: "Event Report",
+    snapGreenSub: "Towards a greener Saudi 🌱",
+    snapGreenF1: "5 Slides",
+    snapGreenF2: "Interactive",
+    snapGreenF3: "3 Goals",
+    snapGreenF4: "3 Photos",
+    snapGreenF5: "Vision 2030",
     catCultural: "Educational & Cultural Events",
     catCulturalSub: "Teacher's Day, Arabic Language Day",
     cardArabicTitle: "Arabic Language Day",
