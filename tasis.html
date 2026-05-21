@@ -1157,7 +1157,7 @@ async function exportAsPDFv2(){
   const textWraps = [];
   
   // 1) نحوّل الـ inputs لـ spans
-  const allInputs = page.querySelectorAll('input, textarea');
+  const allInputs = page.querySelectorAll('input:not([type="file"]):not([type="hidden"]):not([type="checkbox"]):not([type="radio"]), textarea');
   allInputs.forEach(el => {
     const computed = window.getComputedStyle(el);
     const value = el.value || '';
