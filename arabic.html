@@ -9,7 +9,7 @@
 <title>تقرير يوم اللغة العربية</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Amiri:wght@400;700&family=Aref+Ruqaa:wght@400;700&family=Reem+Kufi:wght@400;500;600;700&family=Scheherazade+New:wght@400;700&family=Tajawal:wght@400;500;700;800;900&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Amiri:wght@400;700&family=Aref+Ruqaa:wght@400;700&family=Cairo:wght@400;500;700;900&family=Reem+Kufi:wght@400;500;600;700&family=Scheherazade+New:wght@400;700&family=Tajawal:wght@400;500;700;800;900&display=swap" rel="stylesheet">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 <style>
 :root{color-scheme:light only;}
@@ -933,7 +933,7 @@ const I18N = {
     reportTitle:'تقرير فعالية يوم اللغة العربية',
     headerDate:'١٨ ديسمبر · لغة الضاد',
     adminLabel:'الإدارة التعليمية',
-    adminPh:'الإدارة العامة للتعليم بمنطقة ...',
+    adminPh:'الإدارة العامة للتعليم بمحافظة ...',
     eventPh:'اكتب عنوان الفعالية الرئيسية...',
     subtitlePh:'الفعالية الفرعية أو الشعار...',
     fExec:'المنفذ/ة', execPh:'اكتب الاسم',
@@ -946,7 +946,7 @@ const I18N = {
     goalsPh:'اكتب أهداف الفعالية ومحتواها بإيجاز...',
     sigPrinc:'مدير/ة المدرسة', sigAuth:'معدّ التقرير', namePh:'الاسم',
     btnClear:'تفريغ', btnSave:'حفظ',
-    credit1:'صُمم بـ', credit2:'احتفاءً بلغتنا العربية الخالدة ',
+    credit1:'صُمم بـ', credit2:'احتفاءً بلغتنا العربية الخالدة · ١٤٤٧هـ',
     toastDone:'✅ تم حفظ التقرير بنجاح',
     toastError:'❌ حدث خطأ',
     toastCleared:'✅ تم تفريغ التقرير',
@@ -1150,9 +1150,129 @@ async function saveAsImage(){
   const page = document.getElementById('page');
   showToast('⏳ ' + (currentLang === 'ar' ? 'جاري التحضير...' : 'Preparing...'));
 
+  // ═══════════════════════════════════════════════
+  // الحل الشامل: معالجة جميع النصوص العربية في التقرير
+  // 1. الـ inputs/textareas → تتحول لـ spans/divs
+  // 2. النصوص الثابتة → نلفّها بـ word-by-word spans
+  // ═══════════════════════════════════════════════
+
+  const fieldsToProcess = [
+    { id: 'f-admin' }, { id: 'f-event' }, { id: 'f-subtitle' },
+    { id: 'f-exec' }, { id: 'f-place' }, { id: 'f-bene' },
+    { id: 'f-count' }, { id: 'f-date' }, { id: 'f-goals' },
+    { id: 'f-princ' }, { id: 'f-author' },
+  ];
+
+  const replacements = [];
+  const textWraps = [];
+
+  // ═══ الجزء 1: تحويل الـ inputs ═══
+  fieldsToProcess.forEach(({ id }) => {
+    const el = document.getElementById(id);
+    if(!el) return;
+
+    const computed = window.getComputedStyle(el);
+    const value = el.value || '';
+    const isEmpty = !value;
+    const placeholder = el.placeholder || '';
+    const isTextarea = el.tagName === 'TEXTAREA';
+
+    const replacement = document.createElement(isTextarea ? 'div' : 'span');
+    replacement.setAttribute('data-replacement', 'true');
+
+    // المحتوى: نلفّ كل كلمة في span مستقل
+    const textContent = isEmpty ? placeholder : value;
+    if(isTextarea){
+      const lines = textContent.split('\n');
+      const wrappedHTML = lines.map(line => {
+        const words = line.split(/(\s+)/);
+        return words.map(part => {
+          if(!part) return '';
+          if(/^\s+$/.test(part)) return part;
+          return `<span style="display:inline-block !important; white-space:nowrap !important; letter-spacing:0 !important; direction:rtl !important; unicode-bidi:embed !important; vertical-align:baseline !important;">${part}</span>`;
+        }).join('');
+      }).join('<br>');
+      replacement.innerHTML = wrappedHTML || '&nbsp;';
+    } else {
+      const words = textContent.split(/(\s+)/);
+      const wrappedHTML = words.map(part => {
+        if(!part) return '';
+        if(/^\s+$/.test(part)) return part;
+        return `<span style="display:inline-block !important; white-space:nowrap !important; letter-spacing:0 !important; direction:rtl !important; unicode-bidi:embed !important; vertical-align:baseline !important;">${part}</span>`;
+      }).join('');
+      replacement.innerHTML = wrappedHTML || '&nbsp;';
+    }
+
+    replacement.style.cssText = `
+      display: ${isTextarea ? 'block' : 'inline-block'};
+      width: 100%;
+      box-sizing: border-box;
+      font-family: ${computed.fontFamily};
+      font-size: ${computed.fontSize};
+      font-weight: ${computed.fontWeight};
+      color: ${isEmpty ? 'rgba(0,0,0,0.35)' : computed.color};
+      text-align: ${computed.textAlign};
+      line-height: ${computed.lineHeight};
+      padding: ${computed.padding};
+      direction: rtl;
+      unicode-bidi: embed;
+      white-space: normal;
+      word-wrap: break-word;
+      overflow-wrap: break-word;
+      overflow: visible;
+      vertical-align: middle;
+      background: transparent;
+      border: none;
+      outline: none;
+      letter-spacing: 0;
+      min-height: ${isTextarea ? computed.minHeight : 'auto'};
+    `;
+
+    el.style.display = 'none';
+    el.parentNode.insertBefore(replacement, el);
+    replacements.push({ original: el, replacement });
+  });
+
+  // ═══ الجزء 2: لفّ كل النصوص الثابتة بـ word-spans ═══
+  const arabicTextSelectors = [
+    '.moe-text .l1', '.moe-text .l2',
+    '.report-title', '.report-subtitle',
+    '.admin-band .label',
+    '.field-row label',
+    '.photo-text',
+    '.goals-title .text',
+    '.sig-role',
+    '.footer-band',
+    '.header-title'
+  ];
+
+  arabicTextSelectors.forEach(selector => {
+    document.querySelectorAll(selector).forEach(el => {
+      const originalText = el.textContent;
+      const originalHTML = el.innerHTML;
+
+      if(!originalText.trim()) return;
+      if(el.children.length > 1) return;
+
+      textWraps.push({ el, originalHTML });
+
+      const words = originalText.split(/(\s+)/);
+      const wrappedHTML = words.map(part => {
+        if(!part) return '';
+        if(/^\s+$/.test(part)) return part;
+        return `<span data-arabic-word="1" style="display:inline-block !important; white-space:nowrap !important; letter-spacing:0 !important; word-spacing:0 !important; direction:rtl !important; unicode-bidi:embed !important; vertical-align:baseline !important;">${part}</span>`;
+      }).join('');
+
+      el.innerHTML = wrappedHTML;
+    });
+  });
+
   try{
     await document.fonts.ready;
-    await new Promise(r => setTimeout(r, 400));
+    await new Promise(r => setTimeout(r, 600));
+
+    const pageWidth = page.offsetWidth;
+    const pageHeight = page.offsetHeight;
 
     const canvas = await html2canvas(page, {
       backgroundColor: '#fefdfb',
@@ -1160,9 +1280,32 @@ async function saveAsImage(){
       useCORS: true,
       logging: false,
       allowTaint: true,
+      width: pageWidth,
+      height: pageHeight,
+      windowWidth: pageWidth,
+      windowHeight: pageHeight,
+      x: 0, y: 0, scrollX: 0, scrollY: 0,
+      foreignObjectRendering: false,
       onclone: (doc) => {
         const style = doc.createElement('style');
-        style.textContent = "* { font-family: 'Tajawal','Arial Unicode MS','Tahoma',Arial,sans-serif !important; }";
+        style.textContent = `
+          * {
+            font-family: 'Cairo','Tajawal','Arial Unicode MS','Tahoma',Arial,sans-serif !important;
+            letter-spacing: 0 !important;
+            word-spacing: normal !important;
+            text-rendering: optimizeLegibility !important;
+            -webkit-font-smoothing: antialiased !important;
+            -moz-osx-font-smoothing: grayscale !important;
+            -webkit-font-feature-settings: "kern" 1, "liga" 1, "calt" 1, "rlig" 1 !important;
+            font-feature-settings: "kern" 1, "liga" 1, "calt" 1, "rlig" 1 !important;
+            font-kerning: normal !important;
+            text-shadow: 0 0 0 transparent !important;
+          }
+          [data-replacement="true"] {
+            unicode-bidi: embed !important;
+            direction: rtl !important;
+          }
+        `;
         doc.head.appendChild(style);
       }
     });
@@ -1192,6 +1335,15 @@ async function saveAsImage(){
   } catch(e){
     console.error(e);
     showToast(I18N[currentLang].toastError);
+  } finally {
+    // ═══ إرجاع كل شي ═══
+    replacements.forEach(({ original, replacement }) => {
+      original.style.display = '';
+      if(replacement.parentNode) replacement.parentNode.removeChild(replacement);
+    });
+    textWraps.forEach(({ el, originalHTML }) => {
+      el.innerHTML = originalHTML;
+    });
   }
 }
 
