@@ -1287,6 +1287,74 @@ width:30%;height:2px;background:#6b4a2b;opacity:0.5;
 .snap-arabic .rs-field{border-color:#1e6b8a; color:#1e6b8a;}
 .snap-arabic .rs-footer{color:#1e6b8a;}
 
+/* تقرير الجريدة - أزرق ملكي + ذهبي + ورق عتيق */
+.snap-newspaper{background:linear-gradient(180deg, #f5ecd6 0%, #fbf4dd 100%);}
+.snap-newspaper .rs-header{background:linear-gradient(135deg, #1a3a5c, #0f2440); color:#f5ecd6; border-bottom:2px solid #c5a059;}
+.snap-newspaper .rs-h-side{color:#f5ecd6;}
+.snap-newspaper .rs-h-side .l2{color:#c5a059; opacity:0.95;}
+.snap-newspaper .rs-h-center{
+  background:linear-gradient(135deg, #c5a059, #8b6f37);
+  color:#1a3a5c;
+  border:2px solid #f5ecd6;
+}
+.snap-newspaper .rs-title{background:linear-gradient(135deg, #1a3a5c, #0f2440); color:#c5a059; font-family:'Aref Ruqaa', serif;}
+.snap-newspaper .rs-subtitle{background:linear-gradient(135deg, #c5a059, #8b6f37); color:#1a3a5c; font-weight:900;}
+.snap-newspaper .rs-photo{background:linear-gradient(135deg,#e8dcbb,#d4c19a); border-color:#1a3a5c; color:#5a3e1f;}
+.snap-newspaper .rs-field{border-color:#1a3a5c; color:#1a3a5c; background:rgba(245,236,214,0.5);}
+.snap-newspaper .rs-footer{color:#5a3e1f;}
+
+/* المجلة المدرسية - كورال حيوي + بنفسجي ليلي + ذهبي مشرق */
+.snap-magazine{background:linear-gradient(180deg, #FFF8F0 0%, #FFE8CC 100%);}
+.snap-magazine .rs-header{
+  background:linear-gradient(135deg, #1B1B3A 0%, #2A2A5C 100%);
+  color:#fff;
+  border-bottom:3px solid #F7B538;
+  position:relative;
+  overflow:hidden;
+}
+.snap-magazine .rs-header::after{
+  content:"";
+  position:absolute;
+  top:-15px;
+  right:-15px;
+  width:50px;
+  height:50px;
+  background:#FF6B35;
+  border-radius:50%;
+  opacity:0.6;
+}
+.snap-magazine .rs-h-side{color:#fff;}
+.snap-magazine .rs-h-side .l2{color:#F7B538; opacity:0.95;}
+.snap-magazine .rs-h-center{
+  background:linear-gradient(135deg, #FF6B35, #F7B538);
+  color:#fff;
+  border:2px solid #fff;
+  box-shadow:0 2px 8px rgba(255,107,53,0.4);
+}
+.snap-magazine .rs-title{
+  background:linear-gradient(135deg, #FF6B35, #d54a1f);
+  color:#fff;
+  font-family:'Tajawal',sans-serif;
+  font-weight:900;
+}
+.snap-magazine .rs-subtitle{
+  background:linear-gradient(135deg, #F7B538, #d49a30);
+  color:#1B1B3A;
+  font-weight:900;
+}
+.snap-magazine .rs-photo{
+  background:linear-gradient(135deg,#4ECDC4,#FF85A1);
+  border-color:#1B1B3A;
+  color:#fff;
+}
+.snap-magazine .rs-field{
+  border-color:#FF6B35;
+  color:#1B1B3A;
+  background:#fff;
+  font-weight:700;
+}
+.snap-magazine .rs-footer{color:#1B1B3A;}
+
 /* Mobile responsive */
 @media (max-width:480px){
   .rs-header{padding:6px 8px;}
@@ -1606,6 +1674,16 @@ filter:drop-shadow(0 1px 1px rgba(107,74,43,0.25));
 .r-arabic .card-icon{background:linear-gradient(135deg,#1e6b8a,#2a8aab); color:#fff;}
 .r-arabic .card-icon-wrap::after{background:#d4a657;}
 .r-general .card-icon{background:linear-gradient(135deg,#2a9d8f,#1a3c4e);}
+.r-newspaper .card-icon{background:linear-gradient(135deg,#c5a059,#1a3a5c); color:#fff;}
+.r-newspaper .card-icon-wrap::after{background:#c5a059;}
+
+/* المجلة المدرسية التفاعلية - كورال + بنفسجي + ذهبي */
+.r-magazine .card-icon{
+  background:linear-gradient(135deg,#FF6B35 0%,#F7B538 50%,#1B1B3A 100%);
+  color:#fff;
+  box-shadow:0 4px 14px rgba(255,107,53,0.4);
+}
+.r-magazine .card-icon-wrap::after{background:#FF6B35;}
 .r-national .card-icon{
   background:linear-gradient(135deg,#3a8a52,#1a3d2a);
   padding:4px;
@@ -3046,7 +3124,7 @@ font-size:0.78rem;text-align:center;margin-top:12px;display:none;
         <div class="cat-text">
           <div class="cat-title">
             <span data-i18n="catSchool">التقارير المدرسية</span>
-            <span class="cat-count">1</span>
+            <span class="cat-count">3</span>
           </div>
           <div class="cat-sub" data-i18n="catSchoolSub">تقارير الأنشطة والفعاليات</div>
         </div>
@@ -3080,6 +3158,118 @@ font-size:0.78rem;text-align:center;margin-top:12px;display:none;
             <span class="meta-pill">📷 <span data-i18n="metaPhotos">3 صور</span></span>
             <span class="meta-sep"></span>
             <span class="meta-pill">📝 8 حقول</span>
+          </div>
+        </div>
+        <div class="card-action">‹</div>
+      </div>
+    </div>
+
+    <div class="preview-card r-newspaper locked" data-target="report2.html" onclick="handleCardClick(this)">
+      <span class="card-badge badge-new">✨ <span data-i18n="badgeNew">جديد</span></span>
+      <div class="thumb thumb-newspaper">
+        <div class="real-snap snap-newspaper">
+          <div class="rs-header">
+            <div class="rs-h-side right">
+              <div class="l1" data-i18n="snapNewsTitle">جريدة الفعاليات</div>
+              <div class="l2">SCHOOL NEWS · ١٤٤٧هـ</div>
+            </div>
+            <div class="rs-h-center">📰</div>
+            <div class="rs-h-side left">
+              <div class="l1" data-i18n="snapMoE">وزارة التعليم</div>
+              <div class="l2">١٤٤٧هـ</div>
+            </div>
+          </div>
+          <div class="rs-title" data-i18n="snapNewsEvent">اسم المدرسة · اسم الفعالية</div>
+          <div class="rs-subtitle" data-i18n="snapNewsSub">تصميم جريدة كلاسيكي بأعمدة واقتباس</div>
+          <div class="rs-body">
+            <div class="rs-photos">
+              <div class="rs-photo"></div>
+              <div class="rs-photo"></div>
+              <div class="rs-photo"></div>
+            </div>
+            <div class="rs-fields">
+              <div class="rs-field" data-i18n="snapNewsF1">شعار المدرسة</div>
+              <div class="rs-field" data-i18n="snapNewsF2">عنوان رئيسي</div>
+              <div class="rs-field" data-i18n="snapNewsF3">عمودين إخباريين</div>
+              <div class="rs-field" data-i18n="snapNewsF4">اقتباس بارز</div>
+              <div class="rs-field" data-i18n="snapNewsF5">إحصائيات</div>
+            </div>
+          </div>
+        </div>
+        <div class="lock-overlay">
+          <div class="lock-cta">
+            <span>🔑</span>
+            <span data-i18n="lockCta">سجّل الدخول للوصول</span>
+          </div>
+        </div>
+      </div>
+      <div class="card-content">
+        <div class="card-icon-wrap">
+          <div class="card-icon">📰</div>
+        </div>
+        <div class="card-text">
+          <div class="title" data-i18n="cardNewsTitle">تقرير على شكل جريدة</div>
+          <div class="desc" data-i18n="cardNewsDesc">تصميم فريد · يصلح لأي فعالية مدرسية ✨</div>
+          <div class="meta">
+            <span class="meta-pill">📷 <span data-i18n="metaPhotosNews">3 صور + شعار</span></span>
+            <span class="meta-sep"></span>
+            <span class="meta-pill">📝 <span data-i18n="metaFieldsNews">35 حقل تفاعلي</span></span>
+          </div>
+        </div>
+        <div class="card-action">‹</div>
+      </div>
+    </div>
+
+    <div class="preview-card r-magazine locked" data-target="report3.html" onclick="handleCardClick(this)">
+      <span class="card-badge badge-premium">🎨 <span data-i18n="badgeArtistic">تصميم فني</span></span>
+      <div class="thumb thumb-magazine">
+        <div class="real-snap snap-magazine">
+          <div class="rs-header">
+            <div class="rs-h-side right">
+              <div class="l1" data-i18n="snapMagTitle">المجلة المدرسية</div>
+              <div class="l2">SCHOOL MAGAZINE · ٢٠٢٥</div>
+            </div>
+            <div class="rs-h-center">✨</div>
+            <div class="rs-h-side left">
+              <div class="l1" data-i18n="snapMoE">وزارة التعليم</div>
+              <div class="l2">١٤٤٧هـ</div>
+            </div>
+          </div>
+          <div class="rs-title" data-i18n="snapMagEvent">عنوان فعاليتك · بستايل مبهر</div>
+          <div class="rs-subtitle" data-i18n="snapMagSub">تصميم Sticker Magazine عصري بألوان حيوية</div>
+          <div class="rs-body">
+            <div class="rs-photos">
+              <div class="rs-photo"></div>
+              <div class="rs-photo"></div>
+              <div class="rs-photo"></div>
+            </div>
+            <div class="rs-fields">
+              <div class="rs-field" data-i18n="snapMagF1">صور Polaroid</div>
+              <div class="rs-field" data-i18n="snapMagF2">Speech Bubble</div>
+              <div class="rs-field" data-i18n="snapMagF3">Ticket Style</div>
+              <div class="rs-field" data-i18n="snapMagF4">Notebook</div>
+              <div class="rs-field" data-i18n="snapMagF5">Stamps</div>
+            </div>
+          </div>
+        </div>
+        <div class="lock-overlay">
+          <div class="lock-cta">
+            <span>🔑</span>
+            <span data-i18n="lockCta">سجّل الدخول للوصول</span>
+          </div>
+        </div>
+      </div>
+      <div class="card-content">
+        <div class="card-icon-wrap">
+          <div class="card-icon">✨</div>
+        </div>
+        <div class="card-text">
+          <div class="title" data-i18n="cardMagTitle">المجلة المدرسية التفاعلية</div>
+          <div class="desc" data-i18n="cardMagDesc">8 أقسام · ألوان حيوية · تصميم مبهر 🎨</div>
+          <div class="meta">
+            <span class="meta-pill">📷 <span data-i18n="metaPhotosMag">5 صور + شعار</span></span>
+            <span class="meta-sep"></span>
+            <span class="meta-pill">📝 <span data-i18n="metaFieldsMag">44 حقل تفاعلي</span></span>
           </div>
         </div>
         <div class="card-action">‹</div>
@@ -3502,6 +3692,31 @@ const I18N = {
     catAdminSub: "زيارة صفية، اجتماعات، خطط، محاضر",
     catSchool: "التقارير المدرسية",
     catSchoolSub: "تقارير الأنشطة والفعاليات",
+    snapNewsTitle: "جريدة الفعاليات",
+    snapNewsEvent: "اسم المدرسة · اسم الفعالية",
+    snapNewsSub: "تصميم جريدة كلاسيكي بأعمدة واقتباس",
+    snapNewsF1: "شعار المدرسة",
+    snapNewsF2: "عنوان رئيسي",
+    snapNewsF3: "عمودين إخباريين",
+    snapNewsF4: "اقتباس بارز",
+    snapNewsF5: "إحصائيات",
+    cardNewsTitle: "تقرير على شكل جريدة",
+    cardNewsDesc: "تصميم فريد · يصلح لأي فعالية مدرسية ✨",
+    metaPhotosNews: "3 صور + شعار",
+    metaFieldsNews: "35 حقل تفاعلي",
+    badgeArtistic: "تصميم فني",
+    snapMagTitle: "المجلة المدرسية",
+    snapMagEvent: "عنوان فعاليتك · بستايل مبهر",
+    snapMagSub: "تصميم Sticker Magazine عصري بألوان حيوية",
+    snapMagF1: "صور Polaroid",
+    snapMagF2: "Speech Bubble",
+    snapMagF3: "Ticket Style",
+    snapMagF4: "Notebook",
+    snapMagF5: "Stamps",
+    cardMagTitle: "المجلة المدرسية التفاعلية",
+    cardMagDesc: "8 أقسام · ألوان حيوية · تصميم مبهر 🎨",
+    metaPhotosMag: "5 صور + شعار",
+    metaFieldsMag: "44 حقل تفاعلي",
     catDocs: "الجداول والوثائق",
     catDocsSub: "جداول الاختبارات وشهايد الشكر",
     comingSoon: "تقارير قادمة قريباً",
@@ -3710,6 +3925,31 @@ const I18N = {
     catAdminSub: "Class visits, meetings, plans, minutes",
     catSchool: "School Reports",
     catSchoolSub: "Activity and event reports",
+    snapNewsTitle: "Events Newspaper",
+    snapNewsEvent: "School · Event Name",
+    snapNewsSub: "Classic newspaper design with columns & quote",
+    snapNewsF1: "School Logo",
+    snapNewsF2: "Main Headline",
+    snapNewsF3: "Two Columns",
+    snapNewsF4: "Pull Quote",
+    snapNewsF5: "Statistics",
+    cardNewsTitle: "Newspaper-Style Report",
+    cardNewsDesc: "Unique design · Suitable for any school event ✨",
+    metaPhotosNews: "3 photos + logo",
+    metaFieldsNews: "35 interactive fields",
+    badgeArtistic: "Artistic",
+    snapMagTitle: "School Magazine",
+    snapMagEvent: "Your Event Title · Stunning Style",
+    snapMagSub: "Modern Sticker Magazine design with vibrant colors",
+    snapMagF1: "Polaroid Photos",
+    snapMagF2: "Speech Bubble",
+    snapMagF3: "Ticket Style",
+    snapMagF4: "Notebook",
+    snapMagF5: "Stamps",
+    cardMagTitle: "Interactive School Magazine",
+    cardMagDesc: "8 sections · Vibrant colors · Stunning design 🎨",
+    metaPhotosMag: "5 photos + logo",
+    metaFieldsMag: "44 interactive fields",
     catDocs: "Schedules & Documents",
     catDocsSub: "Exam schedules and certificates",
     comingSoon: "Coming Soon",
