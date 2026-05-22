@@ -1247,6 +1247,30 @@ width:30%;height:2px;background:#6b4a2b;opacity:0.5;
 .snap-flag .rs-field{border-color:#006c35; color:#006c35;}
 .snap-flag .rs-footer{color:#8b6428;}
 
+/* يوم العَلَم - الإصدار التراثي (أخضر داكن + ذهبي فخم) */
+.snap-flag-tradition{background:linear-gradient(180deg, #0a2214 0%, #11311f 100%);}
+.snap-flag-tradition .rs-header{background:linear-gradient(135deg, #11311f 0%, #0a2214 100%); color:#ffffff; border-bottom:2px solid #c5a059;}
+.snap-flag-tradition .rs-h-side{color:#ffffff;}
+.snap-flag-tradition .rs-h-side .l2{color:#c5a059; opacity:0.95;}
+.snap-flag-tradition .rs-h-center{
+  background:linear-gradient(135deg, #c5a059, #8b6f37);
+  color:#ffffff;
+  border:2px solid #c5a059;
+}
+.snap-flag-tradition .rs-title{background:linear-gradient(135deg, #11311f, #0a2214); color:#c5a059; border:1px solid #c5a059;}
+.snap-flag-tradition .rs-subtitle{background:linear-gradient(135deg, #c5a059, #8b6f37); color:#0a2214; font-weight:900;}
+.snap-flag-tradition .rs-photo{background:rgba(197,160,89,0.15); border-color:#c5a059; color:#c5a059;}
+.snap-flag-tradition .rs-field{border-color:#c5a059; color:#c5a059; background:rgba(17,49,31,0.5);}
+.snap-flag-tradition .rs-footer{color:#c5a059;}
+
+/* أيقونة كرت يوم العَلَم التراثي */
+.r-flag-tradition .card-icon{
+  background:linear-gradient(135deg,#11311f,#0a2214);
+  border:2px solid #c5a059;
+  color:#c5a059;
+}
+.r-flag-tradition .card-icon-wrap::after{background:#c5a059;}
+
 /* يوم اللغة العربية - أزرق سماوي + ذهبي (الهوية الرسمية) */
 .snap-arabic{background:linear-gradient(180deg, #e8f4f8 0%, #f5e9d4 100%);}
 .snap-arabic .rs-header{background:linear-gradient(135deg, #1e6b8a, #2a8aab); color:#fff;}
@@ -2285,7 +2309,7 @@ font-size:0.78rem;text-align:center;margin-top:12px;display:none;
         <div class="cat-text">
           <div class="cat-title">
             <span data-i18n="catEvents">المناسبات الوطنية</span>
-            <span class="cat-count">4</span>
+            <span class="cat-count">5</span>
           </div>
           <div class="cat-sub" data-i18n="catEventsSub">يوم التأسيس، اليوم الوطني، يوم العَلَم، السعودية الخضراء</div>
         </div>
@@ -2403,7 +2427,7 @@ font-size:0.78rem;text-align:center;margin-top:12px;display:none;
         </div>
         <div class="card-action">‹</div>
       </div>
-    </div>    <div class="preview-card r-flag locked" data-target="alm.html" onclick="handleCardClick(this)">
+    </div>        <div class="preview-card r-flag locked" data-target="alm.html" onclick="handleCardClick(this)">
       <span class="card-badge badge-hot">🇸🇦 <span data-i18n="badgeFlag">يوم العلم</span></span>
       <div class="thumb thumb-flag">
         <div class="real-snap snap-flag">
@@ -2449,6 +2473,62 @@ font-size:0.78rem;text-align:center;margin-top:12px;display:none;
         <div class="card-text">
           <div class="title" data-i18n="card6Title">يوم العَلَم السعودي</div>
           <div class="desc" data-i18n="card6Desc">١١ مارس · رايةُ التوحيد خفّاقة</div>
+          <div class="meta">
+            <span class="meta-pill">📷 <span data-i18n="metaPhotos">3 صور</span></span>
+            <span class="meta-sep"></span>
+            <span class="meta-pill">📝 <span data-i18n="metaFields">7 حقول</span></span>
+          </div>
+        </div>
+        <div class="card-action">‹</div>
+      </div>
+    </div>
+
+    <div class="preview-card r-flag-tradition locked" data-target="alm2.html" onclick="handleCardClick(this)">
+      <span class="card-badge badge-new">✨ <span data-i18n="badgeNew">جديد</span></span>
+      <div class="thumb thumb-flag-tradition">
+        <div class="real-snap snap-flag-tradition">
+          <div class="rs-header">
+            <div class="rs-h-side right">
+              <div class="l1" data-i18n="snapFlagTradTitle">يوم العَلَم</div>
+              <div class="l2">FLAG DAY · ١١ مارس</div>
+            </div>
+            <div class="rs-h-center">🇸🇦</div>
+            <div class="rs-h-side left">
+              <div class="l1" data-i18n="snapMoE">وزارة التعليم</div>
+              <div class="l2">١٤٤٧هـ</div>
+            </div>
+          </div>
+          <div class="rs-title" data-i18n="snapFlagTradEvent">شموخ راية · مجد وطن</div>
+          <div class="rs-subtitle" data-i18n="snapFlagTradSub">تصميم تراثي فخم بهوية ذهبية</div>
+          <div class="rs-body">
+            <div class="rs-photos">
+              <div class="rs-photo"></div>
+              <div class="rs-photo"></div>
+              <div class="rs-photo"></div>
+            </div>
+            <div class="rs-fields">
+              <div class="rs-field" data-i18n="snapFlagTradF1">المنفذ/ة</div>
+              <div class="rs-field" data-i18n="snapFlagTradF2">المكان</div>
+              <div class="rs-field" data-i18n="snapFlagTradF3">المستهدفون</div>
+              <div class="rs-field" data-i18n="snapFlagTradF4">العدد</div>
+              <div class="rs-field" data-i18n="snapFlagTradF5">التاريخ</div>
+            </div>
+          </div>
+        </div>
+        <div class="lock-overlay">
+          <div class="lock-cta">
+            <span>🔑</span>
+            <span data-i18n="lockCta">سجّل الدخول للوصول</span>
+          </div>
+        </div>
+      </div>
+      <div class="card-content">
+        <div class="card-icon-wrap">
+          <div class="card-icon">🇸🇦</div>
+        </div>
+        <div class="card-text">
+          <div class="title" data-i18n="cardFlagTradTitle">يوم العَلَم - الإصدار التراثي</div>
+          <div class="desc" data-i18n="cardFlagTradDesc">١١ مارس · تصميم فخم بألوان ذهبية ✨</div>
           <div class="meta">
             <span class="meta-pill">📷 <span data-i18n="metaPhotos">3 صور</span></span>
             <span class="meta-sep"></span>
@@ -3482,6 +3562,16 @@ const I18N = {
     snapFlagF3: "المكان",
     snapFlagF4: "المشاركون",
     snapFlagF5: "التاريخ",
+    snapFlagTradTitle: "يوم العَلَم",
+    snapFlagTradEvent: "شموخ راية · مجد وطن",
+    snapFlagTradSub: "تصميم تراثي فخم بهوية ذهبية",
+    snapFlagTradF1: "المنفذ/ة",
+    snapFlagTradF2: "المكان",
+    snapFlagTradF3: "المستهدفون",
+    snapFlagTradF4: "العدد",
+    snapFlagTradF5: "التاريخ",
+    cardFlagTradTitle: "يوم العَلَم - الإصدار التراثي",
+    cardFlagTradDesc: "١١ مارس · تصميم فخم بألوان ذهبية ✨",
     badgeNew2: "جديد",
     badgeFormal: "رسمي",
     badgeWeekly: "أسبوعي",
@@ -3680,6 +3770,16 @@ const I18N = {
     snapFlagF3: "Location",
     snapFlagF4: "Participants",
     snapFlagF5: "Date",
+    snapFlagTradTitle: "Flag Day",
+    snapFlagTradEvent: "Banner Glory · Nation Pride",
+    snapFlagTradSub: "Heritage design with golden identity",
+    snapFlagTradF1: "Executor",
+    snapFlagTradF2: "Location",
+    snapFlagTradF3: "Target Group",
+    snapFlagTradF4: "Count",
+    snapFlagTradF5: "Date",
+    cardFlagTradTitle: "Flag Day - Heritage Edition",
+    cardFlagTradDesc: "Mar 11 · Luxurious design with golden colors ✨",
     badgeNew2: "New",
     badgeFormal: "Formal",
     badgeWeekly: "Weekly",
