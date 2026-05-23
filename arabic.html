@@ -1351,15 +1351,12 @@ document.querySelectorAll('input, textarea').forEach(el => {
 async function saveAsImage(){
   // ═══ نظام التجربة المجانية ═══
   const FREE_DOWNLOADS_LIMIT = 2;
-
-  // المشتركون: تخطي كل القيود
   const loggedUser = localStorage.getItem('loggedUser');
   const isSubscribed = localStorage.getItem('isSubscribed') === '1' || !!loggedUser;
 
   if(!isSubscribed){
     const used = parseInt(localStorage.getItem('free_downloads_used') || '0');
     const left = Math.max(0, FREE_DOWNLOADS_LIMIT - used);
-
     if(left === 0){
       showUpgradeModal();
       return;
@@ -1373,6 +1370,7 @@ async function saveAsImage(){
   // الحل الشامل: معالجة جميع النصوص العربية في التقرير
   // 1. الـ inputs/textareas → تتحول لـ spans/divs
   // 2. النصوص الثابتة → نلفّها بـ word-by-word spans
+  //    عشان html2canvas يحافظ على ترابط الأحرف
   // ═══════════════════════════════════════════════
 
   const fieldsToProcess = [
@@ -1383,7 +1381,7 @@ async function saveAsImage(){
   ];
 
   const replacements = [];
-  const textWraps = [];
+  const textWraps = []; // للنصوص الثابتة
 
   // ═══ الجزء 1: تحويل الـ inputs ═══
   fieldsToProcess.forEach(({ id }) => {
@@ -1399,9 +1397,10 @@ async function saveAsImage(){
     const replacement = document.createElement(isTextarea ? 'div' : 'span');
     replacement.setAttribute('data-replacement', 'true');
 
-    // المحتوى: نلفّ كل كلمة في span مستقل
+    // ═══ المحتوى: نلفّ كل كلمة في span مستقل ═══
     const textContent = isEmpty ? placeholder : value;
     if(isTextarea){
+      // textarea: نحافظ على الأسطر الجديدة ونلفّ كل كلمة
       const lines = textContent.split('\n');
       const wrappedHTML = lines.map(line => {
         const words = line.split(/(\s+)/);
@@ -1413,6 +1412,7 @@ async function saveAsImage(){
       }).join('<br>');
       replacement.innerHTML = wrappedHTML || '&nbsp;';
     } else {
+      // input: كلمة كلمة في spans
       const words = textContent.split(/(\s+)/);
       const wrappedHTML = words.map(part => {
         if(!part) return '';
@@ -1452,7 +1452,8 @@ async function saveAsImage(){
     replacements.push({ original: el, replacement });
   });
 
-  // ═══ الجزء 2: لفّ كل النصوص الثابتة بـ word-spans ═══
+  // ═══ الجزء 2: لفّ كل النصوص الثابتة بـ spans ═══
+  // هذا يجبر html2canvas على الحفاظ على ترابط الأحرف
   const arabicTextSelectors = [
     '.moe-text .l1', '.moe-text .l2',
     '.report-title', '.report-subtitle',
@@ -1462,7 +1463,6 @@ async function saveAsImage(){
     '.goals-title .text',
     '.sig-role',
     '.footer-band',
-    '.header-title'
   ];
 
   arabicTextSelectors.forEach(selector => {
@@ -1470,11 +1470,15 @@ async function saveAsImage(){
       const originalText = el.textContent;
       const originalHTML = el.innerHTML;
 
+      // نتجاهل العناصر الفارغة أو اللي فيها HTML معقّد
       if(!originalText.trim()) return;
-      if(el.children.length > 1) return;
+      if(el.children.length > 1) return; // لو فيه أكثر من ولد، نتجاهل
 
+      // نحفظ المحتوى الأصلي
       textWraps.push({ el, originalHTML });
 
+      // نلفّ كل كلمة في span مستقل بـ display:inline-block
+      // هذا يجبر html2canvas على رسم كل كلمة كـ atomic unit
       const words = originalText.split(/(\s+)/);
       const wrappedHTML = words.map(part => {
         if(!part) return '';
@@ -1490,43 +1494,11 @@ async function saveAsImage(){
     await document.fonts.ready;
     await new Promise(r => setTimeout(r, 600));
 
-    // ═══ الحل الجذري للقطع: نزيل overflow:hidden قبل القياس ═══
-    const originalOverflow = page.style.overflow;
-    const originalHeight = page.style.height;
-    const originalMaxHeight = page.style.maxHeight;
-    
-    page.style.overflow = 'visible';
-    page.style.height = 'auto';
-    page.style.maxHeight = 'none';
-    
-    // نجبر إعادة حساب الـ layout
-    void page.offsetHeight;
-    await new Promise(r => setTimeout(r, 100));
-
-    // نقيس الارتفاع الفعلي بعد إزالة القيود
     const pageWidth = page.offsetWidth;
-    const rect = page.getBoundingClientRect();
-    
-    // نحسب أيضاً ارتفاع آخر عنصر مرئي داخل #page
-    let lastChildBottom = 0;
-    const allChildren = page.querySelectorAll('*');
-    allChildren.forEach(el => {
-      const r = el.getBoundingClientRect();
-      const pageTop = rect.top;
-      const relBottom = r.bottom - pageTop;
-      if(relBottom > lastChildBottom) lastChildBottom = relBottom;
-    });
-    
-    const pageHeight = Math.max(
-      page.offsetHeight,
-      page.scrollHeight,
-      page.clientHeight,
-      Math.ceil(rect.height),
-      Math.ceil(lastChildBottom)
-    ) + 30; // padding أمان
+    const pageHeight = page.offsetHeight;
 
     const canvas = await html2canvas(page, {
-      backgroundColor: '#fefdfb',
+      backgroundColor: '#fff',
       scale: 3,
       useCORS: true,
       logging: false,
@@ -1538,17 +1510,6 @@ async function saveAsImage(){
       x: 0, y: 0, scrollX: 0, scrollY: 0,
       foreignObjectRendering: false,
       onclone: (doc) => {
-        const clonedPage = doc.getElementById('page');
-        if(clonedPage){
-          clonedPage.style.height = 'auto';
-          clonedPage.style.minHeight = pageHeight + 'px';
-          clonedPage.style.maxHeight = 'none';
-          clonedPage.style.overflow = 'visible';
-        }
-        // نخفي شريط الأزرار في النسخة المستنسخة
-        const actionBar = doc.querySelector('.action-bar');
-        if(actionBar) actionBar.style.display = 'none';
-        
         const style = doc.createElement('style');
         style.textContent = `
           * {
@@ -1567,16 +1528,10 @@ async function saveAsImage(){
             unicode-bidi: embed !important;
             direction: rtl !important;
           }
-          #page{overflow:visible !important; height:auto !important; max-height:none !important;}
         `;
         doc.head.appendChild(style);
       }
     });
-    
-    // ═══ نرجع overflow الأصلي بعد الالتقاط ═══
-    page.style.overflow = originalOverflow;
-    page.style.height = originalHeight;
-    page.style.maxHeight = originalMaxHeight;
 
     const link = document.createElement('a');
     link.download = 'تقرير_يوم_اللغة_العربية.png';
@@ -1585,122 +1540,32 @@ async function saveAsImage(){
     showToast(I18N[currentLang].toastDone);
 
     // زيادة العدّاد (للزوار فقط)
-    const loggedUserAfter = localStorage.getItem('loggedUser');
-    const isSubscribedAfter = localStorage.getItem('isSubscribed') === '1' || !!loggedUserAfter;
-
-    if(!isSubscribedAfter){
-      const usedNow = parseInt(localStorage.getItem('free_downloads_used') || '0') + 1;
-      localStorage.setItem('free_downloads_used', usedNow);
-      const remaining = Math.max(0, FREE_DOWNLOADS_LIMIT - usedNow);
+    const _loggedUserAfter = localStorage.getItem('loggedUser');
+    const _isSubAfter = localStorage.getItem('isSubscribed') === '1' || !!_loggedUserAfter;
+    if(!_isSubAfter){
+      const _used = parseInt(localStorage.getItem('free_downloads_used') || '0') + 1;
+      localStorage.setItem('free_downloads_used', _used);
+      const _left = Math.max(0, 2 - _used);
       setTimeout(() => {
-        if(remaining === 0){
-          showUpgradeModal();
-        } else {
-          showToast(`🎁 ${currentLang === 'ar' ? 'تبقّى لك' : 'You have'} ${remaining} ${currentLang === 'ar' ? 'تحميل مجاني' : 'free downloads'}`);
-        }
+        if(_left === 0) showUpgradeModal();
+        else showToast(`🎁 تبقّى لك ${_left} تحميل مجاني`);
       }, 2000);
     }
   } catch(e){
     console.error(e);
     showToast(I18N[currentLang].toastError);
   } finally {
-    // ═══ إرجاع overflow الأصلي (في حال حصل خطأ قبل الإرجاع) ═══
-    try{
-      page.style.overflow = '';
-      page.style.height = '';
-      page.style.maxHeight = '';
-    }catch(_){}
     // ═══ إرجاع كل شي ═══
+    // 1. الـ inputs
     replacements.forEach(({ original, replacement }) => {
       original.style.display = '';
       if(replacement.parentNode) replacement.parentNode.removeChild(replacement);
     });
+    // 2. النصوص الثابتة
     textWraps.forEach(({ el, originalHTML }) => {
       el.innerHTML = originalHTML;
     });
   }
-}
-
-// ═══════════════════════════════════════════════
-// Upgrade Modal
-// ═══════════════════════════════════════════════
-function showUpgradeModal(){
-  let modal = document.getElementById('arUpgradeModal');
-  if(!modal){
-    modal = document.createElement('div');
-    modal.id = 'arUpgradeModal';
-    modal.innerHTML = `
-      <div class="rum-overlay" onclick="if(event.target===this)closeArUpgrade()">
-        <div class="rum-card">
-          <button class="rum-close" onclick="closeArUpgrade()">✕</button>
-          <div class="rum-icon">✨</div>
-          <h2 class="rum-title">انتهت تحميلاتك المجانية!</h2>
-          <p class="rum-subtitle">استمتعت بالقالب؟ احصل على الباقة الكاملة</p>
-          <div class="rum-features">
-            <div class="rum-feat">✅ 15 قالب احترافي معتمد</div>
-            <div class="rum-feat">✅ تحميلات بلا حدود</div>
-            <div class="rum-feat">✅ كل الألوان والثيمات</div>
-            <div class="rum-feat">✅ تحديثات مدى الحياة</div>
-            <div class="rum-feat">✅ دعم فني عبر الواتساب</div>
-          </div>
-          <div class="rum-price-block">
-            <div class="rum-price-old">
-              <span class="rum-strike">59 ريال</span>
-              <span class="rum-discount">خصم 17%</span>
-            </div>
-            <div class="rum-price-new">
-              <span class="rum-amount">49</span>
-              <span class="rum-currency">ريال</span>
-            </div>
-            <div class="rum-note">دفعة واحدة · مدى الحياة</div>
-          </div>
-          <div class="rum-social">🔥 انضم لأكثر من 500+ معلم اشتركوا هذا الشهر</div>
-          <div class="rum-guarantee">🛡️ ضمان استرداد كامل خلال 7 أيام</div>
-          <a href="https://wa.me/966502517217?text=السلام%20عليكم%2C%20أرغب%20في%20الاشتراك%20بمنصة%20التقارير%20المدرسية" target="_blank" rel="noopener" class="rum-cta">
-            <span style="font-size:1.2rem">📱</span>
-            <span>اشترك عبر الواتساب الآن</span>
-          </a>
-          <button class="rum-later" onclick="closeArUpgrade()">ربما لاحقاً</button>
-        </div>
-      </div>
-    `;
-    document.body.appendChild(modal);
-
-    const style = document.createElement('style');
-    style.textContent = `
-      .rum-overlay{position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,15,30,0.85);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);z-index:99999;display:flex;align-items:center;justify-content:center;padding:20px;overflow-y:auto;}
-      .rum-card{background:linear-gradient(135deg,#1a1f2e,#2a3a4e);border:2px solid rgba(255,107,107,0.4);border-radius:24px;padding:30px 22px 24px;max-width:420px;width:100%;text-align:center;position:relative;box-shadow:0 20px 60px rgba(0,0,0,0.6);max-height:92vh;overflow-y:auto;}
-      .rum-close{position:absolute;top:14px;left:14px;background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.15);color:#fff;width:36px;height:36px;border-radius:50%;cursor:pointer;font-size:1rem;font-weight:700;display:flex;align-items:center;justify-content:center;font-family:inherit;}
-      .rum-icon{font-size:3rem;margin-bottom:8px;display:inline-block;}
-      .rum-title{font-family:'Reem Kufi','Tajawal',sans-serif;font-size:1.35rem;font-weight:900;color:#fff;margin-bottom:6px;}
-      .rum-subtitle{font-size:0.85rem;color:rgba(255,255,255,0.65);font-weight:600;margin-bottom:18px;}
-      .rum-features{background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.08);border-radius:14px;padding:14px 16px;margin-bottom:16px;text-align:right;}
-      .rum-feat{padding:5px 0;font-size:0.85rem;font-weight:600;color:rgba(255,255,255,0.92);}
-      .rum-price-block{background:linear-gradient(135deg,rgba(255,193,7,0.12),rgba(255,107,107,0.08));border:2px solid rgba(255,193,7,0.3);border-radius:16px;padding:14px 16px 12px;margin-bottom:14px;}
-      .rum-price-old{display:flex;align-items:center;justify-content:center;gap:10px;margin-bottom:4px;}
-      .rum-strike{color:rgba(255,255,255,0.5);font-size:0.85rem;font-weight:700;text-decoration:line-through;text-decoration-color:#ff6b6b;}
-      .rum-discount{background:linear-gradient(135deg,#ff6b6b,#ee5a52);color:#fff;padding:2px 9px;border-radius:99px;font-size:0.7rem;font-weight:900;}
-      .rum-price-new{display:flex;align-items:baseline;justify-content:center;gap:5px;margin-bottom:3px;}
-      .rum-amount{font-family:'Reem Kufi','Tajawal',sans-serif;font-size:2.6rem;font-weight:900;color:#ffc107;}
-      .rum-currency{font-size:1rem;font-weight:800;color:#ffc107;}
-      .rum-note{font-size:0.72rem;color:rgba(255,255,255,0.6);font-weight:600;}
-      .rum-social{background:rgba(255,107,107,0.1);border:1px solid rgba(255,107,107,0.3);color:#ffb86b;padding:7px 12px;border-radius:99px;font-size:0.74rem;font-weight:700;margin-bottom:10px;}
-      .rum-guarantee{color:rgba(255,255,255,0.7);font-size:0.74rem;font-weight:600;margin-bottom:16px;}
-      .rum-cta{display:flex;align-items:center;justify-content:center;gap:8px;width:100%;padding:14px 20px;background:linear-gradient(135deg,#25d366,#128c7e);color:#fff;border:none;border-radius:14px;font-family:inherit;font-size:0.95rem;font-weight:800;cursor:pointer;text-decoration:none;box-shadow:0 8px 24px rgba(37,211,102,0.4);margin-bottom:8px;box-sizing:border-box;}
-      .rum-later{background:transparent;border:none;color:rgba(255,255,255,0.5);font-family:inherit;font-size:0.8rem;font-weight:600;cursor:pointer;padding:8px;text-decoration:underline;}
-      @media (max-width:480px){.rum-card{padding:24px 18px 20px;}.rum-icon{font-size:2.5rem;}.rum-title{font-size:1.15rem;}.rum-subtitle{font-size:0.78rem;}.rum-feat{font-size:0.78rem;}.rum-amount{font-size:2.2rem;}.rum-cta{font-size:0.88rem;padding:12px 16px;}}
-    `;
-    document.head.appendChild(style);
-  }
-  document.body.style.overflow = 'hidden';
-  modal.style.display = 'block';
-  localStorage.setItem('show_upgrade_now', '1');
-}
-
-function closeArUpgrade(){
-  const modal = document.getElementById('arUpgradeModal');
-  if(modal) modal.style.display = 'none';
-  document.body.style.overflow = '';
 }
 
 // تطبيق
@@ -1887,60 +1752,18 @@ async function exportAsPDFv2(){
     }
     await new Promise(r => setTimeout(r, 400));
     
-    // ═══ الحل الجذري للقطع: نزيل overflow:hidden قبل القياس ═══
-    const originalOverflow = page.style.overflow;
-    const originalHeight = page.style.height;
-    const originalMaxHeight = page.style.maxHeight;
-    
-    page.style.overflow = 'visible';
-    page.style.height = 'auto';
-    page.style.maxHeight = 'none';
-    
-    void page.offsetHeight;
-    await new Promise(r => setTimeout(r, 100));
-    
-    // قياس آمن للارتفاع - يحسب أيضاً آخر طفل مرئي
-    const pageWidth = page.offsetWidth;
-    const rect = page.getBoundingClientRect();
-    
-    let lastChildBottom = 0;
-    page.querySelectorAll('*').forEach(el => {
-      const r = el.getBoundingClientRect();
-      const relBottom = r.bottom - rect.top;
-      if(relBottom > lastChildBottom) lastChildBottom = relBottom;
-    });
-    
-    const pageHeight = Math.max(
-      page.offsetHeight,
-      page.scrollHeight,
-      page.clientHeight,
-      Math.ceil(rect.height),
-      Math.ceil(lastChildBottom)
-    ) + 30;
-    
     // ═══ التقاط الصفحة ═══
     const canvas = await html2canvas(page, {
-      backgroundColor: '#fefdfb',
+      backgroundColor: '#fff',
       scale: 2.5,
       useCORS: true,
       logging: false,
       allowTaint: true,
-      width: pageWidth,
-      height: pageHeight,
-      windowWidth: pageWidth,
-      windowHeight: pageHeight,
-      x: 0, y: 0, scrollX: 0, scrollY: 0,
+      width: page.offsetWidth,
+      height: page.offsetHeight,
+      windowWidth: page.offsetWidth,
+      windowHeight: page.offsetHeight,
       onclone: (doc) => {
-        const clonedPage = doc.getElementById('page');
-        if(clonedPage){
-          clonedPage.style.height = 'auto';
-          clonedPage.style.minHeight = pageHeight + 'px';
-          clonedPage.style.maxHeight = 'none';
-          clonedPage.style.overflow = 'visible';
-        }
-        const actionBar = doc.querySelector('.action-bar');
-        if(actionBar) actionBar.style.display = 'none';
-        
         const style = doc.createElement('style');
         style.textContent = `
           * {
@@ -1951,16 +1774,10 @@ async function exportAsPDFv2(){
             font-feature-settings: "kern" 1, "liga" 1, "calt" 1, "rlig" 1 !important;
             font-kerning: normal !important;
           }
-          #page{overflow:visible !important; height:auto !important; max-height:none !important;}
         `;
         doc.head.appendChild(style);
       }
     });
-    
-    // ═══ نرجع overflow الأصلي ═══
-    page.style.overflow = originalOverflow;
-    page.style.height = originalHeight;
-    page.style.maxHeight = originalMaxHeight;
     
     // ═══ إنشاء PDF بحجم A4 ═══
     const { jsPDF } = window.jspdf;
@@ -2028,12 +1845,6 @@ async function exportAsPDFv2(){
       showToast('❌ خطأ في إنشاء PDF: ' + (err.message || 'خطأ غير معروف'));
     }
   } finally {
-    // ═══ إرجاع overflow الأصلي ═══
-    try{
-      page.style.overflow = '';
-      page.style.height = '';
-      page.style.maxHeight = '';
-    }catch(_){}
     // ═══ إرجاع الـ inputs ═══
     replacements.forEach(({ original, replacement }) => {
       original.style.display = '';
