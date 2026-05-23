@@ -1490,16 +1490,40 @@ async function saveAsImage(){
     await document.fonts.ready;
     await new Promise(r => setTimeout(r, 600));
 
-    // نقيس الارتفاع بطريقة آمنة: نأخذ أكبر قيمة بين الطرق المختلفة
-    // هذا يضمن عدم قطع المحتوى من الأسفل
+    // ═══ الحل الجذري للقطع: نزيل overflow:hidden قبل القياس ═══
+    const originalOverflow = page.style.overflow;
+    const originalHeight = page.style.height;
+    const originalMaxHeight = page.style.maxHeight;
+    
+    page.style.overflow = 'visible';
+    page.style.height = 'auto';
+    page.style.maxHeight = 'none';
+    
+    // نجبر إعادة حساب الـ layout
+    void page.offsetHeight;
+    await new Promise(r => setTimeout(r, 100));
+
+    // نقيس الارتفاع الفعلي بعد إزالة القيود
     const pageWidth = page.offsetWidth;
     const rect = page.getBoundingClientRect();
+    
+    // نحسب أيضاً ارتفاع آخر عنصر مرئي داخل #page
+    let lastChildBottom = 0;
+    const allChildren = page.querySelectorAll('*');
+    allChildren.forEach(el => {
+      const r = el.getBoundingClientRect();
+      const pageTop = rect.top;
+      const relBottom = r.bottom - pageTop;
+      if(relBottom > lastChildBottom) lastChildBottom = relBottom;
+    });
+    
     const pageHeight = Math.max(
       page.offsetHeight,
       page.scrollHeight,
       page.clientHeight,
-      Math.ceil(rect.height)
-    ) + 20; // padding أمان إضافي
+      Math.ceil(rect.height),
+      Math.ceil(lastChildBottom)
+    ) + 30; // padding أمان
 
     const canvas = await html2canvas(page, {
       backgroundColor: '#fefdfb',
@@ -1514,13 +1538,17 @@ async function saveAsImage(){
       x: 0, y: 0, scrollX: 0, scrollY: 0,
       foreignObjectRendering: false,
       onclone: (doc) => {
-        // نتأكد من إعادة الحساب الكامل في النسخة المستنسخة
         const clonedPage = doc.getElementById('page');
         if(clonedPage){
           clonedPage.style.height = 'auto';
           clonedPage.style.minHeight = pageHeight + 'px';
+          clonedPage.style.maxHeight = 'none';
           clonedPage.style.overflow = 'visible';
         }
+        // نخفي شريط الأزرار في النسخة المستنسخة
+        const actionBar = doc.querySelector('.action-bar');
+        if(actionBar) actionBar.style.display = 'none';
+        
         const style = doc.createElement('style');
         style.textContent = `
           * {
@@ -1539,11 +1567,16 @@ async function saveAsImage(){
             unicode-bidi: embed !important;
             direction: rtl !important;
           }
-          #page{overflow:visible !important;}
+          #page{overflow:visible !important; height:auto !important; max-height:none !important;}
         `;
         doc.head.appendChild(style);
       }
     });
+    
+    // ═══ نرجع overflow الأصلي بعد الالتقاط ═══
+    page.style.overflow = originalOverflow;
+    page.style.height = originalHeight;
+    page.style.maxHeight = originalMaxHeight;
 
     const link = document.createElement('a');
     link.download = 'تقرير_يوم_اللغة_العربية.png';
@@ -1571,6 +1604,12 @@ async function saveAsImage(){
     console.error(e);
     showToast(I18N[currentLang].toastError);
   } finally {
+    // ═══ إرجاع overflow الأصلي (في حال حصل خطأ قبل الإرجاع) ═══
+    try{
+      page.style.overflow = '';
+      page.style.height = '';
+      page.style.maxHeight = '';
+    }catch(_){}
     // ═══ إرجاع كل شي ═══
     replacements.forEach(({ original, replacement }) => {
       original.style.display = '';
@@ -1848,15 +1887,36 @@ async function exportAsPDFv2(){
     }
     await new Promise(r => setTimeout(r, 400));
     
-    // ═══ قياس آمن للارتفاع - يضمن عدم القطع من الأسفل ═══
+    // ═══ الحل الجذري للقطع: نزيل overflow:hidden قبل القياس ═══
+    const originalOverflow = page.style.overflow;
+    const originalHeight = page.style.height;
+    const originalMaxHeight = page.style.maxHeight;
+    
+    page.style.overflow = 'visible';
+    page.style.height = 'auto';
+    page.style.maxHeight = 'none';
+    
+    void page.offsetHeight;
+    await new Promise(r => setTimeout(r, 100));
+    
+    // قياس آمن للارتفاع - يحسب أيضاً آخر طفل مرئي
     const pageWidth = page.offsetWidth;
     const rect = page.getBoundingClientRect();
+    
+    let lastChildBottom = 0;
+    page.querySelectorAll('*').forEach(el => {
+      const r = el.getBoundingClientRect();
+      const relBottom = r.bottom - rect.top;
+      if(relBottom > lastChildBottom) lastChildBottom = relBottom;
+    });
+    
     const pageHeight = Math.max(
       page.offsetHeight,
       page.scrollHeight,
       page.clientHeight,
-      Math.ceil(rect.height)
-    ) + 20;
+      Math.ceil(rect.height),
+      Math.ceil(lastChildBottom)
+    ) + 30;
     
     // ═══ التقاط الصفحة ═══
     const canvas = await html2canvas(page, {
@@ -1875,8 +1935,12 @@ async function exportAsPDFv2(){
         if(clonedPage){
           clonedPage.style.height = 'auto';
           clonedPage.style.minHeight = pageHeight + 'px';
+          clonedPage.style.maxHeight = 'none';
           clonedPage.style.overflow = 'visible';
         }
+        const actionBar = doc.querySelector('.action-bar');
+        if(actionBar) actionBar.style.display = 'none';
+        
         const style = doc.createElement('style');
         style.textContent = `
           * {
@@ -1887,11 +1951,16 @@ async function exportAsPDFv2(){
             font-feature-settings: "kern" 1, "liga" 1, "calt" 1, "rlig" 1 !important;
             font-kerning: normal !important;
           }
-          #page{overflow:visible !important;}
+          #page{overflow:visible !important; height:auto !important; max-height:none !important;}
         `;
         doc.head.appendChild(style);
       }
     });
+    
+    // ═══ نرجع overflow الأصلي ═══
+    page.style.overflow = originalOverflow;
+    page.style.height = originalHeight;
+    page.style.maxHeight = originalMaxHeight;
     
     // ═══ إنشاء PDF بحجم A4 ═══
     const { jsPDF } = window.jspdf;
@@ -1959,6 +2028,12 @@ async function exportAsPDFv2(){
       showToast('❌ خطأ في إنشاء PDF: ' + (err.message || 'خطأ غير معروف'));
     }
   } finally {
+    // ═══ إرجاع overflow الأصلي ═══
+    try{
+      page.style.overflow = '';
+      page.style.height = '';
+      page.style.maxHeight = '';
+    }catch(_){}
     // ═══ إرجاع الـ inputs ═══
     replacements.forEach(({ original, replacement }) => {
       original.style.display = '';
