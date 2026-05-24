@@ -1499,21 +1499,38 @@ async function saveAsImage(){
     await document.fonts.ready;
     
     // ═══ إجبار المتصفح على إعادة حساب layout بعد التحويلات ═══
-    // نقرأ خاصية layout-trigger عشان نجبر reflow
+    // نقرأ خاصيات layout-trigger عشان نجبر reflow كامل
     void page.offsetHeight;
     void page.scrollHeight;
+    void document.body.offsetHeight;
     
-    // ننتظر فريمين كاملين لضمان استقرار التخطيط
-    await new Promise(r => requestAnimationFrame(() => requestAnimationFrame(r)));
-    await new Promise(r => setTimeout(r, 800));
+    // ننتظر 3 فريمات كاملة + delay لضمان استقرار التخطيط نهائياً
+    await new Promise(r => requestAnimationFrame(() => requestAnimationFrame(() => requestAnimationFrame(r))));
+    await new Promise(r => setTimeout(r, 900));
     
     // مرة ثانية بعد كل التأخيرات
     void page.offsetHeight;
+    void page.scrollHeight;
 
-    // ═══ الحين نقيس الأبعاد الحقيقية بعد كل التحويلات ═══
-    // نستخدم scrollHeight لأنه ياخذ كل المحتوى حتى لو طلع برا
-    const pageWidth = page.offsetWidth;
-    const pageHeight = Math.max(page.offsetHeight, page.scrollHeight);
+    // ═══ نقيس الأبعاد الحقيقية بأكثر من طريقة ونأخذ الأكبر ═══
+    const rect = page.getBoundingClientRect();
+    const pageWidth = Math.ceil(Math.max(page.offsetWidth, rect.width));
+    
+    // نحسب آخر عنصر فعلياً (الفوتر) ونتأكد إنه داخل الارتفاع
+    const footer = page.querySelector('.footer-band');
+    let footerBottom = 0;
+    if(footer){
+      const footerRect = footer.getBoundingClientRect();
+      const pageRect = page.getBoundingClientRect();
+      footerBottom = (footerRect.bottom - pageRect.top);
+    }
+    
+    const pageHeight = Math.ceil(Math.max(
+      page.offsetHeight,
+      page.scrollHeight,
+      rect.height,
+      footerBottom + 4  // +4 احتياط بسيط
+    ));
 
     const canvas = await html2canvas(page, {
       backgroundColor: '#fff',
@@ -1772,16 +1789,33 @@ async function exportAsPDFv2(){
     // ═══ إجبار المتصفح على إعادة حساب layout بعد التحويلات ═══
     void page.offsetHeight;
     void page.scrollHeight;
+    void document.body.offsetHeight;
     
-    // ننتظر فريمين كاملين لضمان استقرار التخطيط
-    await new Promise(r => requestAnimationFrame(() => requestAnimationFrame(r)));
-    await new Promise(r => setTimeout(r, 600));
+    // ننتظر 3 فريمات + delay
+    await new Promise(r => requestAnimationFrame(() => requestAnimationFrame(() => requestAnimationFrame(r))));
+    await new Promise(r => setTimeout(r, 700));
     
     void page.offsetHeight;
+    void page.scrollHeight;
     
-    // ═══ نقيس الأبعاد الحقيقية بعد التحويلات ═══
-    const realWidth = page.offsetWidth;
-    const realHeight = Math.max(page.offsetHeight, page.scrollHeight);
+    // ═══ نقيس الأبعاد الحقيقية بأكثر من طريقة ═══
+    const pdfRect = page.getBoundingClientRect();
+    const realWidth = Math.ceil(Math.max(page.offsetWidth, pdfRect.width));
+    
+    const footerEl = page.querySelector('.footer-band');
+    let footerBot = 0;
+    if(footerEl){
+      const fRect = footerEl.getBoundingClientRect();
+      const pRect = page.getBoundingClientRect();
+      footerBot = (fRect.bottom - pRect.top);
+    }
+    
+    const realHeight = Math.ceil(Math.max(
+      page.offsetHeight,
+      page.scrollHeight,
+      pdfRect.height,
+      footerBot + 4
+    ));
     
     // ═══ التقاط الصفحة ═══
     const canvas = await html2canvas(page, {
