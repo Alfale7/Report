@@ -4812,7 +4812,7 @@ document.getElementById('loginModal').addEventListener('click', function(e){
 <script type="module">
 import { onUserChange, logout, isLifetime, SITE_CONFIG } from './firebase-config.js';
 
-// مراقبة حالة المستخدم - تحديث الواجهة
+// مراقبة حالة المستخدم - تحديث الواجهة + مزامنة localStorage
 onUserChange((data) => {
   const ctaRow = document.getElementById('ctaRow');
   const priceCard = document.querySelector('.hero-price-card');
@@ -4820,6 +4820,16 @@ onUserChange((data) => {
   if (data?.user) {
     const { user, profile } = data;
     const lifetime = isLifetime(profile);
+
+    // 🔄 مزامنة مع النظام القديم (التقارير لسه تستخدم localStorage)
+    const phoneFromEmail = (user.email || '').split('@')[0];
+    const userPhone = profile?.legacyPhone || phoneFromEmail || user.phoneNumber || user.uid;
+    localStorage.setItem('loggedUser', userPhone);
+    if (lifetime) {
+      localStorage.setItem('isSubscribed', '1');
+    } else {
+      localStorage.removeItem('isSubscribed');
+    }
 
     // إخفاء بطاقة السعر للمشتركين
     if (lifetime && priceCard) {
@@ -4848,6 +4858,9 @@ onUserChange((data) => {
 
 window.firebaseLogout = async function() {
   if (!confirm('تسجيل الخروج؟')) return;
+  // مسح localStorage القديم أيضاً
+  localStorage.removeItem('loggedUser');
+  localStorage.removeItem('isSubscribed');
   await logout();
   window.location.reload();
 };
