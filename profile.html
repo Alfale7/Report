@@ -181,6 +181,32 @@ body{font-family:'Tajawal','Cairo',sans-serif;background:linear-gradient(135deg,
   text-align:center;
   box-shadow:0 6px 14px rgba(212,166,87,0.4);
 }
+
+/* 👑 بطاقة الأدمن السرية */
+.admin-card{
+  background:linear-gradient(135deg,#fff8eb,#fef3d4);
+  border:2px solid #d4a657;
+  box-shadow:0 8px 22px rgba(212,166,87,0.25);
+  position:relative;
+  overflow:hidden;
+}
+.admin-card::before{
+  content:"👑";
+  position:absolute;
+  top:-15px;
+  left:-15px;
+  font-size:5rem;
+  opacity:0.08;
+  pointer-events:none;
+}
+.admin-row{
+  background:#fff !important;
+  border:1px solid #d4a657 !important;
+}
+.admin-row:hover{
+  background:#fef3d4 !important;
+  transform:translateX(-4px);
+}
 .price-tag{
   text-align:center;
   margin:12px 0;
@@ -289,12 +315,25 @@ body{font-family:'Tajawal','Cairo',sans-serif;background:linear-gradient(135deg,
       </div>
     </div>
 
+    <!-- 🔐 زر الأدمن السري (يظهر فقط للأدمن) -->
+    <div class="card admin-card" id="adminCard" style="display:none;">
+      <div class="card-title" style="color:#d4a657;">👑 صلاحيات الإدارة</div>
+      <div class="action-row admin-row" onclick="window.location.href='admin.html'">
+        <div class="icon" style="background:linear-gradient(135deg,#d4a657,#b8923d);color:#fff;">🛠️</div>
+        <div class="text">
+          <div class="title">لوحة الإدارة</div>
+          <div class="desc">إدارة المشتركين والاشتراكات</div>
+        </div>
+        <div class="arrow">‹</div>
+      </div>
+    </div>
+
     <button class="logout-btn" onclick="handleLogout()">🚪 تسجيل الخروج</button>
   </div>
 </div>
 
 <script type="module">
-import { onUserChange, logout, isLifetime, buildSubscribeWhatsAppLink, SITE_CONFIG } from './firebase-config.js';
+import { onUserChange, logout, isLifetime, isAdmin, buildSubscribeWhatsAppLink, SITE_CONFIG } from './firebase-config.js';
 
 onUserChange((data) => {
   if (!data) {
@@ -305,6 +344,11 @@ onUserChange((data) => {
   const { user, profile } = data;
   document.getElementById('loadingState').style.display = 'none';
   document.getElementById('mainContent').style.display = 'block';
+
+  // إظهار بطاقة الأدمن للأدمن فقط
+  if (isAdmin(user)) {
+    document.getElementById('adminCard').style.display = 'block';
+  }
 
   // الاسم والجوال
   if (profile?.phoneNumber || user.phoneNumber) {
