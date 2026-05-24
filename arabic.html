@@ -1495,28 +1495,45 @@ async function saveAsImage(){
     });
   });
 
+  // ═══ متغيرات الحفظ المؤقت للأنماط (نعرّفها هنا عشان finally يقدر يوصلها) ═══
+  const originalScroll = window.scrollY;
+  const originalPageStyle = page.getAttribute('style') || '';
+  const originalBodyStyle = document.body.getAttribute('style') || '';
+
   try{
     await document.fonts.ready;
     
-    // ═══ إجبار المتصفح على إعادة حساب layout بعد التحويلات ═══
-    // نقرأ خاصيات layout-trigger عشان نجبر reflow كامل
+    // ═══ الحل الجذري: نجبر التقرير على عرض ثابت ═══
+    // المشكلة على الجوال: viewport ضيق + body فيه padding-bottom للأزرار
+    // الحل: نثبت عرض الصفحة + نرفع المتصفح للأعلى قبل التصوير
+    
+    window.scrollTo(0, 0);
+    
+    // نطبق أنماط مؤقتة للتصدير (عرض ثابت 560px = max-width الأصلي)
+    page.style.cssText = originalPageStyle + 
+      ';width:560px !important;max-width:560px !important;' +
+      'margin:0 auto !important;position:relative !important;' +
+      'overflow:visible !important;';
+    document.body.style.cssText = originalBodyStyle + 
+      ';padding:0 !important;overflow:visible !important;';
+    
+    // إجبار reflow كامل
     void page.offsetHeight;
     void page.scrollHeight;
     void document.body.offsetHeight;
     
-    // ننتظر 3 فريمات كاملة + delay لضمان استقرار التخطيط نهائياً
+    // ننتظر 3 فريمات + delay
     await new Promise(r => requestAnimationFrame(() => requestAnimationFrame(() => requestAnimationFrame(r))));
     await new Promise(r => setTimeout(r, 900));
     
-    // مرة ثانية بعد كل التأخيرات
     void page.offsetHeight;
     void page.scrollHeight;
 
-    // ═══ نقيس الأبعاد الحقيقية بأكثر من طريقة ونأخذ الأكبر ═══
+    // ═══ نقيس الأبعاد الحقيقية بأكثر من طريقة ═══
     const rect = page.getBoundingClientRect();
-    const pageWidth = Math.ceil(Math.max(page.offsetWidth, rect.width));
+    const pageWidth = Math.ceil(Math.max(page.offsetWidth, rect.width, 560));
     
-    // نحسب آخر عنصر فعلياً (الفوتر) ونتأكد إنه داخل الارتفاع
+    // نلقى آخر عنصر فعلياً (الفوتر) للتحقق
     const footer = page.querySelector('.footer-band');
     let footerBottom = 0;
     if(footer){
@@ -1529,7 +1546,7 @@ async function saveAsImage(){
       page.offsetHeight,
       page.scrollHeight,
       rect.height,
-      footerBottom + 4  // +4 احتياط بسيط
+      footerBottom + 8
     ));
 
     const canvas = await html2canvas(page, {
@@ -1540,8 +1557,8 @@ async function saveAsImage(){
       allowTaint: true,
       width: pageWidth,
       height: pageHeight,
-      windowWidth: pageWidth,
-      windowHeight: pageHeight,
+      windowWidth: Math.max(pageWidth, 1024),  // نخلي viewport واسع
+      windowHeight: pageHeight + 200,
       x: 0, y: 0, scrollX: 0, scrollY: 0,
       foreignObjectRendering: false,
       onclone: (doc) => {
@@ -1591,6 +1608,15 @@ async function saveAsImage(){
     showToast(I18N[currentLang].toastError);
   } finally {
     // ═══ إرجاع كل شي ═══
+    // 0. إرجاع الأنماط الأصلية للـ page و body
+    try{
+      page.setAttribute('style', originalPageStyle);
+      if(!originalPageStyle) page.removeAttribute('style');
+      document.body.setAttribute('style', originalBodyStyle);
+      if(!originalBodyStyle) document.body.removeAttribute('style');
+      window.scrollTo(0, originalScroll);
+    }catch(restoreErr){}
+    
     // 1. الـ inputs
     replacements.forEach(({ original, replacement }) => {
       original.style.display = '';
@@ -1780,11 +1806,25 @@ async function exportAsPDFv2(){
     replacements.push({ original: el, replacement });
   });
   
+  // ═══ متغيرات الحفظ المؤقت (للـ finally) ═══
+  const pdfOriginalScroll = window.scrollY;
+  const pdfOriginalPageStyle = page.getAttribute('style') || '';
+  const pdfOriginalBodyStyle = document.body.getAttribute('style') || '';
+  
   try {
     // نتأكد من تحميل الخطوط
     if(document.fonts && document.fonts.ready){
       await document.fonts.ready;
     }
+    
+    // ═══ الحل الجذري: نثبت عرض الصفحة على max-width ═══
+    window.scrollTo(0, 0);
+    page.style.cssText = pdfOriginalPageStyle + 
+      ';width:560px !important;max-width:560px !important;' +
+      'margin:0 auto !important;position:relative !important;' +
+      'overflow:visible !important;';
+    document.body.style.cssText = pdfOriginalBodyStyle + 
+      ';padding:0 !important;overflow:visible !important;';
     
     // ═══ إجبار المتصفح على إعادة حساب layout بعد التحويلات ═══
     void page.offsetHeight;
@@ -1800,7 +1840,7 @@ async function exportAsPDFv2(){
     
     // ═══ نقيس الأبعاد الحقيقية بأكثر من طريقة ═══
     const pdfRect = page.getBoundingClientRect();
-    const realWidth = Math.ceil(Math.max(page.offsetWidth, pdfRect.width));
+    const realWidth = Math.ceil(Math.max(page.offsetWidth, pdfRect.width, 560));
     
     const footerEl = page.querySelector('.footer-band');
     let footerBot = 0;
@@ -1826,8 +1866,9 @@ async function exportAsPDFv2(){
       allowTaint: true,
       width: realWidth,
       height: realHeight,
-      windowWidth: realWidth,
-      windowHeight: realHeight,
+      windowWidth: Math.max(realWidth, 1024),
+      windowHeight: realHeight + 200,
+      x: 0, y: 0, scrollX: 0, scrollY: 0,
       onclone: (doc) => {
         const style = doc.createElement('style');
         style.textContent = `
@@ -1910,6 +1951,15 @@ async function exportAsPDFv2(){
       showToast('❌ خطأ في إنشاء PDF: ' + (err.message || 'خطأ غير معروف'));
     }
   } finally {
+    // ═══ إرجاع الأنماط الأصلية ═══
+    try{
+      page.setAttribute('style', pdfOriginalPageStyle);
+      if(!pdfOriginalPageStyle) page.removeAttribute('style');
+      document.body.setAttribute('style', pdfOriginalBodyStyle);
+      if(!pdfOriginalBodyStyle) document.body.removeAttribute('style');
+      window.scrollTo(0, pdfOriginalScroll);
+    }catch(restoreErr){}
+    
     // ═══ إرجاع الـ inputs ═══
     replacements.forEach(({ original, replacement }) => {
       original.style.display = '';
