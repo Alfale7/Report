@@ -601,6 +601,10 @@ html,body{
   background:#fff;
   border:1.5px solid rgba(30,107,138,0.15);
   border-radius:8px;
+  min-height:62px;
+  display:flex;
+  flex-direction:column;
+  justify-content:space-between;
 }
 .sig-role{
   font-size:0.7rem;
@@ -613,6 +617,7 @@ html,body{
   border-bottom:1.5px solid #d4a657;
   margin-bottom:4px;
   padding-bottom:3px;
+  min-height:24px;
 }
 .sig-line input{
   width:100%;
@@ -1444,7 +1449,7 @@ async function saveAsImage(){
       border: none;
       outline: none;
       letter-spacing: 0;
-      min-height: ${isTextarea ? computed.minHeight : 'auto'};
+      min-height: ${isTextarea ? computed.minHeight : computed.height || '1.2em'};
     `;
 
     el.style.display = 'none';
@@ -1492,10 +1497,23 @@ async function saveAsImage(){
 
   try{
     await document.fonts.ready;
-    await new Promise(r => setTimeout(r, 600));
+    
+    // ═══ إجبار المتصفح على إعادة حساب layout بعد التحويلات ═══
+    // نقرأ خاصية layout-trigger عشان نجبر reflow
+    void page.offsetHeight;
+    void page.scrollHeight;
+    
+    // ننتظر فريمين كاملين لضمان استقرار التخطيط
+    await new Promise(r => requestAnimationFrame(() => requestAnimationFrame(r)));
+    await new Promise(r => setTimeout(r, 800));
+    
+    // مرة ثانية بعد كل التأخيرات
+    void page.offsetHeight;
 
+    // ═══ الحين نقيس الأبعاد الحقيقية بعد كل التحويلات ═══
+    // نستخدم scrollHeight لأنه ياخذ كل المحتوى حتى لو طلع برا
     const pageWidth = page.offsetWidth;
-    const pageHeight = page.offsetHeight;
+    const pageHeight = Math.max(page.offsetHeight, page.scrollHeight);
 
     const canvas = await html2canvas(page, {
       backgroundColor: '#fff',
@@ -1750,7 +1768,20 @@ async function exportAsPDFv2(){
     if(document.fonts && document.fonts.ready){
       await document.fonts.ready;
     }
-    await new Promise(r => setTimeout(r, 400));
+    
+    // ═══ إجبار المتصفح على إعادة حساب layout بعد التحويلات ═══
+    void page.offsetHeight;
+    void page.scrollHeight;
+    
+    // ننتظر فريمين كاملين لضمان استقرار التخطيط
+    await new Promise(r => requestAnimationFrame(() => requestAnimationFrame(r)));
+    await new Promise(r => setTimeout(r, 600));
+    
+    void page.offsetHeight;
+    
+    // ═══ نقيس الأبعاد الحقيقية بعد التحويلات ═══
+    const realWidth = page.offsetWidth;
+    const realHeight = Math.max(page.offsetHeight, page.scrollHeight);
     
     // ═══ التقاط الصفحة ═══
     const canvas = await html2canvas(page, {
@@ -1759,10 +1790,10 @@ async function exportAsPDFv2(){
       useCORS: true,
       logging: false,
       allowTaint: true,
-      width: page.offsetWidth,
-      height: page.offsetHeight,
-      windowWidth: page.offsetWidth,
-      windowHeight: page.offsetHeight,
+      width: realWidth,
+      height: realHeight,
+      windowWidth: realWidth,
+      windowHeight: realHeight,
       onclone: (doc) => {
         const style = doc.createElement('style');
         style.textContent = `
