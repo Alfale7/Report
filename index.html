@@ -116,6 +116,313 @@ margin-bottom:18px;
 flex-wrap:wrap;
 }
 .hero-top .brand-mark{margin-bottom:0;}
+
+/* ═══ شارة العرض المحدود ═══ */
+.limited-badge{
+  display:inline-flex;
+  align-items:center;
+  gap:7px;
+  padding:7px 16px;
+  background:linear-gradient(135deg,#dc2626,#f59e0b);
+  color:#fff;
+  border-radius:99px;
+  font-family:'Reem Kufi','Tajawal',sans-serif;
+  font-weight:900;
+  font-size:0.74rem;
+  letter-spacing:0.5px;
+  margin:0 auto 14px;
+  position:relative;
+  box-shadow:0 6px 18px rgba(220,38,38,0.4), 0 0 0 1px rgba(255,255,255,0.15);
+  animation:badgeFloat 2.5s ease-in-out infinite;
+}
+@keyframes badgeFloat{0%,100%{transform:translateY(0);}50%{transform:translateY(-3px);}}
+.limited-badge .lb-fire{
+  font-size:0.95rem;
+  filter:drop-shadow(0 0 6px rgba(255,180,0,0.7));
+  animation:fireWiggle 0.4s ease-in-out infinite alternate;
+}
+@keyframes fireWiggle{from{transform:rotate(-8deg);}to{transform:rotate(8deg);}}
+.limited-badge .lb-pulse{
+  position:absolute;
+  inset:-3px;
+  border-radius:99px;
+  background:linear-gradient(135deg,#dc2626,#f59e0b);
+  opacity:0;
+  z-index:-1;
+  animation:pulseBadge 2s ease-out infinite;
+}
+@keyframes pulseBadge{0%{opacity:0.55;transform:scale(1);}100%{opacity:0;transform:scale(1.25);}}
+
+/* ═══ بطاقة السعر الفخمة ═══ */
+.hero-price-card{
+  position:relative;
+  max-width:380px;
+  margin:22px auto 18px;
+  background:linear-gradient(145deg,#fff,#fafbfc);
+  border-radius:24px;
+  padding:22px 20px 20px;
+  box-shadow:
+    0 22px 50px rgba(0,0,0,0.35),
+    0 0 0 1px rgba(212,166,87,0.4),
+    inset 0 1px 0 rgba(255,255,255,0.9);
+  overflow:hidden;
+  text-align:right;
+}
+.hero-price-card::before{
+  content:"";
+  position:absolute;
+  top:-60%;
+  left:-20%;
+  width:140%;
+  height:60%;
+  background:radial-gradient(ellipse,rgba(244,214,144,0.25),transparent 60%);
+  pointer-events:none;
+}
+.hero-price-card::after{
+  content:"💎";
+  position:absolute;
+  bottom:-30px;
+  left:-30px;
+  font-size:8rem;
+  opacity:0.05;
+  pointer-events:none;
+  transform:rotate(-15deg);
+}
+
+.hpc-top{
+  display:flex;
+  justify-content:center;
+  margin-bottom:14px;
+}
+.hpc-badge{
+  display:inline-flex;
+  align-items:center;
+  gap:6px;
+  padding:6px 14px;
+  background:linear-gradient(135deg,#1e6b8a,#2a8aab);
+  color:#fff;
+  border-radius:99px;
+  font-family:'Reem Kufi','Tajawal',sans-serif;
+  font-size:0.78rem;
+  font-weight:900;
+  letter-spacing:0.3px;
+  box-shadow:0 6px 16px rgba(30,107,138,0.35);
+}
+
+.hpc-price-row{
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  gap:18px;
+  margin-bottom:18px;
+  position:relative;
+}
+.hpc-old{
+  text-align:center;
+  opacity:0.65;
+}
+.hpc-old > span:first-child{
+  display:block;
+  font-size:0.65rem;
+  color:#5a7080;
+  font-weight:700;
+  margin-bottom:2px;
+}
+.hpc-strike{
+  font-family:'Reem Kufi','Tajawal',sans-serif;
+  font-size:1.5rem;
+  font-weight:900;
+  color:#94a3b8;
+  position:relative;
+  display:inline-block;
+}
+.hpc-strike::after{
+  content:"";
+  position:absolute;
+  top:50%;
+  left:-3px;
+  right:-3px;
+  height:2.5px;
+  background:#dc2626;
+  transform:rotate(-12deg);
+  border-radius:2px;
+}
+.hpc-now{
+  text-align:center;
+  position:relative;
+}
+.hpc-amount{
+  display:flex;
+  align-items:baseline;
+  justify-content:center;
+  gap:4px;
+  line-height:1;
+}
+.hpc-num{
+  font-family:'Reem Kufi','Tajawal',sans-serif;
+  font-size:3.6rem;
+  font-weight:900;
+  color:#1e6b8a;
+  background:linear-gradient(135deg,#1e6b8a,#2a8aab,#d4a657);
+  -webkit-background-clip:text;
+  -webkit-text-fill-color:transparent;
+  background-clip:text;
+  filter:drop-shadow(0 4px 8px rgba(30,107,138,0.2));
+}
+.hpc-cur{
+  font-family:'Reem Kufi','Tajawal',sans-serif;
+  font-size:1.15rem;
+  font-weight:900;
+  color:#1e6b8a;
+}
+.hpc-once{
+  font-size:0.7rem;
+  color:#16a34a;
+  font-weight:900;
+  margin-top:2px;
+  letter-spacing:0.2px;
+}
+
+.hpc-features{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:8px 12px;
+  margin-bottom:16px;
+  padding:12px 14px;
+  background:rgba(30,107,138,0.04);
+  border:1px solid rgba(30,107,138,0.1);
+  border-radius:14px;
+}
+.hpc-feat{
+  display:flex;
+  align-items:center;
+  gap:6px;
+  font-size:0.74rem;
+  font-weight:700;
+  color:#1a3a4e;
+  line-height:1.3;
+}
+.hpc-tick{
+  flex-shrink:0;
+  width:18px;
+  height:18px;
+  background:linear-gradient(135deg,#16a34a,#15803d);
+  color:#fff;
+  border-radius:50%;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  font-size:0.7rem;
+  font-weight:900;
+}
+
+.hpc-cta{
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  gap:10px;
+  width:100%;
+  padding:14px 18px;
+  background:linear-gradient(135deg,#25d366,#128c7e);
+  color:#fff;
+  border:none;
+  border-radius:14px;
+  font-family:'Reem Kufi','Tajawal',sans-serif;
+  font-size:0.95rem;
+  font-weight:900;
+  cursor:pointer;
+  box-shadow:0 8px 22px rgba(37,211,102,0.45);
+  transition:all 0.2s;
+  position:relative;
+  overflow:hidden;
+}
+.hpc-cta::before{
+  content:"";
+  position:absolute;
+  top:0;left:-100%;
+  width:60%;
+  height:100%;
+  background:linear-gradient(120deg,transparent,rgba(255,255,255,0.35),transparent);
+  animation:shimmer 2.8s infinite;
+}
+@keyframes shimmer{0%{left:-100%;}50%,100%{left:140%;}}
+.hpc-cta:hover{transform:translateY(-2px);box-shadow:0 12px 28px rgba(37,211,102,0.55);}
+.hpc-cta:active{transform:scale(0.97);}
+.hpc-cta-ic{font-size:1.2rem;flex-shrink:0;}
+.hpc-arrow{
+  font-weight:900;
+  transition:transform 0.2s;
+  flex-shrink:0;
+}
+.hpc-cta:hover .hpc-arrow{transform:translateX(-4px);}
+
+.hpc-trust{
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  gap:6px;
+  margin-top:10px;
+  font-size:0.7rem;
+  color:#5a7080;
+  font-weight:700;
+}
+
+/* ═══ Social Proof Strip ═══ */
+.social-proof-strip{
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  gap:12px;
+  margin:18px auto 8px;
+  padding:10px 16px;
+  background:rgba(255,255,255,0.04);
+  border:1px solid rgba(255,255,255,0.08);
+  border-radius:99px;
+  backdrop-filter:blur(10px);
+  -webkit-backdrop-filter:blur(10px);
+  max-width:340px;
+}
+.sps-avatars{
+  display:flex;
+  flex-direction:row-reverse;
+}
+.sps-av{
+  width:28px;
+  height:28px;
+  border-radius:50%;
+  border:2px solid #0a1722;
+  margin-left:-8px;
+  color:#fff;
+  font-family:'Reem Kufi','Tajawal',sans-serif;
+  font-weight:900;
+  font-size:0.7rem;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+}
+.sps-more{
+  background:linear-gradient(135deg,#d4a657,#b8923d) !important;
+  font-size:0.6rem !important;
+}
+.sps-text{text-align:right;}
+.sps-stars{font-size:0.78rem;letter-spacing:0.5px;line-height:1;}
+.sps-count{
+  font-size:0.7rem;
+  color:rgba(255,255,255,0.75);
+  font-weight:700;
+  margin-top:2px;
+}
+
+@media (max-width:420px){
+  .hero-price-card{max-width:100%;padding:18px 16px 16px;}
+  .hpc-num{font-size:3rem;}
+  .hpc-features{grid-template-columns:1fr;gap:6px;padding:10px 12px;}
+  .hpc-feat{font-size:0.72rem;}
+  .hpc-cta{font-size:0.88rem;padding:13px 16px;}
+  .social-proof-strip{padding:8px 12px;gap:9px;}
+  .sps-av{width:24px;height:24px;font-size:0.62rem;}
+}
+
 .lang-switch{
 display:inline-flex;
 align-items:center;
@@ -2289,12 +2596,73 @@ font-size:0.78rem;text-align:center;margin-top:12px;display:none;
       </button>
     </div>
 
+    <!-- 🔥 عرض محدود -->
+    <div class="limited-badge" id="limitedBadge">
+      <span class="lb-fire">🔥</span>
+      <span class="lb-text" data-i18n="limitedOffer">عرض إطلاق محدود</span>
+      <span class="lb-pulse"></span>
+    </div>
+
     <div class="app-logo">
       <div class="app-logo-inner">📋</div>
     </div>
 
     <h1 class="app-title" data-i18n="appTitle">التقارير الذكية</h1>
     <p class="app-sub" data-i18n="appSub">منصة احترافية متكاملة لإعداد وتنزيل تقارير المناسبات المدرسية بتصاميم جاهزة، قابلة للتخصيص، وبجودة عالية ✨</p>
+
+    <!-- 💎 بانر السعر الفخم -->
+    <div class="hero-price-card">
+      <div class="hpc-top">
+        <div class="hpc-badge">
+          <span>💎</span>
+          <span data-i18n="hpcBadge">اشتراك مدى الحياة</span>
+        </div>
+      </div>
+
+      <div class="hpc-price-row">
+        <div class="hpc-old">
+          <span data-i18n="hpcOldLabel">السعر الأصلي</span>
+          <span class="hpc-strike">99</span>
+        </div>
+        <div class="hpc-now">
+          <div class="hpc-amount">
+            <span class="hpc-num">30</span>
+            <span class="hpc-cur" data-i18n="hpcCur">ريال</span>
+          </div>
+          <div class="hpc-once" data-i18n="hpcOnce">دفعة واحدة فقط</div>
+        </div>
+      </div>
+
+      <div class="hpc-features">
+        <div class="hpc-feat">
+          <span class="hpc-tick">✓</span>
+          <span data-i18n="hpcFeat1">+15 قالب احترافي</span>
+        </div>
+        <div class="hpc-feat">
+          <span class="hpc-tick">✓</span>
+          <span data-i18n="hpcFeat2">تحميلات بلا حدود</span>
+        </div>
+        <div class="hpc-feat">
+          <span class="hpc-tick">✓</span>
+          <span data-i18n="hpcFeat3">تحديثات مدى الحياة</span>
+        </div>
+        <div class="hpc-feat">
+          <span class="hpc-tick">✓</span>
+          <span data-i18n="hpcFeat4">بدون تجديد، بدون عمولات</span>
+        </div>
+      </div>
+
+      <button class="hpc-cta" onclick="openSubscribeWhatsApp()">
+        <span class="hpc-cta-ic">📱</span>
+        <span data-i18n="hpcCta">اشترك الآن عبر WhatsApp</span>
+        <span class="hpc-arrow">←</span>
+      </button>
+
+      <div class="hpc-trust">
+        <span>🛡️</span>
+        <span data-i18n="hpcTrust">ضمان استرداد كامل خلال 7 أيام</span>
+      </div>
+    </div>
 
     <div class="trust-row">
       <div class="trust-pill"><span>⚡</span> <span data-i18n="trustFast">سريع</span></div>
@@ -2310,6 +2678,21 @@ font-size:0.78rem;text-align:center;margin-top:12px;display:none;
       <button class="cta-btn cta-ghost" onclick="scrollToPreviews()">
         <span>👁️</span><span data-i18n="ctaPreview">معاينة</span>
       </button>
+    </div>
+
+    <!-- ⭐ Social Proof Strip -->
+    <div class="social-proof-strip">
+      <div class="sps-avatars">
+        <div class="sps-av" style="background:linear-gradient(135deg,#FF6B35,#F7B538);">أ</div>
+        <div class="sps-av" style="background:linear-gradient(135deg,#1B1B3A,#4ECDC4);">م</div>
+        <div class="sps-av" style="background:linear-gradient(135deg,#0EA5E9,#1e6b8a);">ع</div>
+        <div class="sps-av" style="background:linear-gradient(135deg,#16a34a,#15803d);">ف</div>
+        <div class="sps-av sps-more">+500</div>
+      </div>
+      <div class="sps-text">
+        <div class="sps-stars">⭐⭐⭐⭐⭐</div>
+        <div class="sps-count" data-i18n="spsCount">انضم لأكثر من 500 معلم اشتركوا</div>
+      </div>
     </div>
 
     <div class="stats-strip">
@@ -3621,6 +4004,18 @@ const I18N = {
   ar: {
     brandMark: "المنصة متاحة الآن",
     appTitle: "التقارير الذكية",
+    limitedOffer: "عرض إطلاق محدود · لفترة محدودة",
+    hpcBadge: "اشتراك مدى الحياة",
+    hpcOldLabel: "السعر الأصلي",
+    hpcOnce: "دفعة واحدة · بدون تجديد",
+    hpcCur: "ريال",
+    hpcFeat1: "+15 قالب احترافي",
+    hpcFeat2: "تحميلات بلا حدود",
+    hpcFeat3: "تحديثات مدى الحياة",
+    hpcFeat4: "بدون عمولات إضافية",
+    hpcCta: "اشترك الآن - 30 ريال",
+    hpcTrust: "ضمان استرداد كامل خلال 7 أيام",
+    spsCount: "انضم لأكثر من 500 معلم اشتركوا",
     appSub: "منصة احترافية متكاملة لإعداد وتنزيل تقارير المناسبات المدرسية بتصاميم جاهزة، قابلة للتخصيص، وبجودة عالية ✨",
     trustFast: "سريع",
     trustSecure: "آمن",
@@ -3854,6 +4249,18 @@ const I18N = {
   en: {
     brandMark: "Platform is Live",
     appTitle: "Smart Reports",
+    limitedOffer: "Limited Launch Offer",
+    hpcBadge: "Lifetime Subscription",
+    hpcOldLabel: "Original Price",
+    hpcOnce: "One-time payment · No renewal",
+    hpcCur: "SAR",
+    hpcFeat1: "+15 Pro templates",
+    hpcFeat2: "Unlimited downloads",
+    hpcFeat3: "Lifetime updates",
+    hpcFeat4: "No extra fees",
+    hpcCta: "Subscribe Now - 30 SAR",
+    hpcTrust: "Full refund guarantee within 7 days",
+    spsCount: "Join 500+ teachers",
     appSub: "A professional all-in-one platform for creating and downloading school event reports with ready-made, customizable designs and premium quality ✨",
     trustFast: "Fast",
     trustSecure: "Secure",
@@ -4141,6 +4548,22 @@ window.addEventListener('DOMContentLoaded', function(){
 });
 
 function openLogin(){
+  // التحويل لصفحة Firebase login.html الجديدة
+  window.location.href = 'login.html';
+}
+
+function openSubscribeWhatsApp(){
+  const phone = '966502517217';
+  const msg = encodeURIComponent(
+    'السلام عليكم 🌟\n\n' +
+    'أرغب في الاشتراك بمنصة التقارير المدرسية\n' +
+    'العرض: 30 ريال (مدى الحياة) 💎\n\n' +
+    'المصدر: ksa2030.one'
+  );
+  window.open(`https://wa.me/${phone}?text=${msg}`, '_blank');
+}
+
+function _oldOpenLogin(){
   const modal = document.getElementById('loginModal');
   modal.classList.add('show');
   modal.scrollTop = 0;
@@ -4383,6 +4806,51 @@ document.getElementById('phone').addEventListener('keydown', function(e){
 document.getElementById('loginModal').addEventListener('click', function(e){
   if(e.target === this) closeLogin();
 });
+</script>
+
+<!-- ═══ Firebase Integration ═══ -->
+<script type="module">
+import { onUserChange, logout, isLifetime, SITE_CONFIG } from './firebase-config.js';
+
+// مراقبة حالة المستخدم - تحديث الواجهة
+onUserChange((data) => {
+  const ctaRow = document.getElementById('ctaRow');
+  const priceCard = document.querySelector('.hero-price-card');
+
+  if (data?.user) {
+    const { user, profile } = data;
+    const lifetime = isLifetime(profile);
+
+    // إخفاء بطاقة السعر للمشتركين
+    if (lifetime && priceCard) {
+      priceCard.style.display = 'none';
+    }
+
+    // تحديث زر الـ CTA
+    if (ctaRow) {
+      const name = profile?.displayName || (user.email || user.phoneNumber || 'حسابي').split('@')[0];
+      const initial = name.charAt(0).toUpperCase();
+      const planEmoji = lifetime ? '💎' : '🆓';
+
+      ctaRow.innerHTML = `
+        <button class="cta-btn cta-primary" onclick="window.location.href='profile.html'" style="background:linear-gradient(135deg,#1e6b8a,#2a8aab);">
+          <span style="width:24px;height:24px;background:#d4a657;border-radius:50%;display:inline-flex;align-items:center;justify-content:center;font-weight:900;font-size:0.75rem;color:#fff;">${initial}</span>
+          <span>${name}</span>
+          <span style="font-size:0.85rem;">${planEmoji}</span>
+        </button>
+        <button class="cta-btn cta-ghost" onclick="window.firebaseLogout()">
+          <span>🚪</span><span>خروج</span>
+        </button>
+      `;
+    }
+  }
+});
+
+window.firebaseLogout = async function() {
+  if (!confirm('تسجيل الخروج؟')) return;
+  await logout();
+  window.location.reload();
+};
 </script>
 
 </body>
