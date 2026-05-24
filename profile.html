@@ -1,0 +1,371 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#1e6b8a">
+<title>ملفي الشخصي · منصة التقارير</title>
+<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;500;700;900&family=Tajawal:wght@400;500;700;900&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:'Tajawal','Cairo',sans-serif;background:linear-gradient(135deg,#e8f4f8,#f5e9d4);min-height:100vh;padding:20px 16px;color:#1a3a4e;}
+.container{max-width:480px;margin:0 auto;}
+.header{
+  background:linear-gradient(135deg,#1e6b8a,#2a8aab);
+  color:#fff;
+  border-radius:18px;
+  padding:24px 22px;
+  margin-bottom:16px;
+  position:relative;
+  overflow:hidden;
+  box-shadow:0 12px 30px rgba(30,107,138,0.3);
+}
+.header::before{
+  content:"";
+  position:absolute;
+  top:-30px;
+  left:-30px;
+  width:120px;
+  height:120px;
+  background:rgba(212,166,87,0.2);
+  border-radius:50%;
+}
+.back-btn{
+  position:absolute;
+  top:18px;
+  right:18px;
+  background:rgba(255,255,255,0.2);
+  color:#fff;
+  border:none;
+  width:36px;
+  height:36px;
+  border-radius:50%;
+  cursor:pointer;
+  font-size:1rem;
+  font-weight:900;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  text-decoration:none;
+  z-index:2;
+}
+.avatar{
+  width:80px;
+  height:80px;
+  background:#d4a657;
+  border-radius:50%;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  font-size:2.2rem;
+  margin:0 auto 10px;
+  position:relative;
+  z-index:1;
+  border:4px solid rgba(255,255,255,0.3);
+  overflow:hidden;
+}
+.avatar img{width:100%;height:100%;object-fit:cover;border-radius:50%;}
+.user-name{text-align:center;font-size:1.05rem;font-weight:900;position:relative;z-index:1;}
+.user-phone{text-align:center;font-size:0.78rem;color:#f4d690;font-weight:700;margin-top:2px;position:relative;z-index:1;}
+.card{
+  background:#fff;
+  border-radius:16px;
+  padding:18px;
+  margin-bottom:12px;
+  box-shadow:0 4px 12px rgba(30,107,138,0.06);
+  border:1px solid rgba(212,166,87,0.15);
+}
+.card-title{
+  font-size:0.92rem;
+  font-weight:900;
+  color:#1e6b8a;
+  margin-bottom:12px;
+  display:flex;
+  align-items:center;
+  gap:8px;
+}
+.plan-badge{
+  display:inline-block;
+  padding:5px 14px;
+  border-radius:99px;
+  font-size:0.72rem;
+  font-weight:900;
+  letter-spacing:1px;
+  margin-bottom:10px;
+}
+.plan-free{background:#fee2e2;color:#991b1b;}
+.plan-lifetime{
+  background:linear-gradient(135deg,#fde68a,#f59e0b);
+  color:#7c2d12;
+  box-shadow:0 4px 10px rgba(245,158,11,0.3);
+}
+.plan-info{
+  font-size:0.88rem;
+  color:#5a7080;
+  font-weight:700;
+  line-height:1.7;
+}
+.plan-info strong{color:#1e6b8a;}
+.stats{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:10px;
+}
+.stat-box{
+  background:linear-gradient(135deg,#fbf6ec,#f5e9d4);
+  border-radius:12px;
+  padding:12px;
+  text-align:center;
+  border:1px solid rgba(212,166,87,0.2);
+}
+.stat-box .num{font-size:1.6rem;font-weight:900;color:#1e6b8a;}
+.stat-box .lbl{font-size:0.72rem;color:#5a7080;font-weight:700;margin-top:2px;}
+.action-row{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  padding:12px;
+  border-radius:11px;
+  background:#fafbfc;
+  margin-bottom:8px;
+  cursor:pointer;
+  transition:all 0.2s;
+  border:1px solid #e0e6ec;
+}
+.action-row:hover{background:#f0f4f8;border-color:#1e6b8a;}
+.action-row .icon{
+  width:36px;
+  height:36px;
+  background:rgba(30,107,138,0.1);
+  border-radius:10px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  font-size:1.1rem;
+  flex-shrink:0;
+}
+.action-row .text{flex:1;padding:0 12px;}
+.action-row .title{font-weight:900;font-size:0.85rem;color:#1a3a4e;}
+.action-row .desc{font-size:0.72rem;color:#5a7080;font-weight:600;margin-top:1px;}
+.action-row .arrow{color:#a0aab5;font-size:1rem;}
+.logout-btn{
+  width:100%;
+  padding:13px;
+  background:linear-gradient(135deg,#dc2626,#991b1b);
+  color:#fff;
+  border:none;
+  border-radius:12px;
+  font-family:inherit;
+  font-size:0.92rem;
+  font-weight:900;
+  cursor:pointer;
+  margin-top:16px;
+}
+.upgrade-btn{
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  gap:8px;
+  width:100%;
+  padding:14px;
+  background:linear-gradient(135deg,#d4a657,#b8923d);
+  color:#fff;
+  border:none;
+  border-radius:12px;
+  font-family:inherit;
+  font-size:0.95rem;
+  font-weight:900;
+  cursor:pointer;
+  margin-top:12px;
+  text-decoration:none;
+  text-align:center;
+  box-shadow:0 6px 14px rgba(212,166,87,0.4);
+}
+.price-tag{
+  text-align:center;
+  margin:12px 0;
+}
+.price-tag .amount{
+  font-size:2.5rem;
+  font-weight:900;
+  color:#d4a657;
+  line-height:1;
+}
+.price-tag .currency{font-size:1rem;color:#5a7080;font-weight:700;}
+.price-tag .lifetime-note{
+  font-size:0.78rem;
+  color:#16a34a;
+  font-weight:900;
+  background:#dcfce7;
+  padding:3px 10px;
+  border-radius:99px;
+  display:inline-block;
+  margin-top:6px;
+}
+.loading-state{
+  text-align:center;
+  padding:40px 20px;
+  color:#5a7080;
+}
+.spinner{
+  display:inline-block;
+  width:28px;
+  height:28px;
+  border:3px solid #e0e6ec;
+  border-top-color:#1e6b8a;
+  border-radius:50%;
+  animation:spin 0.7s linear infinite;
+  margin-bottom:10px;
+}
+@keyframes spin{to{transform:rotate(360deg);}}
+#mainContent{display:none;}
+</style>
+</head>
+<body>
+
+<div class="container">
+  <div class="loading-state" id="loadingState">
+    <div class="spinner"></div>
+    <div style="font-weight:700;">جاري تحميل بياناتك...</div>
+  </div>
+
+  <div id="mainContent">
+    <div class="header">
+      <a href="index.html" class="back-btn">×</a>
+      <div class="avatar" id="avatarBox">👤</div>
+      <div class="user-name" id="userName">المستخدم</div>
+      <div class="user-phone" id="userPhone">+966 5XX XXX XXX</div>
+    </div>
+
+    <div class="card">
+      <div class="card-title">💎 الاشتراك</div>
+      <div class="plan-badge" id="planBadge">FREE</div>
+      <div class="plan-info" id="planInfo">حساب مجاني</div>
+
+      <div id="upgradeArea" style="display:none;">
+        <div class="price-tag">
+          <span class="amount">30</span>
+          <span class="currency">ريال</span>
+          <div class="lifetime-note">💎 مدى الحياة · مرة واحدة فقط</div>
+        </div>
+        <a href="#" class="upgrade-btn" id="upgradeBtn">
+          <span style="font-size:1.2rem">📱</span>
+          <span>اشترك عبر WhatsApp</span>
+        </a>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-title">📊 إحصائيات الاستخدام</div>
+      <div class="stats">
+        <div class="stat-box">
+          <div class="num" id="downloadsUsed">0</div>
+          <div class="lbl">تحميل تم</div>
+        </div>
+        <div class="stat-box">
+          <div class="num" id="downloadsLeft">∞</div>
+          <div class="lbl">متبقي</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-title">⚙️ الإعدادات</div>
+      <div class="action-row" onclick="changePassword()">
+        <div class="icon">🔒</div>
+        <div class="text">
+          <div class="title">تغيير كلمة المرور</div>
+          <div class="desc">حدّث كلمة سرك</div>
+        </div>
+        <div class="arrow">‹</div>
+      </div>
+      <div class="action-row" onclick="contactSupport()">
+        <div class="icon">💬</div>
+        <div class="text">
+          <div class="title">الدعم الفني</div>
+          <div class="desc">تواصل معنا عبر WhatsApp</div>
+        </div>
+        <div class="arrow">‹</div>
+      </div>
+    </div>
+
+    <button class="logout-btn" onclick="handleLogout()">🚪 تسجيل الخروج</button>
+  </div>
+</div>
+
+<script type="module">
+import { onUserChange, logout, isLifetime, buildSubscribeWhatsAppLink, SITE_CONFIG } from './firebase-config.js';
+
+onUserChange((data) => {
+  if (!data) {
+    window.location.href = 'login.html';
+    return;
+  }
+
+  const { user, profile } = data;
+  document.getElementById('loadingState').style.display = 'none';
+  document.getElementById('mainContent').style.display = 'block';
+
+  // الاسم والجوال
+  if (profile?.phoneNumber || user.phoneNumber) {
+    document.getElementById('userPhone').textContent = profile?.phoneNumber || user.phoneNumber;
+  } else if (user.email && !user.email.includes('@phone.')) {
+    document.getElementById('userPhone').textContent = user.email;
+  }
+  document.getElementById('userName').textContent = profile?.displayName || user.displayName || 'مرحباً بك';
+
+  if (user.photoURL) {
+    document.getElementById('avatarBox').innerHTML = `<img src="${user.photoURL}" alt="">`;
+  } else {
+    const initial = (profile?.displayName || user.email || 'م').charAt(0).toUpperCase();
+    document.getElementById('avatarBox').textContent = initial;
+  }
+
+  // الخطة
+  const lifetime = isLifetime(profile);
+  const badge = document.getElementById('planBadge');
+  const info = document.getElementById('planInfo');
+  const upgradeArea = document.getElementById('upgradeArea');
+
+  if (lifetime) {
+    badge.className = 'plan-badge plan-lifetime';
+    badge.textContent = '💎 مدى الحياة';
+    info.innerHTML = 'لديك <strong>اشتراك دائم</strong> · بدون انتهاء صلاحية ✨<br>تحمّل كل التقارير بلا حدود';
+    upgradeArea.style.display = 'none';
+  } else {
+    badge.className = 'plan-badge plan-free';
+    badge.textContent = '🆓 حساب مجاني';
+    const used = profile?.downloadsUsed || 0;
+    const limit = profile?.downloadsLimit || 2;
+    const left = Math.max(0, limit - used);
+    info.innerHTML = `لديك <strong>${left} من ${limit} تحميلات مجانية</strong> · للوصول الكامل، اشترك مرة واحدة فقط`;
+    upgradeArea.style.display = 'block';
+
+    // إعداد رابط WhatsApp
+    document.getElementById('upgradeBtn').href = buildSubscribeWhatsAppLink(profile, user);
+  }
+
+  // الإحصائيات
+  document.getElementById('downloadsUsed').textContent = profile?.downloadsUsed || 0;
+  const limit = profile?.downloadsLimit || 2;
+  const used = profile?.downloadsUsed || 0;
+  document.getElementById('downloadsLeft').textContent = limit >= 99999 ? '∞' : Math.max(0, limit - used);
+});
+
+window.handleLogout = async function() {
+  if (!confirm('هل أنت متأكد من تسجيل الخروج؟')) return;
+  await logout();
+  window.location.href = 'login.html';
+};
+
+window.changePassword = function() {
+  window.open(`https://wa.me/${SITE_CONFIG.WHATSAPP_NUMBER}?text=أرغب%20في%20تغيير%20كلمة%20المرور`, '_blank');
+};
+
+window.contactSupport = function() {
+  window.open(`https://wa.me/${SITE_CONFIG.WHATSAPP_NUMBER}?text=السلام%20عليكم،%20لدي%20استفسار`, '_blank');
+};
+</script>
+
+</body>
+</html>

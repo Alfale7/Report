@@ -1,0 +1,714 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#1e6b8a">
+<title>تسجيل الدخول · منصة التقارير المدرسية</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;500;700;900&family=Reem+Kufi:wght@400;500;600;700&family=Tajawal:wght@400;500;700;900&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+html,body{font-family:'Tajawal','Cairo',sans-serif;min-height:100vh;}
+
+body{
+  background:
+    radial-gradient(ellipse at top, #1e6b8a 0%, #134d68 50%, #0a3447 100%);
+  color:#fff;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  padding:20px;
+  position:relative;
+  overflow:hidden;
+}
+
+/* خلفية زخرفية */
+body::before, body::after{
+  content:"";
+  position:absolute;
+  border-radius:50%;
+  filter:blur(80px);
+  opacity:0.4;
+  z-index:0;
+}
+body::before{
+  top:-100px;
+  right:-100px;
+  width:400px;
+  height:400px;
+  background:#d4a657;
+}
+body::after{
+  bottom:-100px;
+  left:-100px;
+  width:400px;
+  height:400px;
+  background:#2a8aab;
+}
+
+.container{
+  position:relative;
+  z-index:1;
+  width:100%;
+  max-width:420px;
+}
+
+/* البطاقة الرئيسية */
+.card{
+  background:rgba(255,255,255,0.97);
+  color:#1a3a4e;
+  border-radius:24px;
+  padding:32px 26px 28px;
+  box-shadow:0 30px 80px rgba(0,0,0,0.4), 0 0 0 1px rgba(212,166,87,0.3);
+  position:relative;
+  backdrop-filter:blur(20px);
+  -webkit-backdrop-filter:blur(20px);
+}
+
+/* الرأس */
+.logo-area{
+  text-align:center;
+  margin-bottom:24px;
+}
+.logo-emoji{
+  font-size:3rem;
+  margin-bottom:8px;
+  display:inline-block;
+  animation:bounce 2s ease-in-out infinite;
+}
+@keyframes bounce{
+  0%,100%{transform:translateY(0);}
+  50%{transform:translateY(-8px);}
+}
+
+.title{
+  font-family:'Reem Kufi','Cairo',sans-serif;
+  font-size:1.4rem;
+  font-weight:900;
+  color:#1e6b8a;
+  margin-bottom:4px;
+}
+.subtitle{
+  font-size:0.85rem;
+  color:#5a7080;
+  font-weight:600;
+}
+
+/* أزرار التبديل بين Tabs */
+.tabs{
+  display:flex;
+  background:#f0f4f8;
+  border-radius:14px;
+  padding:4px;
+  margin-bottom:22px;
+  gap:4px;
+}
+.tab-btn{
+  flex:1;
+  padding:10px 8px;
+  border:none;
+  background:transparent;
+  cursor:pointer;
+  font-family:inherit;
+  font-size:0.82rem;
+  font-weight:800;
+  color:#5a7080;
+  border-radius:11px;
+  transition:all 0.2s;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  gap:6px;
+}
+.tab-btn.active{
+  background:#fff;
+  color:#1e6b8a;
+  box-shadow:0 2px 8px rgba(30,107,138,0.15);
+}
+
+/* النموذج */
+.form-section{display:none;}
+.form-section.active{display:block;animation:fadeIn 0.25s;}
+@keyframes fadeIn{from{opacity:0;transform:translateY(8px);}to{opacity:1;transform:translateY(0);}}
+
+.field{
+  margin-bottom:14px;
+}
+.field label{
+  display:block;
+  font-size:0.76rem;
+  font-weight:800;
+  color:#1e6b8a;
+  margin-bottom:5px;
+  letter-spacing:0.3px;
+}
+.field input{
+  width:100%;
+  padding:13px 14px;
+  border:1.5px solid #e0e6ec;
+  border-radius:11px;
+  font-family:inherit;
+  font-size:0.95rem;
+  font-weight:700;
+  color:#1a3a4e;
+  background:#fafbfc;
+  outline:none;
+  transition:all 0.2s;
+}
+.field input:focus{
+  border-color:#1e6b8a;
+  background:#fff;
+  box-shadow:0 0 0 3px rgba(30,107,138,0.1);
+}
+.field input::placeholder{color:#a0aab5;font-weight:500;}
+
+/* الجوال - prefix */
+.phone-input{
+  display:flex;
+  gap:6px;
+}
+.phone-prefix{
+  background:#f0f4f8;
+  padding:13px 12px;
+  border-radius:11px;
+  font-weight:900;
+  color:#1e6b8a;
+  font-size:0.9rem;
+  border:1.5px solid #e0e6ec;
+  display:flex;
+  align-items:center;
+  gap:5px;
+  flex-shrink:0;
+}
+.phone-prefix img{height:16px;width:auto;}
+.phone-input input{flex:1;}
+
+/* OTP إدخال */
+.otp-inputs{
+  display:flex;
+  gap:8px;
+  justify-content:center;
+  margin:8px 0 16px;
+  direction:ltr;
+}
+.otp-inputs input{
+  width:44px;
+  height:54px;
+  text-align:center;
+  font-size:1.4rem;
+  font-weight:900;
+  color:#1e6b8a;
+  border:2px solid #e0e6ec;
+  border-radius:12px;
+  background:#fafbfc;
+}
+.otp-inputs input:focus{
+  border-color:#d4a657;
+  background:#fff;
+  box-shadow:0 0 0 3px rgba(212,166,87,0.15);
+}
+
+/* الزر الرئيسي */
+.btn-primary{
+  width:100%;
+  padding:14px;
+  border:none;
+  border-radius:12px;
+  background:linear-gradient(135deg, #1e6b8a, #2a8aab);
+  color:#fff;
+  font-family:inherit;
+  font-size:1rem;
+  font-weight:900;
+  cursor:pointer;
+  transition:all 0.2s;
+  margin-top:8px;
+  box-shadow:0 6px 16px rgba(30,107,138,0.3);
+}
+.btn-primary:hover:not(:disabled){transform:translateY(-1px);box-shadow:0 8px 20px rgba(30,107,138,0.4);}
+.btn-primary:active{transform:scale(0.98);}
+.btn-primary:disabled{opacity:0.6;cursor:not-allowed;}
+
+/* فاصل OR */
+.divider{
+  display:flex;
+  align-items:center;
+  gap:10px;
+  margin:18px 0;
+  color:#a0aab5;
+  font-size:0.78rem;
+  font-weight:700;
+}
+.divider::before, .divider::after{
+  content:"";
+  flex:1;
+  height:1px;
+  background:#e0e6ec;
+}
+
+/* زر Google */
+.btn-google{
+  width:100%;
+  padding:13px;
+  border:1.5px solid #e0e6ec;
+  border-radius:12px;
+  background:#fff;
+  color:#1a3a4e;
+  font-family:inherit;
+  font-size:0.92rem;
+  font-weight:800;
+  cursor:pointer;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  gap:10px;
+  transition:all 0.2s;
+}
+.btn-google:hover{border-color:#4285F4;background:#f8faff;}
+.btn-google svg{width:20px;height:20px;}
+
+/* روابط */
+.links{
+  text-align:center;
+  margin-top:18px;
+  font-size:0.82rem;
+}
+.links a{
+  color:#1e6b8a;
+  text-decoration:none;
+  font-weight:800;
+  cursor:pointer;
+}
+.links a:hover{text-decoration:underline;}
+.links .muted{color:#5a7080;}
+
+/* الفوتر */
+.footer-note{
+  text-align:center;
+  margin-top:18px;
+  font-size:0.72rem;
+  color:rgba(255,255,255,0.7);
+}
+.footer-note a{color:#f4d690;text-decoration:none;}
+
+/* رسائل الحالة */
+.alert{
+  padding:12px 14px;
+  border-radius:11px;
+  font-size:0.85rem;
+  font-weight:700;
+  margin-bottom:14px;
+  display:none;
+  align-items:center;
+  gap:8px;
+}
+.alert.show{display:flex;}
+.alert.error{background:#fef2f2;color:#b91c1c;border:1px solid #fecaca;}
+.alert.success{background:#f0fdf4;color:#166534;border:1px solid #bbf7d0;}
+.alert.info{background:#eff6ff;color:#1e40af;border:1px solid #bfdbfe;}
+
+/* spinner */
+.spinner{
+  display:inline-block;
+  width:16px;
+  height:16px;
+  border:2px solid rgba(255,255,255,0.3);
+  border-top-color:#fff;
+  border-radius:50%;
+  animation:spin 0.7s linear infinite;
+}
+@keyframes spin{to{transform:rotate(360deg);}}
+
+/* مودال نجاح */
+.success-modal{
+  position:fixed;
+  inset:0;
+  background:rgba(0,20,30,0.85);
+  backdrop-filter:blur(10px);
+  z-index:9999;
+  display:none;
+  align-items:center;
+  justify-content:center;
+  padding:20px;
+}
+.success-modal.show{display:flex;}
+.success-box{
+  background:#fff;
+  color:#1a3a4e;
+  border-radius:20px;
+  padding:32px 24px;
+  text-align:center;
+  max-width:340px;
+  width:100%;
+  animation:popIn 0.3s cubic-bezier(0.34,1.56,0.64,1);
+}
+@keyframes popIn{from{transform:scale(0.8);opacity:0;}to{transform:scale(1);opacity:1;}}
+.success-icon{
+  font-size:3.5rem;
+  margin-bottom:10px;
+}
+.success-title{
+  font-family:'Reem Kufi',sans-serif;
+  font-size:1.3rem;
+  font-weight:900;
+  color:#1e6b8a;
+  margin-bottom:6px;
+}
+.success-msg{
+  font-size:0.88rem;
+  color:#5a7080;
+  font-weight:600;
+  margin-bottom:18px;
+}
+
+/* responsive */
+@media (max-width:380px){
+  .card{padding:24px 20px;}
+  .title{font-size:1.2rem;}
+  .tab-btn{font-size:0.74rem;padding:9px 4px;}
+  .otp-inputs input{width:38px;height:48px;font-size:1.2rem;}
+}
+
+#recaptcha-container{display:flex;justify-content:center;margin-top:8px;}
+</style>
+</head>
+<body>
+
+<div class="container">
+  <div class="card">
+    <div class="logo-area">
+      <div class="logo-emoji">📚</div>
+      <div class="title">منصة التقارير المدرسية</div>
+      <div class="subtitle" id="modeSubtitle">سجّل دخولك للمتابعة</div>
+    </div>
+
+    <!-- تبويبات -->
+    <div class="tabs">
+      <button class="tab-btn active" data-tab="phone" onclick="switchTab('phone')">📱 جوال</button>
+      <button class="tab-btn" data-tab="email" onclick="switchTab('email')">📧 إيميل</button>
+    </div>
+
+    <!-- رسائل التنبيه -->
+    <div class="alert" id="alertBox"></div>
+
+    <!-- ═══ نموذج الجوال ═══ -->
+    <div class="form-section active" id="form-phone">
+      <!-- خطوة 1: إدخال الجوال -->
+      <div id="phone-step-1">
+        <div class="field">
+          <label>📱 رقم الجوال</label>
+          <div class="phone-input">
+            <div class="phone-prefix">🇸🇦 +966</div>
+            <input type="tel" id="phoneInput" placeholder="5xxxxxxxx" maxlength="10" inputmode="numeric">
+          </div>
+        </div>
+        <button class="btn-primary" id="sendOtpBtn" onclick="handleSendOTP()">
+          📨 إرسال كود التحقق
+        </button>
+        <div id="recaptcha-container"></div>
+      </div>
+
+      <!-- خطوة 2: إدخال OTP -->
+      <div id="phone-step-2" style="display:none;">
+        <div class="field">
+          <label>🔢 كود التحقق</label>
+          <div class="otp-inputs">
+            <input type="text" maxlength="1" inputmode="numeric" class="otp-cell" data-idx="0">
+            <input type="text" maxlength="1" inputmode="numeric" class="otp-cell" data-idx="1">
+            <input type="text" maxlength="1" inputmode="numeric" class="otp-cell" data-idx="2">
+            <input type="text" maxlength="1" inputmode="numeric" class="otp-cell" data-idx="3">
+            <input type="text" maxlength="1" inputmode="numeric" class="otp-cell" data-idx="4">
+            <input type="text" maxlength="1" inputmode="numeric" class="otp-cell" data-idx="5">
+          </div>
+        </div>
+        <div class="field" id="newPasswordField">
+          <label>🔒 اختر كلمة مرور (للدخولات القادمة)</label>
+          <input type="password" id="newPasswordInput" placeholder="6 أحرف على الأقل" minlength="6">
+        </div>
+        <button class="btn-primary" id="verifyOtpBtn" onclick="handleVerifyOTP()">
+          ✅ التحقق وإكمال التسجيل
+        </button>
+        <div class="links">
+          <a onclick="resetPhoneStep()">‹ تغيير الرقم</a>
+        </div>
+      </div>
+    </div>
+
+    <!-- ═══ نموذج الإيميل ═══ -->
+    <div class="form-section" id="form-email">
+      <div class="field">
+        <label>📧 البريد الإلكتروني</label>
+        <input type="email" id="emailInput" placeholder="example@email.com">
+      </div>
+      <div class="field">
+        <label>🔒 كلمة المرور</label>
+        <input type="password" id="passwordInput" placeholder="••••••••" minlength="6">
+      </div>
+      <button class="btn-primary" id="emailLoginBtn" onclick="handleEmailLogin()">
+        🔐 تسجيل الدخول
+      </button>
+      <div class="links">
+        <a onclick="handleForgotPassword()">نسيت كلمة المرور؟</a>
+        &nbsp;·&nbsp;
+        <a onclick="toggleRegisterMode()" id="toggleRegLink">إنشاء حساب جديد</a>
+      </div>
+    </div>
+
+    <!-- فاصل + Google -->
+    <div class="divider">أو</div>
+    <button class="btn-google" onclick="handleGoogleLogin()">
+      <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+        <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
+        <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>
+        <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/>
+        <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/>
+      </svg>
+      <span>الدخول بحساب Google</span>
+    </button>
+
+  </div>
+
+  <div class="footer-note">
+    بتسجيلك توافق على <a href="#">الشروط</a> و <a href="#">سياسة الخصوصية</a>
+  </div>
+</div>
+
+<!-- مودال نجاح -->
+<div class="success-modal" id="successModal">
+  <div class="success-box">
+    <div class="success-icon">🎉</div>
+    <div class="success-title" id="successTitle">تم بنجاح!</div>
+    <div class="success-msg" id="successMsg">جاري التحويل...</div>
+    <div class="spinner" style="border-color:rgba(30,107,138,0.2);border-top-color:#1e6b8a;width:24px;height:24px;"></div>
+  </div>
+</div>
+
+<script type="module">
+import {
+  loginWithEmail,
+  registerWithEmail,
+  loginWithGoogle,
+  sendPhoneOTP,
+  verifyPhoneOTP,
+  resetPassword,
+  onUserChange
+} from './firebase-config.js';
+
+let isRegisterMode = false;
+
+// ═══ التحقق من تسجيل الدخول الحالي ═══
+onUserChange((data) => {
+  if (data?.user) {
+    // المستخدم مسجل دخول، نوجهه للموقع
+    showSuccess('مرحباً بك!', 'جاري التحويل...');
+    setTimeout(() => {
+      window.location.href = 'index.html';
+    }, 1200);
+  }
+});
+
+// ═══ تبديل التبويبات ═══
+window.switchTab = function(tab) {
+  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+  document.querySelectorAll('.form-section').forEach(s => s.classList.remove('active'));
+  document.querySelector(`[data-tab="${tab}"]`).classList.add('active');
+  document.getElementById(`form-${tab}`).classList.add('active');
+  hideAlert();
+};
+
+// ═══ الرسائل ═══
+function showAlert(type, message) {
+  const box = document.getElementById('alertBox');
+  box.className = `alert ${type} show`;
+  box.innerHTML = (type === 'error' ? '⚠️ ' : type === 'success' ? '✅ ' : 'ℹ️ ') + message;
+}
+function hideAlert() {
+  document.getElementById('alertBox').classList.remove('show');
+}
+function showSuccess(title, msg) {
+  document.getElementById('successTitle').textContent = title;
+  document.getElementById('successMsg').textContent = msg;
+  document.getElementById('successModal').classList.add('show');
+}
+function setLoading(btnId, isLoading, originalText) {
+  const btn = document.getElementById(btnId);
+  if (isLoading) {
+    btn.disabled = true;
+    btn.dataset.original = btn.innerHTML;
+    btn.innerHTML = '<div class="spinner"></div> جاري المعالجة...';
+  } else {
+    btn.disabled = false;
+    btn.innerHTML = btn.dataset.original || originalText;
+  }
+}
+
+// ═══ تسجيل دخول بالإيميل ═══
+window.handleEmailLogin = async function() {
+  const email = document.getElementById('emailInput').value.trim();
+  const password = document.getElementById('passwordInput').value;
+
+  if (!email || !password) {
+    return showAlert('error', 'أدخل الإيميل وكلمة المرور');
+  }
+
+  hideAlert();
+  setLoading('emailLoginBtn', true);
+
+  const result = isRegisterMode
+    ? await registerWithEmail(email, password)
+    : await loginWithEmail(email, password);
+
+  setLoading('emailLoginBtn', false, '🔐 تسجيل الدخول');
+
+  if (result.success) {
+    showSuccess(
+      isRegisterMode ? 'تم إنشاء الحساب!' : 'مرحباً بك!',
+      'جاري التحويل...'
+    );
+  } else {
+    showAlert('error', result.error);
+  }
+};
+
+// ═══ تبديل بين دخول وتسجيل ═══
+window.toggleRegisterMode = function() {
+  isRegisterMode = !isRegisterMode;
+  const btn = document.getElementById('emailLoginBtn');
+  const link = document.getElementById('toggleRegLink');
+  const subtitle = document.getElementById('modeSubtitle');
+
+  if (isRegisterMode) {
+    btn.innerHTML = '✨ إنشاء حساب';
+    link.textContent = 'لديّ حساب';
+    subtitle.textContent = 'أنشئ حسابك الجديد';
+  } else {
+    btn.innerHTML = '🔐 تسجيل الدخول';
+    link.textContent = 'إنشاء حساب جديد';
+    subtitle.textContent = 'سجّل دخولك للمتابعة';
+  }
+  hideAlert();
+};
+
+// ═══ نسيت كلمة المرور ═══
+window.handleForgotPassword = async function() {
+  const email = document.getElementById('emailInput').value.trim();
+  if (!email) {
+    return showAlert('info', 'أدخل بريدك الإلكتروني أولاً ثم اضغط "نسيت كلمة المرور"');
+  }
+  const result = await resetPassword(email);
+  if (result.success) {
+    showAlert('success', 'تم إرسال رابط استرجاع كلمة المرور إلى بريدك');
+  } else {
+    showAlert('error', result.error);
+  }
+};
+
+// ═══ Google ═══
+window.handleGoogleLogin = async function() {
+  hideAlert();
+  const result = await loginWithGoogle();
+  if (result.success) {
+    showSuccess('مرحباً بك!', 'جاري التحويل...');
+  } else {
+    showAlert('error', result.error);
+  }
+};
+
+// ═══ الجوال - إرسال OTP ═══
+window.handleSendOTP = async function() {
+  const phone = document.getElementById('phoneInput').value.trim();
+
+  if (!phone) {
+    return showAlert('error', 'أدخل رقم الجوال');
+  }
+  if (!/^5\d{8}$/.test(phone) && !/^05\d{8}$/.test(phone)) {
+    return showAlert('error', 'رقم الجوال غير صحيح (يبدأ بـ 05 أو 5)');
+  }
+
+  hideAlert();
+  setLoading('sendOtpBtn', true);
+
+  const result = await sendPhoneOTP(phone);
+
+  setLoading('sendOtpBtn', false, '📨 إرسال كود التحقق');
+
+  if (result.success) {
+    document.getElementById('phone-step-1').style.display = 'none';
+    document.getElementById('phone-step-2').style.display = 'block';
+    showAlert('success', `تم إرسال الكود إلى ${result.phoneNumber}`);
+    document.querySelector('.otp-cell[data-idx="0"]').focus();
+  } else {
+    showAlert('error', result.error);
+  }
+};
+
+// ═══ الجوال - التحقق من OTP ═══
+window.handleVerifyOTP = async function() {
+  const cells = document.querySelectorAll('.otp-cell');
+  const code = Array.from(cells).map(c => c.value).join('');
+  const password = document.getElementById('newPasswordInput').value;
+
+  if (code.length !== 6) {
+    return showAlert('error', 'أدخل الكود كاملاً (6 أرقام)');
+  }
+  if (password && password.length < 6) {
+    return showAlert('error', 'كلمة المرور يجب أن تكون 6 أحرف على الأقل');
+  }
+
+  hideAlert();
+  setLoading('verifyOtpBtn', true);
+
+  const result = await verifyPhoneOTP(code, password || null);
+
+  setLoading('verifyOtpBtn', false, '✅ التحقق وإكمال التسجيل');
+
+  if (result.success) {
+    showSuccess('تم التحقق!', 'مرحباً بك في المنصة...');
+  } else {
+    showAlert('error', result.error);
+  }
+};
+
+// ═══ تغيير الرقم ═══
+window.resetPhoneStep = function() {
+  document.getElementById('phone-step-1').style.display = 'block';
+  document.getElementById('phone-step-2').style.display = 'none';
+  document.querySelectorAll('.otp-cell').forEach(c => c.value = '');
+  hideAlert();
+};
+
+// ═══ OTP - التنقل التلقائي بين الخانات ═══
+document.querySelectorAll('.otp-cell').forEach((cell, idx) => {
+  cell.addEventListener('input', (e) => {
+    const val = e.target.value.replace(/\D/g, '');
+    e.target.value = val;
+    if (val && idx < 5) {
+      document.querySelector(`.otp-cell[data-idx="${idx + 1}"]`).focus();
+    }
+  });
+  cell.addEventListener('keydown', (e) => {
+    if (e.key === 'Backspace' && !e.target.value && idx > 0) {
+      document.querySelector(`.otp-cell[data-idx="${idx - 1}"]`).focus();
+    }
+  });
+  cell.addEventListener('paste', (e) => {
+    e.preventDefault();
+    const pasted = (e.clipboardData || window.clipboardData).getData('text').replace(/\D/g, '');
+    if (pasted.length >= 6) {
+      document.querySelectorAll('.otp-cell').forEach((c, i) => {
+        c.value = pasted[i] || '';
+      });
+      document.querySelector('.otp-cell[data-idx="5"]').focus();
+    }
+  });
+});
+
+// ═══ منع كتابة حروف في الجوال ═══
+document.getElementById('phoneInput').addEventListener('input', (e) => {
+  e.target.value = e.target.value.replace(/\D/g, '');
+});
+</script>
+
+</body>
+</html>

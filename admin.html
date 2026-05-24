@@ -1,0 +1,447 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>🛠️ لوحة الإدارة · ksa2030.one</title>
+<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;700;900&family=Tajawal:wght@400;700;900&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:'Tajawal','Cairo',sans-serif;background:linear-gradient(135deg,#0a3447,#1e6b8a);min-height:100vh;padding:14px;color:#fff;}
+.container{max-width:900px;margin:0 auto;}
+
+.top-bar{
+  background:rgba(255,255,255,0.97);
+  color:#1a3a4e;
+  border-radius:16px;
+  padding:18px 20px;
+  margin-bottom:14px;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:12px;
+  flex-wrap:wrap;
+  box-shadow:0 8px 24px rgba(0,0,0,0.15);
+}
+.top-bar h1{
+  font-size:1.2rem;
+  color:#1e6b8a;
+  font-weight:900;
+  margin:0;
+}
+.top-bar .small{font-size:0.78rem;color:#5a7080;font-weight:700;margin-top:2px;}
+.logout-mini{
+  background:#fee2e2;
+  color:#991b1b;
+  border:none;
+  padding:8px 14px;
+  border-radius:10px;
+  font-family:inherit;
+  font-weight:800;
+  font-size:0.82rem;
+  cursor:pointer;
+}
+
+.stats-grid{
+  display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(140px,1fr));
+  gap:10px;
+  margin-bottom:14px;
+}
+.stat-card{
+  background:rgba(255,255,255,0.95);
+  color:#1a3a4e;
+  border-radius:14px;
+  padding:14px;
+  text-align:center;
+  box-shadow:0 4px 14px rgba(0,0,0,0.1);
+}
+.stat-card .ic{font-size:1.5rem;margin-bottom:4px;}
+.stat-card .num{font-size:1.8rem;font-weight:900;color:#1e6b8a;}
+.stat-card.gold .num{color:#d4a657;}
+.stat-card.green .num{color:#16a34a;}
+.stat-card.red .num{color:#dc2626;}
+.stat-card .lbl{font-size:0.74rem;color:#5a7080;font-weight:700;margin-top:2px;}
+
+.search-bar{
+  background:rgba(255,255,255,0.97);
+  border-radius:14px;
+  padding:14px;
+  margin-bottom:14px;
+  display:flex;
+  gap:10px;
+  align-items:center;
+  box-shadow:0 4px 14px rgba(0,0,0,0.1);
+}
+.search-bar input{
+  flex:1;
+  padding:11px 14px;
+  border:1.5px solid #e0e6ec;
+  border-radius:10px;
+  font-family:inherit;
+  font-size:0.92rem;
+  font-weight:700;
+  outline:none;
+  color:#1a3a4e;
+}
+.search-bar input:focus{border-color:#1e6b8a;}
+.search-bar button{
+  background:linear-gradient(135deg,#1e6b8a,#2a8aab);
+  color:#fff;
+  border:none;
+  padding:11px 18px;
+  border-radius:10px;
+  font-family:inherit;
+  font-weight:900;
+  font-size:0.88rem;
+  cursor:pointer;
+}
+
+.user-list{
+  background:rgba(255,255,255,0.97);
+  border-radius:14px;
+  padding:8px;
+  box-shadow:0 4px 14px rgba(0,0,0,0.1);
+  max-height:600px;
+  overflow-y:auto;
+}
+
+.user-item{
+  display:flex;
+  align-items:center;
+  gap:12px;
+  padding:12px;
+  border-bottom:1px solid #e8eef3;
+  color:#1a3a4e;
+}
+.user-item:last-child{border-bottom:none;}
+
+.user-avatar{
+  width:42px;
+  height:42px;
+  background:linear-gradient(135deg,#1e6b8a,#2a8aab);
+  color:#fff;
+  border-radius:50%;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  font-weight:900;
+  font-size:1rem;
+  flex-shrink:0;
+}
+.user-avatar.lifetime{background:linear-gradient(135deg,#d4a657,#b8923d);}
+
+.user-info{flex:1;min-width:0;}
+.user-info .name{font-weight:900;font-size:0.9rem;color:#1a3a4e;}
+.user-info .meta{font-size:0.74rem;color:#5a7080;font-weight:700;margin-top:1px;}
+
+.user-badge{
+  padding:3px 9px;
+  border-radius:99px;
+  font-size:0.66rem;
+  font-weight:900;
+  letter-spacing:0.5px;
+  white-space:nowrap;
+  margin-right:4px;
+}
+.badge-free{background:#fee2e2;color:#991b1b;}
+.badge-lifetime{background:linear-gradient(135deg,#fde68a,#f59e0b);color:#7c2d12;}
+
+.user-actions{display:flex;gap:6px;flex-shrink:0;}
+.btn-activate{
+  background:linear-gradient(135deg,#16a34a,#15803d);
+  color:#fff;
+  border:none;
+  padding:8px 14px;
+  border-radius:9px;
+  font-family:inherit;
+  font-weight:900;
+  font-size:0.76rem;
+  cursor:pointer;
+  white-space:nowrap;
+}
+.btn-deactivate{
+  background:linear-gradient(135deg,#dc2626,#991b1b);
+  color:#fff;
+  border:none;
+  padding:8px 14px;
+  border-radius:9px;
+  font-family:inherit;
+  font-weight:900;
+  font-size:0.76rem;
+  cursor:pointer;
+  white-space:nowrap;
+}
+
+.empty-state{text-align:center;padding:30px;color:#5a7080;font-weight:700;}
+
+.toast{
+  position:fixed;
+  top:20px;
+  left:50%;
+  transform:translateX(-50%);
+  background:#1a3a4e;
+  color:#fff;
+  padding:12px 22px;
+  border-radius:30px;
+  font-weight:900;
+  font-size:0.88rem;
+  box-shadow:0 8px 24px rgba(0,0,0,0.3);
+  opacity:0;
+  pointer-events:none;
+  transition:opacity 0.3s;
+  z-index:9999;
+}
+.toast.show{opacity:1;}
+.toast.success{background:#15803d;}
+.toast.error{background:#991b1b;}
+
+.access-denied{
+  background:rgba(255,255,255,0.97);
+  color:#1a3a4e;
+  border-radius:16px;
+  padding:40px 24px;
+  text-align:center;
+  margin-top:40px;
+}
+.access-denied h2{color:#dc2626;margin-bottom:10px;}
+.access-denied p{color:#5a7080;font-weight:700;line-height:1.7;margin-bottom:14px;}
+.access-denied code{background:#f0f4f8;padding:2px 8px;border-radius:6px;font-size:0.82rem;color:#1e6b8a;}
+
+@media (max-width:600px){
+  .user-actions{flex-direction:column;}
+  .user-item{flex-wrap:wrap;}
+}
+</style>
+</head>
+<body>
+
+<div class="toast" id="toast"></div>
+
+<div class="container">
+  <!-- شاشة التحميل -->
+  <div id="loadingScreen" class="access-denied">
+    <h2>⏳ جاري التحميل...</h2>
+    <p>التحقق من صلاحياتك...</p>
+  </div>
+
+  <!-- شاشة منع الوصول -->
+  <div id="deniedScreen" class="access-denied" style="display:none;">
+    <h2>🚫 ممنوع الوصول</h2>
+    <p>هذه الصفحة مخصصة للإدارة فقط.</p>
+    <p>لتفعيل صلاحياتك:<br>
+    1. سجّل دخول من <a href="login.html" style="color:#1e6b8a;font-weight:900;">login.html</a><br>
+    2. خذ الـ UID من البروفايل أو من Firebase Console<br>
+    3. أضفه في <code>firebase-config.js</code> ضمن <code>ADMIN_UIDS</code></p>
+    <p>UID الحالي: <br><code id="currentUid">جاري التحميل...</code></p>
+    <button class="logout-mini" onclick="handleLogout()">🚪 تسجيل الخروج</button>
+  </div>
+
+  <!-- اللوحة الرئيسية -->
+  <div id="adminPanel" style="display:none;">
+    <div class="top-bar">
+      <div>
+        <h1>🛠️ لوحة الإدارة</h1>
+        <div class="small">ksa2030.one</div>
+      </div>
+      <button class="logout-mini" onclick="handleLogout()">🚪 خروج</button>
+    </div>
+
+    <div class="stats-grid">
+      <div class="stat-card">
+        <div class="ic">👥</div>
+        <div class="num" id="totalUsers">0</div>
+        <div class="lbl">إجمالي المستخدمين</div>
+      </div>
+      <div class="stat-card gold">
+        <div class="ic">💎</div>
+        <div class="num" id="totalLifetime">0</div>
+        <div class="lbl">مشتركون مدى الحياة</div>
+      </div>
+      <div class="stat-card green">
+        <div class="ic">📥</div>
+        <div class="num" id="totalDownloads">0</div>
+        <div class="lbl">إجمالي التحميلات</div>
+      </div>
+      <div class="stat-card red">
+        <div class="ic">🆓</div>
+        <div class="num" id="totalFree">0</div>
+        <div class="lbl">حسابات مجانية</div>
+      </div>
+    </div>
+
+    <div class="search-bar">
+      <input type="text" id="searchInput" placeholder="🔍 ابحث بالجوال أو الإيميل..." onkeyup="if(event.key==='Enter')handleSearch()">
+      <button onclick="handleSearch()">بحث</button>
+      <button onclick="loadAllUsers()" style="background:#5a7080;">عرض الكل</button>
+    </div>
+
+    <div class="user-list" id="userList">
+      <div class="empty-state">⏳ جاري التحميل...</div>
+    </div>
+  </div>
+</div>
+
+<script type="module">
+import {
+  onUserChange,
+  logout,
+  isAdmin,
+  getAllUsers,
+  findUser,
+  activateUserLifetime,
+  deactivateUser
+} from './firebase-config.js';
+
+let currentUser = null;
+
+// التحقق من الصلاحيات
+onUserChange((data) => {
+  document.getElementById('loadingScreen').style.display = 'none';
+
+  if (!data) {
+    window.location.href = 'login.html';
+    return;
+  }
+
+  currentUser = data.user;
+  document.getElementById('currentUid').textContent = data.user.uid;
+
+  if (isAdmin(data.user)) {
+    document.getElementById('deniedScreen').style.display = 'none';
+    document.getElementById('adminPanel').style.display = 'block';
+    loadAllUsers();
+  } else {
+    document.getElementById('deniedScreen').style.display = 'block';
+  }
+});
+
+// عرض Toast
+function showToast(msg, type = 'success') {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.className = `toast show ${type}`;
+  setTimeout(() => t.classList.remove('show'), 2500);
+}
+
+// تحميل كل المستخدمين
+window.loadAllUsers = async function() {
+  document.getElementById('userList').innerHTML = '<div class="empty-state">⏳ جاري التحميل...</div>';
+  const users = await getAllUsers(200);
+  renderUsers(users);
+  updateStats(users);
+};
+
+// البحث
+window.handleSearch = async function() {
+  const term = document.getElementById('searchInput').value.trim();
+  if (!term) return loadAllUsers();
+
+  document.getElementById('userList').innerHTML = '<div class="empty-state">⏳ جاري البحث...</div>';
+  const results = await findUser(term);
+
+  if (results.length === 0) {
+    document.getElementById('userList').innerHTML = `
+      <div class="empty-state">
+        ❌ لم يتم العثور على نتائج لـ "${term}"
+      </div>
+    `;
+  } else {
+    renderUsers(results);
+  }
+};
+
+// عرض المستخدمين
+function renderUsers(users) {
+  const list = document.getElementById('userList');
+  if (users.length === 0) {
+    list.innerHTML = '<div class="empty-state">لا يوجد مستخدمون</div>';
+    return;
+  }
+
+  list.innerHTML = users.map(u => {
+    const phone = u.phoneNumber || u.legacyPhone || '';
+    const email = u.email && !u.email.includes('@phone.') ? u.email : '';
+    const name = u.displayName || phone || email || 'بدون اسم';
+    const initial = name.charAt(0).toUpperCase();
+    const isLifetime = u.plan === 'lifetime';
+    const downloads = u.downloadsUsed || 0;
+    const isMigrated = u.migratedFromLegacy;
+
+    const created = u.createdAt?.toDate ? u.createdAt.toDate().toLocaleDateString('ar-SA') : '-';
+
+    return `
+      <div class="user-item">
+        <div class="user-avatar ${isLifetime?'lifetime':''}">${initial}</div>
+        <div class="user-info">
+          <div class="name">
+            ${name}
+            <span class="user-badge ${isLifetime?'badge-lifetime':'badge-free'}">
+              ${isLifetime?'💎 LIFETIME':'🆓 FREE'}
+            </span>
+            ${isMigrated?'<span class="user-badge" style="background:#dbeafe;color:#1e40af;">📦 منقول</span>':''}
+          </div>
+          <div class="meta">
+            ${phone ? `📱 ${phone}` : ''}
+            ${email ? ` · 📧 ${email}` : ''}
+            · 📥 ${downloads} تحميل
+            · 📅 ${created}
+          </div>
+        </div>
+        <div class="user-actions">
+          ${isLifetime
+            ? `<button class="btn-deactivate" onclick="handleDeactivate('${u.uid}','${name}')">إلغاء</button>`
+            : `<button class="btn-activate" onclick="handleActivate('${u.uid}','${name}')">✨ تفعيل Lifetime</button>`
+          }
+        </div>
+      </div>
+    `;
+  }).join('');
+}
+
+// تحديث الإحصائيات
+function updateStats(users) {
+  document.getElementById('totalUsers').textContent = users.length;
+  const lifetime = users.filter(u => u.plan === 'lifetime').length;
+  document.getElementById('totalLifetime').textContent = lifetime;
+  document.getElementById('totalFree').textContent = users.length - lifetime;
+  const totalDl = users.reduce((sum, u) => sum + (u.downloadsUsed || 0), 0);
+  document.getElementById('totalDownloads').textContent = totalDl;
+}
+
+// تفعيل
+window.handleActivate = async function(uid, name) {
+  if (!confirm(`تفعيل اشتراك Lifetime 💎 لـ "${name}"؟\nالمبلغ: 30 ريال (مدى الحياة)`)) return;
+
+  const result = await activateUserLifetime(uid);
+  if (result.success) {
+    showToast(`✅ تم تفعيل ${name} - Lifetime 💎`, 'success');
+    setTimeout(() => loadAllUsers(), 800);
+  } else {
+    showToast(`❌ ${result.error}`, 'error');
+  }
+};
+
+// إلغاء
+window.handleDeactivate = async function(uid, name) {
+  if (!confirm(`⚠️ إلغاء اشتراك "${name}"؟\nسيرجع لحساب مجاني.`)) return;
+
+  const result = await deactivateUser(uid);
+  if (result.success) {
+    showToast(`✅ تم إلغاء اشتراك ${name}`, 'success');
+    setTimeout(() => loadAllUsers(), 800);
+  } else {
+    showToast(`❌ ${result.error}`, 'error');
+  }
+};
+
+// خروج
+window.handleLogout = async function() {
+  if (!confirm('تسجيل الخروج؟')) return;
+  await logout();
+  window.location.href = 'login.html';
+};
+</script>
+
+</body>
+</html>
