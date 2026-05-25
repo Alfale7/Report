@@ -823,6 +823,9 @@ html,body{
 }
 
 </style>
+
+  <!-- 🔥 Firebase Integration (يجب أن يكون قبل أي محتوى) -->
+  <script type="module" src="report-firebase.js"></script>
 </head>
 <body>
 
@@ -1200,6 +1203,12 @@ document.querySelectorAll('input, textarea').forEach(el => {
 // Save as Image
 // ═══════════════════════════════════════════════
 async function saveAsImage(){
+  // 🔥 فحص Firebase أولاً - الحماية الفعلية
+  if (typeof window.checkDownloadAccess === 'function') {
+    const allowed = await window.checkDownloadAccess();
+    if (!allowed) return;
+  }
+
   const page = document.getElementById('page');
   showToast('⏳ ' + (currentLang === 'ar' ? 'جاري التحضير...' : 'Preparing...'));
 
@@ -1472,7 +1481,7 @@ async function exportAsPDFv2(){
   const textWraps = [];
   
   // 1) نحوّل الـ inputs لـ spans
-  const allInputs = page.querySelectorAll('input:not([type="file"]):not([type="hidden"]):not([type="checkbox"]):not([type="radio"]), textarea');
+  const allInputs = page.querySelectorAll('input, textarea');
   allInputs.forEach(el => {
     const computed = window.getComputedStyle(el);
     const value = el.value || '';
@@ -1670,10 +1679,5 @@ async function exportAsPDFv2(){
     <span class="arrow">‹</span>
   </button>
   <button class="export-cancel-btn" onclick="closeExportMenu()">إلغاء</button>
-</div>
-
-
-<!-- 🔥 Firebase Integration -->
-<script type="module" src="report-firebase.js"></script>
-</body>
+</div></body>
 </html>
