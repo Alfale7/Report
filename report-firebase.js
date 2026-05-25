@@ -28,9 +28,39 @@ let _profile = null;
 let _userReady = false;
 let _profileUnsubscribe = null;
 
+// ═══ شاشة انتظار قصيرة أثناء تحميل Firebase ═══
+function showInitLoader() {
+  if (document.getElementById('fbInitLoader')) return;
+  const loader = document.createElement('div');
+  loader.id = 'fbInitLoader';
+  loader.innerHTML = `
+    <style>
+      #fbInitLoader{position:fixed;inset:0;z-index:99997;background:rgba(10,52,71,0.9);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);display:flex;flex-direction:column;align-items:center;justify-content:center;color:#fff;font-family:'Tajawal','Cairo',sans-serif;}
+      #fbInitLoader .fbi-spinner{width:48px;height:48px;border:4px solid rgba(255,255,255,0.2);border-top-color:#d4a657;border-radius:50%;animation:fbiSpin 0.8s linear infinite;margin-bottom:14px;}
+      @keyframes fbiSpin{to{transform:rotate(360deg);}}
+      #fbInitLoader .fbi-text{font-size:0.9rem;font-weight:800;opacity:0.9;}
+    </style>
+    <div class="fbi-spinner"></div>
+    <div class="fbi-text">جاري التحقق من حسابك...</div>
+  `;
+  document.body.appendChild(loader);
+}
+function hideInitLoader() {
+  const loader = document.getElementById('fbInitLoader');
+  if (loader) loader.remove();
+}
+
+// إظهار شاشة الانتظار فور التحميل
+if (document.readyState === 'loading') {
+  document.addEventListener('DOMContentLoaded', showInitLoader);
+} else {
+  showInitLoader();
+}
+
 // ═══ مراقبة حالة المستخدم ═══
 onUserChange((data) => {
   _userReady = true;
+  hideInitLoader();
 
   // إلغاء أي مراقبة سابقة
   if (_profileUnsubscribe) {
