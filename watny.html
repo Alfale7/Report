@@ -1236,7 +1236,7 @@ async function exportAsPDFv2(){
   const textWraps = [];
   
   // 1) نحوّل الـ inputs لـ spans
-  const allInputs = page.querySelectorAll('input, textarea');
+  const allInputs = page.querySelectorAll('input:not([type="file"]):not([type="hidden"]):not([type="checkbox"]):not([type="radio"]), textarea');
   allInputs.forEach(el => {
     const computed = window.getComputedStyle(el);
     const value = el.value || '';
@@ -1436,5 +1436,8 @@ async function exportAsPDFv2(){
   <button class="export-cancel-btn" onclick="closeExportMenu()">إلغاء</button>
 </div>
 
+
+<!-- 🔥 Firebase Integration -->
+<script type="module" src="report-firebase.js"></script>
 </body>
 </html>
