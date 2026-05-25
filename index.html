@@ -4836,6 +4836,24 @@ onUserChange((data) => {
       priceCard.style.display = 'none';
     }
 
+    // 🔓 فتح كل الكروت المقفولة (لأي مستخدم مسجّل)
+    document.querySelectorAll('.preview-card.locked').forEach(function(card){
+      card.classList.remove('locked');
+    });
+
+    // 🔓 إخفاء الـ overlay للـ free-trial cards
+    if (lifetime) {
+      document.querySelectorAll('.preview-card.free-trial').forEach(function(card){
+        card.classList.remove('free-trial');
+        card.classList.remove('trial-exhausted');
+        const overlay = card.querySelector('.free-overlay');
+        if(overlay) overlay.remove();
+      });
+      // إخفاء عداد التجربة المجانية
+      const freeCounter = document.getElementById('freeCounter');
+      if(freeCounter) freeCounter.style.display = 'none';
+    }
+
     // تحديث زر الـ CTA
     if (ctaRow) {
       const name = profile?.displayName || (user.email || user.phoneNumber || 'حسابي').split('@')[0];
