@@ -145,10 +145,8 @@ onUserChange((data) => {
     localStorage.removeItem('loggedUser');
     localStorage.removeItem('isSubscribed');
 
-    // المستخدم غير مسجّل - حوّله لـ login
-    if (!document.getElementById('reportLoginGuard')) {
-      showLoginRequired();
-    }
+    // ❌ ما نقفل التقرير - نسمح للزائر يشوف ويجرّب
+    // الفحص يصير عند الضغط على زر التحميل فقط
   }
 });
 
