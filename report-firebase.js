@@ -13,22 +13,75 @@ import {
   incrementDownloadCount,
   buildSubscribeWhatsAppLink,
   SITE_CONFIG,
-  logout
+  logout,
+  auth,
+  db
 } from './firebase-config.js';
+
+import {
+  doc,
+  onSnapshot
+} from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
 let _user = null;
 let _profile = null;
 let _userReady = false;
+let _profileUnsubscribe = null;
 
 // ═══ مراقبة حالة المستخدم ═══
 onUserChange((data) => {
   _userReady = true;
 
+  // إلغاء أي مراقبة سابقة
+  if (_profileUnsubscribe) {
+    _profileUnsubscribe();
+    _profileUnsubscribe = null;
+  }
+
   if (data?.user) {
     _user = data.user;
     _profile = data.profile;
 
-    // مزامنة مع localStorage القديم للتوافق
+    // 🔥 مراقبة لحظية للتحديثات (لما الأدمن يفعّل)
+    _profileUnsubscribe = onSnapshot(doc(db, 'users', _user.uid), (snap) => {
+      if (snap.exists()) {
+        const oldPlan = _profile?.plan;
+        _profile = snap.data();
+
+        // مزامنة مع localStorage
+        const phoneFromEmail = (_user.email || '').split('@')[0];
+        const userPhone = _profile?.legacyPhone || phoneFromEmail || _user.phoneNumber || _user.uid;
+        localStorage.setItem('loggedUser', userPhone);
+
+        if (isLifetime(_profile)) {
+          localStorage.setItem('isSubscribed', '1');
+
+          // إذا تم التفعيل تواً (انتقل من free إلى lifetime)
+          if (oldPlan === 'free' && _profile.plan === 'lifetime') {
+            showActivationToast();
+
+            // قفل أي مودال اشتراك مفتوح
+            const upgradeModal = document.getElementById('fbUpgradeModal');
+            if (upgradeModal) upgradeModal.style.display = 'none';
+
+            // قفل شاشة "سجّل الدخول"
+            const guard = document.getElementById('reportLoginGuard');
+            if (guard) guard.remove();
+
+            // حدث الشارة
+            const badge = document.getElementById('userBadgeFB');
+            const menu = document.getElementById('userBadgeFB-menu');
+            if (badge) badge.remove();
+            if (menu) menu.remove();
+            addUserBadge();
+          }
+        } else {
+          localStorage.removeItem('isSubscribed');
+        }
+      }
+    });
+
+    // مزامنة فورية مع localStorage القديم للتوافق
     const phoneFromEmail = (_user.email || '').split('@')[0];
     const userPhone = _profile?.legacyPhone || phoneFromEmail || _user.phoneNumber || _user.uid;
     localStorage.setItem('loggedUser', userPhone);
@@ -60,6 +113,37 @@ onUserChange((data) => {
     }
   }
 });
+
+// ═══ Toast إعلان التفعيل ═══
+function showActivationToast() {
+  // أزل القديم لو موجود
+  const old = document.getElementById('activationToast');
+  if (old) old.remove();
+
+  const toast = document.createElement('div');
+  toast.id = 'activationToast';
+  toast.innerHTML = `
+    <style>
+      #activationToast{position:fixed;top:20px;left:50%;transform:translateX(-50%);background:linear-gradient(135deg,#d4a657,#b8923d);color:#fff;padding:18px 24px;border-radius:18px;font-family:'Tajawal','Cairo',sans-serif;font-weight:900;box-shadow:0 18px 50px rgba(212,166,87,0.5);z-index:99999;animation:actToastIn 0.5s cubic-bezier(0.34,1.56,0.64,1);max-width:340px;text-align:center;border:2px solid rgba(255,255,255,0.3);}
+      @keyframes actToastIn{from{opacity:0;transform:translate(-50%,-30px) scale(0.9);}to{opacity:1;transform:translate(-50%,0) scale(1);}}
+      #activationToast .at-icon{font-size:2.5rem;margin-bottom:6px;display:block;animation:atBounce 0.6s ease-in-out infinite alternate;}
+      @keyframes atBounce{from{transform:translateY(0);}to{transform:translateY(-6px);}}
+      #activationToast .at-title{font-size:1.05rem;margin-bottom:4px;}
+      #activationToast .at-sub{font-size:0.82rem;font-weight:700;opacity:0.95;line-height:1.5;}
+    </style>
+    <span class="at-icon">🎉</span>
+    <div class="at-title">تم تفعيل اشتراكك!</div>
+    <div class="at-sub">مرحباً بك في عائلة المشتركين 💎<br>تحمّل بلا حدود الآن</div>
+  `;
+  document.body.appendChild(toast);
+
+  setTimeout(() => {
+    toast.style.transition = 'opacity 0.4s, transform 0.4s';
+    toast.style.opacity = '0';
+    toast.style.transform = 'translate(-50%, -20px)';
+    setTimeout(() => toast.remove(), 500);
+  }, 5500);
+}
 
 // ═══ شارة المستخدم ═══
 function addUserBadge() {
