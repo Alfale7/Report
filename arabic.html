@@ -1350,16 +1350,33 @@ document.querySelectorAll('input, textarea').forEach(el => {
 // ═══════════════════════════════════════════════
 async function saveAsImage(){
   // ═══ نظام التجربة المجانية ═══
-  const FREE_DOWNLOADS_LIMIT = 2;
-  const loggedUser = localStorage.getItem('loggedUser');
-  const isSubscribed = localStorage.getItem('isSubscribed') === '1' || !!loggedUser;
+  // 🔥 الفحص من Firebase أولاً (الأكثر دقة)
+  const fbLifetime = (typeof window.isFirebaseLifetime === 'function') && window.isFirebaseLifetime();
+  const fbUser = (typeof window.getFirebaseUser === 'function') && window.getFirebaseUser();
 
-  if(!isSubscribed){
-    const used = parseInt(localStorage.getItem('free_downloads_used') || '0');
-    const left = Math.max(0, FREE_DOWNLOADS_LIMIT - used);
-    if(left === 0){
-      showUpgradeModal();
-      return;
+  if (fbUser) {
+    if (fbLifetime) {
+      // مشترك Lifetime - مر مباشرة
+    } else {
+      // مستخدم مجاني - استخدم نظام Firebase
+      if (typeof window.checkDownloadAccess === 'function') {
+        const allowed = await window.checkDownloadAccess();
+        if (!allowed) return;
+      }
+    }
+  } else {
+    // كود قديم
+    const FREE_DOWNLOADS_LIMIT = 2;
+    const loggedUser = localStorage.getItem('loggedUser');
+    const isSubscribed = localStorage.getItem('isSubscribed') === '1' || !!loggedUser;
+
+    if(!isSubscribed){
+      const used = parseInt(localStorage.getItem('free_downloads_used') || '0');
+      const left = Math.max(0, FREE_DOWNLOADS_LIMIT - used);
+      if(left === 0){
+        showUpgradeModal();
+        return;
+      }
     }
   }
 

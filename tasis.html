@@ -871,19 +871,37 @@ function doClear(){
 
 async function saveAsImage(){
   // ═══ نظام التجربة المجانية ═══
-  // المشتركون: تخطي كل القيود
-  const loggedUser = localStorage.getItem('loggedUser');
-  const isSubscribed = localStorage.getItem('isSubscribed') === '1' || !!loggedUser;
+  // 🔥 الفحص من Firebase أولاً (الأكثر دقة)
+  const fbLifetime = (typeof window.isFirebaseLifetime === 'function') && window.isFirebaseLifetime();
+  const fbUser = (typeof window.getFirebaseUser === 'function') && window.getFirebaseUser();
 
-  if(!isSubscribed){
-    const FREE_DOWNLOADS_LIMIT = 2;
-    const used = parseInt(localStorage.getItem('free_downloads_used') || '0');
-    const left = Math.max(0, FREE_DOWNLOADS_LIMIT - used);
+  // إذا في Firebase user
+  if (fbUser) {
+    // المشترك Lifetime يمر مباشرة
+    if (fbLifetime) {
+      // كمل التحميل بدون قيود
+    } else {
+      // مستخدم مجاني - استخدم نظام Firebase
+      if (typeof window.checkDownloadAccess === 'function') {
+        const allowed = await window.checkDownloadAccess();
+        if (!allowed) return;
+      }
+    }
+  } else {
+    // ما في Firebase user (الكود القديم) - استخدم localStorage
+    const loggedUser = localStorage.getItem('loggedUser');
+    const isSubscribed = localStorage.getItem('isSubscribed') === '1' || !!loggedUser;
 
-    if(left === 0){
-      // انتهت التحميلات - افتح modal الترقية
-      showUpgradeModalInTasis();
-      return;
+    if(!isSubscribed){
+      const FREE_DOWNLOADS_LIMIT = 2;
+      const used = parseInt(localStorage.getItem('free_downloads_used') || '0');
+      const left = Math.max(0, FREE_DOWNLOADS_LIMIT - used);
+
+      if(left === 0){
+        // انتهت التحميلات - افتح modal الترقية
+        showUpgradeModalInTasis();
+        return;
+      }
     }
   }
 
@@ -963,6 +981,13 @@ async function saveAsImage(){
     showToast(I18N[getCurrentLang()].toastDone);
 
     // ═══ زيادة عدّاد التحميلات المجانية (للزوار فقط) ═══
+    // 🔥 لو في Firebase user، نخلي report-firebase.js يدير العداد
+    const fbUserAfter = (typeof window.getFirebaseUser === 'function') && window.getFirebaseUser();
+    if (fbUserAfter) {
+      // تم التعامل معها في checkDownloadAccess
+      return;
+    }
+
     const loggedUserAfter = localStorage.getItem('loggedUser');
     const isSubscribedAfter = localStorage.getItem('isSubscribed') === '1' || !!loggedUserAfter;
 
@@ -1088,8 +1113,11 @@ function closeTasisUpgrade(){
 // ═══════════════════════════════════════════════
 window.addEventListener('DOMContentLoaded', function(){
   // التحقق من الاشتراك أولاً
+  // 🔥 فحص الاشتراك من Firebase (أولوية) ثم localStorage
+  const fbLifetime = (typeof window.isFirebaseLifetime === 'function') && window.isFirebaseLifetime();
+  const fbUser = (typeof window.getFirebaseUser === 'function') && window.getFirebaseUser();
   const loggedUser = localStorage.getItem('loggedUser');
-  const isSubscribed = localStorage.getItem('isSubscribed') === '1' || !!loggedUser;
+  const isSubscribed = fbLifetime || (fbUser && localStorage.getItem('isSubscribed') === '1') || (!fbUser && localStorage.getItem('isSubscribed') === '1') || (!!loggedUser && localStorage.getItem('isSubscribed') === '1')
 
   // المشتركون: دخول حر بدون أي فحص
   if(isSubscribed) return;
