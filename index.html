@@ -4654,18 +4654,24 @@ function logout(){
 function handleCardClick(card){
   const target = card.getAttribute('data-target');
 
-  // 🔥 فحص حالة Firebase (إذا جاهز)
+  // 🔥 فحص حالة Firebase
   const fbUser = (typeof window.getFirebaseUser === 'function') && window.getFirebaseUser();
   const fbLifetime = (typeof window.isFirebaseLifetime === 'function') && window.isFirebaseLifetime();
 
-  // المشترك Lifetime → افتح أي تقرير مباشرة
-  if (fbLifetime) {
+  // إذا Firebase جاهز - نعتمد عليه فقط (الأدق)
+  if (fbUser) {
+    // المشترك Lifetime → افتح أي تقرير
+    if (fbLifetime) {
+      if (target) window.location.href = target;
+      return;
+    }
+    // مستخدم Free مسجّل → افتح التقرير (الفحص يصير عند التحميل)
     if (target) window.location.href = target;
     return;
   }
 
-  // المستخدم مسجّل (Firebase أو localStorage) → افتح التقرير
-  if (fbUser || localStorage.getItem('loggedUser') || localStorage.getItem('isSubscribed') === '1') {
+  // Firebase لسه ما جاهز - استخدم localStorage كـ fallback
+  if (localStorage.getItem('isSubscribed') === '1' || localStorage.getItem('loggedUser')) {
     if (target) window.location.href = target;
     return;
   }
@@ -4812,75 +4818,105 @@ document.getElementById('loginModal').addEventListener('click', function(e){
 
 <!-- ═══ Firebase Integration ═══ -->
 <script type="module">
-import { onUserChange, logout, isLifetime, SITE_CONFIG } from './firebase-config.js';
+import { onUserChange, logout, isLifetime, SITE_CONFIG, db } from './firebase-config.js';
+import { doc, onSnapshot } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+
+let _indexProfileUnsub = null;
 
 // مراقبة حالة المستخدم - تحديث الواجهة + مزامنة localStorage
 onUserChange((data) => {
   const ctaRow = document.getElementById('ctaRow');
   const priceCard = document.querySelector('.hero-price-card');
 
+  // إلغاء أي مراقبة سابقة
+  if (_indexProfileUnsub) {
+    _indexProfileUnsub();
+    _indexProfileUnsub = null;
+  }
+
   if (data?.user) {
     const { user, profile } = data;
-    const lifetime = isLifetime(profile);
 
-    // 🔄 مزامنة مع النظام القديم (التقارير لسه تستخدم localStorage)
-    const phoneFromEmail = (user.email || '').split('@')[0];
-    const userPhone = profile?.legacyPhone || phoneFromEmail || user.phoneNumber || user.uid;
-    localStorage.setItem('loggedUser', userPhone);
-    if (lifetime) {
-      localStorage.setItem('isSubscribed', '1');
-    } else {
-      localStorage.removeItem('isSubscribed');
-    }
-
-    // إخفاء بطاقة السعر للمشتركين
-    if (lifetime && priceCard) {
-      priceCard.style.display = 'none';
-    }
-
-    // 🔓 فتح كل الكروت المقفولة (لأي مستخدم مسجّل)
-    document.querySelectorAll('.preview-card.locked').forEach(function(card){
-      card.classList.remove('locked');
+    // 🔥 مراقبة لحظية - لو الأدمن غيّر الاشتراك
+    _indexProfileUnsub = onSnapshot(doc(db, 'users', user.uid), (snap) => {
+      if (snap.exists()) {
+        const liveProfile = snap.data();
+        applyUserState(user, liveProfile);
+      }
     });
 
-    // 🔓 إخفاء الـ overlay للـ free-trial cards
-    if (lifetime) {
-      document.querySelectorAll('.preview-card.free-trial').forEach(function(card){
-        card.classList.remove('free-trial');
-        card.classList.remove('trial-exhausted');
-        const overlay = card.querySelector('.free-overlay');
-        if(overlay) overlay.remove();
-      });
-      // إخفاء عداد التجربة المجانية
-      const freeCounter = document.getElementById('freeCounter');
-      if(freeCounter) freeCounter.style.display = 'none';
-    }
-
-    // تحديث زر الـ CTA
-    if (ctaRow) {
-      const name = profile?.displayName || (user.email || user.phoneNumber || 'حسابي').split('@')[0];
-      const initial = name.charAt(0).toUpperCase();
-      const planEmoji = lifetime ? '💎' : '🆓';
-
-      ctaRow.innerHTML = `
-        <button class="cta-btn cta-primary" onclick="window.location.href='profile.html'" style="background:linear-gradient(135deg,#1e6b8a,#2a8aab);">
-          <span style="width:24px;height:24px;background:#d4a657;border-radius:50%;display:inline-flex;align-items:center;justify-content:center;font-weight:900;font-size:0.75rem;color:#fff;">${initial}</span>
-          <span>${name}</span>
-          <span style="font-size:0.85rem;">${planEmoji}</span>
-        </button>
-        <button class="cta-btn cta-ghost" onclick="window.firebaseLogout()">
-          <span>🚪</span><span>خروج</span>
-        </button>
-      `;
-    }
+    applyUserState(user, profile);
+  } else {
+    // مستخدم خرج - امسح كل شي
+    localStorage.removeItem('loggedUser');
+    localStorage.removeItem('isSubscribed');
   }
 });
 
+function applyUserState(user, profile) {
+  const ctaRow = document.getElementById('ctaRow');
+  const priceCard = document.querySelector('.hero-price-card');
+  const lifetime = isLifetime(profile);
+
+  // 🔄 مزامنة مع النظام القديم
+  const phoneFromEmail = (user.email || '').split('@')[0];
+  const userPhone = profile?.legacyPhone || phoneFromEmail || user.phoneNumber || user.uid;
+  localStorage.setItem('loggedUser', userPhone);
+
+  if (lifetime) {
+    localStorage.setItem('isSubscribed', '1');
+    localStorage.removeItem('free_downloads_used');
+  } else {
+    // ❌ مستخدم Free - شيل عنه الاشتراك
+    localStorage.removeItem('isSubscribed');
+  }
+
+  // إخفاء/إظهار بطاقة السعر
+  if (priceCard) {
+    priceCard.style.display = lifetime ? 'none' : '';
+  }
+
+  // 🔓 فتح كل الكروت
+  document.querySelectorAll('.preview-card.locked').forEach(function(card){
+    card.classList.remove('locked');
+  });
+
+  // 🔓 إخفاء الـ overlay للـ free-trial cards
+  if (lifetime) {
+    document.querySelectorAll('.preview-card.free-trial').forEach(function(card){
+      card.classList.remove('free-trial');
+      card.classList.remove('trial-exhausted');
+      const overlay = card.querySelector('.free-overlay');
+      if(overlay) overlay.remove();
+    });
+    const freeCounter = document.getElementById('freeCounter');
+    if(freeCounter) freeCounter.style.display = 'none';
+  }
+
+  // تحديث زر الـ CTA
+  if (ctaRow) {
+    const name = profile?.displayName || (user.email || user.phoneNumber || 'حسابي').split('@')[0];
+    const initial = name.charAt(0).toUpperCase();
+    const planEmoji = lifetime ? '💎' : '🆓';
+
+    ctaRow.innerHTML = `
+      <button class="cta-btn cta-primary" onclick="window.location.href='profile.html'" style="background:linear-gradient(135deg,#1e6b8a,#2a8aab);">
+        <span style="width:24px;height:24px;background:#d4a657;border-radius:50%;display:inline-flex;align-items:center;justify-content:center;font-weight:900;font-size:0.75rem;color:#fff;">${initial}</span>
+        <span>${name}</span>
+        <span style="font-size:0.85rem;">${planEmoji}</span>
+      </button>
+      <button class="cta-btn cta-ghost" onclick="window.firebaseLogout()">
+        <span>🚪</span><span>خروج</span>
+      </button>
+    `;
+  }
+}
+
 window.firebaseLogout = async function() {
   if (!confirm('تسجيل الخروج؟')) return;
-  // مسح localStorage القديم أيضاً
   localStorage.removeItem('loggedUser');
   localStorage.removeItem('isSubscribed');
+  localStorage.removeItem('free_downloads_used');
   await logout();
   window.location.reload();
 };
