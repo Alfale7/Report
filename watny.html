@@ -981,6 +981,12 @@ function doClear(){
 }
 
 async function saveAsImage(){
+  // 🔥 فحص Firebase أولاً - الحماية الفعلية
+  if (typeof window.checkDownloadAccess === 'function') {
+    const allowed = await window.checkDownloadAccess();
+    if (!allowed) return;
+  }
+
   const page=document.getElementById('page');
 
   // دالة مساعدة: تحوّل نص لـ spans كلمات لمنع كسر الحروف العربية في html2canvas
@@ -1236,7 +1242,7 @@ async function exportAsPDFv2(){
   const textWraps = [];
   
   // 1) نحوّل الـ inputs لـ spans
-  const allInputs = page.querySelectorAll('input:not([type="file"]):not([type="hidden"]):not([type="checkbox"]):not([type="radio"]), textarea');
+  const allInputs = page.querySelectorAll('input, textarea');
   allInputs.forEach(el => {
     const computed = window.getComputedStyle(el);
     const value = el.value || '';
