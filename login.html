@@ -544,9 +544,11 @@ import {
 // التحقق من حالة الدخول - إذا داخل، حوّل للموقع
 onUserChange((data) => {
   if (data?.user) {
-    // متابعة من main page
+    // متابعة - رجع للصفحة اللي جاء منها لو موجودة
+    const returnTo = sessionStorage.getItem('returnAfterLogin');
+    sessionStorage.removeItem('returnAfterLogin');
     setTimeout(() => {
-      window.location.href = 'index.html';
+      window.location.href = returnTo || 'index.html';
     }, 300);
   }
 });
