@@ -48,13 +48,15 @@ onUserChange((data) => {
         const oldPlan = _profile?.plan;
         _profile = snap.data();
 
-        // مزامنة مع localStorage
+        // ⚡ مزامنة فورية وقوية مع localStorage
         const phoneFromEmail = (_user.email || '').split('@')[0];
         const userPhone = _profile?.legacyPhone || phoneFromEmail || _user.phoneNumber || _user.uid;
         localStorage.setItem('loggedUser', userPhone);
 
         if (isLifetime(_profile)) {
+          // ⚡ Lifetime - مسح أي قيود قديمة
           localStorage.setItem('isSubscribed', '1');
+          localStorage.removeItem('free_downloads_used');
 
           // إذا تم التفعيل تواً (انتقل من free إلى lifetime)
           if (oldPlan === 'free' && _profile.plan === 'lifetime') {
@@ -63,6 +65,11 @@ onUserChange((data) => {
             // قفل أي مودال اشتراك مفتوح
             const upgradeModal = document.getElementById('fbUpgradeModal');
             if (upgradeModal) upgradeModal.style.display = 'none';
+
+            // قفل أي مودال قديم
+            document.querySelectorAll('#tasisUpgradeModal,#upgradeModal,[id*="UpgradeModal"]').forEach(m => {
+              m.style.display = 'none';
+            });
 
             // قفل شاشة "سجّل الدخول"
             const guard = document.getElementById('reportLoginGuard');
@@ -88,6 +95,7 @@ onUserChange((data) => {
 
     if (isLifetime(_profile)) {
       localStorage.setItem('isSubscribed', '1');
+      localStorage.removeItem('free_downloads_used'); // ⚡ مسح القيود القديمة
     } else {
       localStorage.removeItem('isSubscribed');
     }
