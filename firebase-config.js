@@ -280,7 +280,7 @@ export function buildSubscribeWhatsAppLink(profile, user) {
 // ═══ Admin Functions ═══
 
 const ADMIN_UIDS = [
-  // ضع UID حسابك هنا بعد التسجيل
+  'bKJ4YdvOEkRCPJ8qMqEyDJsM3ua2'  // nawaf4223@hotmail.com
 ];
 
 export function isAdmin(user) {
