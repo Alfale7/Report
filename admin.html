@@ -293,6 +293,9 @@ import {
   deactivateUser
 } from './firebase-config.js';
 
+// قائمة UIDs الإداريين (نفس اللي في firebase-config)
+const ADMIN_UIDS_LOCAL = ['bKJ4YdvOEkRCPJ8qMqEyDJsM3ua2'];
+
 let currentUser = null;
 
 // التحقق من الصلاحيات
@@ -328,6 +331,18 @@ function showToast(msg, type = 'success') {
 window.loadAllUsers = async function() {
   document.getElementById('userList').innerHTML = '<div class="empty-state">⏳ جاري التحميل...</div>';
   const users = await getAllUsers(200);
+
+  // ترتيب: الأدمن أولاً، ثم Lifetime، ثم Free
+  users.sort((a, b) => {
+    const aAdmin = ADMIN_UIDS_LOCAL.includes(a.uid || a.id);
+    const bAdmin = ADMIN_UIDS_LOCAL.includes(b.uid || b.id);
+    if (aAdmin && !bAdmin) return -1;
+    if (!aAdmin && bAdmin) return 1;
+    if (a.plan === 'lifetime' && b.plan !== 'lifetime') return -1;
+    if (a.plan !== 'lifetime' && b.plan === 'lifetime') return 1;
+    return 0;
+  });
+
   renderUsers(users);
   updateStats(users);
 };
@@ -367,15 +382,17 @@ function renderUsers(users) {
     const isLifetime = u.plan === 'lifetime';
     const downloads = u.downloadsUsed || 0;
     const isMigrated = u.migratedFromLegacy;
+    const isAdminUser = ADMIN_UIDS_LOCAL.includes(u.uid || u.id);
 
     const created = u.createdAt?.toDate ? u.createdAt.toDate().toLocaleDateString('ar-SA') : '-';
 
     return `
-      <div class="user-item">
-        <div class="user-avatar ${isLifetime?'lifetime':''}">${initial}</div>
+      <div class="user-item" ${isAdminUser ? 'style="background:linear-gradient(90deg,#fef3c7,#fff);border:1px solid #d4a657;border-radius:10px;margin-bottom:4px;"' : ''}>
+        <div class="user-avatar ${isAdminUser ? 'admin' : (isLifetime?'lifetime':'')}" ${isAdminUser ? 'style="background:linear-gradient(135deg,#7c2d12,#b8923d);"' : ''}>${isAdminUser ? '👑' : initial}</div>
         <div class="user-info">
           <div class="name">
             ${name}
+            ${isAdminUser ? '<span class="user-badge" style="background:linear-gradient(135deg,#7c2d12,#b8923d);color:#fff;">👑 ADMIN</span>' : ''}
             <span class="user-badge ${isLifetime?'badge-lifetime':'badge-free'}">
               ${isLifetime?'💎 LIFETIME':'🆓 FREE'}
             </span>
@@ -389,9 +406,12 @@ function renderUsers(users) {
           </div>
         </div>
         <div class="user-actions">
-          ${isLifetime
-            ? `<button class="btn-deactivate" onclick="handleDeactivate('${u.uid}','${name}')">إلغاء</button>`
-            : `<button class="btn-activate" onclick="handleActivate('${u.uid}','${name}')">✨ تفعيل Lifetime</button>`
+          ${isAdminUser
+            ? `<span style="color:#7c2d12;font-weight:900;font-size:0.74rem;padding:8px 12px;background:#fef3c7;border-radius:9px;">🔒 محمي</span>`
+            : (isLifetime
+              ? `<button class="btn-deactivate" onclick="handleDeactivate('${u.uid}','${name}')">إلغاء</button>`
+              : `<button class="btn-activate" onclick="handleActivate('${u.uid}','${name}')">✨ تفعيل Lifetime</button>`
+            )
           }
         </div>
       </div>
