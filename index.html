@@ -4652,25 +4652,25 @@ function logout(){
 }
 
 function handleCardClick(card){
-  // الكروت المجانية للتجربة
-  if(card.classList.contains('free-trial')){
-    // تحقق من العدّاد قبل السماح بالدخول
-    if(getFreeDownloadsLeft() === 0){
-      // انتهت التحميلات → افتح Modal الترقية مباشرة بدون دخول
-      openUpgradeModal();
-      return;
-    }
-    const target = card.getAttribute('data-target');
-    if(target) window.location.href = target;
+  // 🔥 فحص حالة Firebase أولاً
+  const fbUser = (typeof window.getFirebaseUser === 'function') && window.getFirebaseUser();
+  const fbLifetime = (typeof window.isFirebaseLifetime === 'function') && window.isFirebaseLifetime();
+  const target = card.getAttribute('data-target');
+
+  // المشترك Lifetime → افتح أي تقرير مباشرة
+  if (fbLifetime) {
+    if (target) window.location.href = target;
     return;
   }
-  // الكروت المقفولة
-  if(card.classList.contains('locked')){
-    openLogin();
-  } else {
-    const target = card.getAttribute('data-target');
-    if(target) window.location.href = target;
+
+  // المستخدم مسجّل لكن مجاني → افتح التقرير (يحسب من Firebase عند التحميل)
+  if (fbUser) {
+    if (target) window.location.href = target;
+    return;
   }
+
+  // ❌ بدون تسجيل دخول → روح صفحة الدخول
+  window.location.href = 'login.html';
 }
 
 // ═══════════════════════════════════════════════
