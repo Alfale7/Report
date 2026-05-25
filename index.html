@@ -498,7 +498,7 @@ font-size:0.7rem;color:rgba(255,255,255,0.85);font-weight:700;
 backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);
 }
 
-.cta-row{display:flex;gap:10px;margin-top:6px;}
+.cta-row{display:flex;gap:10px;margin-top:6px;flex-wrap:wrap;}
 .cta-btn{
 flex:1;padding:15px 12px;border:none;border-radius:14px;
 font-family:inherit;font-weight:800;font-size:0.95rem;cursor:pointer;
@@ -515,6 +515,113 @@ background:rgba(255,255,255,0.06);
 border:1.5px solid rgba(255,255,255,0.15);
 color:#fff;
 backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);
+}
+
+/* 🎨 الزر الفخم الجديد */
+.cta-mega{
+  flex:0 0 100%;
+  padding:18px 20px;
+  border-radius:18px;
+  background:linear-gradient(135deg,#1e6b8a 0%,#2a8aab 50%,#1e6b8a 100%);
+  background-size:200% 100%;
+  box-shadow:
+    0 14px 35px rgba(30,107,138,0.5),
+    0 0 0 1px rgba(255,255,255,0.1),
+    inset 0 1px 0 rgba(255,255,255,0.25);
+  position:relative;
+  overflow:hidden;
+  justify-content:flex-start;
+  gap:14px;
+  text-align:right;
+  color:#fff;
+  border:none;
+  font-family:inherit;
+  cursor:pointer;
+  animation:cmShine 3s ease-in-out infinite;
+}
+@keyframes cmShine{
+  0%,100%{background-position:0% 50%;}
+  50%{background-position:100% 50%;}
+}
+.cta-mega::before{
+  content:"";
+  position:absolute;
+  top:0;left:-100%;
+  width:60%;height:100%;
+  background:linear-gradient(120deg,transparent,rgba(255,255,255,0.18),transparent);
+  animation:cmSweep 3.5s ease-in-out infinite;
+}
+@keyframes cmSweep{
+  0%{left:-100%;}
+  50%,100%{left:160%;}
+}
+.cta-mega:hover{
+  transform:translateY(-3px);
+  box-shadow:
+    0 20px 45px rgba(30,107,138,0.6),
+    0 0 0 1px rgba(255,255,255,0.15);
+}
+.cta-mega-badge{
+  position:absolute;
+  top:-9px;
+  right:18px;
+  background:linear-gradient(135deg,#d4a657,#b8923d);
+  color:#fff;
+  padding:3px 12px;
+  border-radius:99px;
+  font-size:0.66rem;
+  font-weight:900;
+  letter-spacing:0.4px;
+  box-shadow:0 6px 14px rgba(212,166,87,0.5);
+  white-space:nowrap;
+  z-index:2;
+}
+.cta-mega-icon{
+  width:44px;height:44px;
+  background:rgba(255,255,255,0.18);
+  border-radius:13px;
+  display:flex;align-items:center;justify-content:center;
+  font-size:1.5rem;
+  flex-shrink:0;
+  backdrop-filter:blur(10px);
+  -webkit-backdrop-filter:blur(10px);
+}
+.cta-mega-content{
+  flex:1;
+  display:flex;
+  flex-direction:column;
+  gap:3px;
+  line-height:1.2;
+}
+.cta-mega-title{
+  font-family:'Reem Kufi','Tajawal',sans-serif;
+  font-size:1.02rem;
+  font-weight:900;
+  color:#fff;
+}
+.cta-mega-sub{
+  font-size:0.74rem;
+  font-weight:700;
+  color:#a7d8ec;
+}
+.cta-mega-arrow{
+  font-size:1.4rem;
+  font-weight:900;
+  color:#fff;
+  opacity:0.85;
+  animation:cmArrow 1.5s ease-in-out infinite;
+}
+@keyframes cmArrow{
+  0%,100%{transform:translateX(0);}
+  50%{transform:translateX(-4px);}
+}
+
+@media (max-width:480px){
+  .cta-mega{padding:16px;gap:10px;}
+  .cta-mega-icon{width:38px;height:38px;font-size:1.3rem;}
+  .cta-mega-title{font-size:0.94rem;}
+  .cta-mega-sub{font-size:0.7rem;}
+  .cta-mega-badge{font-size:0.62rem;padding:2px 10px;}
 }
 
 .stats-strip{
@@ -2672,11 +2779,17 @@ font-size:0.78rem;text-align:center;margin-top:12px;display:none;
     </div>
 
     <div class="cta-row" id="ctaRow">
-      <button class="cta-btn cta-primary" onclick="openLogin()">
-        <span>🔐</span><span data-i18n="ctaLogin">تسجيل الدخول</span>
+      <button class="cta-btn cta-primary cta-mega" onclick="openLogin()">
+        <span class="cta-mega-badge">✨ ابدأ مجاناً الآن</span>
+        <span class="cta-mega-icon">🔐</span>
+        <span class="cta-mega-content">
+          <span class="cta-mega-title" data-i18n="ctaLogin">تسجيل الدخول أو إنشاء حساب</span>
+          <span class="cta-mega-sub" data-i18n="ctaLoginSub">⚡ دخول سريع بـ Google · 🎁 تقريران مجاناً</span>
+        </span>
+        <span class="cta-mega-arrow">←</span>
       </button>
       <button class="cta-btn cta-ghost" onclick="scrollToPreviews()">
-        <span>👁️</span><span data-i18n="ctaPreview">معاينة</span>
+        <span>👁️</span><span data-i18n="ctaPreview">معاينة القوالب</span>
       </button>
     </div>
 
@@ -4818,7 +4931,7 @@ document.getElementById('loginModal').addEventListener('click', function(e){
 
 <!-- ═══ Firebase Integration ═══ -->
 <script type="module">
-import { onUserChange, logout, isLifetime, SITE_CONFIG, db } from './firebase-config.js';
+import { onUserChange, logout, isLifetime, isAdmin, SITE_CONFIG, db } from './firebase-config.js';
 import { doc, onSnapshot } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
 let _indexProfileUnsub = null;
@@ -4897,11 +5010,19 @@ function applyUserState(user, profile) {
   if (ctaRow) {
     const name = profile?.displayName || (user.email || user.phoneNumber || 'حسابي').split('@')[0];
     const initial = name.charAt(0).toUpperCase();
-    const planEmoji = lifetime ? '💎' : '🆓';
+    const admin = isAdmin(user);
+    const planEmoji = admin ? '👑' : (lifetime ? '💎' : '🆓');
+    const planText = admin ? 'ADMIN' : (lifetime ? 'LIFETIME' : 'FREE');
 
     ctaRow.innerHTML = `
+      ${admin ? `
+        <button class="cta-btn cta-primary" onclick="window.location.href='admin.html'" style="background:linear-gradient(135deg,#7c2d12,#b8923d);box-shadow:0 8px 24px rgba(212,166,87,0.5);position:relative;">
+          <span style="width:24px;height:24px;background:rgba(255,255,255,0.2);border-radius:50%;display:inline-flex;align-items:center;justify-content:center;font-weight:900;font-size:0.95rem;">👑</span>
+          <span>لوحة الإدارة</span>
+        </button>
+      ` : ''}
       <button class="cta-btn cta-primary" onclick="window.location.href='profile.html'" style="background:linear-gradient(135deg,#1e6b8a,#2a8aab);">
-        <span style="width:24px;height:24px;background:#d4a657;border-radius:50%;display:inline-flex;align-items:center;justify-content:center;font-weight:900;font-size:0.75rem;color:#fff;">${initial}</span>
+        <span style="width:24px;height:24px;background:${admin?'#7c2d12':'#d4a657'};border-radius:50%;display:inline-flex;align-items:center;justify-content:center;font-weight:900;font-size:0.75rem;color:#fff;">${admin?'👑':initial}</span>
         <span>${name}</span>
         <span style="font-size:0.85rem;">${planEmoji}</span>
       </button>
