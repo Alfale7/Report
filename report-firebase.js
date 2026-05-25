@@ -269,7 +269,7 @@ function showLoginRequired() {
       <div class="gicon">🔐</div>
       <h2>سجّل الدخول للوصول</h2>
       <p>هذا التقرير مخصص لمستخدمي المنصة<br>سجّل دخولك أو أنشئ حساباً جديداً (مجاناً)</p>
-      <a href="login.html" class="gbtn">
+      <a href="login.html" class="gbtn" onclick="sessionStorage.setItem('returnAfterLogin', window.location.pathname.split('/').pop());">
         <span>🔑</span><span>تسجيل الدخول</span>
       </a>
       <a href="index.html" class="gbtn gbtn-ghost">
