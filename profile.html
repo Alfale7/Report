@@ -402,8 +402,33 @@ window.handleLogout = async function() {
   window.location.href = 'login.html';
 };
 
-window.changePassword = function() {
-  window.open(`https://wa.me/${SITE_CONFIG.WHATSAPP_NUMBER}?text=أرغب%20في%20تغيير%20كلمة%20المرور`, '_blank');
+window.changePassword = async function() {
+  const user = window.getFirebaseUser ? window.getFirebaseUser() : null;
+  const profile = window.getFirebaseProfile ? window.getFirebaseProfile() : null;
+  const email = user?.email || '';
+
+  // 🔍 لو إيميل حقيقي (مش وهمي للقدامى) → إرسال رابط Firebase
+  if (email && !email.includes('@phone.ksa2030.one')) {
+    if (!confirm(`سيتم إرسال رابط إعادة تعيين كلمة المرور إلى:\n${email}\n\nهل تريد المتابعة؟`)) return;
+
+    try {
+      const { sendPasswordResetEmail } = await import("https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js");
+      const { auth } = await import('./firebase-config.js');
+      await sendPasswordResetEmail(auth, email);
+      alert(`✅ تم إرسال رابط إعادة التعيين إلى:\n${email}\n\nراجع بريدك (وفولدر Spam لو ما وصل)`);
+    } catch (err) {
+      console.error(err);
+      alert('❌ حدث خطأ. حاول مرة أخرى أو تواصل عبر الواتساب.');
+    }
+    return;
+  }
+
+  // 📱 للمشتركين القدامى (بالجوال) → واتساب
+  const phone = profile?.legacyPhone || profile?.phoneNumber || '';
+  const msg = phone
+    ? `السلام عليكم، أرغب في تغيير كلمة المرور لحسابي\nرقم الجوال: ${phone}`
+    : 'السلام عليكم، أرغب في تغيير كلمة المرور لحسابي';
+  window.open(`https://wa.me/${SITE_CONFIG.WHATSAPP_NUMBER}?text=${encodeURIComponent(msg)}`, '_blank');
 };
 
 window.contactSupport = function() {

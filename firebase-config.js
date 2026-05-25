@@ -58,7 +58,7 @@ export const SITE_CONFIG = {
   CURRENCY: 'ريال',
   PLAN_TYPE: 'lifetime',
   FREE_DOWNLOADS_LIMIT: 2,
-  WHATSAPP_NUMBER: '966502517217',
+  WHATSAPP_NUMBER: '966550522867',
   WHATSAPP_MESSAGE: 'السلام عليكم، أرغب في الاشتراك بمنصة التقارير'
 };
 
@@ -280,9 +280,8 @@ export function buildSubscribeWhatsAppLink(profile, user) {
 // ═══ Admin Functions ═══
 
 const ADMIN_UIDS = [
-  'bKJ4YdvOEkRCPJ8qMqEyDJsM3ua2'
+  // ضع UID حسابك هنا بعد التسجيل
 ];
-
 
 export function isAdmin(user) {
   if (!user) return false;

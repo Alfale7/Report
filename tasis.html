@@ -31,30 +31,6 @@ overflow:hidden;
 box-shadow:0 4px 24px rgba(0,0,0,0.18);
 }
 
-/* ═══ خلفية قصر الدرعية الشفافة ═══ */
-#page::before{
-content:"";
-position:absolute;
-top:0;
-left:0;
-right:0;
-bottom:0;
-background-image: url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA4MDAgNjAwIiBwcmVzZXJ2ZUFzcGVjdFJhdGlvPSJ4TWlkWU1pZCBzbGljZSI+CjxkZWZzPgo8bGluZWFyR3JhZGllbnQgaWQ9InBhbGFjZUdyYWQiIHgxPSIwIiB5MT0iMCIgeDI9IjAiIHkyPSIxIj4KPHN0b3Agb2Zmc2V0PSIwJSIgc3RvcC1jb2xvcj0iIzhiNmY0NyIgc3RvcC1vcGFjaXR5PSIwLjg1Ii8+CjxzdG9wIG9mZnNldD0iMTAwJSIgc3RvcC1jb2xvcj0iIzZiNGYyOCIgc3RvcC1vcGFjaXR5PSIwLjkiLz4KPC9saW5lYXJHcmFkaWVudD4KPHBhdHRlcm4gaWQ9ImJyaWNrVGV4dHVyZSIgeD0iMCIgeT0iMCIgd2lkdGg9IjIwIiBoZWlnaHQ9IjEwIiBwYXR0ZXJuVW5pdHM9InVzZXJTcGFjZU9uVXNlIj4KPHJlY3Qgd2lkdGg9IjIwIiBoZWlnaHQ9IjEwIiBmaWxsPSJub25lIi8+CjxsaW5lIHgxPSIwIiB5MT0iNSIgeDI9IjIwIiB5Mj0iNSIgc3Ryb2tlPSIjNWEzZjFlIiBzdHJva2Utd2lkdGg9IjAuMyIgb3BhY2l0eT0iMC40Ii8+CjxsaW5lIHgxPSIxMCIgeTE9IjAiIHgyPSIxMCIgeTI9IjUiIHN0cm9rZT0iIzVhM2YxZSIgc3Ryb2tlLXdpZHRoPSIwLjMiIG9wYWNpdHk9IjAuNCIvPgo8bGluZSB4MT0iMCIgeTE9IjUiIHgyPSIwIiB5Mj0iMTAiIHN0cm9rZT0iIzVhM2YxZSIgc3Ryb2tlLXdpZHRoPSIwLjMiIG9wYWNpdHk9IjAuNCIvPgo8L3BhdHRlcm4+CjwvZGVmcz4KCjwhLS0g2KfZhNij2LHYttmK2KkgLSDYqtmE2KfZhCDYtdit2LHYp9mI2YrYqSAtLT4KPHBhdGggZD0iTTAsNTUwIFEyMDAsNTIwIDQwMCw1NDAgVDgwMCw1MzUgTDgwMCw2MDAgTDAsNjAwIFoiIGZpbGw9IiNkNGI4OTYiIG9wYWNpdHk9IjAuNSIvPgo8cGF0aCBkPSJNMCw1NjAgUTMwMCw1NDUgNTAwLDU1NSBUODAwLDU1MCBMODAwLDYwMCBMMCw2MDAgWiIgZmlsbD0iI2M0YTQ3YyIgb3BhY2l0eT0iMC42Ii8+Cgo8IS0tINin2YTYqNix2Kwg2KfZhNij2YrYs9ixINin2YTZg9io2YrYsSAtLT4KPGc+CjxyZWN0IHg9IjgwIiB5PSIyODAiIHdpZHRoPSIxMjAiIGhlaWdodD0iMjgwIiBmaWxsPSJ1cmwoI3BhbGFjZUdyYWQpIi8+CjxyZWN0IHg9IjgwIiB5PSIyODAiIHdpZHRoPSIxMjAiIGhlaWdodD0iMjgwIiBmaWxsPSJ1cmwoI2JyaWNrVGV4dHVyZSkiLz4KPCEtLSDYtNix2YHYp9iqINi52YTZiSDYp9mE2YLZhdipIC0tPgo8ZyBmaWxsPSIjNWEzZjFlIiBvcGFjaXR5PSIwLjkiPgo8cG9seWdvbiBwb2ludHM9IjgwLDI4MCA5MCwyNjUgMTAwLDI4MCIvPgo8cG9seWdvbiBwb2ludHM9IjEwMCwyODAgMTEwLDI2NSAxMjAsMjgwIi8+Cjxwb2x5Z29uIHBvaW50cz0iMTIwLDI4MCAxMzAsMjY1IDE0MCwyODAiLz4KPHBvbHlnb24gcG9pbnRzPSIxNDAsMjgwIDE1MCwyNjUgMTYwLDI4MCIvPgo8cG9seWdvbiBwb2ludHM9IjE2MCwyODAgMTcwLDI2NSAxODAsMjgwIi8+Cjxwb2x5Z29uIHBvaW50cz0iMTgwLDI4MCAxOTAsMjY1IDIwMCwyODAiLz4KPC9nPgo8IS0tINio2KfYqCDZhdmC2YjYsyAtLT4KPHBhdGggZD0iTTEyMCw1NjAgTDEyMCw0OTAgUTEyMCw0NzAgMTQwLDQ3MCBRMTYwLDQ3MCAxNjAsNDkwIEwxNjAsNTYwIFoiIGZpbGw9IiMzZDI4MTciIG9wYWNpdHk9IjAuOCIvPgo8IS0tINmG2YjYp9mB2LAg2YXYq9mE2KvYqSAtLT4KPHBvbHlnb24gcG9pbnRzPSIxMDAsMzgwIDExNSwzNTAgMTMwLDM4MCIgZmlsbD0iIzNkMjgxNyIgb3BhY2l0eT0iMC43Ii8+Cjxwb2x5Z29uIHBvaW50cz0iMTUwLDM4MCAxNjUsMzUwIDE4MCwzODAiIGZpbGw9IiMzZDI4MTciIG9wYWNpdHk9IjAuNyIvPgo8cG9seWdvbiBwb2ludHM9IjEwMCw0NDAgMTE1LDQxMCAxMzAsNDQwIiBmaWxsPSIjM2QyODE3IiBvcGFjaXR5PSIwLjciLz4KPHBvbHlnb24gcG9pbnRzPSIxNTAsNDQwIDE2NSw0MTAgMTgwLDQ0MCIgZmlsbD0iIzNkMjgxNyIgb3BhY2l0eT0iMC43Ii8+CjwvZz4KCjwhLS0g2KfZhNmF2KjZhtmJINin2YTYo9mI2LPYtyAtINmC2LXYsSDYs9mE2YjZiSAtLT4KPGc+CjxyZWN0IHg9IjI0MCIgeT0iMjAwIiB3aWR0aD0iMzAwIiBoZWlnaHQ9IjM2MCIgZmlsbD0idXJsKCNwYWxhY2VHcmFkKSIvPgo8cmVjdCB4PSIyNDAiIHk9IjIwMCIgd2lkdGg9IjMwMCIgaGVpZ2h0PSIzNjAiIGZpbGw9InVybCgjYnJpY2tUZXh0dXJlKSIvPgo8IS0tINi02LHZgdin2Kog2YLZhdipINin2YTZhdio2YbZiSDYp9mE2KPZiNiz2LcgLS0+CjxnIGZpbGw9IiM1YTNmMWUiIG9wYWNpdHk9IjAuOSI+Cjxwb2x5Z29uIHBvaW50cz0iMjQwLDIwMCAyNTIsMTgwIDI2NCwyMDAiLz4KPHBvbHlnb24gcG9pbnRzPSIyNjQsMjAwIDI3NiwxODAgMjg4LDIwMCIvPgo8cG9seWdvbiBwb2ludHM9IjI4OCwyMDAgMzAwLDE4MCAzMTIsMjAwIi8+Cjxwb2x5Z29uIHBvaW50cz0iMzEyLDIwMCAzMjQsMTgwIDMzNiwyMDAiLz4KPHBvbHlnb24gcG9pbnRzPSIzMzYsMjAwIDM0OCwxODAgMzYwLDIwMCIvPgo8cG9seWdvbiBwb2ludHM9IjM2MCwyMDAgMzcyLDE4MCAzODQsMjAwIi8+Cjxwb2x5Z29uIHBvaW50cz0iMzg0LDIwMCAzOTYsMTgwIDQwOCwyMDAiLz4KPHBvbHlnb24gcG9pbnRzPSI0MDgsMjAwIDQyMCwxODAgNDMyLDIwMCIvPgo8cG9seWdvbiBwb2ludHM9IjQzMiwyMDAgNDQ0LDE4MCA0NTYsMjAwIi8+Cjxwb2x5Z29uIHBvaW50cz0iNDU2LDIwMCA0NjgsMTgwIDQ4MCwyMDAiLz4KPHBvbHlnb24gcG9pbnRzPSI0ODAsMjAwIDQ5MiwxODAgNTA0LDIwMCIvPgo8cG9seWdvbiBwb2ludHM9IjUwNCwyMDAgNTE2LDE4MCA1MjgsMjAwIi8+Cjxwb2x5Z29uIHBvaW50cz0iNTI4LDIwMCA1NDAsMTgwIDU0MCwyMDAiLz4KPC9nPgo8IS0tINio2KfYqCDYsdim2YrYs9mKINmD2KjZitixIC0tPgo8cGF0aCBkPSJNMzUwLDU2MCBMMzUwLDQ0MCBRMzUwLDQwMCAzOTAsNDAwIFE0MzAsNDAwIDQzMCw0NDAgTDQzMCw1NjAgWiIgZmlsbD0iIzNkMjgxNyIgb3BhY2l0eT0iMC44NSIvPgo8IS0tINiy2K7YsdmB2Kkg2LnZhNmJINin2YTYqNin2KggLS0+CjxyZWN0IHg9IjM4NSIgeT0iNDQwIiB3aWR0aD0iMTAiIGhlaWdodD0iMTIwIiBmaWxsPSIjOGI2ZjQ3IiBvcGFjaXR5PSIwLjYiLz4KPCEtLSDZhtmI2KfZgdiwIC0tPgo8ZyBmaWxsPSIjM2QyODE3IiBvcGFjaXR5PSIwLjciPgo8cG9seWdvbiBwb2ludHM9IjI2NSwzMDAgMjg1LDI2NSAzMDUsMzAwIi8+Cjxwb2x5Z29uIHBvaW50cz0iMzM1LDMwMCAzNTUsMjY1IDM3NSwzMDAiLz4KPHBvbHlnb24gcG9pbnRzPSI0MDUsMzAwIDQyNSwyNjUgNDQ1LDMwMCIvPgo8cG9seWdvbiBwb2ludHM9IjQ3NSwzMDAgNDk1LDI2NSA1MTUsMzAwIi8+Cjxwb2x5Z29uIHBvaW50cz0iMjY1LDM4MCAyODUsMzQ1IDMwNSwzODAiLz4KPHBvbHlnb24gcG9pbnRzPSI0NzUsMzgwIDQ5NSwzNDUgNTE1LDM4MCIvPgo8L2c+CjwhLS0g2YbYp9mB2LDYqSDZg9io2YrYsdipINmB2Yog2KfZhNmI2LPYtyAtLT4KPHBhdGggZD0iTTM3MCwzNjAgTDM3MCwzMzAgUTM3MCwzMTAgMzkwLDMxMCBRNDEwLDMxMCA0MTAsMzMwIEw0MTAsMzYwIFoiIGZpbGw9IiMzZDI4MTciIG9wYWNpdHk9IjAuNyIvPgo8L2c+Cgo8IS0tINin2YTYqNix2Kwg2KfZhNij2YrZhdmGINin2YTZg9io2YrYsSAtLT4KPGc+CjxyZWN0IHg9IjU4MCIgeT0iMjYwIiB3aWR0aD0iMTMwIiBoZWlnaHQ9IjMwMCIgZmlsbD0idXJsKCNwYWxhY2VHcmFkKSIvPgo8cmVjdCB4PSI1ODAiIHk9IjI2MCIgd2lkdGg9IjEzMCIgaGVpZ2h0PSIzMDAiIGZpbGw9InVybCgjYnJpY2tUZXh0dXJlKSIvPgo8IS0tINi02LHZgdin2KogLS0+CjxnIGZpbGw9IiM1YTNmMWUiIG9wYWNpdHk9IjAuOSI+Cjxwb2x5Z29uIHBvaW50cz0iNTgwLDI2MCA1OTEsMjQ1IDYwMiwyNjAiLz4KPHBvbHlnb24gcG9pbnRzPSI2MDIsMjYwIDYxMywyNDUgNjI0LDI2MCIvPgo8cG9seWdvbiBwb2ludHM9IjYyNCwyNjAgNjM1LDI0NSA2NDYsMjYwIi8+Cjxwb2x5Z29uIHBvaW50cz0iNjQ2LDI2MCA2NTcsMjQ1IDY2OCwyNjAiLz4KPHBvbHlnb24gcG9pbnRzPSI2NjgsMjYwIDY3OSwyNDUgNjkwLDI2MCIvPgo8cG9seWdvbiBwb2ludHM9IjY5MCwyNjAgNzAxLDI0NSA3MTAsMjYwIi8+CjwvZz4KPCEtLSDYqNin2KggLS0+CjxwYXRoIGQ9Ik02MjAsNTYwIEw2MjAsNDcwIFE2MjAsNDUwIDY0NSw0NTAgUTY3MCw0NTAgNjcwLDQ3MCBMNjcwLDU2MCBaIiBmaWxsPSIjM2QyODE3IiBvcGFjaXR5PSIwLjgiLz4KPCEtLSDZhtmI2KfZgdiwIC0tPgo8cG9seWdvbiBwb2ludHM9IjYwNSwzNzAgNjIyLDM0MCA2MzksMzcwIiBmaWxsPSIjM2QyODE3IiBvcGFjaXR5PSIwLjciLz4KPHBvbHlnb24gcG9pbnRzPSI2NjAsMzcwIDY3NywzNDAgNjk0LDM3MCIgZmlsbD0iIzNkMjgxNyIgb3BhY2l0eT0iMC43Ii8+Cjxwb2x5Z29uIHBvaW50cz0iNjA1LDQzMCA2MjIsNDAwIDYzOSw0MzAiIGZpbGw9IiMzZDI4MTciIG9wYWNpdHk9IjAuNyIvPgo8L2c+Cgo8IS0tINmF2KjZhtmJINi12LrZitixINmB2Yog2KfZhNmK2LPYp9ixINin2YTYqNi52YrYryAtLT4KPGcgb3BhY2l0eT0iMC43Ij4KPHJlY3QgeD0iMTAiIHk9IjM4MCIgd2lkdGg9IjcwIiBoZWlnaHQ9IjE4MCIgZmlsbD0idXJsKCNwYWxhY2VHcmFkKSIvPgo8ZyBmaWxsPSIjNWEzZjFlIj4KPHBvbHlnb24gcG9pbnRzPSIxMCwzODAgMjAsMzY4IDMwLDM4MCIvPgo8cG9seWdvbiBwb2ludHM9IjMwLDM4MCA0MCwzNjggNTAsMzgwIi8+Cjxwb2x5Z29uIHBvaW50cz0iNTAsMzgwIDYwLDM2OCA3MCwzODAiLz4KPHBvbHlnb24gcG9pbnRzPSI3MCwzODAgODAsMzY4IDgwLDM4MCIvPgo8L2c+Cjxwb2x5Z29uIHBvaW50cz0iMjUsNDQwIDM1LDQyMCA0NSw0NDAiIGZpbGw9IiMzZDI4MTciIG9wYWNpdHk9IjAuNiIvPgo8cG9seWdvbiBwb2ludHM9IjU1LDQ0MCA2NSw0MjAgNzUsNDQwIiBmaWxsPSIjM2QyODE3IiBvcGFjaXR5PSIwLjYiLz4KPC9nPgoKPCEtLSDZhdio2YbZiSDYtdi62YrYsSDZitmF2YrZhiAtLT4KPGcgb3BhY2l0eT0iMC43Ij4KPHJlY3QgeD0iNzIwIiB5PSI0MDAiIHdpZHRoPSI3MCIgaGVpZ2h0PSIxNjAiIGZpbGw9InVybCgjcGFsYWNlR3JhZCkiLz4KPGcgZmlsbD0iIzVhM2YxZSI+Cjxwb2x5Z29uIHBvaW50cz0iNzIwLDQwMCA3MzAsMzg4IDc0MCw0MDAiLz4KPHBvbHlnb24gcG9pbnRzPSI3NDAsNDAwIDc1MCwzODggNzYwLDQwMCIvPgo8cG9seWdvbiBwb2ludHM9Ijc2MCw0MDAgNzcwLDM4OCA3ODAsNDAwIi8+Cjxwb2x5Z29uIHBvaW50cz0iNzgwLDQwMCA3OTAsMzg4IDc5MCw0MDAiLz4KPC9nPgo8cG9seWdvbiBwb2ludHM9IjczNSw0NTAgNzQ1LDQzMCA3NTUsNDUwIiBmaWxsPSIjM2QyODE3IiBvcGFjaXR5PSIwLjYiLz4KPC9nPgoKPCEtLSDZhtiu2YTYqSDZgdmKINin2YTZitiz2KfYsSAtLT4KPGcgb3BhY2l0eT0iMC42Ij4KPHJlY3QgeD0iMjE4IiB5PSI0NTAiIHdpZHRoPSI2IiBoZWlnaHQ9IjExMCIgZmlsbD0iIzNkMjgxNyIvPgo8ZyBmaWxsPSIjNWE3YTNlIj4KPGVsbGlwc2UgY3g9IjIyMSIgY3k9IjQ0NSIgcng9IjI1IiByeT0iNiIgdHJhbnNmb3JtPSJyb3RhdGUoLTIwIDIyMSA0NDUpIi8+CjxlbGxpcHNlIGN4PSIyMjEiIGN5PSI0NDUiIHJ4PSIyNSIgcnk9IjYiIHRyYW5zZm9ybT0icm90YXRlKDIwIDIyMSA0NDUpIi8+CjxlbGxpcHNlIGN4PSIyMjEiIGN5PSI0NDUiIHJ4PSIyNSIgcnk9IjYiIHRyYW5zZm9ybT0icm90YXRlKC00MCAyMjEgNDQ1KSIvPgo8ZWxsaXBzZSBjeD0iMjIxIiBjeT0iNDQ1IiByeD0iMjUiIHJ5PSI2IiB0cmFuc2Zvcm09InJvdGF0ZSg0MCAyMjEgNDQ1KSIvPgo8ZWxsaXBzZSBjeD0iMjIxIiBjeT0iNDQ1IiByeD0iMjUiIHJ5PSI2Ii8+CjwvZz4KPC9nPgoKPCEtLSDZhtiu2YTYqSDZgdmKINin2YTZitmF2YrZhiAtLT4KPGcgb3BhY2l0eT0iMC42Ij4KPHJlY3QgeD0iNTU1IiB5PSI0NjAiIHdpZHRoPSI2IiBoZWlnaHQ9IjEwMCIgZmlsbD0iIzNkMjgxNyIvPgo8ZyBmaWxsPSIjNWE3YTNlIj4KPGVsbGlwc2UgY3g9IjU1OCIgY3k9IjQ1NSIgcng9IjIyIiByeT0iNSIgdHJhbnNmb3JtPSJyb3RhdGUoLTIwIDU1OCA0NTUpIi8+CjxlbGxpcHNlIGN4PSI1NTgiIGN5PSI0NTUiIHJ4PSIyMiIgcnk9IjUiIHRyYW5zZm9ybT0icm90YXRlKDIwIDU1OCA0NTUpIi8+CjxlbGxpcHNlIGN4PSI1NTgiIGN5PSI0NTUiIHJ4PSIyMiIgcnk9IjUiIHRyYW5zZm9ybT0icm90YXRlKC00MCA1NTggNDU1KSIvPgo8ZWxsaXBzZSBjeD0iNTU4IiBjeT0iNDU1IiByeD0iMjIiIHJ5PSI1IiB0cmFuc2Zvcm09InJvdGF0ZSg0MCA1NTggNDU1KSIvPgo8ZWxsaXBzZSBjeD0iNTU4IiBjeT0iNDU1IiByeD0iMjIiIHJ5PSI1Ii8+CjwvZz4KPC9nPgo8L3N2Zz4=');
-background-position: center 65%;
-background-repeat: no-repeat;
-background-size: 130% auto;
-opacity: 0.08;
-pointer-events: none;
-z-index: 0;
-filter: sepia(0.3);
-}
-
-/* نتأكد أن المحتوى فوق الخلفية */
-#page > *{
-position: relative;
-z-index: 1;
-}
-
 .top-band{
 background:#c9b99a;
 padding:10px 14px;
@@ -238,9 +214,7 @@ display:flex;
 align-items:baseline;
 gap:3px;
 min-height:30px;
-background:rgba(255,255,255,0.78);
-backdrop-filter:blur(2px);
--webkit-backdrop-filter:blur(2px);
+background:#fff;
 width:100%;
 min-width:0;
 overflow:hidden;
@@ -569,6 +543,9 @@ transition:all 0.2s;
 }
 
 </style>
+
+  <!-- 🔥 Firebase Integration (يجب أن يكون قبل أي محتوى) -->
+  <script type="module" src="report-firebase.js"></script>
 </head>
 <body>
 
@@ -870,38 +847,26 @@ function doClear(){
 }
 
 async function saveAsImage(){
+  // 🔥 فحص Firebase أولاً - الحماية الفعلية
+  if (typeof window.checkDownloadAccess === 'function') {
+    const allowed = await window.checkDownloadAccess();
+    if (!allowed) return;
+  }
+
   // ═══ نظام التجربة المجانية ═══
-  // 🔥 الفحص من Firebase أولاً (الأكثر دقة)
-  const fbLifetime = (typeof window.isFirebaseLifetime === 'function') && window.isFirebaseLifetime();
-  const fbUser = (typeof window.getFirebaseUser === 'function') && window.getFirebaseUser();
+  // المشتركون: تخطي كل القيود
+  const loggedUser = localStorage.getItem('loggedUser');
+  const isSubscribed = localStorage.getItem('isSubscribed') === '1' || !!loggedUser;
 
-  // إذا في Firebase user
-  if (fbUser) {
-    // المشترك Lifetime يمر مباشرة
-    if (fbLifetime) {
-      // كمل التحميل بدون قيود
-    } else {
-      // مستخدم مجاني - استخدم نظام Firebase
-      if (typeof window.checkDownloadAccess === 'function') {
-        const allowed = await window.checkDownloadAccess();
-        if (!allowed) return;
-      }
-    }
-  } else {
-    // ما في Firebase user (الكود القديم) - استخدم localStorage
-    const loggedUser = localStorage.getItem('loggedUser');
-    const isSubscribed = localStorage.getItem('isSubscribed') === '1' || !!loggedUser;
+  if(!isSubscribed){
+    const FREE_DOWNLOADS_LIMIT = 2;
+    const used = parseInt(localStorage.getItem('free_downloads_used') || '0');
+    const left = Math.max(0, FREE_DOWNLOADS_LIMIT - used);
 
-    if(!isSubscribed){
-      const FREE_DOWNLOADS_LIMIT = 2;
-      const used = parseInt(localStorage.getItem('free_downloads_used') || '0');
-      const left = Math.max(0, FREE_DOWNLOADS_LIMIT - used);
-
-      if(left === 0){
-        // انتهت التحميلات - افتح modal الترقية
-        showUpgradeModalInTasis();
-        return;
-      }
+    if(left === 0){
+      // انتهت التحميلات - افتح modal الترقية
+      showUpgradeModalInTasis();
+      return;
     }
   }
 
@@ -981,13 +946,6 @@ async function saveAsImage(){
     showToast(I18N[getCurrentLang()].toastDone);
 
     // ═══ زيادة عدّاد التحميلات المجانية (للزوار فقط) ═══
-    // 🔥 لو في Firebase user، نخلي report-firebase.js يدير العداد
-    const fbUserAfter = (typeof window.getFirebaseUser === 'function') && window.getFirebaseUser();
-    if (fbUserAfter) {
-      // تم التعامل معها في checkDownloadAccess
-      return;
-    }
-
     const loggedUserAfter = localStorage.getItem('loggedUser');
     const isSubscribedAfter = localStorage.getItem('isSubscribed') === '1' || !!loggedUserAfter;
 
@@ -1018,13 +976,6 @@ async function saveAsImage(){
 // Upgrade Modal داخل tasis.html
 // ═══════════════════════════════════════════════
 function showUpgradeModalInTasis(){
-  // استخدم المودال الجديد من Firebase
-  if (typeof window._fbShowUpgrade === 'function') {
-    window._fbShowUpgrade();
-    return;
-  }
-
-  // fallback - نفس التصميم بسعر جديد
   let modal = document.getElementById('tasisUpgradeModal');
   if(!modal){
     modal = document.createElement('div');
@@ -1033,27 +984,30 @@ function showUpgradeModalInTasis(){
       <div class="rum-overlay" onclick="if(event.target===this)closeTasisUpgrade()">
         <div class="rum-card">
           <button class="rum-close" onclick="closeTasisUpgrade()">✕</button>
-          <div class="rum-icon">💎</div>
+          <div class="rum-icon">✨</div>
           <h2 class="rum-title">انتهت تحميلاتك المجانية!</h2>
-          <p class="rum-subtitle">استمتعت بالقوالب؟ احصل على كل شي بـ 30 ريال فقط</p>
+          <p class="rum-subtitle">استمتعت بتقرير يوم التأسيس؟ احصل على الباقة الكاملة</p>
           <div class="rum-features">
-            <div class="rum-feat">✅ +15 قالب احترافي معتمد</div>
-            <div class="rum-feat">✅ تحميلات بلا حدود · مدى الحياة</div>
+            <div class="rum-feat">✅ 13 قالب احترافي معتمد</div>
+            <div class="rum-feat">✅ تحميلات بلا حدود</div>
             <div class="rum-feat">✅ كل الألوان والثيمات</div>
-            <div class="rum-feat">✅ تحديثات مجانية للأبد</div>
+            <div class="rum-feat">✅ تحديثات مدى الحياة</div>
             <div class="rum-feat">✅ دعم فني عبر الواتساب</div>
           </div>
           <div class="rum-price-block">
-            <div class="rum-price-tag">🔥 عرض إطلاق محدود</div>
+            <div class="rum-price-old">
+              <span class="rum-strike">59 ريال</span>
+              <span class="rum-discount">خصم 17%</span>
+            </div>
             <div class="rum-price-new">
-              <span class="rum-amount">30</span>
+              <span class="rum-amount">49</span>
               <span class="rum-currency">ريال</span>
             </div>
-            <div class="rum-lifetime">💎 مدى الحياة · دفعة واحدة</div>
+            <div class="rum-note">دفعة واحدة · مدى الحياة</div>
           </div>
-          <div class="rum-social">🔥 انضم لأكثر من 500+ معلم اشتركوا</div>
+          <div class="rum-social">🔥 انضم لأكثر من 500+ معلم اشتركوا هذا الشهر</div>
           <div class="rum-guarantee">🛡️ ضمان استرداد كامل خلال 7 أيام</div>
-          <a href="https://wa.me/966502517217?text=السلام%20عليكم%2C%20أرغب%20في%20الاشتراك%20بمنصة%20التقارير%20-%2030%20ريال%20مدى%20الحياة" target="_blank" rel="noopener" class="rum-cta">
+          <a href="https://wa.me/966550522867?text=السلام%20عليكم%2C%20أرغب%20في%20الاشتراك%20بمنصة%20التقارير%20المدرسية" target="_blank" rel="noopener" class="rum-cta">
             <span style="font-size:1.2rem">📱</span>
             <span>اشترك عبر الواتساب الآن</span>
           </a>
@@ -1067,29 +1021,31 @@ function showUpgradeModalInTasis(){
     style.textContent = `
       .rum-overlay{position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,15,30,0.85);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);z-index:99999;display:flex;align-items:center;justify-content:center;padding:20px;overflow-y:auto;animation:rum-fade 0.3s;}
       @keyframes rum-fade{from{opacity:0;}to{opacity:1;}}
-      .rum-card{background:linear-gradient(135deg,#1a1f2e 0%,#2a3a4e 100%);border:2px solid rgba(212,166,87,0.5);border-radius:24px;padding:30px 22px 24px;max-width:420px;width:100%;text-align:center;position:relative;box-shadow:0 20px 60px rgba(0,0,0,0.6);max-height:92vh;overflow-y:auto;animation:rum-slide 0.4s cubic-bezier(0.34,1.56,0.64,1);}
+      .rum-card{background:linear-gradient(135deg,#1a1f2e 0%,#2a3a4e 100%);border:2px solid rgba(255,107,107,0.4);border-radius:24px;padding:30px 22px 24px;max-width:420px;width:100%;text-align:center;position:relative;box-shadow:0 20px 60px rgba(0,0,0,0.6);max-height:92vh;overflow-y:auto;animation:rum-slide 0.4s cubic-bezier(0.34,1.56,0.64,1);}
       @keyframes rum-slide{from{transform:translateY(30px) scale(0.95);opacity:0;}to{transform:translateY(0) scale(1);opacity:1;}}
       .rum-close{position:absolute;top:14px;left:14px;background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.15);color:#fff;width:36px;height:36px;border-radius:50%;cursor:pointer;font-size:1rem;font-weight:700;display:flex;align-items:center;justify-content:center;transition:all 0.2s;font-family:inherit;}
       .rum-close:hover{background:rgba(255,255,255,0.15);transform:rotate(90deg);}
-      .rum-icon{font-size:3.2rem;margin-bottom:8px;display:inline-block;animation:rum-bounce 2s ease-in-out infinite;filter:drop-shadow(0 4px 10px rgba(212,166,87,0.5));}
+      .rum-icon{font-size:3rem;margin-bottom:8px;display:inline-block;animation:rum-bounce 2s ease-in-out infinite;}
       @keyframes rum-bounce{0%,100%{transform:translateY(0);}50%{transform:translateY(-8px);}}
       .rum-title{font-family:'Reem Kufi','Tajawal',sans-serif;font-size:1.35rem;font-weight:900;color:#fff;margin-bottom:6px;line-height:1.3;}
       .rum-subtitle{font-size:0.85rem;color:rgba(255,255,255,0.65);font-weight:600;margin-bottom:18px;line-height:1.5;}
       .rum-features{background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.08);border-radius:14px;padding:14px 16px;margin-bottom:16px;text-align:right;}
       .rum-feat{padding:5px 0;font-size:0.85rem;font-weight:600;color:rgba(255,255,255,0.92);}
-      .rum-price-block{background:linear-gradient(135deg,rgba(212,166,87,0.15),rgba(245,158,11,0.08));border:2px solid rgba(212,166,87,0.4);border-radius:16px;padding:16px 16px 12px;margin-bottom:14px;position:relative;}
-      .rum-price-tag{position:absolute;top:-10px;right:50%;transform:translateX(50%);background:linear-gradient(135deg,#dc2626,#f59e0b);color:#fff;padding:3px 12px;border-radius:99px;font-size:0.7rem;font-weight:900;letter-spacing:0.4px;white-space:nowrap;box-shadow:0 4px 12px rgba(220,38,38,0.4);}
-      .rum-price-new{display:flex;align-items:baseline;justify-content:center;gap:5px;margin-top:6px;margin-bottom:6px;}
-      .rum-amount{font-family:'Reem Kufi','Tajawal',sans-serif;font-size:3.2rem;font-weight:900;color:#ffc107;line-height:1;text-shadow:0 2px 14px rgba(255,193,7,0.4);}
-      .rum-currency{font-size:1.1rem;font-weight:800;color:#ffc107;}
-      .rum-lifetime{display:inline-block;background:linear-gradient(135deg,#16a34a,#15803d);color:#fff;padding:4px 14px;border-radius:99px;font-size:0.74rem;font-weight:900;letter-spacing:0.3px;}
-      .rum-social{background:rgba(212,166,87,0.12);border:1px solid rgba(212,166,87,0.3);color:#f4d690;padding:7px 12px;border-radius:99px;font-size:0.74rem;font-weight:700;margin-bottom:10px;}
+      .rum-price-block{background:linear-gradient(135deg,rgba(255,193,7,0.12),rgba(255,107,107,0.08));border:2px solid rgba(255,193,7,0.3);border-radius:16px;padding:14px 16px 12px;margin-bottom:14px;}
+      .rum-price-old{display:flex;align-items:center;justify-content:center;gap:10px;margin-bottom:4px;}
+      .rum-strike{color:rgba(255,255,255,0.5);font-size:0.85rem;font-weight:700;text-decoration:line-through;text-decoration-color:#ff6b6b;text-decoration-thickness:2px;}
+      .rum-discount{background:linear-gradient(135deg,#ff6b6b,#ee5a52);color:#fff;padding:2px 9px;border-radius:99px;font-size:0.7rem;font-weight:900;}
+      .rum-price-new{display:flex;align-items:baseline;justify-content:center;gap:5px;margin-bottom:3px;}
+      .rum-amount{font-family:'Reem Kufi','Tajawal',sans-serif;font-size:2.6rem;font-weight:900;color:#ffc107;line-height:1;text-shadow:0 2px 14px rgba(255,193,7,0.4);}
+      .rum-currency{font-size:1rem;font-weight:800;color:#ffc107;}
+      .rum-note{font-size:0.72rem;color:rgba(255,255,255,0.6);font-weight:600;}
+      .rum-social{background:rgba(255,107,107,0.1);border:1px solid rgba(255,107,107,0.3);color:#ffb86b;padding:7px 12px;border-radius:99px;font-size:0.74rem;font-weight:700;margin-bottom:10px;}
       .rum-guarantee{color:rgba(255,255,255,0.7);font-size:0.74rem;font-weight:600;margin-bottom:16px;}
       .rum-cta{display:flex;align-items:center;justify-content:center;gap:8px;width:100%;padding:14px 20px;background:linear-gradient(135deg,#25d366 0%,#128c7e 100%);color:#fff;border:none;border-radius:14px;font-family:inherit;font-size:0.95rem;font-weight:800;cursor:pointer;text-decoration:none;box-shadow:0 8px 24px rgba(37,211,102,0.4);transition:all 0.2s;margin-bottom:8px;box-sizing:border-box;}
       .rum-cta:hover{transform:translateY(-2px);box-shadow:0 12px 30px rgba(37,211,102,0.55);}
       .rum-later{background:transparent;border:none;color:rgba(255,255,255,0.5);font-family:inherit;font-size:0.8rem;font-weight:600;cursor:pointer;padding:8px;text-decoration:underline;text-underline-offset:3px;}
       .rum-later:hover{color:rgba(255,255,255,0.8);}
-      @media (max-width:480px){.rum-card{padding:24px 18px 20px;border-radius:20px;}.rum-icon{font-size:2.5rem;}.rum-title{font-size:1.15rem;}.rum-subtitle{font-size:0.78rem;}.rum-feat{font-size:0.78rem;}.rum-amount{font-size:2.6rem;}.rum-cta{font-size:0.88rem;padding:12px 16px;}}
+      @media (max-width:480px){.rum-card{padding:24px 18px 20px;border-radius:20px;}.rum-icon{font-size:2.5rem;}.rum-title{font-size:1.15rem;}.rum-subtitle{font-size:0.78rem;}.rum-feat{font-size:0.78rem;}.rum-amount{font-size:2.2rem;}.rum-cta{font-size:0.88rem;padding:12px 16px;}}
     `;
     document.head.appendChild(style);
   }
@@ -1113,11 +1069,8 @@ function closeTasisUpgrade(){
 // ═══════════════════════════════════════════════
 window.addEventListener('DOMContentLoaded', function(){
   // التحقق من الاشتراك أولاً
-  // 🔥 فحص الاشتراك من Firebase (أولوية) ثم localStorage
-  const fbLifetime = (typeof window.isFirebaseLifetime === 'function') && window.isFirebaseLifetime();
-  const fbUser = (typeof window.getFirebaseUser === 'function') && window.getFirebaseUser();
   const loggedUser = localStorage.getItem('loggedUser');
-  const isSubscribed = fbLifetime || (fbUser && localStorage.getItem('isSubscribed') === '1') || (!fbUser && localStorage.getItem('isSubscribed') === '1') || (!!loggedUser && localStorage.getItem('isSubscribed') === '1')
+  const isSubscribed = localStorage.getItem('isSubscribed') === '1' || !!loggedUser;
 
   // المشتركون: دخول حر بدون أي فحص
   if(isSubscribed) return;
@@ -1411,10 +1364,5 @@ async function exportAsPDFv2(){
     <span class="arrow">‹</span>
   </button>
   <button class="export-cancel-btn" onclick="closeExportMenu()">إلغاء</button>
-</div>
-
-
-<!-- 🔥 Firebase Integration -->
-<script type="module" src="report-firebase.js"></script>
-</body>
+</div></body>
 </html>
