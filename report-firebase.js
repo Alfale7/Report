@@ -15,7 +15,8 @@ import {
   SITE_CONFIG,
   logout,
   auth,
-  db
+  db,
+  getUserProfile
 } from './firebase-config.js';
 
 import {
@@ -58,7 +59,7 @@ if (document.readyState === 'loading') {
 }
 
 // ═══ مراقبة حالة المستخدم ═══
-onUserChange((data) => {
+onUserChange(async (data) => {
   _userReady = true;
   hideInitLoader();
 
@@ -145,8 +146,10 @@ onUserChange((data) => {
     localStorage.removeItem('loggedUser');
     localStorage.removeItem('isSubscribed');
 
-    // ❌ ما نقفل التقرير - نسمح للزائر يشوف ويجرّب
-    // الفحص يصير عند الضغط على زر التحميل فقط
+    // المستخدم غير مسجّل - يطلب تسجيل دخول
+    if (!document.getElementById('reportLoginGuard')) {
+      showLoginRequired();
+    }
   }
 });
 
