@@ -4652,10 +4652,11 @@ function logout(){
 }
 
 function handleCardClick(card){
-  // 🔥 فحص حالة Firebase أولاً
+  const target = card.getAttribute('data-target');
+
+  // 🔥 فحص حالة Firebase (إذا جاهز)
   const fbUser = (typeof window.getFirebaseUser === 'function') && window.getFirebaseUser();
   const fbLifetime = (typeof window.isFirebaseLifetime === 'function') && window.isFirebaseLifetime();
-  const target = card.getAttribute('data-target');
 
   // المشترك Lifetime → افتح أي تقرير مباشرة
   if (fbLifetime) {
@@ -4663,13 +4664,14 @@ function handleCardClick(card){
     return;
   }
 
-  // المستخدم مسجّل لكن مجاني → افتح التقرير (يحسب من Firebase عند التحميل)
-  if (fbUser) {
+  // المستخدم مسجّل (Firebase أو localStorage) → افتح التقرير
+  if (fbUser || localStorage.getItem('loggedUser') || localStorage.getItem('isSubscribed') === '1') {
     if (target) window.location.href = target;
     return;
   }
 
   // ❌ بدون تسجيل دخول → روح صفحة الدخول
+  if (target) sessionStorage.setItem('returnAfterLogin', target);
   window.location.href = 'login.html';
 }
 
