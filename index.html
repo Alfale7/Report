@@ -3676,7 +3676,7 @@ font-size:0.78rem;text-align:center;margin-top:12px;display:none;
   </div>
 
 
-  <div class="user-bar" id="userBar">
+  <div class="user-bar" id="userBar" style="display:none !important;">
     <div class="who">
       <span class="dot"></span>
       <span><span data-i18n="welcome">مرحباً</span> <span id="userName">05XXXXXXXX</span></span>
@@ -5927,6 +5927,12 @@ function login(){
 }
 
 function enterLoggedInMode(phone){
+  // 🔥 معطّل - النظام الجديد (Firebase) يدير كل شي عبر CTA
+  // user-bar القديم مخفي بالكامل
+  return;
+}
+
+function _OLD_enterLoggedInMode(phone){
   const dict = I18N[getCurrentLang()];
   document.getElementById('userBar').classList.add('show');
   document.getElementById('userName').textContent = phone;
