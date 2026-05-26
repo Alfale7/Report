@@ -131,8 +131,19 @@ function handleAccess() {
   }
 
   // 3️⃣ مستخدم Free
-  // إذا تقرير تجريبي مجاني (tasis) → افتح
+  // ⚠️ تقرير التأسيس مجاني لكن يحتسب من حد الـ 2 تحميل المجاني
   if (FREE_TRIAL_REPORTS.includes(_currentPage)) {
+    const downloadsUsed = _profile?.downloadsUsed || 0;
+    const limit = _profile?.downloadsLimit || SITE_CONFIG.FREE_DOWNLOADS_LIMIT || 2;
+
+    if (downloadsUsed >= limit) {
+      // ⚠️ خلّص حد المجاني → اقفل
+      hideFullPageLoader();
+      showSubscribeGate();
+      return;
+    }
+
+    // لسه عنده تحميلات مجانية
     hideFullPageLoader();
     removeAllGuards();
     refreshBadge();
@@ -328,10 +339,29 @@ window.isFirebaseAdmin = () => isAdmin(_user);
 // 📊 تتبّع التحميلات في Firebase (Real-time)
 window.trackDownload = async function() {
   if (!_user) return false;
+
+  // ✅ لو Lifetime أو Admin → بدون عد
+  if (isLifetime(_profile) || isAdmin(_user)) {
+    return true;
+  }
+
+  // ⚠️ Free user → سجّل التحميل
   try {
     const result = await incrementDownloadCount(_user.uid);
     if (result.success) {
       console.log('✅ تم تسجيل التحميل في Firebase');
+
+      // 🔥 بعد الزيادة، إذا تجاوز الحد → اعرض شاشة الاشتراك
+      const used = (_profile?.downloadsUsed || 0) + 1;
+      const limit = _profile?.downloadsLimit || SITE_CONFIG.FREE_DOWNLOADS_LIMIT || 2;
+
+      if (used >= limit) {
+        // التحميل الأخير - اعرض رسالة بعد ثانية
+        setTimeout(() => {
+          alert('🎁 انتهت تحميلاتك المجانية!\n\nاشترك مرة واحدة فقط بـ 30 ريال للحصول على تحميلات بلا حدود 💎');
+          showSubscribeGate();
+        }, 800);
+      }
       return true;
     }
   } catch (err) {
@@ -340,12 +370,31 @@ window.trackDownload = async function() {
   return false;
 };
 
+// ✋ فحص قبل التحميل (يمنع التحميل لو تجاوز الحد)
+window.canDownload = function() {
+  if (!_user) return false;
+  if (isLifetime(_profile) || isAdmin(_user)) return true;
+
+  const used = _profile?.downloadsUsed || 0;
+  const limit = _profile?.downloadsLimit || SITE_CONFIG.FREE_DOWNLOADS_LIMIT || 2;
+
+  if (used >= limit) {
+    showSubscribeGate();
+    alert('🎁 لقد استخدمت جميع تحميلاتك المجانية\n\nاشترك مرة واحدة فقط بـ 30 ريال 💎');
+    return false;
+  }
+  return true;
+};
+
 // 🎯 ربط تلقائي مع saveAsImage (إن وجدت)
-// نُغلّف الدالة الأصلية - بحيث تستدعي trackDownload تلقائياً
+// نُغلّف الدالة الأصلية - بحيث تفحص قبل التحميل ثم تسجّل بعده
 setTimeout(() => {
   if (typeof window.saveAsImage === 'function') {
     const _original = window.saveAsImage;
     window.saveAsImage = async function(...args) {
+      // ✋ فحص قبل التحميل
+      if (!window.canDownload()) return;
+
       const result = await _original.apply(this, args);
       // نسجل التحميل بعد نجاح الحفظ
       window.trackDownload();
@@ -356,6 +405,7 @@ setTimeout(() => {
   if (typeof window.savePDF === 'function') {
     const _originalPDF = window.savePDF;
     window.savePDF = async function(...args) {
+      if (!window.canDownload()) return;
       const result = await _originalPDF.apply(this, args);
       window.trackDownload();
       return result;
