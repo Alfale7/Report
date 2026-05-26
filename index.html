@@ -5967,14 +5967,22 @@ function enterLoggedInMode(phone){
   if(freeCounter) freeCounter.style.display = 'none';
 }
 
-function logout(){
+async function logout(){
   const dict = I18N[getCurrentLang()];
-  if(confirm(dict.confirmLogout)){
-    localStorage.removeItem('loggedUser');
-    localStorage.removeItem('isSubscribed');
-    sessionStorage.removeItem('loggedUser');
-    location.reload();
+  if(!confirm(dict.confirmLogout)) return;
+
+  // مسح localStorage القديم
+  localStorage.removeItem('loggedUser');
+  localStorage.removeItem('isSubscribed');
+  localStorage.removeItem('free_downloads_used');
+  sessionStorage.removeItem('loggedUser');
+
+  // 🔥 خروج Firebase أيضاً (مهم!)
+  if (typeof window.firebaseLogoutSilent === 'function') {
+    await window.firebaseLogoutSilent();
   }
+
+  location.reload();
 }
 
 function handleCardClick(card){
@@ -6253,6 +6261,15 @@ window.firebaseLogout = async function() {
   localStorage.removeItem('free_downloads_used');
   await logout();
   window.location.reload();
+};
+
+// نسخة بدون تأكيد - للنظام القديم
+window.firebaseLogoutSilent = async function() {
+  try {
+    await logout();
+  } catch(e) {
+    console.warn('Firebase logout error:', e);
+  }
 };
 </script>
 
