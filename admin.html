@@ -1206,8 +1206,10 @@ function updateDashboard(users, total, lifetime, free, totalDl) {
 
 function updateRecentSubscribers(users) {
   const sorted = [...users].sort((a, b) => {
-    const dateA = new Date(a.createdAt || a.lastLogin || 0);
-    const dateB = new Date(b.createdAt || b.lastLogin || 0);
+    // للـ Lifetime: استخدم activatedAt
+    // للمجاني: استخدم createdAt
+    const dateA = new Date(a.activatedAt || a.createdAt || a.lastLogin || 0);
+    const dateB = new Date(b.activatedAt || b.createdAt || b.lastLogin || 0);
     return dateB - dateA;
   }).slice(0, 5);
 
@@ -1229,14 +1231,18 @@ function updateRecentSubscribers(users) {
     const name = u.displayName || u.email?.split('@')[0] || u.phoneNumber || 'مجهول';
     const initial = name.charAt(0).toUpperCase();
     const isLifetime = u.plan === 'lifetime';
-    const timeAgo = getTimeAgo(u.createdAt || u.lastLogin);
+    // 💡 وقت التفعيل للمدفوع، وقت التسجيل للمجاني
+    const relevantDate = isLifetime
+      ? (u.activatedAt || u.createdAt)
+      : (u.createdAt || u.lastLogin);
+    const timeAgo = getTimeAgo(relevantDate);
 
     return `
       <div class="recent-item">
         <div class="recent-avatar" style="background:${colors[idx % colors.length]};">${initial}</div>
         <div class="recent-info">
           <div class="recent-name">${name}</div>
-          <div class="recent-time">⏰ ${timeAgo}</div>
+          <div class="recent-time">${isLifetime ? '✨ تفعيل' : '🆕 تسجيل'} ${timeAgo}</div>
         </div>
         <span class="recent-badge ${isLifetime ? 'lifetime' : 'free'}">
           ${isLifetime ? '💎 LIFETIME' : '🆓 FREE'}
