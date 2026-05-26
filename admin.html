@@ -30,6 +30,32 @@ body{font-family:'Tajawal','Cairo',sans-serif;background:linear-gradient(135deg,
   margin:0;
 }
 .top-bar .small{font-size:0.78rem;color:#5a7080;font-weight:700;margin-top:2px;}
+
+.top-actions{
+  display:flex;
+  gap:8px;
+  align-items:center;
+}
+.btn-home{
+  background:linear-gradient(135deg,#1e6b8a,#2a8aab);
+  color:#fff;
+  text-decoration:none;
+  padding:9px 14px;
+  border-radius:10px;
+  font-family:inherit;
+  font-weight:900;
+  font-size:0.82rem;
+  display:inline-flex;
+  align-items:center;
+  gap:5px;
+  transition:all 0.2s;
+  box-shadow:0 4px 12px rgba(30,107,138,0.3);
+}
+.btn-home:hover{
+  transform:translateY(-2px);
+  box-shadow:0 8px 18px rgba(30,107,138,0.4);
+}
+
 .logout-mini{
   background:#fee2e2;
   color:#991b1b;
@@ -1300,17 +1326,24 @@ function updateBarsChart(users) {
 }
 
 function getTimeAgo(dateStr) {
-  if (!dateStr) return 'غير محدد';
+  if (!dateStr) return 'حديثاً';
+
   const date = new Date(dateStr);
+
+  // ✅ تأكد إن التاريخ صحيح
+  if (isNaN(date.getTime())) return 'حديثاً';
+
   const now = new Date();
   const diff = (now - date) / 1000;
 
+  if (diff < 0) return 'حديثاً';
   if (diff < 60) return 'الآن';
   if (diff < 3600) return `قبل ${Math.floor(diff / 60)} دقيقة`;
   if (diff < 86400) return `قبل ${Math.floor(diff / 3600)} ساعة`;
   if (diff < 604800) return `قبل ${Math.floor(diff / 86400)} يوم`;
   if (diff < 2592000) return `قبل ${Math.floor(diff / 604800)} أسبوع`;
-  return `قبل ${Math.floor(diff / 2592000)} شهر`;
+  if (diff < 31536000) return `قبل ${Math.floor(diff / 2592000)} شهر`;
+  return `قبل ${Math.floor(diff / 31536000)} سنة`;
 }
 
 // تفعيل
