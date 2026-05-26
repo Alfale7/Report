@@ -207,6 +207,65 @@ body{font-family:'Tajawal','Cairo',sans-serif;background:linear-gradient(135deg,
   background:#fef3d4 !important;
   transform:translateX(-4px);
 }
+
+/* 🆔 بطاقة معرّف العميل */
+.customer-id-card{
+  background:linear-gradient(135deg,#f0f9ff,#fff);
+  border:1.5px solid #bae6fd;
+}
+.customer-id-wrap{
+  display:flex;
+  align-items:center;
+  gap:10px;
+  background:linear-gradient(135deg,#1e6b8a,#2a8aab);
+  border-radius:12px;
+  padding:12px 14px;
+  margin-bottom:10px;
+}
+.customer-id-value{
+  flex:1;
+  font-family:'Courier New',monospace;
+  font-size:1.1rem;
+  font-weight:900;
+  color:#fff;
+  letter-spacing:2px;
+  text-align:center;
+  direction:ltr;
+  user-select:all;
+}
+.customer-id-copy{
+  background:rgba(255,255,255,0.2);
+  color:#fff;
+  border:1px solid rgba(255,255,255,0.3);
+  padding:8px 14px;
+  border-radius:10px;
+  font-family:inherit;
+  font-weight:900;
+  font-size:0.78rem;
+  cursor:pointer;
+  display:flex;
+  align-items:center;
+  gap:5px;
+  transition:all 0.2s;
+  flex-shrink:0;
+}
+.customer-id-copy:hover{
+  background:rgba(255,255,255,0.3);
+  transform:translateY(-1px);
+}
+.customer-id-copy.copied{
+  background:#16a34a;
+  border-color:#15803d;
+}
+.customer-id-hint{
+  font-size:0.74rem;
+  color:#5a7080;
+  font-weight:700;
+  text-align:center;
+  padding:6px 8px;
+  background:#fef3c7;
+  border-radius:8px;
+}
 .price-tag{
   text-align:center;
   margin:12px 0;
@@ -295,6 +354,20 @@ body{font-family:'Tajawal','Cairo',sans-serif;background:linear-gradient(135deg,
       </div>
     </div>
 
+    <!-- 🆔 معرّف العميل -->
+    <div class="card customer-id-card">
+      <div class="card-title">🆔 معرّف حسابك</div>
+      <div class="customer-id-wrap">
+        <div class="customer-id-value" id="customerIdValue">--------</div>
+        <button class="customer-id-copy" onclick="copyCustomerId()" id="customerIdBtn">
+          <span>📋</span><span>نسخ</span>
+        </button>
+      </div>
+      <div class="customer-id-hint">
+        💡 استخدم هذا المعرّف عند التواصل مع الدعم
+      </div>
+    </div>
+
     <div class="card">
       <div class="card-title">⚙️ الإعدادات</div>
       <div class="action-row" onclick="changePassword()">
@@ -357,6 +430,11 @@ onUserChange((data) => {
     document.getElementById('userPhone').textContent = user.email;
   }
   document.getElementById('userName').textContent = profile?.displayName || user.displayName || 'مرحباً بك';
+
+  // 🆔 معرّف العميل (أول 8 حروف من UID)
+  const customerId = user.uid.substring(0, 8).toUpperCase();
+  document.getElementById('customerIdValue').textContent = customerId;
+  window._customerId = customerId; // نخزّنه عشان نسخه
 
   if (user.photoURL) {
     document.getElementById('avatarBox').innerHTML = `<img src="${user.photoURL}" alt="">`;
@@ -433,6 +511,34 @@ window.changePassword = async function() {
 
 window.contactSupport = function() {
   window.open(`https://wa.me/${SITE_CONFIG.WHATSAPP_NUMBER}?text=السلام%20عليكم،%20لدي%20استفسار`, '_blank');
+};
+
+// 🆔 نسخ معرّف العميل
+window.copyCustomerId = function() {
+  const id = window._customerId || document.getElementById('customerIdValue').textContent;
+  const btn = document.getElementById('customerIdBtn');
+
+  navigator.clipboard.writeText(id).then(() => {
+    btn.classList.add('copied');
+    btn.innerHTML = '<span>✓</span><span>تم النسخ!</span>';
+    setTimeout(() => {
+      btn.classList.remove('copied');
+      btn.innerHTML = '<span>📋</span><span>نسخ</span>';
+    }, 2000);
+  }).catch(() => {
+    const ta = document.createElement('textarea');
+    ta.value = id;
+    document.body.appendChild(ta);
+    ta.select();
+    document.execCommand('copy');
+    document.body.removeChild(ta);
+    btn.classList.add('copied');
+    btn.innerHTML = '<span>✓</span><span>تم النسخ!</span>';
+    setTimeout(() => {
+      btn.classList.remove('copied');
+      btn.innerHTML = '<span>📋</span><span>نسخ</span>';
+    }, 2000);
+  });
 };
 </script>
 
