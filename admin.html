@@ -147,7 +147,21 @@ body{font-family:'Tajawal','Cairo',sans-serif;background:linear-gradient(135deg,
 .badge-free{background:#fee2e2;color:#991b1b;}
 .badge-lifetime{background:linear-gradient(135deg,#fde68a,#f59e0b);color:#7c2d12;}
 
-.user-actions{display:flex;gap:6px;flex-shrink:0;}
+.user-actions{display:flex;gap:6px;flex-shrink:0;flex-wrap:wrap;}
+.btn-edit-name{
+  background:linear-gradient(135deg,#1e6b8a,#2a8aab);
+  color:#fff;
+  border:none;
+  padding:8px 14px;
+  border-radius:9px;
+  font-family:inherit;
+  font-weight:900;
+  font-size:0.76rem;
+  cursor:pointer;
+  white-space:nowrap;
+}
+.btn-edit-name:hover{transform:translateY(-1px);box-shadow:0 6px 14px rgba(30,107,138,0.4);}
+
 .btn-activate{
   background:linear-gradient(135deg,#16a34a,#15803d);
   color:#fff;
@@ -174,6 +188,137 @@ body{font-family:'Tajawal','Cairo',sans-serif;background:linear-gradient(135deg,
 }
 
 .empty-state{text-align:center;padding:30px;color:#5a7080;font-weight:700;}
+
+/* ✏️ Edit Modal */
+.edit-modal-overlay{
+  display:none;
+  position:fixed;
+  inset:0;
+  background:rgba(10,52,71,0.7);
+  z-index:9999;
+  backdrop-filter:blur(8px);
+  -webkit-backdrop-filter:blur(8px);
+  align-items:center;
+  justify-content:center;
+  padding:14px;
+}
+.edit-modal-overlay.show{display:flex;}
+.edit-modal-card{
+  background:#fff;
+  border-radius:24px;
+  padding:30px 24px;
+  max-width:420px;
+  width:100%;
+  box-shadow:0 24px 60px rgba(0,0,0,0.4);
+  text-align:center;
+  position:relative;
+  animation:editModalIn 0.3s cubic-bezier(0.4,0,0.2,1);
+}
+@keyframes editModalIn{
+  from{transform:scale(0.85);opacity:0;}
+  to{transform:scale(1);opacity:1;}
+}
+.edit-modal-icon{
+  width:72px;height:72px;
+  background:linear-gradient(135deg,#1e6b8a,#2a8aab);
+  border-radius:22px;
+  display:flex;align-items:center;justify-content:center;
+  font-size:2.2rem;
+  margin:0 auto 14px;
+  box-shadow:0 12px 28px rgba(30,107,138,0.4);
+}
+.edit-modal-title{
+  font-family:'Reem Kufi','Tajawal',sans-serif;
+  font-size:1.3rem;
+  font-weight:700;
+  color:#1a3a4e;
+  margin-bottom:5px;
+}
+.edit-modal-sub{
+  color:#5a7080;
+  font-size:0.84rem;
+  font-weight:700;
+  margin-bottom:22px;
+}
+.edit-modal-field{
+  margin-bottom:14px;
+  text-align:right;
+}
+.edit-modal-label{
+  display:block;
+  font-size:0.8rem;
+  font-weight:900;
+  color:#5a7080;
+  margin-bottom:5px;
+}
+.edit-modal-current{
+  background:#f8fafc;
+  border:1.5px solid #e2e8f0;
+  border-radius:10px;
+  padding:10px 14px;
+  font-weight:900;
+  color:#1a3a4e;
+  font-size:0.92rem;
+}
+.edit-modal-input{
+  width:100%;
+  background:#fff;
+  border:2px solid #cbd5e1;
+  border-radius:11px;
+  padding:12px 14px;
+  font-family:inherit;
+  font-weight:900;
+  font-size:1rem;
+  color:#1a3a4e;
+  outline:none;
+  transition:border 0.2s;
+}
+.edit-modal-input:focus{
+  border-color:#1e6b8a;
+  box-shadow:0 0 0 3px rgba(30,107,138,0.15);
+}
+.edit-modal-hint{
+  font-size:0.72rem;
+  color:#94a3b8;
+  font-weight:700;
+  margin-top:5px;
+}
+.edit-modal-actions{
+  display:flex;
+  gap:8px;
+  margin-top:20px;
+}
+.edit-modal-cancel,.edit-modal-save{
+  flex:1;
+  padding:13px;
+  border:none;
+  border-radius:11px;
+  font-family:inherit;
+  font-weight:900;
+  font-size:0.9rem;
+  cursor:pointer;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  gap:6px;
+  transition:all 0.2s;
+}
+.edit-modal-cancel{
+  background:#f1f5f9;
+  color:#5a7080;
+}
+.edit-modal-cancel:hover{background:#e2e8f0;}
+.edit-modal-save{
+  background:linear-gradient(135deg,#16a34a,#15803d);
+  color:#fff;
+  box-shadow:0 6px 16px rgba(22,163,74,0.35);
+}
+.edit-modal-save:hover{transform:translateY(-2px);}
+.edit-modal-save:disabled{
+  background:#94a3b8;
+  cursor:wait;
+  transform:none;
+}
 
 .toast{
   position:fixed;
@@ -271,13 +416,40 @@ body{font-family:'Tajawal','Cairo',sans-serif;background:linear-gradient(135deg,
     </div>
 
     <div class="search-bar">
-      <input type="text" id="searchInput" placeholder="🔍 ابحث بالجوال أو الإيميل..." onkeyup="if(event.key==='Enter')handleSearch()">
+      <input type="text" id="searchInput" placeholder="🔍 ابحث بالإيميل أو الجوال أو 🆔 معرّف العميل..." onkeyup="if(event.key==='Enter')handleSearch()">
       <button onclick="handleSearch()">بحث</button>
       <button onclick="loadAllUsers()" style="background:#5a7080;">عرض الكل</button>
     </div>
 
     <div class="user-list" id="userList">
       <div class="empty-state">⏳ جاري التحميل...</div>
+    </div>
+  </div>
+</div>
+
+<!-- ✏️ Modal تعديل الاسم -->
+<div class="edit-modal-overlay" id="editModal">
+  <div class="edit-modal-card">
+    <div class="edit-modal-icon">✏️</div>
+    <h3 class="edit-modal-title">تعديل اسم العميل</h3>
+    <p class="edit-modal-sub">سيتم التحديث فوراً لدى العميل</p>
+
+    <div class="edit-modal-field">
+      <label class="edit-modal-label">الاسم الحالي:</label>
+      <div class="edit-modal-current" id="editCurrentName">--</div>
+    </div>
+
+    <div class="edit-modal-field">
+      <label class="edit-modal-label">الاسم الجديد:</label>
+      <input type="text" id="editNewName" class="edit-modal-input" placeholder="مثلاً: ريانـه 🌹" autocomplete="off">
+      <div class="edit-modal-hint">✨ تقدر تستخدم الإيموجي والرموز</div>
+    </div>
+
+    <div class="edit-modal-actions">
+      <button class="edit-modal-cancel" onclick="closeEditModal()">إلغاء</button>
+      <button class="edit-modal-save" onclick="saveEditName()" id="editSaveBtn">
+        <span>💾</span><span>حفظ التغيير</span>
+      </button>
     </div>
   </div>
 </div>
@@ -290,8 +462,11 @@ import {
   getAllUsers,
   findUser,
   activateUserLifetime,
-  deactivateUser
+  deactivateUser,
+  db
 } from './firebase-config.js';
+
+import { doc, updateDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
 // قائمة UIDs الإداريين (نفس اللي في firebase-config)
 const ADMIN_UIDS_LOCAL = ['bKJ4YdvOEkRCPJ8qMqEyDJsM3ua2'];
@@ -409,11 +584,14 @@ function renderUsers(users) {
           </div>
         </div>
         <div class="user-actions">
+          <button class="btn-edit-name" onclick="handleEditName('${u.uid || u.id}','${(name || '').replace(/'/g, "\\'")}')">
+            ✏️ تعديل الاسم
+          </button>
           ${isAdminUser
             ? `<span style="color:#7c2d12;font-weight:900;font-size:0.74rem;padding:8px 12px;background:#fef3c7;border-radius:9px;">🔒 محمي</span>`
             : (isLifetime
-              ? `<button class="btn-deactivate" onclick="handleDeactivate('${u.uid}','${name}')">إلغاء</button>`
-              : `<button class="btn-activate" onclick="handleActivate('${u.uid}','${name}')">✨ تفعيل Lifetime</button>`
+              ? `<button class="btn-deactivate" onclick="handleDeactivate('${u.uid || u.id}','${(name || '').replace(/'/g, "\\'")}')">إلغاء</button>`
+              : `<button class="btn-activate" onclick="handleActivate('${u.uid || u.id}','${(name || '').replace(/'/g, "\\'")}')">✨ تفعيل Lifetime</button>`
             )
           }
         </div>
@@ -457,6 +635,59 @@ window.handleDeactivate = async function(uid, name) {
     showToast(`❌ ${result.error}`, 'error');
   }
 };
+
+// ✏️ تعديل الاسم
+let _editingUid = null;
+window.handleEditName = function(uid, currentName) {
+  _editingUid = uid;
+  document.getElementById('editCurrentName').textContent = currentName || '(بدون اسم)';
+  document.getElementById('editNewName').value = currentName || '';
+  document.getElementById('editModal').classList.add('show');
+  setTimeout(() => document.getElementById('editNewName').focus(), 100);
+};
+
+window.closeEditModal = function() {
+  document.getElementById('editModal').classList.remove('show');
+  _editingUid = null;
+};
+
+window.saveEditName = async function() {
+  const newName = document.getElementById('editNewName').value.trim();
+  if (!newName) {
+    showToast('⚠️ اكتب اسم صحيح', 'error');
+    return;
+  }
+  if (!_editingUid) return;
+
+  const btn = document.getElementById('editSaveBtn');
+  btn.disabled = true;
+  btn.innerHTML = '<span>⏳</span><span>جاري الحفظ...</span>';
+
+  try {
+    await updateDoc(doc(db, 'users', _editingUid), {
+      displayName: newName,
+      updatedAt: new Date().toISOString()
+    });
+    showToast(`✅ تم تحديث الاسم إلى "${newName}"`, 'success');
+    closeEditModal();
+    setTimeout(() => loadAllUsers(), 600);
+  } catch (err) {
+    console.error(err);
+    showToast(`❌ فشل التحديث: ${err.message}`, 'error');
+    btn.disabled = false;
+    btn.innerHTML = '<span>💾</span><span>حفظ التغيير</span>';
+  }
+};
+
+// إغلاق المودال عند الضغط خارجها
+document.getElementById('editModal').addEventListener('click', (e) => {
+  if (e.target.id === 'editModal') closeEditModal();
+});
+
+// Enter للحفظ
+document.getElementById('editNewName').addEventListener('keypress', (e) => {
+  if (e.key === 'Enter') saveEditName();
+});
 
 // خروج
 window.handleLogout = async function() {
