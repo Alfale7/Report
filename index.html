@@ -3371,6 +3371,272 @@ text-align:center;
 /* ═══════════════════════════════════════════════════ */
 
 /* MODAL */
+/* ═══════════════════════════════════════════════════ */
+/* 🎉 شاشة الترحيب الفخمة عند تفعيل Lifetime           */
+/* ═══════════════════════════════════════════════════ */
+.welcome-overlay{
+  display:none;
+  position:fixed;
+  inset:0;
+  background:linear-gradient(135deg,rgba(10,52,71,0.95),rgba(30,107,138,0.95));
+  backdrop-filter:blur(15px);
+  -webkit-backdrop-filter:blur(15px);
+  z-index:99999;
+  align-items:center;
+  justify-content:center;
+  padding:18px;
+  animation:wmFadeIn 0.5s ease-out;
+  overflow-y:auto;
+}
+.welcome-overlay.show{display:flex;}
+@keyframes wmFadeIn{
+  from{opacity:0;}
+  to{opacity:1;}
+}
+
+.welcome-card{
+  background:linear-gradient(135deg,#fff,#f8fafc);
+  border-radius:32px;
+  padding:36px 26px 28px;
+  max-width:440px;
+  width:100%;
+  text-align:center;
+  position:relative;
+  box-shadow:0 30px 80px rgba(0,0,0,0.5),
+             0 0 0 1px rgba(255,255,255,0.1),
+             inset 0 1px 0 rgba(255,255,255,1);
+  animation:wmCardIn 0.7s cubic-bezier(0.34,1.56,0.64,1);
+  overflow:hidden;
+}
+@keyframes wmCardIn{
+  0%{transform:scale(0.3) rotate(-10deg);opacity:0;}
+  60%{transform:scale(1.05) rotate(2deg);}
+  100%{transform:scale(1) rotate(0);opacity:1;}
+}
+
+/* الحلقات المتحركة */
+.welcome-rings{
+  position:absolute;
+  top:60px;
+  left:50%;
+  transform:translateX(-50%);
+  width:300px;
+  height:300px;
+  pointer-events:none;
+}
+.ring{
+  position:absolute;
+  inset:0;
+  border-radius:50%;
+  border:2px solid rgba(212,166,87,0.3);
+  animation:ringPulse 3s ease-out infinite;
+}
+.ring.r1{animation-delay:0s;}
+.ring.r2{animation-delay:1s;}
+.ring.r3{animation-delay:2s;}
+@keyframes ringPulse{
+  0%{transform:scale(0.6);opacity:0;}
+  50%{opacity:0.6;}
+  100%{transform:scale(1.5);opacity:0;}
+}
+
+/* الماسة الذهبية */
+.welcome-diamond{
+  width:120px;
+  height:120px;
+  margin:0 auto 20px;
+  background:linear-gradient(135deg,#fbbf24,#d4a657,#b8923d);
+  border-radius:28px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  font-size:4rem;
+  position:relative;
+  z-index:2;
+  box-shadow:0 20px 50px rgba(212,166,87,0.5),
+             inset 0 -4px 12px rgba(0,0,0,0.15),
+             inset 0 4px 12px rgba(255,255,255,0.5);
+  animation:diamondFloat 3s ease-in-out infinite;
+  transform-style:preserve-3d;
+}
+@keyframes diamondFloat{
+  0%,100%{transform:translateY(0) rotate(0deg);}
+  50%{transform:translateY(-8px) rotate(5deg);}
+}
+.diamond-shine{
+  position:absolute;
+  inset:8px;
+  border-radius:22px;
+  background:linear-gradient(135deg,rgba(255,255,255,0.4),transparent 60%);
+  pointer-events:none;
+  animation:shineRotate 4s linear infinite;
+}
+@keyframes shineRotate{
+  0%{transform:rotate(0deg);}
+  100%{transform:rotate(360deg);}
+}
+
+/* العنوان */
+.welcome-title{margin-bottom:24px;position:relative;z-index:2;}
+.welcome-congrats{
+  font-family:'Reem Kufi','Tajawal',sans-serif;
+  font-size:1.6rem;
+  font-weight:900;
+  margin-bottom:6px;
+  color:#1a3a4e;
+  animation:bounce 1s ease-in-out 0.5s 2;
+}
+.welcome-congrats .grad{
+  background:linear-gradient(135deg,#d4a657,#fbbf24,#d4a657);
+  background-size:200% 100%;
+  -webkit-background-clip:text;
+  -webkit-text-fill-color:transparent;
+  background-clip:text;
+  animation:gradShift 2s ease-in-out infinite;
+}
+@keyframes gradShift{
+  0%,100%{background-position:0% 50%;}
+  50%{background-position:100% 50%;}
+}
+@keyframes bounce{
+  0%,100%{transform:translateY(0);}
+  50%{transform:translateY(-8px);}
+}
+.welcome-name{
+  font-family:'Reem Kufi','Tajawal',sans-serif;
+  font-size:1.8rem;
+  font-weight:900;
+  color:#1e6b8a;
+  margin-bottom:10px;
+  word-break:break-word;
+}
+.welcome-sub{
+  font-size:1rem;
+  font-weight:700;
+  color:#475569;
+  line-height:1.6;
+}
+.lifetime-text{
+  background:linear-gradient(135deg,#d4a657,#b8923d);
+  color:#fff;
+  padding:3px 10px;
+  border-radius:99px;
+  font-size:0.86rem;
+  display:inline-block;
+  margin-right:4px;
+  box-shadow:0 4px 12px rgba(212,166,87,0.4);
+}
+
+/* المميزات */
+.welcome-benefits{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:8px;
+  margin-bottom:22px;
+  text-align:right;
+  position:relative;
+  z-index:2;
+}
+.benefit-item{
+  background:linear-gradient(135deg,#f0f9ff,#e0f2fe);
+  border:1.5px solid rgba(30,107,138,0.15);
+  border-radius:14px;
+  padding:11px 12px;
+  display:flex;
+  align-items:center;
+  gap:9px;
+  transition:transform 0.2s;
+}
+.benefit-item:hover{transform:translateY(-3px);}
+.benefit-icon{
+  font-size:1.5rem;
+  width:36px;
+  height:36px;
+  background:#fff;
+  border-radius:10px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  flex-shrink:0;
+  box-shadow:0 4px 10px rgba(30,107,138,0.15);
+}
+.benefit-text{flex:1;min-width:0;}
+.benefit-text strong{
+  display:block;
+  font-size:0.78rem;
+  font-weight:900;
+  color:#1a3a4e;
+  line-height:1.2;
+  margin-bottom:1px;
+}
+.benefit-text span{
+  font-size:0.66rem;
+  color:#5a7080;
+  font-weight:700;
+}
+
+/* CTA */
+.welcome-cta{
+  width:100%;
+  background:linear-gradient(135deg,#16a34a,#15803d);
+  color:#fff;
+  border:none;
+  padding:17px;
+  border-radius:14px;
+  font-family:inherit;
+  font-size:1.05rem;
+  font-weight:900;
+  cursor:pointer;
+  box-shadow:0 14px 32px rgba(22,163,74,0.4),
+             inset 0 1px 0 rgba(255,255,255,0.3);
+  transition:all 0.25s;
+  position:relative;
+  overflow:hidden;
+  z-index:2;
+}
+.welcome-cta::before{
+  content:"";
+  position:absolute;
+  top:0;left:-100%;
+  width:60%;
+  height:100%;
+  background:linear-gradient(120deg,transparent,rgba(255,255,255,0.3),transparent);
+  animation:ctaSweep 2s ease-in-out infinite;
+}
+@keyframes ctaSweep{
+  0%{left:-100%;}
+  50%,100%{left:160%;}
+}
+.welcome-cta:hover{
+  transform:translateY(-3px);
+  box-shadow:0 18px 40px rgba(22,163,74,0.5);
+}
+.welcome-cta:active{transform:translateY(-1px);}
+
+/* footer */
+.welcome-footer{
+  margin-top:14px;
+  position:relative;
+  z-index:2;
+}
+.welcome-thanks{
+  font-size:0.84rem;
+  color:#5a7080;
+  font-weight:800;
+}
+
+@media (max-width:480px){
+  .welcome-card{padding:30px 22px 24px;border-radius:24px;}
+  .welcome-diamond{width:100px;height:100px;font-size:3.4rem;}
+  .welcome-congrats{font-size:1.4rem;}
+  .welcome-name{font-size:1.5rem;}
+  .welcome-sub{font-size:0.9rem;}
+  .welcome-benefits{grid-template-columns:1fr;}
+  .benefit-text strong{font-size:0.84rem;}
+  .benefit-text span{font-size:0.7rem;}
+}
+/* ═══════════════════════════════════════════════════ */
+
 .modal-overlay{
 position:fixed;top:0;left:0;right:0;bottom:0;
 background:rgba(0,0,0,0.78);
@@ -3529,6 +3795,9 @@ font-size:0.78rem;text-align:center;margin-top:12px;display:none;
 
 .modal-hint{text-align:center;font-size:0.72rem;color:rgba(255,255,255,0.45);margin-top:14px;}
 </style>
+<!-- 🎉 Canvas Confetti - مكتبة الاحتفال العالمية -->
+<script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.3/dist/confetti.browser.min.js"></script>
+
 </head>
 <body>
 
@@ -5157,6 +5426,77 @@ font-size:0.78rem;text-align:center;margin-top:12px;display:none;
 
 </div>
 
+<!-- 🎉 WELCOME CELEBRATION MODAL - شاشة الاحتفال بالتفعيل -->
+<div class="welcome-overlay" id="welcomeModal">
+  <div class="welcome-card">
+    <!-- Animated rings -->
+    <div class="welcome-rings">
+      <div class="ring r1"></div>
+      <div class="ring r2"></div>
+      <div class="ring r3"></div>
+    </div>
+
+    <!-- Diamond icon -->
+    <div class="welcome-diamond">
+      <div class="diamond-shine"></div>
+      <span>💎</span>
+    </div>
+
+    <!-- Title -->
+    <div class="welcome-title">
+      <div class="welcome-congrats">
+        🎉 <span class="grad">مبروك</span> 🎉
+      </div>
+      <div class="welcome-name" id="welcomeName">يا غالي!</div>
+      <div class="welcome-sub">
+        تم تفعيل اشتراكك <span class="lifetime-text">Lifetime 💎</span>
+      </div>
+    </div>
+
+    <!-- Benefits -->
+    <div class="welcome-benefits">
+      <div class="benefit-item">
+        <div class="benefit-icon">📋</div>
+        <div class="benefit-text">
+          <strong>+15 قالب احترافي</strong>
+          <span>كلها متاحة الآن</span>
+        </div>
+      </div>
+      <div class="benefit-item">
+        <div class="benefit-icon">⚡</div>
+        <div class="benefit-text">
+          <strong>تحميلات بلا حدود</strong>
+          <span>إلى الأبد</span>
+        </div>
+      </div>
+      <div class="benefit-item">
+        <div class="benefit-icon">🚀</div>
+        <div class="benefit-text">
+          <strong>تحديثات مستمرة</strong>
+          <span>قوالب جديدة شهرياً</span>
+        </div>
+      </div>
+      <div class="benefit-item">
+        <div class="benefit-icon">💬</div>
+        <div class="benefit-text">
+          <strong>دعم فني مميز</strong>
+          <span>نحن دائماً معك</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- CTA -->
+    <button class="welcome-cta" onclick="closeWelcomeModal()">
+      <span>🚀 ابدأ رحلتك الآن</span>
+    </button>
+
+    <!-- Footer hint -->
+    <div class="welcome-footer">
+      <span class="welcome-thanks">شكراً لثقتك بنا 💚</span>
+    </div>
+  </div>
+</div>
+
 <!-- MODAL -->
 <div class="modal-overlay" id="loginModal">
   <div class="modal-card">
@@ -5855,22 +6195,15 @@ document.addEventListener('DOMContentLoaded', function(){
 /* ═══════════════════ نهاية نظام الترجمة ═══════════════════ */
 
 window.addEventListener('DOMContentLoaded', function(){
-  // التحقق من الـ session القديمة (sessionStorage)
-  const oldSession = sessionStorage.getItem('loggedUser');
-  if(oldSession && users[oldSession]){
-    // نقلها إلى localStorage (دائمة)
-    localStorage.setItem('loggedUser', oldSession);
-    localStorage.setItem('isSubscribed', '1');
-    sessionStorage.removeItem('loggedUser');
-  }
+  // 🔥 نظام Firebase الجديد يدير كل شي
+  // نمسح آثار localStorage القديم لتجنب الخروج المزدوج
+  localStorage.removeItem('loggedUser');
+  localStorage.removeItem('isSubscribed');
+  sessionStorage.removeItem('loggedUser');
 
-  // التحقق من الـ login الدائم
-  const savedUser = localStorage.getItem('loggedUser');
-  if(savedUser && users[savedUser]){
-    // التأكد من تحديث isSubscribed (لو كان مفقود من قبل)
-    localStorage.setItem('isSubscribed', '1');
-    enterLoggedInMode(savedUser);
-  }
+  // نخفي user-bar القديم نهائياً
+  const oldBar = document.getElementById('userBar');
+  if (oldBar) oldBar.style.display = 'none';
 });
 
 function openLogin(){
@@ -6159,7 +6492,7 @@ document.getElementById('loginModal').addEventListener('click', function(e){
 <!-- ═══ Firebase Integration ═══ -->
 <script type="module">
 import { onUserChange, logout, isLifetime, isAdmin, SITE_CONFIG, db } from './firebase-config.js';
-import { doc, onSnapshot } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+import { doc, onSnapshot, updateDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
 let _indexProfileUnsub = null;
 
@@ -6176,11 +6509,23 @@ onUserChange((data) => {
 
   if (data?.user) {
     const { user, profile } = data;
+    let _previousPlan = profile?.plan || 'free';
 
     // 🔥 مراقبة لحظية - لو الأدمن غيّر الاشتراك
     _indexProfileUnsub = onSnapshot(doc(db, 'users', user.uid), (snap) => {
       if (snap.exists()) {
         const liveProfile = snap.data();
+
+        // 🎉 كشف التفعيل الجديد!
+        const currentPlan = liveProfile.plan;
+        const wasWelcomed = liveProfile.welcomedAt;
+
+        if (currentPlan === 'lifetime' && _previousPlan !== 'lifetime' && !wasWelcomed) {
+          // أول تفعيل! نعرض شاشة الاحتفال
+          showWelcomeCelebration(user, liveProfile);
+        }
+        _previousPlan = currentPlan;
+
         applyUserState(user, liveProfile);
       }
     });
