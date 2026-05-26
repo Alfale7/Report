@@ -389,19 +389,19 @@ window.canDownload = function() {
 // 🎯 ربط تلقائي مع saveAsImage (إن وجدت)
 // نُغلّف الدالة الأصلية - بحيث تفحص قبل التحميل ثم تسجّل بعده
 setTimeout(() => {
+  // 1️⃣ تصدير كصورة (PNG)
   if (typeof window.saveAsImage === 'function') {
     const _original = window.saveAsImage;
     window.saveAsImage = async function(...args) {
-      // ✋ فحص قبل التحميل
       if (!window.canDownload()) return;
-
       const result = await _original.apply(this, args);
-      // نسجل التحميل بعد نجاح الحفظ
       window.trackDownload();
       return result;
     };
     console.log('🔗 تم ربط saveAsImage بـ Firebase');
   }
+
+  // 2️⃣ تصدير PDF
   if (typeof window.savePDF === 'function') {
     const _originalPDF = window.savePDF;
     window.savePDF = async function(...args) {
@@ -412,4 +412,52 @@ setTimeout(() => {
     };
     console.log('🔗 تم ربط savePDF بـ Firebase');
   }
+
+  // 3️⃣ الطباعة (window.print)
+  const _originalPrint = window.print;
+  window.print = function(...args) {
+    if (!window.canDownload()) return;
+    // نسجّل التحميل قبل ما تفتح نافذة الطباعة
+    window.trackDownload();
+    return _originalPrint.apply(this, args);
+  };
+  console.log('🔗 تم ربط window.print بـ Firebase');
+
+  // 4️⃣ printReport (لو الموقع يستخدم دالة مخصصة)
+  if (typeof window.printReport === 'function') {
+    const _origPrintReport = window.printReport;
+    window.printReport = function(...args) {
+      if (!window.canDownload()) return;
+      window.trackDownload();
+      return _origPrintReport.apply(this, args);
+    };
+    console.log('🔗 تم ربط printReport بـ Firebase');
+  }
+
+  // 5️⃣ حماية اختصار Ctrl+P / Cmd+P
+  document.addEventListener('keydown', function(e) {
+    if ((e.ctrlKey || e.metaKey) && e.key === 'p') {
+      // فحص الصلاحية
+      if (!window.canDownload()) {
+        e.preventDefault();
+        return false;
+      }
+      // مسموح → سجّل التحميل
+      window.trackDownload();
+    }
+  });
+
+  // 6️⃣ حماية beforeprint (يطلق قبل أي طباعة)
+  let _printTracked = false;
+  window.addEventListener('beforeprint', function() {
+    if (_printTracked) return;
+    _printTracked = true;
+    setTimeout(() => { _printTracked = false; }, 2000);
+
+    if (!window.canDownload()) {
+      // ما نقدر نوقفها هنا لكن نسجل اشتراك مطلوب
+      return;
+    }
+    window.trackDownload();
+  });
 }, 1000);

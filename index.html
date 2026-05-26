@@ -6556,6 +6556,9 @@ function applyUserState(user, profile) {
     localStorage.removeItem('isSubscribed');
   }
 
+  // 🎁 تحديث عدّاد التحميلات المجانية ديناميكياً
+  updateFreeCounter(profile, lifetime);
+
   // إخفاء/إظهار بطاقة السعر
   if (priceCard) {
     priceCard.style.display = lifetime ? 'none' : '';
@@ -6604,6 +6607,170 @@ function applyUserState(user, profile) {
     `;
   }
 }
+
+// 🎁 تحديث عدّاد التحميلات المجانية ديناميكياً
+function updateFreeCounter(profile, isLifetimeUser) {
+  const counter = document.getElementById('freeCounter');
+  if (!counter) return;
+
+  // مشترك Lifetime → إخفاء العدّاد
+  if (isLifetimeUser) {
+    counter.style.display = 'none';
+    return;
+  }
+
+  const used = profile?.downloadsUsed || 0;
+  const limit = profile?.downloadsLimit || 2;
+  const remaining = Math.max(0, limit - used);
+
+  const valueEl = document.getElementById('freeCounterValue');
+  const textEl = counter.querySelector('.free-counter-text');
+  const iconEl = counter.querySelector('.free-counter-icon');
+  const btnEl = counter.querySelector('.free-counter-btn');
+
+  counter.style.display = ''; // إظهار
+
+  if (remaining > 0) {
+    // 🎁 لسه عنده تحميلات
+    if (valueEl) valueEl.textContent = remaining;
+    if (iconEl) iconEl.textContent = '🎁';
+    counter.style.background = '';
+    counter.style.borderColor = '';
+
+    // النص العادي
+    const suffix = textEl?.querySelector('[data-i18n="freeCounterSuffix"]');
+    if (suffix) {
+      suffix.textContent = remaining === 1
+        ? 'تحميل مجاني متبقي فقط · جرّب تقرير التأسيس'
+        : 'تحميل مجاني متبقي · جرّب تقرير يوم التأسيس الآن';
+    }
+    if (btnEl) btnEl.querySelector('span').textContent = 'جرّب الآن';
+
+  } else {
+    // ⚠️ خلصت التحميلات → اشتركوا
+    if (iconEl) iconEl.textContent = '🔒';
+    counter.style.background = 'linear-gradient(135deg,rgba(220,38,38,0.15),rgba(245,158,11,0.08))';
+    counter.style.borderColor = 'rgba(220,38,38,0.4)';
+
+    // نغيّر كل النص
+    if (textEl) {
+      textEl.innerHTML = `
+        <strong style="color:#fff;font-size:1rem;display:block;margin-bottom:2px;">
+          ⚠️ انتهت تجربتك المجانية
+        </strong>
+        <span style="color:rgba(255,255,255,0.85);font-size:0.84rem;">
+          اشترك بـ 30 ريال للحصول على تحميلات بلا حدود 💎
+        </span>
+      `;
+    }
+    if (btnEl) {
+      btnEl.querySelector('span').textContent = '💎 اشترك الآن';
+      btnEl.onclick = () => window.location.href = 'pay.html';
+      btnEl.style.background = 'linear-gradient(135deg,#16a34a,#15803d)';
+    }
+  }
+}
+
+// 🎉 شاشة الاحتفال بالتفعيل (Lifetime)
+function showWelcomeCelebration(user, profile) {
+  const name = profile?.displayName || user?.email?.split('@')[0] || 'يا غالي';
+  document.getElementById('welcomeName').textContent = `يا ${name}!`;
+
+  // عرض المودال
+  document.getElementById('welcomeModal').classList.add('show');
+
+  // 🎊 إطلاق الكونفيتي بطريقة احترافية
+  setTimeout(() => launchConfetti(), 400);
+
+  // حفظ welcomedAt في Firebase (عشان ما تظهر مرة ثانية)
+  if (user?.uid) {
+    updateDoc(doc(db, 'users', user.uid), {
+      welcomedAt: serverTimestamp()
+    }).catch(err => console.warn('welcomedAt save failed:', err));
+  }
+}
+
+// 🎊 الكونفيتي العالمي (طريقة Stripe & Linear)
+function launchConfetti() {
+  if (typeof confetti === 'undefined') {
+    console.warn('canvas-confetti not loaded');
+    return;
+  }
+
+  const duration = 4000;
+  const animationEnd = Date.now() + duration;
+  const colors = ['#d4a657', '#fbbf24', '#16a34a', '#1e6b8a', '#FF6B35', '#DB2777'];
+
+  // الموجة الأولى - من المنتصف
+  confetti({
+    particleCount: 150,
+    spread: 100,
+    origin: { y: 0.5 },
+    colors: colors,
+    startVelocity: 45,
+    scalar: 1.2,
+    ticks: 300
+  });
+
+  // موجات متتالية من الجانبين
+  const randomInRange = (min, max) => Math.random() * (max - min) + min;
+  const interval = setInterval(() => {
+    const timeLeft = animationEnd - Date.now();
+    if (timeLeft <= 0) return clearInterval(interval);
+
+    const particleCount = 50 * (timeLeft / duration);
+
+    // من الشمال
+    confetti({
+      particleCount,
+      angle: 60,
+      spread: 70,
+      origin: { x: 0, y: 0.6 },
+      colors: colors,
+      scalar: randomInRange(0.8, 1.2),
+      ticks: 200
+    });
+
+    // من اليمين
+    confetti({
+      particleCount,
+      angle: 120,
+      spread: 70,
+      origin: { x: 1, y: 0.6 },
+      colors: colors,
+      scalar: randomInRange(0.8, 1.2),
+      ticks: 200
+    });
+  }, 250);
+
+  // نجوم ذهبية إضافية
+  setTimeout(() => {
+    confetti({
+      particleCount: 100,
+      spread: 360,
+      origin: { y: 0.4 },
+      colors: ['#d4a657', '#fbbf24'],
+      shapes: ['star'],
+      startVelocity: 35,
+      scalar: 1.4
+    });
+  }, 800);
+}
+
+window.closeWelcomeModal = function() {
+  // كونفيتي وداع 🎊
+  if (typeof confetti !== 'undefined') {
+    confetti({
+      particleCount: 80,
+      spread: 100,
+      origin: { y: 0.7 },
+      colors: ['#16a34a', '#d4a657', '#1e6b8a']
+    });
+  }
+  setTimeout(() => {
+    document.getElementById('welcomeModal').classList.remove('show');
+  }, 300);
+};
 
 window.firebaseLogout = async function() {
   if (!confirm('تسجيل الخروج؟')) return;
