@@ -11,7 +11,8 @@ import {
   buildSubscribeWhatsAppLink,
   SITE_CONFIG,
   logout,
-  getUserProfile
+  getUserProfile,
+  incrementDownloadCount
 } from './firebase-config.js';
 
 import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
@@ -323,3 +324,42 @@ window.getFirebaseUser = () => _user;
 window.getFirebaseProfile = () => _profile;
 window.isFirebaseLifetime = () => isLifetime(_profile);
 window.isFirebaseAdmin = () => isAdmin(_user);
+
+// 📊 تتبّع التحميلات في Firebase (Real-time)
+window.trackDownload = async function() {
+  if (!_user) return false;
+  try {
+    const result = await incrementDownloadCount(_user.uid);
+    if (result.success) {
+      console.log('✅ تم تسجيل التحميل في Firebase');
+      return true;
+    }
+  } catch (err) {
+    console.error('فشل تسجيل التحميل:', err);
+  }
+  return false;
+};
+
+// 🎯 ربط تلقائي مع saveAsImage (إن وجدت)
+// نُغلّف الدالة الأصلية - بحيث تستدعي trackDownload تلقائياً
+setTimeout(() => {
+  if (typeof window.saveAsImage === 'function') {
+    const _original = window.saveAsImage;
+    window.saveAsImage = async function(...args) {
+      const result = await _original.apply(this, args);
+      // نسجل التحميل بعد نجاح الحفظ
+      window.trackDownload();
+      return result;
+    };
+    console.log('🔗 تم ربط saveAsImage بـ Firebase');
+  }
+  if (typeof window.savePDF === 'function') {
+    const _originalPDF = window.savePDF;
+    window.savePDF = async function(...args) {
+      const result = await _originalPDF.apply(this, args);
+      window.trackDownload();
+      return result;
+    };
+    console.log('🔗 تم ربط savePDF بـ Firebase');
+  }
+}, 1000);
