@@ -63,6 +63,398 @@ body{font-family:'Tajawal','Cairo',sans-serif;background:linear-gradient(135deg,
 .stat-card.red .num{color:#dc2626;}
 .stat-card .lbl{font-size:0.74rem;color:#5a7080;font-weight:700;margin-top:2px;}
 
+/* ════════════════════════════════════════════════ */
+/* 📊 لوحة الإحصائيات الاحترافية                     */
+/* ════════════════════════════════════════════════ */
+.dashboard-section{
+  margin:20px 0;
+  display:flex;
+  flex-direction:column;
+  gap:14px;
+}
+
+/* بطاقات الإيرادات */
+.revenue-cards{
+  display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(180px,1fr));
+  gap:10px;
+}
+.rev-card{
+  background:#fff;
+  border-radius:18px;
+  padding:18px 16px;
+  box-shadow:0 6px 18px rgba(0,0,0,0.06);
+  border:1px solid #f0f4f8;
+  position:relative;
+  overflow:hidden;
+  transition:transform 0.2s;
+}
+.rev-card:hover{transform:translateY(-3px);box-shadow:0 14px 30px rgba(0,0,0,0.12);}
+.rev-card.primary{
+  background:linear-gradient(135deg,#fff8e1,#fff);
+  border-color:rgba(212,166,87,0.3);
+}
+.rev-card.primary::before{
+  content:"";
+  position:absolute;
+  top:0;left:0;right:0;
+  height:3px;
+  background:linear-gradient(90deg,#d4a657,#fbbf24);
+}
+.rev-header{
+  display:flex;
+  align-items:center;
+  gap:10px;
+  margin-bottom:10px;
+}
+.rev-icon{
+  width:36px;
+  height:36px;
+  border-radius:10px;
+  color:#fff;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  font-size:1.2rem;
+  box-shadow:0 4px 10px rgba(0,0,0,0.15);
+}
+.rev-label{
+  font-size:0.78rem;
+  color:#5a7080;
+  font-weight:900;
+}
+.rev-amount{
+  font-family:'Reem Kufi','Tajawal',sans-serif;
+  font-size:2rem;
+  font-weight:900;
+  color:#1a3a4e;
+  line-height:1;
+  margin-bottom:3px;
+}
+.rev-card.primary .rev-amount{
+  background:linear-gradient(135deg,#d4a657,#b8923d);
+  -webkit-background-clip:text;
+  -webkit-text-fill-color:transparent;
+  background-clip:text;
+}
+.rev-currency{
+  font-size:0.7rem;
+  color:#5a7080;
+  font-weight:700;
+  margin-bottom:8px;
+}
+.rev-trend{
+  font-size:0.72rem;
+  color:#5a7080;
+  font-weight:700;
+  display:flex;
+  align-items:center;
+  gap:4px;
+  padding-top:8px;
+  border-top:1px solid #f0f4f8;
+}
+.trend-up{color:#16a34a;}
+
+/* صف اللوحة */
+.dashboard-row{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:12px;
+}
+@media (max-width:700px){
+  .dashboard-row{grid-template-columns:1fr;}
+}
+
+.dash-card{
+  background:#fff;
+  border-radius:18px;
+  padding:16px;
+  box-shadow:0 6px 18px rgba(0,0,0,0.06);
+  border:1px solid #f0f4f8;
+}
+.dash-card-title{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  font-family:'Reem Kufi','Tajawal',sans-serif;
+  font-size:0.94rem;
+  font-weight:900;
+  color:#1a3a4e;
+  margin-bottom:14px;
+  padding-bottom:10px;
+  border-bottom:1px solid #f0f4f8;
+}
+.dash-badge{
+  background:#f0f9ff;
+  color:#1e6b8a;
+  padding:3px 10px;
+  border-radius:99px;
+  font-size:0.72rem;
+  font-weight:900;
+}
+.dash-badge.live{
+  background:#dcfce7;
+  color:#15803d;
+  animation:pulseDot 2s ease-in-out infinite;
+}
+@keyframes pulseDot{0%,100%{opacity:1;}50%{opacity:0.7;}}
+
+/* Donut Chart */
+.donut-wrap{
+  position:relative;
+  width:160px;
+  height:160px;
+  margin:0 auto 14px;
+}
+.donut{
+  width:100%;
+  height:100%;
+  transform:rotate(-90deg);
+}
+.donut-bg{
+  fill:none;
+  stroke:#f0f4f8;
+  stroke-width:10;
+}
+.donut-progress{
+  fill:none;
+  stroke:url(#donutGrad);
+  stroke-width:10;
+  stroke-linecap:round;
+  transition:stroke-dasharray 0.8s cubic-bezier(0.4,0,0.2,1);
+}
+/* نضيف gradient */
+.donut::before{content:"";}
+.donut-center{
+  position:absolute;
+  inset:0;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:center;
+}
+.donut-pct{
+  font-family:'Reem Kufi','Tajawal',sans-serif;
+  font-size:2rem;
+  font-weight:900;
+  background:linear-gradient(135deg,#d4a657,#b8923d);
+  -webkit-background-clip:text;
+  -webkit-text-fill-color:transparent;
+  background-clip:text;
+  line-height:1;
+}
+.donut-label{
+  font-size:0.74rem;
+  color:#5a7080;
+  font-weight:800;
+  margin-top:2px;
+}
+.donut-legend{
+  display:flex;
+  flex-direction:column;
+  gap:8px;
+}
+.legend-item{
+  display:flex;
+  align-items:center;
+  gap:8px;
+  padding:6px 10px;
+  background:#f8fafc;
+  border-radius:9px;
+}
+.legend-dot{
+  width:12px;
+  height:12px;
+  border-radius:50%;
+  flex-shrink:0;
+}
+.legend-dot.gold{background:linear-gradient(135deg,#d4a657,#fbbf24);}
+.legend-dot.gray{background:#cbd5e1;}
+.legend-text{
+  flex:1;
+  font-size:0.82rem;
+  font-weight:900;
+  color:#1a3a4e;
+}
+.legend-value{
+  font-size:0.86rem;
+  font-weight:900;
+  color:#1e6b8a;
+}
+
+/* قائمة آخر المشتركين */
+.recent-list{
+  display:flex;
+  flex-direction:column;
+  gap:8px;
+  max-height:280px;
+  overflow-y:auto;
+}
+.recent-item{
+  display:flex;
+  align-items:center;
+  gap:10px;
+  padding:10px;
+  background:#f8fafc;
+  border-radius:11px;
+  transition:background 0.2s;
+}
+.recent-item:hover{background:#f0f9ff;}
+.recent-avatar{
+  width:36px;
+  height:36px;
+  border-radius:50%;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  font-weight:900;
+  font-size:0.86rem;
+  color:#fff;
+  flex-shrink:0;
+}
+.recent-info{flex:1;min-width:0;}
+.recent-name{
+  font-size:0.84rem;
+  font-weight:900;
+  color:#1a3a4e;
+  overflow:hidden;
+  text-overflow:ellipsis;
+  white-space:nowrap;
+}
+.recent-time{
+  font-size:0.7rem;
+  color:#5a7080;
+  font-weight:700;
+}
+.recent-badge{
+  font-size:0.68rem;
+  font-weight:900;
+  padding:3px 8px;
+  border-radius:99px;
+  flex-shrink:0;
+}
+.recent-badge.lifetime{
+  background:linear-gradient(135deg,#fde68a,#f59e0b);
+  color:#7c2d12;
+}
+.recent-badge.free{
+  background:#e2e8f0;
+  color:#475569;
+}
+.recent-empty{
+  text-align:center;
+  padding:20px;
+  color:#94a3b8;
+  font-weight:700;
+  font-size:0.84rem;
+}
+
+/* Top Users */
+.top-users-list{
+  display:flex;
+  flex-direction:column;
+  gap:8px;
+}
+.top-item{
+  display:flex;
+  align-items:center;
+  gap:12px;
+  padding:12px;
+  background:#f8fafc;
+  border-radius:11px;
+  position:relative;
+}
+.top-rank{
+  width:32px;
+  height:32px;
+  border-radius:50%;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  font-weight:900;
+  font-size:0.9rem;
+  color:#fff;
+  flex-shrink:0;
+}
+.top-rank.r1{background:linear-gradient(135deg,#d4a657,#b8923d);}
+.top-rank.r2{background:linear-gradient(135deg,#9ca3af,#6b7280);}
+.top-rank.r3{background:linear-gradient(135deg,#92400e,#78350f);}
+.top-rank.r-other{background:linear-gradient(135deg,#cbd5e1,#94a3b8);color:#475569;}
+.top-info{flex:1;min-width:0;}
+.top-name{
+  font-size:0.86rem;
+  font-weight:900;
+  color:#1a3a4e;
+  overflow:hidden;
+  text-overflow:ellipsis;
+  white-space:nowrap;
+}
+.top-email{
+  font-size:0.7rem;
+  color:#5a7080;
+  font-weight:700;
+}
+.top-downloads{
+  font-family:'Reem Kufi','Tajawal',sans-serif;
+  font-size:1.05rem;
+  font-weight:900;
+  color:#1e6b8a;
+  flex-shrink:0;
+}
+.top-downloads-lbl{
+  font-size:0.66rem;
+  color:#5a7080;
+  font-weight:800;
+}
+
+/* Bars Chart */
+.bars-chart{
+  display:flex;
+  align-items:flex-end;
+  justify-content:space-around;
+  gap:6px;
+  height:140px;
+  padding:10px 4px;
+}
+.bar-item{
+  flex:1;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  gap:6px;
+  height:100%;
+}
+.bar-value{
+  font-size:0.74rem;
+  font-weight:900;
+  color:#1a3a4e;
+  height:18px;
+}
+.bar-fill{
+  width:100%;
+  background:linear-gradient(180deg,#d4a657,#b8923d);
+  border-radius:8px 8px 0 0;
+  min-height:4px;
+  transition:height 0.8s cubic-bezier(0.4,0,0.2,1);
+  position:relative;
+  box-shadow:0 -4px 12px rgba(212,166,87,0.4);
+}
+.bar-fill.zero{background:#e2e8f0;box-shadow:none;}
+.bar-label{
+  font-size:0.66rem;
+  color:#5a7080;
+  font-weight:800;
+  margin-top:4px;
+}
+
+@media (max-width:480px){
+  .revenue-cards{grid-template-columns:1fr;}
+  .rev-amount{font-size:1.7rem;}
+  .donut-wrap{width:140px;height:140px;}
+}
+/* ════════════════════════════════════════════════ */
+
+
 .search-bar{
   background:rgba(255,255,255,0.97);
   border-radius:14px;
@@ -414,6 +806,134 @@ body{font-family:'Tajawal','Cairo',sans-serif;background:linear-gradient(135deg,
         <div class="lbl">حسابات مجانية</div>
       </div>
     </div>
+
+    <!-- ════════════════════════════════════════════════ -->
+    <!-- 📊 لوحة الإحصائيات الاحترافية                     -->
+    <!-- ════════════════════════════════════════════════ -->
+    <div class="dashboard-section">
+
+      <!-- بطاقات الإيرادات -->
+      <div class="revenue-cards">
+        <div class="rev-card primary">
+          <div class="rev-header">
+            <div class="rev-icon" style="background:linear-gradient(135deg,#16a34a,#15803d);">💰</div>
+            <div class="rev-label">إجمالي الإيرادات</div>
+          </div>
+          <div class="rev-amount" id="totalRevenue">0</div>
+          <div class="rev-currency">ريال سعودي</div>
+          <div class="rev-trend">
+            <span class="trend-up">📈</span>
+            <span>محسوبة على Lifetime × 30</span>
+          </div>
+        </div>
+
+        <div class="rev-card">
+          <div class="rev-header">
+            <div class="rev-icon" style="background:linear-gradient(135deg,#1e6b8a,#2a8aab);">📊</div>
+            <div class="rev-label">معدل التحويل</div>
+          </div>
+          <div class="rev-amount" id="conversionRate">0%</div>
+          <div class="rev-currency">مجاني → مدفوع</div>
+          <div class="rev-trend">
+            <span>🎯</span>
+            <span>كلما زاد كلما زاد دخلك</span>
+          </div>
+        </div>
+
+        <div class="rev-card">
+          <div class="rev-header">
+            <div class="rev-icon" style="background:linear-gradient(135deg,#7E22CE,#4C1D95);">📈</div>
+            <div class="rev-label">متوسط التحميلات</div>
+          </div>
+          <div class="rev-amount" id="avgDownloads">0</div>
+          <div class="rev-currency">لكل مستخدم</div>
+          <div class="rev-trend">
+            <span>💪</span>
+            <span>نشاط المستخدمين</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- مخطط دائري + قائمة -->
+      <div class="dashboard-row">
+
+        <!-- المخطط الدائري -->
+        <div class="dash-card chart-card">
+          <div class="dash-card-title">
+            <span>📊 توزيع المشتركين</span>
+            <span class="dash-badge" id="totalUsersBadge">0</span>
+          </div>
+          <div class="donut-wrap">
+            <svg width="0" height="0" style="position:absolute;">
+              <defs>
+                <linearGradient id="donutGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+                  <stop offset="0%" stop-color="#d4a657"/>
+                  <stop offset="100%" stop-color="#fbbf24"/>
+                </linearGradient>
+              </defs>
+            </svg>
+            <svg class="donut" viewBox="0 0 100 100">
+              <circle class="donut-bg" cx="50" cy="50" r="40"></circle>
+              <circle class="donut-progress" id="donutProgress" cx="50" cy="50" r="40"
+                stroke-dasharray="0 251.2" stroke-dashoffset="0"></circle>
+            </svg>
+            <div class="donut-center">
+              <div class="donut-pct" id="donutPct">0%</div>
+              <div class="donut-label">مدفوع</div>
+            </div>
+          </div>
+          <div class="donut-legend">
+            <div class="legend-item">
+              <span class="legend-dot gold"></span>
+              <span class="legend-text">💎 Lifetime</span>
+              <span class="legend-value" id="legendLifetime">0</span>
+            </div>
+            <div class="legend-item">
+              <span class="legend-dot gray"></span>
+              <span class="legend-text">🆓 مجاني</span>
+              <span class="legend-value" id="legendFree">0</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- آخر المشتركين -->
+        <div class="dash-card recent-card">
+          <div class="dash-card-title">
+            <span>🆕 آخر المشتركين</span>
+            <span class="dash-badge live">🟢 LIVE</span>
+          </div>
+          <div class="recent-list" id="recentSubscribers">
+            <div class="recent-empty">جاري التحميل...</div>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- الأكثر نشاطاً -->
+      <div class="dash-card top-users-card">
+        <div class="dash-card-title">
+          <span>🏆 أكثر المستخدمين نشاطاً</span>
+          <span class="dash-badge">TOP 5</span>
+        </div>
+        <div class="top-users-list" id="topUsersList">
+          <div class="recent-empty">جاري التحميل...</div>
+        </div>
+      </div>
+
+      <!-- مخطط شريطي - مستخدمين/يوم -->
+      <div class="dash-card chart-bars-card">
+        <div class="dash-card-title">
+          <span>📅 التسجيلات (آخر 7 أيام)</span>
+          <span class="dash-badge" id="last7Days">0</span>
+        </div>
+        <div class="bars-chart" id="barsChart">
+          <!-- يُملأ بـ JS -->
+        </div>
+      </div>
+
+    </div>
+
+    <!-- ════════════════════════════════════════════════ -->
 
     <div class="search-bar">
       <input type="text" id="searchInput" placeholder="🔍 ابحث بالإيميل أو الجوال أو 🆔 معرّف العميل..." onkeyup="if(event.key==='Enter')handleSearch()">
