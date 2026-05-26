@@ -178,7 +178,7 @@ function showLoginRequired() {
 // ═══ شاشة "اشترك" (للمستخدمين Free) ═══
 function showSubscribeGate() {
   if (document.getElementById('subscribeGate')) return;
-  const link = buildSubscribeWhatsAppLink(_profile, _user);
+  const link = 'pay.html';
   const name = _profile?.displayName || (_user.email || '').split('@')[0];
 
   const g = document.createElement('div');

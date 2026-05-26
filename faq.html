@@ -1,0 +1,428 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>الأسئلة الشائعة · منصة التقارير الذكية</title>
+<link href="https://fonts.googleapis.com/css2?family=Reem+Kufi:wght@400;600;700&family=Tajawal:wght@400;500;700;900&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+body{
+  font-family:'Tajawal','Cairo',sans-serif;
+  background:linear-gradient(135deg,#0a3447,#1e6b8a);
+  min-height:100vh;
+  color:#fff;
+  padding:20px 14px 40px;
+}
+.container{max-width:680px;margin:0 auto;}
+
+.back{
+  display:inline-flex;
+  align-items:center;
+  gap:6px;
+  color:#fff;
+  text-decoration:none;
+  font-weight:900;
+  font-size:0.86rem;
+  margin-bottom:20px;
+  padding:8px 14px;
+  background:rgba(255,255,255,0.1);
+  border-radius:99px;
+  transition:background 0.2s;
+}
+.back:hover{background:rgba(255,255,255,0.15);}
+
+/* Header */
+.page-header{
+  text-align:center;
+  margin-bottom:24px;
+}
+.page-icon{
+  width:80px;height:80px;
+  background:linear-gradient(135deg,#1e6b8a,#2a8aab);
+  border-radius:22px;
+  display:flex;align-items:center;justify-content:center;
+  font-size:2.6rem;
+  margin:0 auto 16px;
+  box-shadow:0 14px 32px rgba(30,107,138,0.4);
+}
+.page-title{
+  font-family:'Reem Kufi',sans-serif;
+  font-size:1.7rem;
+  font-weight:700;
+  margin-bottom:8px;
+}
+.page-sub{
+  font-size:0.92rem;
+  color:rgba(255,255,255,0.75);
+  font-weight:700;
+}
+
+/* FAQ List */
+.faq-list{
+  display:flex;
+  flex-direction:column;
+  gap:10px;
+  margin-bottom:24px;
+}
+
+.faq-item{
+  background:#fff;
+  border-radius:14px;
+  overflow:hidden;
+  transition:all 0.3s;
+  box-shadow:0 4px 14px rgba(0,0,0,0.18);
+  border:1.5px solid transparent;
+}
+.faq-item:hover{box-shadow:0 8px 22px rgba(0,0,0,0.25);}
+.faq-item.open{
+  border-color:#d4a657;
+  box-shadow:0 12px 30px rgba(212,166,87,0.3);
+}
+
+.faq-q{
+  width:100%;
+  padding:16px 18px;
+  background:transparent;
+  border:none;
+  display:flex;
+  align-items:center;
+  gap:12px;
+  cursor:pointer;
+  text-align:right;
+  font-family:inherit;
+}
+.faq-q:hover{background:#f8fafc;}
+.faq-item.open .faq-q{background:linear-gradient(135deg,#f0f9ff,#fef3c7);}
+
+.faq-q-icon{
+  width:36px;height:36px;
+  background:linear-gradient(135deg,#f0f4f8,#e0e6ec);
+  border-radius:10px;
+  display:flex;align-items:center;justify-content:center;
+  font-size:1.1rem;
+  flex-shrink:0;
+  transition:all 0.3s;
+}
+.faq-item.open .faq-q-icon{
+  background:linear-gradient(135deg,#d4a657,#b8923d);
+  transform:rotate(360deg);
+}
+.faq-q-text{
+  flex:1;
+  font-size:0.92rem;
+  font-weight:900;
+  color:#1a3a4e;
+  line-height:1.4;
+}
+.faq-arrow{
+  width:30px;height:30px;
+  background:linear-gradient(135deg,#1e6b8a,#2a8aab);
+  color:#fff;
+  border-radius:50%;
+  display:flex;align-items:center;justify-content:center;
+  font-size:1.3rem;
+  font-weight:900;
+  flex-shrink:0;
+  transition:all 0.3s;
+  line-height:0;
+  padding-bottom:2px;
+}
+.faq-item.open .faq-arrow{
+  background:linear-gradient(135deg,#dc2626,#991b1b);
+  transform:rotate(45deg);
+}
+
+.faq-a{
+  max-height:0;
+  overflow:hidden;
+  transition:max-height 0.4s cubic-bezier(0.4,0,0.2,1);
+}
+.faq-item.open .faq-a{max-height:600px;}
+.faq-a p, .faq-a ul{
+  font-size:0.88rem;
+  color:#475569;
+  font-weight:700;
+  line-height:1.8;
+  padding:8px 18px;
+}
+.faq-a p:first-child{padding-top:0;}
+.faq-a p:last-child,.faq-a ul:last-child{padding-bottom:18px;}
+.faq-a ul{
+  list-style:none;
+  padding:8px 18px 8px 30px;
+}
+.faq-a ul li{padding:5px 0;display:flex;gap:6px;}
+.faq-a strong{color:#1e6b8a;font-weight:900;}
+
+/* CTA */
+.faq-cta{
+  background:linear-gradient(135deg,#1e6b8a,#2a8aab);
+  color:#fff;
+  border-radius:18px;
+  padding:18px 20px;
+  display:flex;
+  align-items:center;
+  gap:14px;
+  box-shadow:0 14px 36px rgba(30,107,138,0.4);
+}
+.faq-cta-icon{
+  width:50px;height:50px;
+  background:rgba(255,255,255,0.18);
+  border-radius:14px;
+  display:flex;align-items:center;justify-content:center;
+  font-size:1.6rem;
+  flex-shrink:0;
+}
+.faq-cta-content{flex:1;min-width:0;}
+.faq-cta-title{
+  font-family:'Reem Kufi',sans-serif;
+  font-size:1rem;
+  font-weight:700;
+  margin-bottom:2px;
+}
+.faq-cta-sub{
+  font-size:0.78rem;
+  opacity:0.85;
+  font-weight:700;
+}
+.faq-cta-btn{
+  background:#fff;
+  color:#1e6b8a;
+  padding:11px 18px;
+  border-radius:11px;
+  font-family:inherit;
+  font-size:0.86rem;
+  font-weight:900;
+  text-decoration:none;
+  display:flex;
+  align-items:center;
+  gap:6px;
+  white-space:nowrap;
+  transition:all 0.2s;
+  flex-shrink:0;
+}
+.faq-cta-btn:hover{
+  transform:translateY(-2px);
+  box-shadow:0 8px 18px rgba(0,0,0,0.25);
+}
+
+@media (max-width:600px){
+  .page-title{font-size:1.35rem;}
+  .faq-q{padding:14px;gap:10px;}
+  .faq-q-icon{width:32px;height:32px;font-size:1rem;}
+  .faq-q-text{font-size:0.84rem;}
+  .faq-arrow{width:26px;height:26px;font-size:1.1rem;}
+  .faq-a p,.faq-a ul{font-size:0.82rem;padding:8px 14px;}
+  .faq-cta{flex-direction:column;text-align:center;gap:12px;padding:18px;}
+  .faq-cta-btn{width:100%;justify-content:center;}
+}
+</style>
+</head>
+<body>
+
+<div class="container">
+  <a href="index.html" class="back">← الرجوع للرئيسية</a>
+
+  <div class="page-header">
+    <div class="page-icon">❓</div>
+    <h1 class="page-title">الأسئلة الشائعة</h1>
+    <p class="page-sub">جاوبنا على أكثر الأسئلة اللي توصلنا</p>
+  </div>
+
+  <div class="faq-list">
+
+    <div class="faq-item">
+      <button class="faq-q" onclick="toggleFaq(this)">
+        <span class="faq-q-icon">💎</span>
+        <span class="faq-q-text">وش يعني اشتراك "مدى الحياة"؟ هل صحيح بدون تجديد؟</span>
+        <span class="faq-arrow">+</span>
+      </button>
+      <div class="faq-a">
+        <p>نعم! 100% بدون تجديد ❤️<br><br>تدفع 30 ريال مرة واحدة فقط، وتحصل على:</p>
+        <ul>
+          <li>✓ كل القوالب الـ 15 الحالية</li>
+          <li>✓ كل التحديثات الجديدة مجاناً</li>
+          <li>✓ تحميلات بلا حدود إلى الأبد</li>
+          <li>✓ بدون أي رسوم سنوية أو شهرية</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="faq-item">
+      <button class="faq-q" onclick="toggleFaq(this)">
+        <span class="faq-q-icon">💳</span>
+        <span class="faq-q-text">كيف أقدر أدفع؟ تقبلون مدى وApple Pay؟</span>
+        <span class="faq-arrow">+</span>
+      </button>
+      <div class="faq-a">
+        <p>حالياً نستقبل المدفوعات بالطرق التالية:</p>
+        <ul>
+          <li>📱 STC Pay (الأسرع)</li>
+          <li>🏦 تحويل بنكي</li>
+          <li>💬 التواصل عبر الواتساب</li>
+        </ul>
+        <p><strong>قريباً جداً:</strong> Apple Pay و Mada تلقائي عبر الموقع 🚀</p>
+      </div>
+    </div>
+
+    <div class="faq-item">
+      <button class="faq-q" onclick="toggleFaq(this)">
+        <span class="faq-q-icon">⚡</span>
+        <span class="faq-q-text">كم يستغرق تفعيل اشتراكي بعد الدفع؟</span>
+        <span class="faq-arrow">+</span>
+      </button>
+      <div class="faq-a">
+        <p>التفعيل سريع جداً ⚡</p>
+        <ul>
+          <li>⏱️ خلال 5-10 دقائق في أوقات العمل</li>
+          <li>🌙 خلال الليل: يتم التفعيل صباحاً (8 ص)</li>
+          <li>🔔 ستصلك رسالة واتساب بمجرد التفعيل</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="faq-item">
+      <button class="faq-q" onclick="toggleFaq(this)">
+        <span class="faq-q-icon">🎁</span>
+        <span class="faq-q-text">هل أقدر أجرّب الموقع قبل الاشتراك؟</span>
+        <span class="faq-arrow">+</span>
+      </button>
+      <div class="faq-a">
+        <p>أكيد! نوفر لك تجربة مجانية كاملة 🎉</p>
+        <ul>
+          <li>✓ قالب التأسيس مجاناً 100%</li>
+          <li>✓ 2 تحميل مجاني تجربة</li>
+          <li>✓ بدون الحاجة لبطاقة ائتمان</li>
+          <li>✓ سجّل بإيميلك واستمتع</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="faq-item">
+      <button class="faq-q" onclick="toggleFaq(this)">
+        <span class="faq-q-icon">📱</span>
+        <span class="faq-q-text">هل الموقع يشتغل على الجوال؟</span>
+        <span class="faq-arrow">+</span>
+      </button>
+      <div class="faq-a">
+        <p>نعم! الموقع مصمم خصيصاً للجوال 📲</p>
+        <ul>
+          <li>✓ تصميم متجاوب 100% مع كل الأجهزة</li>
+          <li>✓ تحميل سريع وسلس</li>
+          <li>✓ يعمل على iPhone و Android</li>
+          <li>✓ ما يحتاج تطبيق - فقط افتح المتصفح</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="faq-item">
+      <button class="faq-q" onclick="toggleFaq(this)">
+        <span class="faq-q-icon">🔒</span>
+        <span class="faq-q-text">هل بياناتي وحسابي آمنين؟</span>
+        <span class="faq-arrow">+</span>
+      </button>
+      <div class="faq-a">
+        <p>أمنك أولويتنا 🛡️</p>
+        <ul>
+          <li>🔐 نستخدم Firebase من Google (أعلى معايير الأمان)</li>
+          <li>🔑 كلمات السر مشفّرة 100%</li>
+          <li>📧 يمكنك استعادة حسابك بالبريد بسهولة</li>
+          <li>👤 بياناتك لا تُشارك مع أي طرف ثالث</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="faq-item">
+      <button class="faq-q" onclick="toggleFaq(this)">
+        <span class="faq-q-icon">🛡️</span>
+        <span class="faq-q-text">إذا ما عجبني المنصة، فيه ضمان استرداد؟</span>
+        <span class="faq-arrow">+</span>
+      </button>
+      <div class="faq-a">
+        <p>نعم بالطبع! نضمن لك راحة البال 💚</p>
+        <ul>
+          <li>✓ ضمان استرداد كامل خلال 7 أيام</li>
+          <li>✓ بدون أي أسئلة أو تعقيدات</li>
+          <li>✓ تواصل معنا في الواتساب وفوراً نرجع المبلغ</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="faq-item">
+      <button class="faq-q" onclick="toggleFaq(this)">
+        <span class="faq-q-icon">📥</span>
+        <span class="faq-q-text">كيف أحمّل التقارير؟ وش الصيغة المتاحة؟</span>
+        <span class="faq-arrow">+</span>
+      </button>
+      <div class="faq-a">
+        <p>سهل جداً 👌</p>
+        <ul>
+          <li>1️⃣ اختر القالب اللي يناسبك</li>
+          <li>2️⃣ عبّي البيانات (يحفظ تلقائياً)</li>
+          <li>3️⃣ اضغط "تحميل كصورة"</li>
+          <li>4️⃣ تستلم صورة HD جاهزة للطباعة أو الإرسال</li>
+        </ul>
+        <p><strong>الصيغة:</strong> PNG عالية الجودة (مناسبة للواتساب والطباعة)</p>
+      </div>
+    </div>
+
+    <div class="faq-item">
+      <button class="faq-q" onclick="toggleFaq(this)">
+        <span class="faq-q-icon">🆕</span>
+        <span class="faq-q-text">هل تضيفون قوالب جديدة بشكل مستمر؟</span>
+        <span class="faq-arrow">+</span>
+      </button>
+      <div class="faq-a">
+        <p>نعم! هذا التزامنا تجاه المشتركين 🌟</p>
+        <ul>
+          <li>📅 قوالب جديدة كل شهر</li>
+          <li>🎉 قوالب خاصة بالمناسبات (التأسيس، اليوم الوطني، إلخ)</li>
+          <li>🔄 تحسينات دورية على القوالب الموجودة</li>
+          <li>💎 كل ذلك مجاناً للمشتركين Lifetime</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="faq-item">
+      <button class="faq-q" onclick="toggleFaq(this)">
+        <span class="faq-q-icon">💬</span>
+        <span class="faq-q-text">عندي مشكلة أو سؤال، كيف أتواصل معكم؟</span>
+        <span class="faq-arrow">+</span>
+      </button>
+      <div class="faq-a">
+        <p>نحن في خدمتك دائماً 🤝</p>
+        <ul>
+          <li>📱 واتساب: +966 55 052 2867</li>
+          <li>⏰ متاحين 24/7 (الردود خلال ساعات النهار)</li>
+          <li>💬 سرعة الرد: عادة خلال 10-30 دقيقة</li>
+          <li>🎯 نهتم بكل تفاصيلك ونساعدك خطوة بخطوة</li>
+        </ul>
+      </div>
+    </div>
+
+  </div>
+
+  <div class="faq-cta">
+    <div class="faq-cta-icon">💭</div>
+    <div class="faq-cta-content">
+      <div class="faq-cta-title">لا زال عندك سؤال؟</div>
+      <div class="faq-cta-sub">نحن هنا لمساعدتك في أي وقت</div>
+    </div>
+    <a href="https://wa.me/966550522867?text=السلام%20عليكم،%20عندي%20استفسار" target="_blank" class="faq-cta-btn">
+      <span>💬</span><span>راسلنا الآن</span>
+    </a>
+  </div>
+</div>
+
+<script>
+function toggleFaq(btn) {
+  const item = btn.parentElement;
+  const wasOpen = item.classList.contains('open');
+  document.querySelectorAll('.faq-item').forEach(i => i.classList.remove('open'));
+  if (!wasOpen) item.classList.add('open');
+}
+</script>
+
+</body>
+</html>

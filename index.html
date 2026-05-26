@@ -645,6 +645,702 @@ margin-top:3px;font-weight:700;
 }
 .stat-divider{width:1px;height:24px;background:rgba(255,255,255,0.1);}
 
+/* ═══════════════════════════════════════════════════ */
+/* ❓ قسم الأسئلة الشائعة (FAQ)                          */
+/* ═══════════════════════════════════════════════════ */
+.faq-section{
+  margin:40px 0 30px;
+  padding:34px 18px;
+  background:linear-gradient(180deg,rgba(255,255,255,0.04),rgba(255,255,255,0.02));
+  border:1px solid rgba(255,255,255,0.1);
+  border-radius:24px;
+  backdrop-filter:blur(15px);
+  -webkit-backdrop-filter:blur(15px);
+  position:relative;
+  overflow:hidden;
+}
+.faq-section::before{
+  content:"";
+  position:absolute;
+  top:0;left:0;right:0;
+  height:3px;
+  background:linear-gradient(90deg,transparent,#1e6b8a 30%,#d4a657 70%,transparent);
+}
+
+.faq-header{
+  text-align:center;
+  margin-bottom:24px;
+}
+.faq-badge{
+  display:inline-flex;
+  align-items:center;
+  gap:5px;
+  background:linear-gradient(135deg,#1e6b8a,#2a8aab);
+  color:#fff;
+  padding:6px 16px;
+  border-radius:99px;
+  font-size:0.74rem;
+  font-weight:900;
+  letter-spacing:0.4px;
+  margin-bottom:12px;
+  box-shadow:0 8px 22px rgba(30,107,138,0.4);
+}
+.faq-title{
+  font-family:'Reem Kufi','Tajawal',sans-serif;
+  font-size:1.5rem;
+  font-weight:700;
+  color:#fff;
+  margin-bottom:6px;
+}
+.faq-sub{
+  font-size:0.88rem;
+  color:rgba(255,255,255,0.7);
+  font-weight:700;
+}
+
+.faq-list{
+  display:flex;
+  flex-direction:column;
+  gap:10px;
+  margin-bottom:24px;
+}
+
+.faq-item{
+  background:#fff;
+  border-radius:14px;
+  overflow:hidden;
+  transition:all 0.3s;
+  box-shadow:0 4px 14px rgba(0,0,0,0.12);
+  border:1.5px solid transparent;
+}
+.faq-item:hover{
+  box-shadow:0 8px 22px rgba(0,0,0,0.18);
+}
+.faq-item.open{
+  border-color:#d4a657;
+  box-shadow:0 12px 30px rgba(212,166,87,0.25);
+}
+
+.faq-q{
+  width:100%;
+  padding:16px 18px;
+  background:transparent;
+  border:none;
+  display:flex;
+  align-items:center;
+  gap:12px;
+  cursor:pointer;
+  text-align:right;
+  font-family:inherit;
+  transition:background 0.2s;
+}
+.faq-q:hover{background:#f8fafc;}
+.faq-item.open .faq-q{background:linear-gradient(135deg,#f0f9ff,#fef3c7);}
+
+.faq-q-icon{
+  width:36px;
+  height:36px;
+  background:linear-gradient(135deg,#f0f4f8,#e0e6ec);
+  border-radius:10px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  font-size:1.1rem;
+  flex-shrink:0;
+  transition:all 0.3s;
+}
+.faq-item.open .faq-q-icon{
+  background:linear-gradient(135deg,#d4a657,#b8923d);
+  transform:rotate(360deg);
+}
+.faq-q-text{
+  flex:1;
+  font-size:0.92rem;
+  font-weight:900;
+  color:#1a3a4e;
+  line-height:1.4;
+}
+.faq-arrow{
+  width:30px;
+  height:30px;
+  background:linear-gradient(135deg,#1e6b8a,#2a8aab);
+  color:#fff;
+  border-radius:50%;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  font-size:1.3rem;
+  font-weight:900;
+  flex-shrink:0;
+  transition:all 0.3s;
+  line-height:0;
+  padding-bottom:2px;
+}
+.faq-item.open .faq-arrow{
+  background:linear-gradient(135deg,#dc2626,#991b1b);
+  transform:rotate(45deg);
+}
+
+.faq-a{
+  max-height:0;
+  overflow:hidden;
+  transition:max-height 0.4s cubic-bezier(0.4,0,0.2,1);
+}
+.faq-item.open .faq-a{
+  max-height:500px;
+}
+.faq-a > * {
+  padding:0 18px;
+}
+.faq-a p:first-child{padding-top:0;}
+.faq-a p, .faq-a ul{
+  font-size:0.88rem;
+  color:#475569;
+  font-weight:700;
+  line-height:1.8;
+  margin:0;
+  padding:8px 18px;
+}
+.faq-a p:last-child{padding-bottom:18px;}
+.faq-a ul{
+  list-style:none;
+  padding:8px 18px 8px 30px;
+}
+.faq-a ul li{
+  padding:5px 0;
+  display:flex;
+  gap:6px;
+}
+.faq-a ul:last-child{padding-bottom:18px;}
+.faq-a strong{color:#1e6b8a;font-weight:900;}
+
+/* CTA */
+.faq-cta{
+  background:linear-gradient(135deg,#1e6b8a,#2a8aab);
+  color:#fff;
+  border-radius:18px;
+  padding:18px 20px;
+  display:flex;
+  align-items:center;
+  gap:14px;
+  box-shadow:0 14px 36px rgba(30,107,138,0.4);
+}
+.faq-cta-icon{
+  width:50px;
+  height:50px;
+  background:rgba(255,255,255,0.18);
+  border-radius:14px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  font-size:1.6rem;
+  flex-shrink:0;
+}
+.faq-cta-content{flex:1;min-width:0;}
+.faq-cta-title{
+  font-family:'Reem Kufi','Tajawal',sans-serif;
+  font-size:1rem;
+  font-weight:700;
+  margin-bottom:2px;
+}
+.faq-cta-sub{
+  font-size:0.78rem;
+  opacity:0.85;
+  font-weight:700;
+}
+.faq-cta-btn{
+  background:#fff;
+  color:#1e6b8a;
+  padding:11px 18px;
+  border-radius:11px;
+  font-family:inherit;
+  font-size:0.86rem;
+  font-weight:900;
+  text-decoration:none;
+  display:flex;
+  align-items:center;
+  gap:6px;
+  white-space:nowrap;
+  transition:all 0.2s;
+  flex-shrink:0;
+}
+.faq-cta-btn:hover{
+  transform:translateY(-2px);
+  box-shadow:0 8px 18px rgba(0,0,0,0.25);
+}
+
+@media (max-width:600px){
+  .faq-section{margin:30px -2px 20px;padding:24px 14px;border-radius:20px;}
+  .faq-title{font-size:1.2rem;}
+  .faq-q{padding:14px;gap:10px;}
+  .faq-q-icon{width:32px;height:32px;font-size:1rem;}
+  .faq-q-text{font-size:0.84rem;}
+  .faq-arrow{width:26px;height:26px;font-size:1.1rem;}
+  .faq-a p,.faq-a ul{font-size:0.82rem;padding:8px 14px;}
+  .faq-cta{flex-direction:column;text-align:center;gap:12px;padding:18px;}
+  .faq-cta-btn{width:100%;justify-content:center;}
+}
+/* ═══════════════════════════════════════════════════ */
+
+/* ═══════════════════════════════════════════════════ */
+/* ⭐ قسم آراء العملاء الاحترافي (مثل سلة وزد)           */
+/* ═══════════════════════════════════════════════════ */
+.reviews-section{
+  margin:40px 0 30px;
+  padding:34px 18px;
+  background:linear-gradient(180deg,rgba(255,255,255,0.05),rgba(255,255,255,0.02));
+  border:1px solid rgba(255,255,255,0.1);
+  border-radius:24px;
+  backdrop-filter:blur(15px);
+  -webkit-backdrop-filter:blur(15px);
+  position:relative;
+  overflow:hidden;
+}
+.reviews-section::before{
+  content:"";
+  position:absolute;
+  top:0;left:0;right:0;
+  height:3px;
+  background:linear-gradient(90deg,transparent,#d4a657 30%,#1e6b8a 70%,transparent);
+}
+
+.rv-header{
+  text-align:center;
+  margin-bottom:24px;
+}
+.rv-badge{
+  display:inline-flex;
+  align-items:center;
+  gap:5px;
+  background:linear-gradient(135deg,#d4a657,#b8923d);
+  color:#fff;
+  padding:6px 16px;
+  border-radius:99px;
+  font-size:0.74rem;
+  font-weight:900;
+  letter-spacing:0.4px;
+  margin-bottom:12px;
+  box-shadow:0 8px 22px rgba(212,166,87,0.4);
+}
+.rv-title{
+  font-family:'Reem Kufi','Tajawal',sans-serif;
+  font-size:1.5rem;
+  font-weight:700;
+  color:#fff;
+  margin-bottom:6px;
+}
+.rv-sub{
+  font-size:0.88rem;
+  color:rgba(255,255,255,0.7);
+  font-weight:700;
+}
+
+/* ملخص التقييمات */
+.rv-summary{
+  background:#fff;
+  border-radius:20px;
+  padding:22px 20px;
+  margin-bottom:22px;
+  display:grid;
+  grid-template-columns:1fr 1.4fr;
+  gap:24px;
+  align-items:center;
+  box-shadow:0 14px 38px rgba(0,0,0,0.18);
+  color:#1a3a4e;
+}
+.rv-summary-main{
+  text-align:center;
+  padding-left:18px;
+  border-left:1px solid #e8eef3;
+}
+.rv-rating-big{
+  font-family:'Reem Kufi','Tajawal',sans-serif;
+  font-size:3.6rem;
+  font-weight:900;
+  background:linear-gradient(135deg,#d4a657,#b8923d);
+  -webkit-background-clip:text;
+  -webkit-text-fill-color:transparent;
+  background-clip:text;
+  line-height:1;
+  margin-bottom:6px;
+}
+.rv-stars-big{
+  font-size:1.1rem;
+  letter-spacing:3px;
+  filter:drop-shadow(0 3px 10px rgba(255,193,7,0.4));
+  margin-bottom:6px;
+}
+.rv-rating-count{
+  font-size:0.78rem;
+  color:#5a7080;
+  font-weight:700;
+}
+.rv-rating-count strong{color:#1e6b8a;font-weight:900;}
+
+.rv-summary-bars{display:flex;flex-direction:column;gap:8px;}
+.rv-bar-row{
+  display:grid;
+  grid-template-columns:38px 1fr 36px;
+  gap:8px;
+  align-items:center;
+  font-size:0.74rem;
+  color:#5a7080;
+  font-weight:800;
+}
+.rv-bar{
+  height:8px;
+  background:#f0f4f8;
+  border-radius:99px;
+  overflow:hidden;
+}
+.rv-bar-fill{
+  height:100%;
+  background:linear-gradient(90deg,#d4a657,#fbbf24);
+  border-radius:99px;
+  transition:width 0.6s;
+}
+.rv-bar-pct{
+  text-align:left;
+  color:#1a3a4e;
+  font-weight:900;
+}
+
+/* الفلاتر */
+.rv-filters{
+  display:flex;
+  gap:8px;
+  overflow-x:auto;
+  padding-bottom:6px;
+  margin-bottom:18px;
+  scrollbar-width:none;
+}
+.rv-filters::-webkit-scrollbar{display:none;}
+.rv-filter{
+  flex-shrink:0;
+  background:rgba(255,255,255,0.08);
+  border:1px solid rgba(255,255,255,0.15);
+  color:rgba(255,255,255,0.85);
+  padding:9px 16px;
+  border-radius:99px;
+  font-family:inherit;
+  font-size:0.78rem;
+  font-weight:900;
+  cursor:pointer;
+  transition:all 0.2s;
+  white-space:nowrap;
+}
+.rv-filter:hover{background:rgba(255,255,255,0.12);}
+.rv-filter.active{
+  background:linear-gradient(135deg,#d4a657,#b8923d);
+  border-color:#d4a657;
+  color:#fff;
+  box-shadow:0 6px 18px rgba(212,166,87,0.4);
+}
+
+/* شبكة التقييمات → Slider */
+.rv-slider-wrap{
+  position:relative;
+  margin:0 -8px 20px;
+}
+.rv-slider{
+  display:flex;
+  gap:14px;
+  overflow-x:auto;
+  scroll-snap-type:x mandatory;
+  scroll-behavior:smooth;
+  -webkit-overflow-scrolling:touch;
+  padding:6px 14px 14px;
+  scrollbar-width:none;
+}
+.rv-slider::-webkit-scrollbar{display:none;}
+
+.rv-nav{
+  position:absolute;
+  top:50%;
+  transform:translateY(-50%);
+  width:42px;
+  height:42px;
+  border-radius:50%;
+  background:rgba(255,255,255,0.95);
+  border:none;
+  color:#1e6b8a;
+  font-size:1.6rem;
+  font-weight:900;
+  cursor:pointer;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  box-shadow:0 8px 22px rgba(0,0,0,0.3);
+  z-index:5;
+  transition:all 0.2s;
+  font-family:inherit;
+}
+.rv-nav:hover{
+  background:#fff;
+  transform:translateY(-50%) scale(1.1);
+}
+.rv-nav:active{transform:translateY(-50%) scale(0.95);}
+.rv-nav-prev{right:-4px;}
+.rv-nav-next{left:-4px;}
+
+@media (max-width:700px){
+  .rv-nav{display:none;}
+}
+
+/* نقاط التنقل */
+.rv-dots{
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  gap:8px;
+  margin-bottom:20px;
+  flex-wrap:wrap;
+}
+.rv-dot{
+  width:8px;
+  height:8px;
+  border-radius:50%;
+  background:rgba(255,255,255,0.25);
+  border:none;
+  cursor:pointer;
+  padding:0;
+  transition:all 0.3s;
+}
+.rv-dot:hover{
+  background:rgba(255,255,255,0.45);
+  transform:scale(1.2);
+}
+.rv-dot.active{
+  background:linear-gradient(135deg,#d4a657,#fbbf24);
+  width:28px;
+  border-radius:99px;
+  box-shadow:0 4px 12px rgba(212,166,87,0.5);
+}
+
+.rv-card{
+  flex:0 0 calc(33.333% - 10px);
+  min-width:280px;
+  background:#fff;
+  color:#1a3a4e;
+  border-radius:16px;
+  padding:18px 18px 14px;
+  box-shadow:0 6px 20px rgba(0,0,0,0.18);
+  transition:all 0.2s;
+  position:relative;
+  display:flex;
+  flex-direction:column;
+  scroll-snap-align:start;
+}
+.rv-card:hover{transform:translateY(-3px);box-shadow:0 16px 36px rgba(0,0,0,0.25);}
+
+@media (max-width:900px){
+  .rv-card{flex:0 0 calc(50% - 8px);min-width:260px;}
+}
+@media (max-width:600px){
+  .rv-card{flex:0 0 calc(100% - 28px);min-width:0;}
+}
+
+.rv-card-header{
+  display:flex;
+  align-items:flex-start;
+  gap:11px;
+  margin-bottom:10px;
+}
+.rv-avatar{
+  width:42px;
+  height:42px;
+  border-radius:50%;
+  color:#fff;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  font-weight:900;
+  font-size:0.88rem;
+  flex-shrink:0;
+  box-shadow:0 4px 10px rgba(0,0,0,0.12);
+}
+.rv-author{flex:1;min-width:0;}
+.rv-name-row{
+  display:flex;
+  align-items:center;
+  gap:6px;
+  margin-bottom:2px;
+}
+.rv-name{
+  font-size:0.88rem;
+  font-weight:900;
+  color:#1a3a4e;
+}
+.rv-verified{
+  width:18px;
+  height:18px;
+  background:linear-gradient(135deg,#10b981,#059669);
+  color:#fff;
+  border-radius:50%;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  font-size:0.6rem;
+  font-weight:900;
+  flex-shrink:0;
+  box-shadow:0 2px 6px rgba(16,185,129,0.5);
+}
+.rv-meta{
+  font-size:0.7rem;
+  color:#94a3b8;
+  font-weight:700;
+  display:flex;
+  align-items:center;
+  flex-wrap:wrap;
+  gap:4px;
+}
+.rv-dot{color:#cbd5e1;}
+
+.rv-stars-row{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:8px;
+  margin-bottom:10px;
+  flex-wrap:wrap;
+}
+.rv-stars{
+  font-size:0.84rem;
+  letter-spacing:1.5px;
+}
+.rv-product{
+  background:#f0f4f8;
+  color:#1e6b8a;
+  padding:3px 9px;
+  border-radius:99px;
+  font-size:0.66rem;
+  font-weight:900;
+}
+
+.rv-text{
+  font-size:0.85rem;
+  color:#475569;
+  font-weight:700;
+  line-height:1.7;
+  margin-bottom:14px;
+  flex:1;
+}
+
+.rv-footer{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  padding-top:11px;
+  border-top:1px solid #f1f5f9;
+  gap:8px;
+  flex-wrap:wrap;
+}
+.rv-helpful{
+  background:transparent;
+  border:1px solid #e2e8f0;
+  color:#5a7080;
+  padding:5px 12px;
+  border-radius:99px;
+  font-family:inherit;
+  font-size:0.72rem;
+  font-weight:800;
+  cursor:pointer;
+  transition:all 0.2s;
+}
+.rv-helpful:hover{
+  background:#f0f4f8;
+  border-color:#1e6b8a;
+  color:#1e6b8a;
+}
+.rv-helpful .rv-count{color:#94a3b8;font-weight:700;}
+.rv-purchase{
+  font-size:0.66rem;
+  color:#10b981;
+  font-weight:900;
+  display:flex;
+  align-items:center;
+  gap:3px;
+}
+
+/* عرض المزيد */
+.rv-load-more{text-align:center;margin-bottom:24px;}
+.rv-more-btn{
+  display:inline-flex;
+  align-items:center;
+  gap:8px;
+  background:rgba(255,255,255,0.08);
+  border:1.5px solid rgba(255,255,255,0.2);
+  color:#fff;
+  padding:13px 28px;
+  border-radius:13px;
+  font-family:inherit;
+  font-size:0.88rem;
+  font-weight:900;
+  cursor:pointer;
+  transition:all 0.2s;
+}
+.rv-more-btn:hover{
+  background:rgba(255,255,255,0.12);
+  transform:translateY(-2px);
+}
+.rv-load-info{
+  font-size:0.74rem;
+  color:rgba(255,255,255,0.55);
+  font-weight:700;
+  margin-top:10px;
+}
+
+/* شريط الثقة النهائي */
+.rv-trust-final{
+  display:grid;
+  grid-template-columns:repeat(3,1fr);
+  gap:14px;
+  padding:20px;
+  background:linear-gradient(135deg,rgba(212,166,87,0.12),rgba(245,158,11,0.06));
+  border:1px solid rgba(212,166,87,0.3);
+  border-radius:16px;
+}
+.rv-trust-item{
+  text-align:center;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  gap:4px;
+}
+.rv-trust-icon{font-size:1.6rem;margin-bottom:2px;}
+.rv-trust-num{
+  font-family:'Reem Kufi','Tajawal',sans-serif;
+  font-size:1.1rem;
+  font-weight:900;
+  color:#f4d690;
+  line-height:1;
+}
+.rv-trust-label{
+  font-size:0.68rem;
+  color:rgba(255,255,255,0.7);
+  font-weight:800;
+}
+
+@media (max-width:600px){
+  .reviews-section{margin:30px -2px 20px;padding:24px 14px;border-radius:20px;}
+  .rv-title{font-size:1.2rem;}
+  .rv-summary{
+    grid-template-columns:1fr;
+    gap:18px;
+  }
+  .rv-summary-main{
+    padding-left:0;
+    padding-bottom:18px;
+    border-left:none;
+    border-bottom:1px solid #e8eef3;
+  }
+  .rv-rating-big{font-size:3rem;}
+  .rv-trust-num{font-size:0.95rem;}
+  .rv-trust-label{font-size:0.62rem;}
+  .rv-trust-icon{font-size:1.4rem;}
+}
+/* ═══════════════════════════════════════════════════ */
+
 .user-bar{
 display:none;align-items:center;justify-content:space-between;
 gap:10px;margin-bottom:18px;padding:13px 16px;
@@ -2512,14 +3208,167 @@ text-align:center;
 .feature-card .f-title{font-size:0.82rem;font-weight:800;margin-bottom:4px;color:#fff;}
 .feature-card .f-desc{font-size:0.66rem;color:rgba(255,255,255,0.5);line-height:1.5;}
 
-/* Footer */
-.footer{
-text-align:center;margin-top:36px;padding-top:24px;
-border-top:1px solid rgba(255,255,255,0.06);
+/* ═══════════════════════════════════════════════════ */
+/* 🦶 Footer احترافي (مثل aamaad.store)                 */
+/* ═══════════════════════════════════════════════════ */
+.site-footer{
+  margin:40px -2px 0;
+  padding:30px 20px 22px;
+  background:linear-gradient(180deg,rgba(255,255,255,0.05),rgba(255,255,255,0.02));
+  border:1px solid rgba(255,255,255,0.08);
+  border-radius:24px 24px 0 0;
+  border-bottom:none;
+  position:relative;
+  overflow:hidden;
 }
-.footer .made-with{font-size:0.75rem;color:rgba(255,255,255,0.5);margin-bottom:6px;}
-.footer .heart{color:#f44336;}
-.footer .copy{font-size:0.66rem;color:rgba(255,255,255,0.3);}
+.site-footer::before{
+  content:"";
+  position:absolute;
+  top:0;left:0;right:0;
+  height:3px;
+  background:linear-gradient(90deg,transparent,#d4a657 30%,#1e6b8a 70%,transparent);
+}
+
+/* جهات الاتصال - أيقونات فقط */
+.footer-contact{
+  display:flex;
+  justify-content:center;
+  gap:14px;
+  margin-bottom:24px;
+  padding-bottom:22px;
+  border-bottom:1px solid rgba(255,255,255,0.08);
+}
+.footer-contact-icon{
+  text-decoration:none;
+  transition:transform 0.2s;
+}
+.footer-contact-icon:hover{
+  transform:translateY(-4px) scale(1.05);
+}
+.footer-contact-icon span{
+  width:56px;
+  height:56px;
+  border-radius:16px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  font-size:1.8rem;
+  color:#fff;
+  box-shadow:0 10px 24px rgba(0,0,0,0.3),inset 0 1px 0 rgba(255,255,255,0.2);
+  transition:box-shadow 0.2s;
+}
+.footer-contact-icon:hover span{
+  box-shadow:0 14px 32px rgba(0,0,0,0.4),inset 0 1px 0 rgba(255,255,255,0.3);
+}
+
+/* أعمدة الروابط */
+.footer-links{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:18px;
+  margin-bottom:24px;
+  padding-bottom:22px;
+  border-bottom:1px solid rgba(255,255,255,0.08);
+}
+.footer-col-title{
+  font-family:'Reem Kufi','Tajawal',sans-serif;
+  font-size:0.92rem;
+  font-weight:700;
+  color:#f4d690;
+  margin-bottom:12px;
+  letter-spacing:0.3px;
+}
+.footer-list{
+  list-style:none;
+  display:flex;
+  flex-direction:column;
+  gap:8px;
+}
+.footer-list a{
+  color:rgba(255,255,255,0.78);
+  text-decoration:none;
+  font-size:0.86rem;
+  font-weight:700;
+  padding:6px 10px;
+  border-radius:8px;
+  display:block;
+  transition:all 0.2s;
+  border:1px solid transparent;
+}
+.footer-list a:hover{
+  background:rgba(212,166,87,0.1);
+  color:#fff;
+  border-color:rgba(212,166,87,0.25);
+  padding-right:14px;
+}
+
+/* الشعار */
+.footer-brand{
+  text-align:center;
+  margin-bottom:18px;
+}
+.footer-logo{
+  display:inline-flex;
+  align-items:center;
+  gap:8px;
+  margin-bottom:8px;
+}
+.footer-logo-icon{
+  font-size:1.4rem;
+  background:linear-gradient(135deg,#d4a657,#b8923d);
+  width:36px;
+  height:36px;
+  border-radius:10px;
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  box-shadow:0 6px 18px rgba(212,166,87,0.35);
+}
+.footer-logo-text{
+  font-family:'Reem Kufi','Tajawal',sans-serif;
+  font-size:1rem;
+  font-weight:700;
+  color:#fff;
+}
+.footer-tagline{
+  font-size:0.78rem;
+  color:rgba(255,255,255,0.6);
+  font-weight:700;
+}
+.footer-heart{
+  color:#ef4444;
+  animation:fhBeat 1.5s ease-in-out infinite;
+  display:inline-block;
+}
+@keyframes fhBeat{
+  0%,100%{transform:scale(1);}
+  50%{transform:scale(1.2);}
+}
+
+/* الحقوق */
+.footer-copy{
+  text-align:center;
+  padding-top:18px;
+  border-top:1px solid rgba(255,255,255,0.06);
+  font-size:0.74rem;
+  color:rgba(255,255,255,0.4);
+  font-weight:700;
+}
+.footer-copy a{
+  color:#d4a657;
+  text-decoration:none;
+  font-weight:900;
+}
+.footer-copy a:hover{
+  text-decoration:underline;
+}
+
+@media (max-width:480px){
+  .site-footer{margin:30px -2px 0;padding:24px 16px 18px;}
+  .footer-links{grid-template-columns:1fr;gap:18px;}
+  .footer-logo-text{font-size:0.92rem;}
+}
+/* ═══════════════════════════════════════════════════ */
 
 /* MODAL */
 .modal-overlay{
@@ -2825,6 +3674,7 @@ font-size:0.78rem;text-align:center;margin-top:12px;display:none;
       </div>
     </div>
   </div>
+
 
   <div class="user-bar" id="userBar">
     <div class="who">
@@ -3937,10 +4787,373 @@ font-size:0.78rem;text-align:center;margin-top:12px;display:none;
     </div>
   </div>
 
-  <div class="footer">
-    <div class="made-with"><span data-i18n="madeWith1">صُمم بـ</span> <span class="heart">♥</span> <span data-i18n="madeWith2">لمدارس المملكة العربية السعودية</span></div>
-    <div class="copy">© <span data-i18n="copyYear">٢٠٢٦</span> — <span data-i18n="copyText">جميع الحقوق محفوظة · التقارير الذكية</span></div>
-  </div>
+  <!-- ═══════════════════════════════════════════════════ -->
+  <!-- ⭐ قسم آراء العملاء الاحترافي (مثل سلة وزد)         -->
+  <!-- ═══════════════════════════════════════════════════ -->
+  <section class="reviews-section">
+
+    <!-- ترويسة القسم -->
+    <div class="rv-header">
+      <div class="rv-badge">⭐ آراء العملاء</div>
+      <h2 class="rv-title">+500 معلم يثقون بنا</h2>
+      <p class="rv-sub">آراء حقيقية من معلمين ومعلمات استخدموا قوالبنا</p>
+    </div>
+
+    <!-- ملخص التقييمات الكلي -->
+    <div class="rv-summary">
+      <div class="rv-summary-main">
+        <div class="rv-rating-big">4.9</div>
+        <div class="rv-stars-big">⭐⭐⭐⭐⭐</div>
+        <div class="rv-rating-count">بناءً على <strong>312</strong> تقييم</div>
+      </div>
+      <div class="rv-summary-bars">
+        <div class="rv-bar-row">
+          <span class="rv-bar-label">5 ⭐</span>
+          <div class="rv-bar"><div class="rv-bar-fill" style="width:92%;"></div></div>
+          <span class="rv-bar-pct">92%</span>
+        </div>
+        <div class="rv-bar-row">
+          <span class="rv-bar-label">4 ⭐</span>
+          <div class="rv-bar"><div class="rv-bar-fill" style="width:6%;"></div></div>
+          <span class="rv-bar-pct">6%</span>
+        </div>
+        <div class="rv-bar-row">
+          <span class="rv-bar-label">3 ⭐</span>
+          <div class="rv-bar"><div class="rv-bar-fill" style="width:1%;"></div></div>
+          <span class="rv-bar-pct">1%</span>
+        </div>
+        <div class="rv-bar-row">
+          <span class="rv-bar-label">2 ⭐</span>
+          <div class="rv-bar"><div class="rv-bar-fill" style="width:1%;"></div></div>
+          <span class="rv-bar-pct">1%</span>
+        </div>
+        <div class="rv-bar-row">
+          <span class="rv-bar-label">1 ⭐</span>
+          <div class="rv-bar"><div class="rv-bar-fill" style="width:0%;"></div></div>
+          <span class="rv-bar-pct">0%</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- فلاتر التقييمات -->
+    <div class="rv-filters">
+      <button class="rv-filter active" onclick="filterReviews(this,'all')">📋 الكل (312)</button>
+      <button class="rv-filter" onclick="filterReviews(this,'5')">⭐ 5 نجوم (287)</button>
+      <button class="rv-filter" onclick="filterReviews(this,'verified')">✓ موثّقين (312)</button>
+      <button class="rv-filter" onclick="filterReviews(this,'recent')">🕐 الأحدث</button>
+    </div>
+
+    <!-- شبكة التقييمات → Slider أفقي -->
+    <div class="rv-slider-wrap">
+      <button class="rv-nav rv-nav-prev" onclick="slideReviews(-1)" aria-label="السابق">‹</button>
+      <button class="rv-nav rv-nav-next" onclick="slideReviews(1)" aria-label="التالي">›</button>
+
+      <div class="rv-slider" id="reviewsSlider">
+
+      <!-- تقييم 1 -->
+      <div class="rv-card" data-stars="5">
+        <div class="rv-card-header">
+          <div class="rv-avatar" style="background:linear-gradient(135deg,#FF6B35,#F7B538);">أ</div>
+          <div class="rv-author">
+            <div class="rv-name-row">
+              <span class="rv-name">أم محمد العتيبي</span>
+              <span class="rv-verified" title="مشترك موثّق">✓</span>
+            </div>
+            <div class="rv-meta">
+              <span class="rv-role">معلمة · الرياض</span>
+              <span class="rv-dot">·</span>
+              <span class="rv-date">قبل يومين</span>
+            </div>
+          </div>
+        </div>
+        <div class="rv-stars-row">
+          <span class="rv-stars">⭐⭐⭐⭐⭐</span>
+          <span class="rv-product">📋 منصة التقارير</span>
+        </div>
+        <p class="rv-text">منصة رائعة فعلاً! وفّرت عليّ ساعات من العمل. التقارير جاهزة ومتنوعة وأشكالها جداً احترافية. أنصح بها كل معلم.</p>
+        <div class="rv-footer">
+          <button class="rv-helpful">👍 مفيد <span class="rv-count">(42)</span></button>
+          <span class="rv-purchase">💳 شراء موثّق</span>
+        </div>
+      </div>
+
+      <!-- تقييم 2 -->
+      <div class="rv-card" data-stars="5">
+        <div class="rv-card-header">
+          <div class="rv-avatar" style="background:linear-gradient(135deg,#1B1B3A,#4ECDC4);">أ.أ</div>
+          <div class="rv-author">
+            <div class="rv-name-row">
+              <span class="rv-name">أحمد القحطاني</span>
+              <span class="rv-verified">✓</span>
+            </div>
+            <div class="rv-meta">
+              <span class="rv-role">مدير مدرسة · جدة</span>
+              <span class="rv-dot">·</span>
+              <span class="rv-date">قبل 3 أيام</span>
+            </div>
+          </div>
+        </div>
+        <div class="rv-stars-row">
+          <span class="rv-stars">⭐⭐⭐⭐⭐</span>
+          <span class="rv-product">🎉 قالب التأسيس</span>
+        </div>
+        <p class="rv-text">والله شي مرتب وفخم! دفعت 30 ريال وقالب التأسيس لحاله يستاهلها. شغل احترافي وأسعار مناسبة جداً.</p>
+        <div class="rv-footer">
+          <button class="rv-helpful">👍 مفيد <span class="rv-count">(38)</span></button>
+          <span class="rv-purchase">💳 شراء موثّق</span>
+        </div>
+      </div>
+
+      <!-- تقييم 3 -->
+      <div class="rv-card" data-stars="5">
+        <div class="rv-card-header">
+          <div class="rv-avatar" style="background:linear-gradient(135deg,#0EA5E9,#1e6b8a);">ع.ع</div>
+          <div class="rv-author">
+            <div class="rv-name-row">
+              <span class="rv-name">عبدالله الشمري</span>
+              <span class="rv-verified">✓</span>
+            </div>
+            <div class="rv-meta">
+              <span class="rv-role">وكيل مدرسة · الدمام</span>
+              <span class="rv-dot">·</span>
+              <span class="rv-date">قبل أسبوع</span>
+            </div>
+          </div>
+        </div>
+        <div class="rv-stars-row">
+          <span class="rv-stars">⭐⭐⭐⭐⭐</span>
+          <span class="rv-product">📋 الباقة الكاملة</span>
+        </div>
+        <p class="rv-text">أحسن منصة تعاملت معها 👏 سرعة في التحميل، تصاميم راقية، وفريق الدعم متعاون جداً. شكراً لكم 💎</p>
+        <div class="rv-footer">
+          <button class="rv-helpful">👍 مفيد <span class="rv-count">(56)</span></button>
+          <span class="rv-purchase">💳 شراء موثّق</span>
+        </div>
+      </div>
+
+      <!-- تقييم 4 -->
+      <div class="rv-card" data-stars="5">
+        <div class="rv-card-header">
+          <div class="rv-avatar" style="background:linear-gradient(135deg,#16a34a,#15803d);">ف.م</div>
+          <div class="rv-author">
+            <div class="rv-name-row">
+              <span class="rv-name">فاطمة المالكي</span>
+              <span class="rv-verified">✓</span>
+            </div>
+            <div class="rv-meta">
+              <span class="rv-role">معلمة · مكة المكرمة</span>
+              <span class="rv-dot">·</span>
+              <span class="rv-date">قبل أسبوعين</span>
+            </div>
+          </div>
+        </div>
+        <div class="rv-stars-row">
+          <span class="rv-stars">⭐⭐⭐⭐⭐</span>
+          <span class="rv-product">💎 اشتراك مدى الحياة</span>
+        </div>
+        <p class="rv-text">صراحة مودّتها للمعلمات في المدرسة وكلهم اشتركوا 🌹 30 ريال مدى الحياة عرض ما يفوت. التحديثات مستمرة والخدمة ممتازة.</p>
+        <div class="rv-footer">
+          <button class="rv-helpful">👍 مفيد <span class="rv-count">(73)</span></button>
+          <span class="rv-purchase">💳 شراء موثّق</span>
+        </div>
+      </div>
+
+      <!-- تقييم 5 -->
+      <div class="rv-card" data-stars="5">
+        <div class="rv-card-header">
+          <div class="rv-avatar" style="background:linear-gradient(135deg,#7E22CE,#4C1D95);">س.ع</div>
+          <div class="rv-author">
+            <div class="rv-name-row">
+              <span class="rv-name">سارة العنزي</span>
+              <span class="rv-verified">✓</span>
+            </div>
+            <div class="rv-meta">
+              <span class="rv-role">معلمة · بريدة</span>
+              <span class="rv-dot">·</span>
+              <span class="rv-date">قبل 3 أسابيع</span>
+            </div>
+          </div>
+        </div>
+        <div class="rv-stars-row">
+          <span class="rv-stars">⭐⭐⭐⭐⭐</span>
+          <span class="rv-product">📊 تقارير الحصص</span>
+        </div>
+        <p class="rv-text">كنت أقعد ساعات أصمم تقارير الحصص، الآن خلال 5 دقائق التقرير جاهز ومنسق بشكل رائع. الله يعطيكم العافية 💪</p>
+        <div class="rv-footer">
+          <button class="rv-helpful">👍 مفيد <span class="rv-count">(29)</span></button>
+          <span class="rv-purchase">💳 شراء موثّق</span>
+        </div>
+      </div>
+
+      <!-- تقييم 6 -->
+      <div class="rv-card" data-stars="5">
+        <div class="rv-card-header">
+          <div class="rv-avatar" style="background:linear-gradient(135deg,#EA580C,#C2410C);">ن.ح</div>
+          <div class="rv-author">
+            <div class="rv-name-row">
+              <span class="rv-name">نواف الحربي</span>
+              <span class="rv-verified">✓</span>
+            </div>
+            <div class="rv-meta">
+              <span class="rv-role">معلم تربية بدنية · تبوك</span>
+              <span class="rv-dot">·</span>
+              <span class="rv-date">قبل شهر</span>
+            </div>
+          </div>
+        </div>
+        <div class="rv-stars-row">
+          <span class="rv-stars">⭐⭐⭐⭐⭐</span>
+          <span class="rv-product">🇸🇦 قالب اليوم الوطني</span>
+        </div>
+        <p class="rv-text">تقرير اليوم الوطني والتأسيس حلوين بشكل! استخدمتهم في الإذاعة المدرسية والإدارة انبهرت. شكراً 💚</p>
+        <div class="rv-footer">
+          <button class="rv-helpful">👍 مفيد <span class="rv-count">(45)</span></button>
+          <span class="rv-purchase">💳 شراء موثّق</span>
+        </div>
+      </div>
+
+      <!-- تقييم 7 -->
+      <div class="rv-card" data-stars="5">
+        <div class="rv-card-header">
+          <div class="rv-avatar" style="background:linear-gradient(135deg,#DB2777,#9D174D);">م.ف</div>
+          <div class="rv-author">
+            <div class="rv-name-row">
+              <span class="rv-name">منى الفهد</span>
+              <span class="rv-verified">✓</span>
+            </div>
+            <div class="rv-meta">
+              <span class="rv-role">قائدة مدرسة · الخبر</span>
+              <span class="rv-dot">·</span>
+              <span class="rv-date">قبل شهر</span>
+            </div>
+          </div>
+        </div>
+        <div class="rv-stars-row">
+          <span class="rv-stars">⭐⭐⭐⭐⭐</span>
+          <span class="rv-product">📋 الباقة الكاملة</span>
+        </div>
+        <p class="rv-text">منصة من ذهب 🏆 الفرق بين قبل وبعد عظيم. شكراً لكم على الجهد الرائع، الموقع سريع وبتصميم متناسق وعصري.</p>
+        <div class="rv-footer">
+          <button class="rv-helpful">👍 مفيد <span class="rv-count">(67)</span></button>
+          <span class="rv-purchase">💳 شراء موثّق</span>
+        </div>
+      </div>
+
+      <!-- تقييم 8 -->
+      <div class="rv-card" data-stars="5">
+        <div class="rv-card-header">
+          <div class="rv-avatar" style="background:linear-gradient(135deg,#059669,#047857);">ب.ز</div>
+          <div class="rv-author">
+            <div class="rv-name-row">
+              <span class="rv-name">بدر الزهراني</span>
+              <span class="rv-verified">✓</span>
+            </div>
+            <div class="rv-meta">
+              <span class="rv-role">مشرف تربوي · الطائف</span>
+              <span class="rv-dot">·</span>
+              <span class="rv-date">قبل شهرين</span>
+            </div>
+          </div>
+        </div>
+        <div class="rv-stars-row">
+          <span class="rv-stars">⭐⭐⭐⭐⭐</span>
+          <span class="rv-product">📊 تقارير الإدارة</span>
+        </div>
+        <p class="rv-text">جربت كذا منصة قبلها بس هذي الأفضل. التصاميم حديثة، التحميل سريع، والأهم أنها بسعر معقول جداً مقارنة بالميزات.</p>
+        <div class="rv-footer">
+          <button class="rv-helpful">👍 مفيد <span class="rv-count">(34)</span></button>
+          <span class="rv-purchase">💳 شراء موثّق</span>
+        </div>
+      </div>
+
+    </div>
+    </div>
+
+    <!-- نقاط التنقل -->
+    <div class="rv-dots" id="reviewsDots"></div>
+
+    <!-- زر "عرض المزيد" -->
+    <div class="rv-load-more">
+      <button class="rv-more-btn" onclick="alert('قريباً - تحميل المزيد من التقييمات')">
+        <span>📄</span>
+        <span>عرض المزيد من التقييمات</span>
+      </button>
+      <div class="rv-load-info">عُرض 8 من أصل 312 تقييم</div>
+    </div>
+
+    <!-- شريط الثقة النهائي -->
+    <div class="rv-trust-final">
+      <div class="rv-trust-item">
+        <div class="rv-trust-icon">🛡️</div>
+        <div class="rv-trust-num">98%</div>
+        <div class="rv-trust-label">رضا المشتركين</div>
+      </div>
+      <div class="rv-trust-item">
+        <div class="rv-trust-icon">⚡</div>
+        <div class="rv-trust-num">5 دقائق</div>
+        <div class="rv-trust-label">متوسط التفعيل</div>
+      </div>
+      <div class="rv-trust-item">
+        <div class="rv-trust-icon">💎</div>
+        <div class="rv-trust-num">+500</div>
+        <div class="rv-trust-label">مشترك</div>
+      </div>
+    </div>
+
+  </section>
+
+  <!-- ═══════════════════════════════════════════════════ -->
+  <!-- 🦶 Footer احترافي (مثل aamaad.store)                 -->
+  <!-- ═══════════════════════════════════════════════════ -->
+  <footer class="site-footer">
+
+    <!-- 📞 جهات الاتصال - أيقونات فقط -->
+    <div class="footer-contact">
+      <a href="mailto:admin@ksa2030.one" class="footer-contact-icon" title="البريد الإلكتروني" aria-label="البريد الإلكتروني">
+        <span style="background:linear-gradient(135deg,#1e6b8a,#2a8aab);">📧</span>
+      </a>
+
+      <a href="https://wa.me/966550522867?text=السلام%20عليكم،%20لدي%20استفسار" target="_blank" rel="noopener" class="footer-contact-icon" title="الواتساب" aria-label="الواتساب">
+        <span style="background:linear-gradient(135deg,#25d366,#128c7e);">💬</span>
+      </a>
+    </div>
+
+    <!-- 📋 الروابط -->
+    <div class="footer-links">
+
+      <div class="footer-col">
+        <h3 class="footer-col-title">🔗 روابط مهمة</h3>
+        <ul class="footer-list">
+          <li><a href="privacy.html">🛡️ سياسة الخصوصية</a></li>
+          <li><a href="terms.html">📜 الشروط والأحكام</a></li>
+        </ul>
+      </div>
+
+      <div class="footer-col">
+        <h3 class="footer-col-title">📂 روابط أخرى</h3>
+        <ul class="footer-list">
+          <li><a href="contact.html">💬 تواصل معنا</a></li>
+          <li><a href="faq.html">❓ الأسئلة الشائعة</a></li>
+        </ul>
+      </div>
+
+    </div>
+
+    <!-- 🏷️ شعار -->
+    <div class="footer-brand">
+      <div class="footer-logo">
+        <span class="footer-logo-icon">📋</span>
+        <span class="footer-logo-text">منصة التقارير الذكية</span>
+      </div>
+      <div class="footer-tagline">صُمم بـ <span class="footer-heart">♥</span> لمدارس المملكة العربية السعودية</div>
+    </div>
+
+    <!-- ©️ الحقوق -->
+    <div class="footer-copy">
+      © 2026 · جميع الحقوق محفوظة · <a href="https://ksa2030.one">ksa2030.one</a>
+    </div>
+
+  </footer>
 
 </div>
 
@@ -3993,7 +5206,7 @@ font-size:0.78rem;text-align:center;margin-top:12px;display:none;
         </div>
       </div>
 
-      <a href="https://wa.me/966550522867?text=السلام%20عليكم،%20أرغب%20بالاشتراك%20في%20موقع%20التقارير%20الذكية%20والحصول%20على%20النسخة%20الذهبية%20بـ%2030%20ريال." class="promo-wa-btn" target="_blank" rel="noopener">
+      <a href="pay.html" class="promo-wa-btn">
         <svg class="wa-icon" viewBox="0 0 24 24" fill="currentColor">
           <path d="M.057 24l1.687-6.163c-1.041-1.804-1.588-3.849-1.587-5.946.003-6.556 5.338-11.891 11.893-11.891 3.181.001 6.167 1.24 8.413 3.488 2.245 2.248 3.481 5.236 3.48 8.414-.003 6.557-5.338 11.892-11.893 11.892-1.99-.001-3.951-.5-5.688-1.448l-6.305 1.654zm6.597-3.807c1.676.995 3.276 1.591 5.392 1.592 5.448 0 9.886-4.434 9.889-9.885.002-5.462-4.415-9.89-9.881-9.892-5.452 0-9.887 4.434-9.889 9.884-.001 2.225.651 3.891 1.746 5.634l-.999 3.648 3.742-.981zm11.387-5.464c-.074-.124-.272-.198-.57-.347-.297-.149-1.758-.868-2.031-.967-.272-.099-.47-.149-.669.149-.198.297-.768.967-.941 1.165-.173.198-.347.223-.644.074-.297-.149-1.255-.462-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.297-.347.446-.521.151-.172.2-.296.3-.495.099-.198.05-.372-.025-.521-.075-.148-.669-1.611-.916-2.206-.242-.579-.487-.501-.669-.51l-.57-.01c-.198 0-.52.074-.792.372s-1.04 1.016-1.04 2.479 1.065 2.876 1.213 3.074c.149.198 2.095 3.2 5.076 4.487.709.306 1.263.489 1.694.626.712.226 1.36.194 1.872.118.571-.085 1.758-.719 2.006-1.413.248-.695.248-1.29.173-1.414z"/>
         </svg>
@@ -4079,7 +5292,7 @@ font-size:0.78rem;text-align:center;margin-top:12px;display:none;
       <span data-i18n="upGuarantee">ضمان استرداد كامل خلال 7 أيام</span>
     </div>
 
-    <a href="https://wa.me/966550522867?text=السلام%20عليكم%2C%20أرغب%20في%20الاشتراك%20بمنصة%20التقارير%20المدرسية" target="_blank" rel="noopener" class="upgrade-cta-btn">
+    <a href="pay.html" class="upgrade-cta-btn">
       <span class="wa-icon">📱</span>
       <span data-i18n="upCtaWa">اشترك عبر الواتساب الآن</span>
     </a>
@@ -5041,6 +6254,132 @@ window.firebaseLogout = async function() {
   await logout();
   window.location.reload();
 };
+</script>
+
+<script>
+// FAQ Toggle
+function toggleFaq(btn) {
+  const item = btn.parentElement;
+  const wasOpen = item.classList.contains('open');
+
+  // قفل كل الأسئلة الثانية (اختياري)
+  document.querySelectorAll('.faq-item').forEach(i => i.classList.remove('open'));
+
+  // افتح هذا فقط لو كان مقفل
+  if (!wasOpen) {
+    item.classList.add('open');
+  }
+}
+
+// فلاتر التقييمات
+function filterReviews(btn, filter) {
+  document.querySelectorAll('.rv-filter').forEach(f => f.classList.remove('active'));
+  btn.classList.add('active');
+
+  const cards = document.querySelectorAll('.rv-card');
+  cards.forEach(card => {
+    if (filter === 'all' || filter === 'verified' || filter === 'recent') {
+      card.style.display = '';
+    } else if (filter === '5') {
+      card.style.display = card.dataset.stars === '5' ? '' : 'none';
+    }
+  });
+  // إعادة بناء النقاط بعد الفلترة
+  setTimeout(buildReviewsDots, 100);
+}
+
+// زر "مفيد"
+document.querySelectorAll('.rv-helpful').forEach(btn => {
+  btn.addEventListener('click', (e) => {
+    e.stopPropagation();
+    const countEl = btn.querySelector('.rv-count');
+    const current = parseInt(countEl.textContent.replace(/[()]/g, '')) || 0;
+    countEl.textContent = `(${current + 1})`;
+    btn.style.background = '#dcfce7';
+    btn.style.borderColor = '#16a34a';
+    btn.style.color = '#15803d';
+    btn.disabled = true;
+  });
+});
+
+// ═══ Slider التقييمات ═══
+const reviewsSlider = document.getElementById('reviewsSlider');
+const reviewsDots = document.getElementById('reviewsDots');
+
+function getCardsPerView() {
+  const w = window.innerWidth;
+  if (w >= 900) return 3;
+  if (w >= 600) return 2;
+  return 1;
+}
+
+function buildReviewsDots() {
+  if (!reviewsSlider || !reviewsDots) return;
+  const cards = reviewsSlider.querySelectorAll('.rv-card:not([style*="display: none"])');
+  const perView = getCardsPerView();
+  const totalDots = Math.max(1, Math.ceil(cards.length / perView));
+
+  reviewsDots.innerHTML = '';
+  for (let i = 0; i < totalDots; i++) {
+    const dot = document.createElement('button');
+    dot.className = 'rv-dot' + (i === 0 ? ' active' : '');
+    dot.setAttribute('aria-label', `صفحة ${i + 1}`);
+    dot.onclick = () => goToReviewPage(i);
+    reviewsDots.appendChild(dot);
+  }
+}
+
+function goToReviewPage(pageIdx) {
+  if (!reviewsSlider) return;
+  const cards = reviewsSlider.querySelectorAll('.rv-card:not([style*="display: none"])');
+  const perView = getCardsPerView();
+  const targetCardIdx = pageIdx * perView;
+  const targetCard = cards[targetCardIdx];
+  if (targetCard) {
+    const cardWidth = targetCard.offsetWidth + 14;
+    reviewsSlider.scrollTo({
+      left: -targetCardIdx * cardWidth, // RTL: استخدم سالب
+      behavior: 'smooth'
+    });
+  }
+  updateActiveDot();
+}
+
+function updateActiveDot() {
+  if (!reviewsSlider || !reviewsDots) return;
+  const cards = reviewsSlider.querySelectorAll('.rv-card');
+  const perView = getCardsPerView();
+  const cardWidth = cards[0]?.offsetWidth + 14 || 300;
+  // في RTL، scrollLeft يكون سالب
+  const scrollPos = Math.abs(reviewsSlider.scrollLeft);
+  const currentPage = Math.round(scrollPos / (cardWidth * perView));
+
+  const dots = reviewsDots.querySelectorAll('.rv-dot');
+  dots.forEach((d, i) => {
+    d.classList.toggle('active', i === currentPage);
+  });
+}
+
+function slideReviews(direction) {
+  if (!reviewsSlider) return;
+  const cards = reviewsSlider.querySelectorAll('.rv-card');
+  const cardWidth = cards[0]?.offsetWidth + 14 || 300;
+  const perView = getCardsPerView();
+  const scrollAmount = cardWidth * perView;
+
+  // RTL: نعكس الاتجاه
+  reviewsSlider.scrollBy({
+    left: direction * scrollAmount * -1,
+    behavior: 'smooth'
+  });
+}
+
+// بناء النقاط عند التحميل
+if (reviewsSlider) {
+  window.addEventListener('load', buildReviewsDots);
+  window.addEventListener('resize', buildReviewsDots);
+  reviewsSlider.addEventListener('scroll', updateActiveDot);
+}
 </script>
 
 </body>

@@ -1,0 +1,581 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#0a3447">
+<title>الدفع · منصة التقارير الذكية</title>
+<link href="https://fonts.googleapis.com/css2?family=Reem+Kufi:wght@400;600;700&family=Tajawal:wght@400;500;700;900&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+html,body{width:100%;max-width:100%;overflow-x:hidden;}
+body{
+  font-family:'Tajawal','Cairo',sans-serif;
+  background:linear-gradient(135deg,#0a3447 0%,#0e4a63 40%,#134d68 100%);
+  min-height:100vh;
+  color:#fff;
+  padding:18px 14px 30px;
+  position:relative;
+}
+
+/* Background Orbs */
+.bg-orbs{position:absolute;inset:0;overflow:hidden;pointer-events:none;z-index:0;}
+.orb{position:absolute;border-radius:50%;filter:blur(80px);opacity:0.25;}
+.orb-1{width:300px;height:300px;background:#d4a657;top:-100px;right:-80px;}
+.orb-2{width:250px;height:250px;background:#16a34a;bottom:-50px;left:-80px;}
+
+.container{max-width:520px;margin:0 auto;position:relative;z-index:1;}
+
+/* Back */
+.back{
+  display:inline-flex;
+  align-items:center;
+  gap:6px;
+  color:#fff;
+  text-decoration:none;
+  font-weight:900;
+  font-size:0.86rem;
+  margin-bottom:16px;
+  padding:8px 14px;
+  background:rgba(255,255,255,0.1);
+  border-radius:99px;
+  transition:background 0.2s;
+}
+.back:hover{background:rgba(255,255,255,0.18);}
+
+/* Price Card */
+.price-card{
+  background:linear-gradient(135deg,#fff8e1,#fff);
+  color:#1a3a4e;
+  border-radius:24px;
+  padding:24px 22px;
+  margin-bottom:18px;
+  text-align:center;
+  box-shadow:0 24px 60px rgba(0,0,0,0.4);
+  position:relative;
+  overflow:hidden;
+  border:2px solid rgba(212,166,87,0.4);
+}
+.price-card::before{
+  content:"";
+  position:absolute;
+  top:0;left:0;right:0;
+  height:5px;
+  background:linear-gradient(90deg,#d4a657,#fbbf24,#d4a657);
+}
+.pc-badge{
+  display:inline-block;
+  background:linear-gradient(135deg,#dc2626,#f59e0b);
+  color:#fff;
+  padding:5px 14px;
+  border-radius:99px;
+  font-size:0.74rem;
+  font-weight:900;
+  margin-bottom:12px;
+  box-shadow:0 6px 16px rgba(220,38,38,0.4);
+  animation:pulse 2s ease-in-out infinite;
+}
+@keyframes pulse{0%,100%{transform:scale(1);}50%{transform:scale(1.05);}}
+.pc-icon{font-size:2.6rem;margin-bottom:6px;display:inline-block;}
+.pc-title{
+  font-family:'Reem Kufi',sans-serif;
+  font-size:1.2rem;
+  font-weight:700;
+  color:#1a3a4e;
+  margin-bottom:4px;
+}
+.pc-price{
+  display:flex;
+  align-items:baseline;
+  justify-content:center;
+  gap:5px;
+  margin:10px 0 4px;
+}
+.pc-amount{
+  font-family:'Reem Kufi',sans-serif;
+  font-size:3.8rem;
+  font-weight:900;
+  background:linear-gradient(135deg,#d4a657,#b8923d);
+  -webkit-background-clip:text;
+  -webkit-text-fill-color:transparent;
+  background-clip:text;
+  line-height:1;
+}
+.pc-cur{
+  font-size:1.3rem;
+  font-weight:800;
+  color:#1e6b8a;
+}
+.pc-lifetime{
+  display:inline-block;
+  background:linear-gradient(135deg,#16a34a,#15803d);
+  color:#fff;
+  padding:5px 14px;
+  border-radius:99px;
+  font-size:0.78rem;
+  font-weight:900;
+}
+
+/* Steps */
+.steps-title{
+  font-family:'Reem Kufi',sans-serif;
+  font-size:1.1rem;
+  text-align:center;
+  margin-bottom:14px;
+  color:#fff;
+}
+.steps-title span{
+  display:inline-block;
+  background:linear-gradient(135deg,#d4a657,#b8923d);
+  color:#fff;
+  width:28px;
+  height:28px;
+  border-radius:50%;
+  font-size:0.86rem;
+  font-weight:900;
+  margin-left:6px;
+  line-height:28px;
+}
+
+/* Payment Card */
+.pay-card{
+  background:#fff;
+  color:#1a3a4e;
+  border-radius:20px;
+  padding:22px 20px;
+  margin-bottom:14px;
+  box-shadow:0 14px 36px rgba(0,0,0,0.25);
+  position:relative;
+  overflow:hidden;
+  border:1.5px solid transparent;
+  transition:all 0.3s;
+}
+.pay-card:hover{border-color:#1e6b8a;}
+.pay-card::before{
+  content:"";
+  position:absolute;
+  top:0;left:0;right:0;
+  height:4px;
+  background:linear-gradient(90deg,#1e6b8a,#2a8aab);
+}
+.pc-header{
+  display:flex;
+  align-items:center;
+  gap:12px;
+  margin-bottom:14px;
+}
+.pc-step{
+  width:36px;
+  height:36px;
+  background:linear-gradient(135deg,#1e6b8a,#2a8aab);
+  color:#fff;
+  border-radius:10px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  font-weight:900;
+  font-size:1rem;
+  flex-shrink:0;
+  box-shadow:0 6px 14px rgba(30,107,138,0.4);
+}
+.pc-title2{
+  font-family:'Reem Kufi',sans-serif;
+  font-size:1rem;
+  font-weight:700;
+  color:#1a3a4e;
+  line-height:1.3;
+}
+.pc-sub{
+  font-size:0.78rem;
+  color:#5a7080;
+  font-weight:700;
+  margin-top:2px;
+}
+
+.bank-info{
+  background:linear-gradient(135deg,#f0f9ff,#f8fafc);
+  border:1.5px solid #e0f2fe;
+  border-radius:14px;
+  padding:14px 16px;
+  margin-bottom:10px;
+}
+.bank-row{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:8px;
+  padding:8px 0;
+  border-bottom:1px solid #e0f2fe;
+}
+.bank-row:last-child{border-bottom:none;}
+.br-label{
+  font-size:0.76rem;
+  color:#5a7080;
+  font-weight:800;
+}
+.br-value{
+  font-size:0.92rem;
+  color:#1a3a4e;
+  font-weight:900;
+  text-align:left;
+  font-family:'Tajawal',monospace;
+  letter-spacing:0.5px;
+  direction:ltr;
+}
+
+.copy-btn{
+  width:100%;
+  background:linear-gradient(135deg,#1e6b8a,#2a8aab);
+  color:#fff;
+  border:none;
+  padding:14px;
+  border-radius:13px;
+  font-family:inherit;
+  font-size:0.92rem;
+  font-weight:900;
+  cursor:pointer;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  gap:8px;
+  transition:all 0.2s;
+  box-shadow:0 8px 20px rgba(30,107,138,0.35);
+  margin-top:10px;
+}
+.copy-btn:hover{
+  transform:translateY(-2px);
+  box-shadow:0 12px 26px rgba(30,107,138,0.45);
+}
+.copy-btn:active{transform:translateY(0);}
+.copy-btn.copied{
+  background:linear-gradient(135deg,#16a34a,#15803d);
+  box-shadow:0 8px 20px rgba(22,163,74,0.4);
+}
+
+/* Amount Card */
+.amount-card{
+  background:linear-gradient(135deg,rgba(212,166,87,0.15),rgba(245,158,11,0.05));
+  border:1.5px dashed rgba(212,166,87,0.5);
+  border-radius:14px;
+  padding:14px;
+  margin:10px 0 14px;
+  text-align:center;
+}
+.amount-card .label{
+  font-size:0.78rem;
+  color:#7c2d12;
+  font-weight:800;
+  margin-bottom:4px;
+}
+.amount-card .value{
+  font-family:'Reem Kufi',sans-serif;
+  font-size:1.8rem;
+  font-weight:900;
+  color:#b8923d;
+  line-height:1;
+}
+
+/* WhatsApp Card */
+.wa-card{
+  background:linear-gradient(135deg,#25d366,#128c7e);
+  color:#fff;
+  border-radius:20px;
+  padding:22px 20px;
+  margin-bottom:14px;
+  box-shadow:0 14px 36px rgba(37,211,102,0.4);
+  position:relative;
+  overflow:hidden;
+}
+.wa-card::before{
+  content:"";
+  position:absolute;
+  top:-30px;
+  left:-30px;
+  width:120px;
+  height:120px;
+  background:rgba(255,255,255,0.08);
+  border-radius:50%;
+}
+.wa-text{
+  position:relative;
+  z-index:1;
+  text-align:center;
+  margin-bottom:12px;
+}
+.wa-title{
+  font-family:'Reem Kufi',sans-serif;
+  font-size:1.1rem;
+  font-weight:700;
+  margin-bottom:4px;
+}
+.wa-sub{
+  font-size:0.82rem;
+  opacity:0.95;
+  font-weight:700;
+}
+.wa-btn{
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  gap:10px;
+  width:100%;
+  padding:15px;
+  background:#fff;
+  color:#128c7e;
+  border:none;
+  border-radius:13px;
+  font-family:inherit;
+  font-size:1rem;
+  font-weight:900;
+  cursor:pointer;
+  text-decoration:none;
+  box-shadow:0 8px 20px rgba(0,0,0,0.2);
+  transition:transform 0.2s;
+  position:relative;
+  z-index:1;
+}
+.wa-btn:hover{transform:translateY(-2px);}
+.wa-btn .icon{font-size:1.4rem;}
+
+/* Trust badges */
+.trust-row{
+  display:flex;
+  gap:8px;
+  margin-top:18px;
+}
+.trust-badge{
+  flex:1;
+  background:rgba(255,255,255,0.06);
+  border:1px solid rgba(255,255,255,0.12);
+  border-radius:12px;
+  padding:10px;
+  text-align:center;
+  font-size:0.72rem;
+  font-weight:800;
+  color:rgba(255,255,255,0.85);
+}
+.trust-badge .ic{font-size:1.4rem;margin-bottom:4px;display:block;}
+
+/* Toast */
+.toast{
+  position:fixed;
+  top:20px;
+  left:50%;
+  transform:translateX(-50%);
+  background:linear-gradient(135deg,#16a34a,#15803d);
+  color:#fff;
+  padding:14px 22px;
+  border-radius:99px;
+  font-weight:900;
+  font-size:0.88rem;
+  box-shadow:0 18px 40px rgba(22,163,74,0.5);
+  z-index:9999;
+  opacity:0;
+  pointer-events:none;
+  transition:all 0.3s;
+  display:flex;
+  align-items:center;
+  gap:8px;
+}
+.toast.show{opacity:1;transform:translateX(-50%) translateY(0);}
+.toast.show.hide{opacity:0;transform:translateX(-50%) translateY(-20px);}
+
+@media (max-width:480px){
+  .price-card{padding:20px 18px;}
+  .pc-amount{font-size:3rem;}
+  .pay-card{padding:18px 16px;}
+  .br-value{font-size:0.84rem;}
+  .wa-btn{font-size:0.92rem;}
+}
+</style>
+</head>
+<body>
+
+<div class="bg-orbs">
+  <div class="orb orb-1"></div>
+  <div class="orb orb-2"></div>
+</div>
+
+<div class="toast" id="toast">
+  <span>✅</span>
+  <span id="toastMsg">تم النسخ!</span>
+</div>
+
+<div class="container">
+  <a href="index.html" class="back">← الرجوع للرئيسية</a>
+
+  <!-- بطاقة السعر -->
+  <div class="price-card">
+    <span class="pc-badge">🔥 عرض إطلاق محدود</span>
+    <div class="pc-icon">💎</div>
+    <div class="pc-title">منصة التقارير الذكية</div>
+    <div class="pc-price">
+      <span class="pc-amount">30</span>
+      <span class="pc-cur">ريال</span>
+    </div>
+    <div class="pc-lifetime">💎 مدى الحياة · دفعة واحدة</div>
+  </div>
+
+  <!-- الخطوات -->
+  <div class="steps-title">طريقة الدفع البسيطة 👇</div>
+
+  <!-- البطاقة 1: تحويل بنكي -->
+  <div class="pay-card">
+    <div class="pc-header">
+      <div class="pc-step">1</div>
+      <div>
+        <div class="pc-title2">حوّل المبلغ على الحساب البنكي</div>
+        <div class="pc-sub">🏦 بنك الراجحي - تحويل آمن وسريع</div>
+      </div>
+    </div>
+
+    <!-- المبلغ -->
+    <div class="amount-card">
+      <div class="label">💰 المبلغ المطلوب</div>
+      <div class="value">30 ريال</div>
+    </div>
+
+    <!-- بيانات الحساب -->
+    <div class="bank-info">
+      <div class="bank-row">
+        <span class="br-label">🏦 البنك</span>
+        <span class="br-value" style="font-family:inherit;direction:rtl;">الراجحي</span>
+      </div>
+      <div class="bank-row">
+        <span class="br-label">📛 الاسم</span>
+        <span class="br-value" style="font-family:inherit;direction:rtl;">صلاح الفالح</span>
+      </div>
+      <div class="bank-row">
+        <span class="br-label">💳 الآيبان</span>
+        <span class="br-value" id="ibanText">SA2680000154608010376006</span>
+      </div>
+    </div>
+
+    <button class="copy-btn" id="copyBtn" onclick="copyIBAN()">
+      <span>📋</span>
+      <span>نسخ رقم الآيبان</span>
+    </button>
+  </div>
+
+  <!-- البطاقة 2: إرسال الإيصال -->
+  <div class="wa-card">
+    <div class="pc-header" style="margin-bottom:14px;">
+      <div class="pc-step" style="background:rgba(255,255,255,0.25);">2</div>
+      <div class="wa-text" style="text-align:right;margin:0;">
+        <div class="wa-title">✅ بعد التحويل، أرسل الإيصال</div>
+        <div class="wa-sub">سيتم تفعيل اشتراكك خلال 1-3 دقائق</div>
+      </div>
+    </div>
+
+    <a href="#" id="waBtn" class="wa-btn">
+      <span class="icon">💬</span>
+      <span>إرسال الإيصال على الواتساب</span>
+    </a>
+  </div>
+
+  <!-- شارات الثقة -->
+  <div class="trust-row">
+    <div class="trust-badge">
+      <span class="ic">⚡</span>
+      <span>تفعيل خلال<br>1-3 دقائق</span>
+    </div>
+    <div class="trust-badge">
+      <span class="ic">🛡️</span>
+      <span>ضمان استرداد<br>7 أيام</span>
+    </div>
+    <div class="trust-badge">
+      <span class="ic">🔒</span>
+      <span>دفع آمن<br>100%</span>
+    </div>
+  </div>
+</div>
+
+<script type="module">
+import { onUserChange, isLifetime } from './firebase-config.js';
+
+let _userEmail = '';
+let _userName = '';
+let _userId = '';
+
+// متابعة حالة المستخدم
+onUserChange((data) => {
+  if (data?.user) {
+    _userEmail = data.user.email || '';
+    _userName = data.profile?.displayName || _userEmail.split('@')[0] || 'عميل جديد';
+    _userId = data.user.uid.substring(0, 8);
+
+    // إذا كان مشترك Lifetime، أبلغه
+    if (isLifetime(data.profile)) {
+      alert('💎 أنت مشترك Lifetime بالفعل!\nاستمتع بكل القوالب.');
+      window.location.href = 'index.html';
+      return;
+    }
+
+    updateWhatsAppLink();
+  } else {
+    updateWhatsAppLink();
+  }
+});
+
+function updateWhatsAppLink() {
+  const msg = `السلام عليكم 👋
+
+تم تحويل مبلغ الاشتراك 💎
+
+📛 الاسم: ${_userName || 'لم أسجّل بعد'}
+📧 الإيميل: ${_userEmail || 'لم أسجّل بعد'}
+🆔 رقم العميل: ${_userId || 'لم أسجّل بعد'}
+💰 المبلغ: 30 ريال
+🏦 البنك: الراجحي
+📅 التاريخ: ${new Date().toLocaleDateString('ar-SA')}
+
+📸 الإيصال مرفق
+
+شكراً لكم 🙏`;
+
+  const link = `https://wa.me/966550522867?text=${encodeURIComponent(msg)}`;
+  document.getElementById('waBtn').href = link;
+}
+</script>
+
+<script>
+// نسخ IBAN
+function copyIBAN() {
+  const iban = 'SA2680000154608010376006';
+  const btn = document.getElementById('copyBtn');
+
+  navigator.clipboard.writeText(iban).then(() => {
+    showToast('✅ تم نسخ الآيبان!');
+    btn.classList.add('copied');
+    btn.innerHTML = '<span>✓</span><span>تم النسخ بنجاح!</span>';
+    setTimeout(() => {
+      btn.classList.remove('copied');
+      btn.innerHTML = '<span>📋</span><span>نسخ رقم الآيبان</span>';
+    }, 2500);
+  }).catch(() => {
+    // fallback للمتصفحات القديمة
+    const textarea = document.createElement('textarea');
+    textarea.value = iban;
+    document.body.appendChild(textarea);
+    textarea.select();
+    document.execCommand('copy');
+    document.body.removeChild(textarea);
+    showToast('✅ تم نسخ الآيبان!');
+  });
+}
+
+function showToast(msg) {
+  const toast = document.getElementById('toast');
+  document.getElementById('toastMsg').textContent = msg;
+  toast.classList.add('show');
+  setTimeout(() => {
+    toast.classList.add('hide');
+    setTimeout(() => {
+      toast.classList.remove('show', 'hide');
+    }, 300);
+  }, 2500);
+}
+</script>
+
+</body>
+</html>

@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>تواصل معنا · منصة التقارير الذكية</title>
+<link href="https://fonts.googleapis.com/css2?family=Reem+Kufi:wght@400;600;700&family=Tajawal:wght@400;500;700;900&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+body{
+  font-family:'Tajawal','Cairo',sans-serif;
+  background:linear-gradient(135deg,#0a3447,#1e6b8a);
+  min-height:100vh;
+  color:#fff;
+  padding:20px 14px 40px;
+}
+.container{max-width:520px;margin:0 auto;}
+.back{
+  display:inline-flex;
+  align-items:center;
+  gap:6px;
+  color:#fff;
+  text-decoration:none;
+  font-weight:900;
+  font-size:0.86rem;
+  margin-bottom:20px;
+  padding:8px 14px;
+  background:rgba(255,255,255,0.1);
+  border-radius:99px;
+}
+.card{
+  background:#fff;
+  color:#1a3a4e;
+  border-radius:24px;
+  padding:34px 26px 28px;
+  box-shadow:0 24px 60px rgba(0,0,0,0.3);
+  position:relative;
+  overflow:hidden;
+  text-align:center;
+}
+.card::before{
+  content:"";
+  position:absolute;
+  top:0;left:0;right:0;
+  height:5px;
+  background:linear-gradient(90deg,#d4a657,#25d366,#d4a657);
+}
+.icon{
+  width:80px;height:80px;
+  background:linear-gradient(135deg,#25d366,#128c7e);
+  border-radius:22px;
+  display:flex;align-items:center;justify-content:center;
+  font-size:2.6rem;
+  margin:0 auto 18px;
+  box-shadow:0 14px 32px rgba(37,211,102,0.4);
+}
+h1{
+  font-family:'Reem Kufi',sans-serif;
+  font-size:1.7rem;
+  margin-bottom:8px;
+  color:#1a3a4e;
+}
+.subtitle{
+  color:#5a7080;
+  font-size:0.92rem;
+  font-weight:700;
+  margin-bottom:24px;
+  line-height:1.7;
+}
+.method{
+  display:flex;
+  align-items:center;
+  gap:14px;
+  background:#f8fafc;
+  border:1.5px solid #e2e8f0;
+  border-radius:16px;
+  padding:16px 18px;
+  margin-bottom:12px;
+  text-decoration:none;
+  color:inherit;
+  transition:all 0.25s;
+  text-align:right;
+}
+.method:hover{
+  border-color:#1e6b8a;
+  transform:translateY(-3px);
+  box-shadow:0 12px 28px rgba(30,107,138,0.18);
+}
+.method.whatsapp{
+  background:linear-gradient(135deg,rgba(37,211,102,0.08),rgba(18,140,126,0.04));
+  border-color:rgba(37,211,102,0.3);
+}
+.method.whatsapp:hover{border-color:#25d366;}
+.m-icon{
+  width:54px;
+  height:54px;
+  border-radius:14px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  font-size:1.6rem;
+  color:#fff;
+  flex-shrink:0;
+  box-shadow:0 6px 16px rgba(0,0,0,0.15);
+}
+.m-info{flex:1;min-width:0;}
+.m-label{
+  font-size:0.74rem;
+  color:#5a7080;
+  font-weight:800;
+  margin-bottom:3px;
+}
+.m-value{
+  font-size:1rem;
+  font-weight:900;
+  color:#1a3a4e;
+  word-break:break-all;
+}
+.m-arrow{
+  color:#94a3b8;
+  font-size:1.4rem;
+  font-weight:900;
+}
+
+.hours{
+  background:linear-gradient(135deg,#f0fdf4,#dcfce7);
+  border:1.5px solid #16a34a;
+  border-radius:14px;
+  padding:14px;
+  margin-top:18px;
+  text-align:center;
+}
+.hours-title{
+  font-size:0.86rem;
+  font-weight:900;
+  color:#15803d;
+  margin-bottom:4px;
+}
+.hours-text{
+  font-size:0.78rem;
+  color:#16a34a;
+  font-weight:700;
+}
+
+.faq-link{
+  margin-top:14px;
+  background:#fef3c7;
+  border:1.5px solid #f59e0b;
+  border-radius:14px;
+  padding:13px;
+  text-align:center;
+}
+.faq-link a{
+  color:#92400e;
+  font-weight:900;
+  font-size:0.84rem;
+  text-decoration:none;
+}
+.faq-link a:hover{text-decoration:underline;}
+
+@media (max-width:480px){
+  .card{padding:28px 20px 22px;}
+  h1{font-size:1.4rem;}
+  .m-value{font-size:0.92rem;}
+  .m-icon{width:48px;height:48px;font-size:1.4rem;}
+}
+</style>
+</head>
+<body>
+
+<div class="container">
+  <a href="index.html" class="back">← الرجوع للرئيسية</a>
+
+  <div class="card">
+    <div class="icon">💬</div>
+    <h1>تواصل معنا</h1>
+    <p class="subtitle">نسعدنا تواصلك معنا!<br>اختر الطريقة الأنسب لك</p>
+
+    <a href="https://wa.me/966550522867?text=السلام%20عليكم،%20لدي%20استفسار" target="_blank" rel="noopener" class="method whatsapp">
+      <div class="m-icon" style="background:linear-gradient(135deg,#25d366,#128c7e);">💬</div>
+      <div class="m-info">
+        <div class="m-label">واتساب (الأسرع)</div>
+        <div class="m-value" dir="ltr">+966 55 052 2867</div>
+      </div>
+      <div class="m-arrow">‹</div>
+    </a>
+
+    <a href="mailto:admin@ksa2030.one" class="method">
+      <div class="m-icon" style="background:linear-gradient(135deg,#1e6b8a,#2a8aab);">📧</div>
+      <div class="m-info">
+        <div class="m-label">البريد الإلكتروني</div>
+        <div class="m-value">admin@ksa2030.one</div>
+      </div>
+      <div class="m-arrow">‹</div>
+    </a>
+
+    <div class="hours">
+      <div class="hours-title">⏰ ساعات العمل</div>
+      <div class="hours-text">متاحين 24/7 · الردود خلال ساعات النهار (8 ص - 11 م)</div>
+    </div>
+
+    <div class="faq-link">
+      <a href="faq.html">❓ الأسئلة الشائعة - ربما تجد إجابتك هنا</a>
+    </div>
+  </div>
+</div>
+
+</body>
+</html>
