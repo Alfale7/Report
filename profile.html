@@ -431,8 +431,8 @@ onUserChange((data) => {
   }
   document.getElementById('userName').textContent = profile?.displayName || user.displayName || 'مرحباً بك';
 
-  // 🆔 معرّف العميل (أول 8 حروف من UID)
-  const customerId = user.uid.substring(0, 8).toUpperCase();
+  // 🆔 معرّف العميل (أول 8 حروف من UID - بنفس الحالة الأصلية)
+  const customerId = user.uid.substring(0, 8);
   document.getElementById('customerIdValue').textContent = customerId;
   window._customerId = customerId; // نخزّنه عشان نسخه
 
