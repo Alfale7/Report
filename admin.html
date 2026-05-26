@@ -781,7 +781,12 @@ body{font-family:'Tajawal','Cairo',sans-serif;background:linear-gradient(135deg,
         <h1>🛠️ لوحة الإدارة</h1>
         <div class="small">ksa2030.one</div>
       </div>
-      <button class="logout-mini" onclick="handleLogout()">🚪 خروج</button>
+      <div class="top-actions">
+        <a href="index.html" class="btn-home" title="الرجوع للرئيسية">
+          <span>🏠</span><span>الرئيسية</span>
+        </a>
+        <button class="logout-mini" onclick="handleLogout()">🚪 خروج</button>
+      </div>
     </div>
 
     <div class="stats-grid">
@@ -1122,12 +1127,190 @@ function renderUsers(users) {
 
 // تحديث الإحصائيات
 function updateStats(users) {
-  document.getElementById('totalUsers').textContent = users.length;
+  const total = users.length;
   const lifetime = users.filter(u => u.plan === 'lifetime').length;
-  document.getElementById('totalLifetime').textContent = lifetime;
-  document.getElementById('totalFree').textContent = users.length - lifetime;
+  const free = total - lifetime;
   const totalDl = users.reduce((sum, u) => sum + (u.downloadsUsed || 0), 0);
+
+  // الإحصائيات الأساسية
+  document.getElementById('totalUsers').textContent = total;
+  document.getElementById('totalLifetime').textContent = lifetime;
+  document.getElementById('totalFree').textContent = free;
   document.getElementById('totalDownloads').textContent = totalDl;
+
+  // 📊 لوحة الإحصائيات الاحترافية
+  updateDashboard(users, total, lifetime, free, totalDl);
+}
+
+function updateDashboard(users, total, lifetime, free, totalDl) {
+  // 💰 الإيرادات
+  const revenue = lifetime * 30;
+  document.getElementById('totalRevenue').textContent = revenue.toLocaleString('en-US');
+
+  // 📈 معدل التحويل
+  const conversionRate = total > 0 ? ((lifetime / total) * 100).toFixed(1) : 0;
+  document.getElementById('conversionRate').textContent = conversionRate + '%';
+
+  // 📊 متوسط التحميلات
+  const avgDl = total > 0 ? (totalDl / total).toFixed(1) : 0;
+  document.getElementById('avgDownloads').textContent = avgDl;
+
+  // 🍩 Donut Chart
+  const pct = total > 0 ? (lifetime / total) * 100 : 0;
+  const circumference = 2 * Math.PI * 40; // 251.2
+  const fillLength = (pct / 100) * circumference;
+  const donutEl = document.getElementById('donutProgress');
+  if (donutEl) {
+    donutEl.setAttribute('stroke-dasharray', `${fillLength} ${circumference}`);
+  }
+  document.getElementById('donutPct').textContent = pct.toFixed(0) + '%';
+  document.getElementById('totalUsersBadge').textContent = total;
+  document.getElementById('legendLifetime').textContent = lifetime;
+  document.getElementById('legendFree').textContent = free;
+
+  // 🆕 آخر المشتركين (آخر 5)
+  updateRecentSubscribers(users);
+
+  // 🏆 الأكثر نشاطاً
+  updateTopUsers(users);
+
+  // 📅 آخر 7 أيام
+  updateBarsChart(users);
+}
+
+function updateRecentSubscribers(users) {
+  const sorted = [...users].sort((a, b) => {
+    const dateA = new Date(a.createdAt || a.lastLogin || 0);
+    const dateB = new Date(b.createdAt || b.lastLogin || 0);
+    return dateB - dateA;
+  }).slice(0, 5);
+
+  const container = document.getElementById('recentSubscribers');
+  if (!sorted.length) {
+    container.innerHTML = '<div class="recent-empty">لا توجد بيانات</div>';
+    return;
+  }
+
+  const colors = [
+    'linear-gradient(135deg,#FF6B35,#F7B538)',
+    'linear-gradient(135deg,#1B1B3A,#4ECDC4)',
+    'linear-gradient(135deg,#0EA5E9,#1e6b8a)',
+    'linear-gradient(135deg,#16a34a,#15803d)',
+    'linear-gradient(135deg,#DB2777,#9D174D)'
+  ];
+
+  container.innerHTML = sorted.map((u, idx) => {
+    const name = u.displayName || u.email?.split('@')[0] || u.phoneNumber || 'مجهول';
+    const initial = name.charAt(0).toUpperCase();
+    const isLifetime = u.plan === 'lifetime';
+    const timeAgo = getTimeAgo(u.createdAt || u.lastLogin);
+
+    return `
+      <div class="recent-item">
+        <div class="recent-avatar" style="background:${colors[idx % colors.length]};">${initial}</div>
+        <div class="recent-info">
+          <div class="recent-name">${name}</div>
+          <div class="recent-time">⏰ ${timeAgo}</div>
+        </div>
+        <span class="recent-badge ${isLifetime ? 'lifetime' : 'free'}">
+          ${isLifetime ? '💎 LIFETIME' : '🆓 FREE'}
+        </span>
+      </div>
+    `;
+  }).join('');
+}
+
+function updateTopUsers(users) {
+  const sorted = [...users]
+    .filter(u => (u.downloadsUsed || 0) > 0)
+    .sort((a, b) => (b.downloadsUsed || 0) - (a.downloadsUsed || 0))
+    .slice(0, 5);
+
+  const container = document.getElementById('topUsersList');
+  if (!sorted.length) {
+    container.innerHTML = '<div class="recent-empty">لا توجد بيانات تحميل بعد</div>';
+    return;
+  }
+
+  container.innerHTML = sorted.map((u, idx) => {
+    const name = u.displayName || u.email?.split('@')[0] || u.phoneNumber || 'مجهول';
+    const email = u.email || u.phoneNumber || '';
+    const downloads = u.downloadsUsed || 0;
+    const rankClass = idx === 0 ? 'r1' : idx === 1 ? 'r2' : idx === 2 ? 'r3' : 'r-other';
+    const rankIcon = idx === 0 ? '🥇' : idx === 1 ? '🥈' : idx === 2 ? '🥉' : (idx + 1);
+
+    return `
+      <div class="top-item">
+        <div class="top-rank ${rankClass}">${rankIcon}</div>
+        <div class="top-info">
+          <div class="top-name">${name}</div>
+          <div class="top-email">${email}</div>
+        </div>
+        <div>
+          <div class="top-downloads">${downloads}</div>
+          <div class="top-downloads-lbl">تحميل</div>
+        </div>
+      </div>
+    `;
+  }).join('');
+}
+
+function updateBarsChart(users) {
+  // آخر 7 أيام
+  const days = [];
+  const now = new Date();
+  for (let i = 6; i >= 0; i--) {
+    const d = new Date(now);
+    d.setDate(d.getDate() - i);
+    d.setHours(0, 0, 0, 0);
+    days.push({
+      date: d,
+      label: d.toLocaleDateString('ar-SA', { weekday: 'short' }),
+      count: 0
+    });
+  }
+
+  // عدّ التسجيلات لكل يوم
+  users.forEach(u => {
+    if (!u.createdAt) return;
+    const created = new Date(u.createdAt);
+    created.setHours(0, 0, 0, 0);
+    const day = days.find(d => d.date.getTime() === created.getTime());
+    if (day) day.count++;
+  });
+
+  // أعلى قيمة للحساب
+  const maxCount = Math.max(...days.map(d => d.count), 1);
+  const total7Days = days.reduce((s, d) => s + d.count, 0);
+  document.getElementById('last7Days').textContent = total7Days;
+
+  // رسم الأعمدة
+  const container = document.getElementById('barsChart');
+  container.innerHTML = days.map(d => {
+    const heightPct = (d.count / maxCount) * 70 + 4; // بالـ % من حاوية بطول 140px
+    const height = (d.count / maxCount) * 80;
+    return `
+      <div class="bar-item">
+        <div class="bar-value">${d.count || ''}</div>
+        <div class="bar-fill ${d.count === 0 ? 'zero' : ''}" style="height:${Math.max(height, 4)}px;flex:none;"></div>
+        <div class="bar-label">${d.label}</div>
+      </div>
+    `;
+  }).join('');
+}
+
+function getTimeAgo(dateStr) {
+  if (!dateStr) return 'غير محدد';
+  const date = new Date(dateStr);
+  const now = new Date();
+  const diff = (now - date) / 1000;
+
+  if (diff < 60) return 'الآن';
+  if (diff < 3600) return `قبل ${Math.floor(diff / 60)} دقيقة`;
+  if (diff < 86400) return `قبل ${Math.floor(diff / 3600)} ساعة`;
+  if (diff < 604800) return `قبل ${Math.floor(diff / 86400)} يوم`;
+  if (diff < 2592000) return `قبل ${Math.floor(diff / 604800)} أسبوع`;
+  return `قبل ${Math.floor(diff / 2592000)} شهر`;
 }
 
 // تفعيل
