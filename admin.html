@@ -1334,7 +1334,17 @@ function updateBarsChart(users) {
 function getTimeAgo(dateStr) {
   if (!dateStr) return 'حديثاً';
 
-  const date = new Date(dateStr);
+  // 🔥 يدعم Firebase Timestamp + ISO string + Date
+  let date;
+  if (typeof dateStr === 'object' && dateStr.seconds) {
+    // Firebase Timestamp
+    date = new Date(dateStr.seconds * 1000);
+  } else if (typeof dateStr === 'object' && dateStr.toDate) {
+    // Firestore Timestamp object
+    date = dateStr.toDate();
+  } else {
+    date = new Date(dateStr);
+  }
 
   // ✅ تأكد إن التاريخ صحيح
   if (isNaN(date.getTime())) return 'حديثاً';
@@ -1342,7 +1352,7 @@ function getTimeAgo(dateStr) {
   const now = new Date();
   const diff = (now - date) / 1000;
 
-  if (diff < 0) return 'حديثاً';
+  if (diff < 0) return 'الآن';
   if (diff < 60) return 'الآن';
   if (diff < 3600) return `قبل ${Math.floor(diff / 60)} دقيقة`;
   if (diff < 86400) return `قبل ${Math.floor(diff / 3600)} ساعة`;
