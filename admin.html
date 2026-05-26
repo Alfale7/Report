@@ -404,6 +404,9 @@ function renderUsers(users) {
             · 📥 ${downloads} تحميل
             · 📅 ${created}
           </div>
+          <div class="meta" style="margin-top:4px;color:#1e6b8a;font-weight:900;">
+            🆔 معرّف العميل: <span style="background:#f0f9ff;padding:2px 8px;border-radius:6px;font-family:monospace;">${(u.uid || u.id || '').substring(0,8)}</span>
+          </div>
         </div>
         <div class="user-actions">
           ${isAdminUser

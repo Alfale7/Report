@@ -332,6 +332,18 @@ export async function findUser(searchTerm) {
       });
     }
 
+    // 🆔 بحث بمعرّف العميل (أول 8 حروف من UID)
+    if (results.length === 0 && term.length >= 4 && term.length <= 10 && !term.includes('@')) {
+      const allSnap = await getDocs(query(collection(db, 'users'), limit(500)));
+      allSnap.forEach(d => {
+        if (d.id.startsWith(term)) {
+          if (!results.find(r => r.id === d.id)) {
+            results.push({ id: d.id, ...d.data() });
+          }
+        }
+      });
+    }
+
     return results;
   } catch (error) {
     console.error('findUser error:', error);
