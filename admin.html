@@ -580,6 +580,24 @@ body{font-family:'Tajawal','Cairo',sans-serif;background:linear-gradient(135deg,
 }
 .btn-edit-name:hover{transform:translateY(-1px);box-shadow:0 6px 14px rgba(30,107,138,0.4);}
 
+.btn-delete{
+  background:linear-gradient(135deg,#dc2626,#991b1b);
+  color:#fff;
+  border:none;
+  padding:8px 12px;
+  border-radius:9px;
+  font-family:inherit;
+  font-weight:900;
+  font-size:0.9rem;
+  cursor:pointer;
+  white-space:nowrap;
+  transition:all 0.2s;
+}
+.btn-delete:hover{
+  transform:translateY(-1px) scale(1.05);
+  box-shadow:0 6px 14px rgba(220,38,38,0.4);
+}
+
 .btn-activate{
   background:linear-gradient(135deg,#16a34a,#15803d);
   color:#fff;
@@ -1017,7 +1035,7 @@ import {
   db
 } from './firebase-config.js';
 
-import { doc, updateDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+import { doc, updateDoc, deleteDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
 // قائمة UIDs الإداريين (نفس اللي في firebase-config)
 const ADMIN_UIDS_LOCAL = ['bKJ4YdvOEkRCPJ8qMqEyDJsM3ua2'];
@@ -1136,14 +1154,19 @@ function renderUsers(users) {
         </div>
         <div class="user-actions">
           <button class="btn-edit-name" onclick="handleEditName('${u.uid || u.id}','${(name || '').replace(/'/g, "\\'")}')">
-            ✏️ تعديل الاسم
+            ✏️ تعديل
           </button>
           ${isAdminUser
             ? `<span style="color:#7c2d12;font-weight:900;font-size:0.74rem;padding:8px 12px;background:#fef3c7;border-radius:9px;">🔒 محمي</span>`
-            : (isLifetime
-              ? `<button class="btn-deactivate" onclick="handleDeactivate('${u.uid || u.id}','${(name || '').replace(/'/g, "\\'")}')">إلغاء</button>`
-              : `<button class="btn-activate" onclick="handleActivate('${u.uid || u.id}','${(name || '').replace(/'/g, "\\'")}')">✨ تفعيل Lifetime</button>`
-            )
+            : `
+              ${isLifetime
+                ? `<button class="btn-deactivate" onclick="handleDeactivate('${u.uid || u.id}','${(name || '').replace(/'/g, "\\'")}')">إلغاء</button>`
+                : `<button class="btn-activate" onclick="handleActivate('${u.uid || u.id}','${(name || '').replace(/'/g, "\\'")}')">✨ تفعيل</button>`
+              }
+              <button class="btn-delete" onclick="handleDelete('${u.uid || u.id}','${(name || '').replace(/'/g, "\\'")}','${email || phone || ''}')" title="حذف نهائي">
+                🗑️
+              </button>
+            `
           }
         </div>
       </div>
@@ -1206,10 +1229,9 @@ function updateDashboard(users, total, lifetime, free, totalDl) {
 
 function updateRecentSubscribers(users) {
   const sorted = [...users].sort((a, b) => {
-    // للـ Lifetime: استخدم activatedAt
-    // للمجاني: استخدم createdAt
-    const dateA = new Date(a.activatedAt || a.createdAt || a.lastLogin || 0);
-    const dateB = new Date(b.activatedAt || b.createdAt || b.lastLogin || 0);
+    // أولوية: activatedAt → createdAt → lastLogin
+    const dateA = new Date(getDateValue(a.activatedAt || a.createdAt || a.lastLogin || 0));
+    const dateB = new Date(getDateValue(b.activatedAt || b.createdAt || b.lastLogin || 0));
     return dateB - dateA;
   }).slice(0, 5);
 
@@ -1231,18 +1253,31 @@ function updateRecentSubscribers(users) {
     const name = u.displayName || u.email?.split('@')[0] || u.phoneNumber || 'مجهول';
     const initial = name.charAt(0).toUpperCase();
     const isLifetime = u.plan === 'lifetime';
-    // 💡 وقت التفعيل للمدفوع، وقت التسجيل للمجاني
-    const relevantDate = isLifetime
-      ? (u.activatedAt || u.createdAt)
-      : (u.createdAt || u.lastLogin);
-    const timeAgo = getTimeAgo(relevantDate);
+    const isMigrated = u.migratedFromLegacy === true;
+
+    // 💡 منطق ذكي للوقت
+    let timeLabel, timeAgo;
+    if (isMigrated) {
+      // مهاجَر قديم
+      timeLabel = '📦 مشترك قديم';
+      timeAgo = '';
+    } else if (isLifetime && u.activatedAt) {
+      timeLabel = '✨ تفعيل';
+      timeAgo = getTimeAgo(u.activatedAt);
+    } else if (u.createdAt) {
+      timeLabel = isLifetime ? '✨ تفعيل' : '🆕 تسجيل';
+      timeAgo = getTimeAgo(u.createdAt);
+    } else {
+      timeLabel = '⏰';
+      timeAgo = 'غير محدد';
+    }
 
     return `
       <div class="recent-item">
         <div class="recent-avatar" style="background:${colors[idx % colors.length]};">${initial}</div>
         <div class="recent-info">
           <div class="recent-name">${name}</div>
-          <div class="recent-time">${isLifetime ? '✨ تفعيل' : '🆕 تسجيل'} ${timeAgo}</div>
+          <div class="recent-time">${timeLabel} ${timeAgo}</div>
         </div>
         <span class="recent-badge ${isLifetime ? 'lifetime' : 'free'}">
           ${isLifetime ? '💎 LIFETIME' : '🆓 FREE'}
@@ -1250,6 +1285,15 @@ function updateRecentSubscribers(users) {
       </div>
     `;
   }).join('');
+}
+
+// 🔥 يستخرج قيمة عددية من أي صيغة تاريخ
+function getDateValue(d) {
+  if (!d) return 0;
+  if (typeof d === 'object' && d.seconds) return d.seconds * 1000;
+  if (typeof d === 'object' && d.toDate) return d.toDate().getTime();
+  const parsed = new Date(d).getTime();
+  return isNaN(parsed) ? 0 : parsed;
 }
 
 function updateTopUsers(users) {
@@ -1385,6 +1429,34 @@ window.handleDeactivate = async function(uid, name) {
     setTimeout(() => loadAllUsers(), 800);
   } else {
     showToast(`❌ ${result.error}`, 'error');
+  }
+};
+
+// 🗑️ حذف الحساب نهائياً
+window.handleDelete = async function(uid, name, contact) {
+  // تحذير 1: تأكيد قوي
+  const warn1 = `⚠️ تحذير: حذف نهائي!\n\nسيتم حذف:\n• الحساب: ${name}\n• الاتصال: ${contact}\n• كل البيانات والإحصائيات\n\n❌ لا يمكن التراجع عن هذه العملية!\n\nهل أنت متأكد؟`;
+  if (!confirm(warn1)) return;
+
+  // تحذير 2: كتابة "حذف"
+  const confirmText = prompt(`للتأكيد، اكتب كلمة "حذف" بالضبط:`);
+  if (confirmText !== 'حذف') {
+    showToast('❌ تم إلغاء الحذف', 'error');
+    return;
+  }
+
+  try {
+    // حذف من Firestore
+    await deleteDoc(doc(db, 'users', uid));
+    showToast(`🗑️ تم حذف "${name}" نهائياً`, 'success');
+
+    // ملاحظة: حساب Authentication يبقى موجود (نحذفه يدوياً من Firebase Console لو احتجنا)
+    console.warn(`💡 ملاحظة: حساب Auth لـ ${name} لا يزال موجوداً في Firebase Authentication. احذفه يدوياً من Console.`);
+
+    setTimeout(() => loadAllUsers(), 1000);
+  } catch (err) {
+    console.error(err);
+    showToast(`❌ فشل الحذف: ${err.message}`, 'error');
   }
 };
 

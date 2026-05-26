@@ -148,6 +148,117 @@ body{font-family:'Tajawal','Cairo',sans-serif;background:linear-gradient(135deg,
 .action-row .title{font-weight:900;font-size:0.85rem;color:#1a3a4e;}
 .action-row .desc{font-size:0.72rem;color:#5a7080;font-weight:600;margin-top:1px;}
 .action-row .arrow{color:#a0aab5;font-size:1rem;}
+
+/* ✏️ Modal تعديل الاسم */
+.pn-modal-overlay{
+  display:none;
+  position:fixed;
+  inset:0;
+  background:rgba(10,52,71,0.75);
+  z-index:9999;
+  backdrop-filter:blur(8px);
+  -webkit-backdrop-filter:blur(8px);
+  align-items:center;
+  justify-content:center;
+  padding:14px;
+}
+.pn-modal-overlay.show{display:flex;}
+.pn-modal-card{
+  background:#fff;
+  border-radius:22px;
+  padding:28px 22px;
+  max-width:380px;
+  width:100%;
+  box-shadow:0 24px 60px rgba(0,0,0,0.4);
+  text-align:center;
+  animation:pnModalIn 0.3s cubic-bezier(0.34,1.56,0.64,1);
+}
+@keyframes pnModalIn{
+  from{transform:scale(0.85);opacity:0;}
+  to{transform:scale(1);opacity:1;}
+}
+.pn-modal-icon{
+  width:64px;height:64px;
+  background:linear-gradient(135deg,#1e6b8a,#2a8aab);
+  border-radius:18px;
+  display:flex;align-items:center;justify-content:center;
+  font-size:1.9rem;
+  margin:0 auto 12px;
+  box-shadow:0 10px 24px rgba(30,107,138,0.4);
+}
+.pn-modal-title{
+  font-size:1.2rem;
+  font-weight:900;
+  color:#1a3a4e;
+  margin-bottom:5px;
+}
+.pn-modal-sub{
+  color:#5a7080;
+  font-size:0.82rem;
+  font-weight:700;
+  margin-bottom:18px;
+}
+.pn-modal-field{
+  margin-bottom:14px;
+  text-align:right;
+}
+.pn-modal-label{
+  display:block;
+  font-size:0.78rem;
+  font-weight:900;
+  color:#5a7080;
+  margin-bottom:5px;
+}
+.pn-modal-input{
+  width:100%;
+  background:#fff;
+  border:2px solid #cbd5e1;
+  border-radius:11px;
+  padding:12px 14px;
+  font-family:inherit;
+  font-weight:900;
+  font-size:1rem;
+  color:#1a3a4e;
+  outline:none;
+  transition:border 0.2s;
+}
+.pn-modal-input:focus{
+  border-color:#1e6b8a;
+  box-shadow:0 0 0 3px rgba(30,107,138,0.15);
+}
+.pn-modal-hint{
+  font-size:0.7rem;
+  color:#94a3b8;
+  font-weight:700;
+  margin-top:5px;
+}
+.pn-modal-actions{
+  display:flex;
+  gap:8px;
+  margin-top:16px;
+}
+.pn-modal-cancel,.pn-modal-save{
+  flex:1;
+  padding:12px;
+  border:none;
+  border-radius:11px;
+  font-family:inherit;
+  font-weight:900;
+  font-size:0.88rem;
+  cursor:pointer;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  gap:6px;
+}
+.pn-modal-cancel{background:#f1f5f9;color:#5a7080;}
+.pn-modal-save{
+  background:linear-gradient(135deg,#16a34a,#15803d);
+  color:#fff;
+  box-shadow:0 6px 16px rgba(22,163,74,0.35);
+}
+.pn-modal-save:disabled{background:#94a3b8;cursor:wait;}
+
 .logout-btn{
   width:100%;
   padding:13px;
@@ -370,6 +481,14 @@ body{font-family:'Tajawal','Cairo',sans-serif;background:linear-gradient(135deg,
 
     <div class="card">
       <div class="card-title">⚙️ الإعدادات</div>
+      <div class="action-row" onclick="openEditNameModal()">
+        <div class="icon" style="background:linear-gradient(135deg,#1e6b8a,#2a8aab);color:#fff;">✏️</div>
+        <div class="text">
+          <div class="title">تعديل اسمي</div>
+          <div class="desc">غيّر الاسم الذي يظهر لك</div>
+        </div>
+        <div class="arrow">‹</div>
+      </div>
       <div class="action-row" onclick="changePassword()">
         <div class="icon">🔒</div>
         <div class="text">
@@ -405,8 +524,31 @@ body{font-family:'Tajawal','Cairo',sans-serif;background:linear-gradient(135deg,
   </div>
 </div>
 
+<!-- ✏️ Modal تعديل الاسم -->
+<div class="pn-modal-overlay" id="pnEditModal">
+  <div class="pn-modal-card">
+    <div class="pn-modal-icon">✏️</div>
+    <h3 class="pn-modal-title">تعديل اسمك</h3>
+    <p class="pn-modal-sub">سيظهر هذا الاسم في جميع تقاريرك</p>
+
+    <div class="pn-modal-field">
+      <label class="pn-modal-label">الاسم الجديد:</label>
+      <input type="text" id="pnNewName" class="pn-modal-input" placeholder="اكتب اسمك..." autocomplete="off" maxlength="50">
+      <div class="pn-modal-hint">✨ يمكنك استخدام الإيموجي والرموز</div>
+    </div>
+
+    <div class="pn-modal-actions">
+      <button class="pn-modal-cancel" onclick="closeEditNameModal()">إلغاء</button>
+      <button class="pn-modal-save" id="pnSaveBtn" onclick="saveProfileName()">
+        <span>💾</span><span>حفظ</span>
+      </button>
+    </div>
+  </div>
+</div>
+
 <script type="module">
-import { onUserChange, logout, isLifetime, isAdmin, buildSubscribeWhatsAppLink, SITE_CONFIG } from './firebase-config.js';
+import { onUserChange, logout, isLifetime, isAdmin, buildSubscribeWhatsAppLink, SITE_CONFIG, db } from './firebase-config.js';
+import { doc, updateDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
 onUserChange((data) => {
   if (!data) {
@@ -415,6 +557,7 @@ onUserChange((data) => {
   }
 
   const { user, profile } = data;
+  window._currentFbUser = user; // 💾 احفظ المرجع
   document.getElementById('loadingState').style.display = 'none';
   document.getElementById('mainContent').style.display = 'block';
 
@@ -540,6 +683,67 @@ window.copyCustomerId = function() {
     }, 2000);
   });
 };
+
+// ✏️ تعديل الاسم
+window.openEditNameModal = function() {
+  const currentName = document.getElementById('userName').textContent || '';
+  document.getElementById('pnNewName').value = currentName !== 'مرحباً بك' ? currentName : '';
+  document.getElementById('pnEditModal').classList.add('show');
+  setTimeout(() => document.getElementById('pnNewName').focus(), 100);
+};
+
+window.closeEditNameModal = function() {
+  document.getElementById('pnEditModal').classList.remove('show');
+};
+
+window.saveProfileName = async function() {
+  const newName = document.getElementById('pnNewName').value.trim();
+  if (!newName) {
+    alert('⚠️ اكتب اسم صحيح');
+    return;
+  }
+  if (newName.length < 2) {
+    alert('⚠️ الاسم قصير جداً');
+    return;
+  }
+
+  const user = window._currentFbUser;
+  if (!user?.uid) {
+    alert('❌ خطأ في جلسة المستخدم');
+    return;
+  }
+
+  const btn = document.getElementById('pnSaveBtn');
+  btn.disabled = true;
+  btn.innerHTML = '<span>⏳</span><span>جاري الحفظ...</span>';
+
+  try {
+    await updateDoc(doc(db, 'users', user.uid), {
+      displayName: newName,
+      updatedAt: new Date().toISOString()
+    });
+
+    // تحديث الاسم في الواجهة فوراً
+    document.getElementById('userName').textContent = newName;
+    closeEditNameModal();
+    alert(`✅ تم حفظ اسمك: ${newName}`);
+  } catch (err) {
+    console.error(err);
+    alert(`❌ فشل الحفظ: ${err.message}`);
+    btn.disabled = false;
+    btn.innerHTML = '<span>💾</span><span>حفظ</span>';
+  }
+};
+
+// إغلاق المودال خارجه
+document.getElementById('pnEditModal')?.addEventListener('click', (e) => {
+  if (e.target.id === 'pnEditModal') closeEditNameModal();
+});
+
+// Enter للحفظ
+document.getElementById('pnNewName')?.addEventListener('keypress', (e) => {
+  if (e.key === 'Enter') saveProfileName();
+});
 </script>
 
 </body>
