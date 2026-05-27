@@ -8,6 +8,10 @@
 <meta name="theme-color" content="#006c35">
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
 <title>تقرير يوم العَلَم السعودي</title>
+
+<!-- 📦 مكتبات التصدير -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Amiri:wght@400;700&family=Tajawal:wght@400;500;700;800;900&family=Reem+Kufi:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -643,10 +647,19 @@ color:#003d1f;
 }
 .btn:hover{transform:translateY(-1px); box-shadow:0 4px 12px rgba(0,0,0,0.2);}
 .btn:active{transform:scale(0.96);}
-.btn-print{
+.btn-image{
+background:linear-gradient(135deg, #3a7bd5, #00d2ff);
+color:#fff;
+}
+.btn-pdf{
 background:linear-gradient(135deg, #e6c068, #b8923d);
 color:#fff;
 }
+.btn-share{
+background:linear-gradient(135deg, #16a34a, #15803d);
+color:#fff;
+}
+.btn:disabled{opacity:0.6; cursor:wait;}
 .btn-clear{
 background:transparent;
 color:#fff;
@@ -1001,8 +1014,14 @@ background:linear-gradient(135deg, #003d1f, #006c35) !important;
     <button class="btn btn-lang" onclick="toggleLang()">
       <span>🌐</span><span id="langTxt">EN</span>
     </button>
-    <button class="btn btn-print" onclick="printPage()">
-      <span>🖨️</span><span class="txt" data-i18n="btnPrint">طباعة</span>
+    <button class="btn btn-image" onclick="saveAsImage()">
+      <span>🖼️</span><span class="txt" data-i18n="btnImage">صورة</span>
+    </button>
+    <button class="btn btn-pdf" onclick="savePDF()">
+      <span>📄</span><span class="txt" data-i18n="btnPdf">PDF</span>
+    </button>
+    <button class="btn btn-share" onclick="shareReport()">
+      <span>📤</span><span class="txt" data-i18n="btnShare">مشاركة</span>
     </button>
   </div>
 
@@ -1051,7 +1070,7 @@ const dict = {
     zSig:'التوقيعات', sigPrep:'معدّ/ة التقرير', sigPrin:'مدير/ة المدرسة', phName:'الاسم',
     motto:'رايةٌ لا تَنحَني · وعَهدٌ لا يَنكَسِر',
     credit1:'صُمم بـ', credit2:'لمدارس المملكة العربية السعودية · ٢٠٢٦',
-    btnClear:'تفريغ', btnPrint:'طباعة', yes:'نعم، احذف', cancel:'إلغاء',
+    btnClear:'تفريغ', btnImage:'صورة', btnPdf:'PDF', btnShare:'مشاركة', yes:'نعم، احذف', cancel:'إلغاء',
     confirmClear:'سيتم حذف كل البيانات والصور. هل أنت متأكد؟',
     msgCleared:'✅ تم تفريغ التقرير',
     msgUploaded:'✅ تم رفع الصورة',
@@ -1082,7 +1101,7 @@ const dict = {
     zSig:'Signatures', sigPrep:'Report Author', sigPrin:'School Principal', phName:'Name',
     motto:'A Banner That Never Bows · A Covenant That Never Breaks',
     credit1:'Designed with', credit2:'for Saudi Arabian schools · 2026',
-    btnClear:'Clear', btnPrint:'Print', yes:'Yes, delete', cancel:'Cancel',
+    btnClear:'Clear', btnImage:'Image', btnPdf:'PDF', btnShare:'Share', yes:'Yes, delete', cancel:'Cancel',
     confirmClear:'All data and photos will be deleted. Are you sure?',
     msgCleared:'✅ Report cleared',
     msgUploaded:'✅ Photo uploaded',
@@ -1251,16 +1270,207 @@ function doClear(){
   showToast(dict[currentLang].msgCleared);
 }
 
-function printPage(){
+// ═══════════════════════════════════════════════
+// 🖼️ تصدير كصورة PNG
+// ═══════════════════════════════════════════════
+async function saveAsImage(){
   saveData();
+  const btn = document.querySelector('.btn-image');
+  const originalText = btn.innerHTML;
+
+  // إخفاء التوست والمودال
   const t = document.getElementById('toast');
-  if(t){ t.classList.remove('show'); t.style.display = 'none'; t.textContent = ''; }
-  document.getElementById('modal').classList.remove('show');
-  setTimeout(() => {
-    window.print();
-    setTimeout(() => { if(t) t.style.display = ''; }, 500);
-  }, 350);
+  if(t){ t.classList.remove('show'); t.style.display = 'none'; }
+  const modal = document.getElementById('modal');
+  if(modal) modal.classList.remove('show');
+
+  try {
+    btn.disabled = true;
+    btn.innerHTML = '<span>⏳</span><span class="txt">جاري...</span>';
+
+    const page = document.getElementById('page');
+
+    // إخفاء أزرار الحذف للصور قبل التصدير
+    document.querySelectorAll('.photo-rm').forEach(el => el.style.display = 'none');
+
+    const canvas = await html2canvas(page, {
+      scale: 2,
+      useCORS: true,
+      backgroundColor: '#fdfcf8',
+      logging: false,
+      windowWidth: page.scrollWidth,
+      windowHeight: page.scrollHeight
+    });
+
+    // إعادة إظهار أزرار الحذف
+    document.querySelectorAll('.photo-cell.filled .photo-rm').forEach(el => el.style.display = 'flex');
+
+    // تنزيل
+    const link = document.createElement('a');
+    link.download = 'تقرير-يوم-العلم-' + Date.now() + '.png';
+    link.href = canvas.toDataURL('image/png');
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+
+    showToast(currentLang === 'ar' ? '✅ تم حفظ الصورة' : '✅ Image saved');
+  } catch(err) {
+    console.error('Image export error:', err);
+    showToast(currentLang === 'ar' ? '❌ فشل التصدير' : '❌ Export failed');
+  } finally {
+    btn.disabled = false;
+    btn.innerHTML = originalText;
+    if(t) t.style.display = '';
+  }
 }
+
+// ═══════════════════════════════════════════════
+// 📄 تصدير كـ PDF
+// ═══════════════════════════════════════════════
+async function savePDF(){
+  saveData();
+  const btn = document.querySelector('.btn-pdf');
+  const originalText = btn.innerHTML;
+
+  // إخفاء التوست والمودال
+  const t = document.getElementById('toast');
+  if(t){ t.classList.remove('show'); t.style.display = 'none'; }
+  const modal = document.getElementById('modal');
+  if(modal) modal.classList.remove('show');
+
+  try {
+    btn.disabled = true;
+    btn.innerHTML = '<span>⏳</span><span class="txt">جاري...</span>';
+
+    const page = document.getElementById('page');
+
+    // إخفاء أزرار الحذف
+    document.querySelectorAll('.photo-rm').forEach(el => el.style.display = 'none');
+
+    const canvas = await html2canvas(page, {
+      scale: 2,
+      useCORS: true,
+      backgroundColor: '#fdfcf8',
+      logging: false
+    });
+
+    document.querySelectorAll('.photo-cell.filled .photo-rm').forEach(el => el.style.display = 'flex');
+
+    const { jsPDF } = window.jspdf;
+    const pdf = new jsPDF({
+      orientation: 'portrait',
+      unit: 'mm',
+      format: 'a4'
+    });
+
+    const imgData = canvas.toDataURL('image/png');
+    const pdfWidth = pdf.internal.pageSize.getWidth();
+    const pdfHeight = pdf.internal.pageSize.getHeight();
+    const imgRatio = canvas.height / canvas.width;
+    const imgWidth = pdfWidth;
+    const imgHeight = pdfWidth * imgRatio;
+
+    if (imgHeight <= pdfHeight) {
+      pdf.addImage(imgData, 'PNG', 0, 0, imgWidth, imgHeight);
+    } else {
+      // التقرير طويل - نقسم على صفحات
+      let position = 0;
+      while (position < imgHeight) {
+        if (position > 0) pdf.addPage();
+        pdf.addImage(imgData, 'PNG', 0, -position, imgWidth, imgHeight);
+        position += pdfHeight;
+      }
+    }
+
+    pdf.save('تقرير-يوم-العلم-' + Date.now() + '.pdf');
+    showToast(currentLang === 'ar' ? '✅ تم حفظ PDF' : '✅ PDF saved');
+  } catch(err) {
+    console.error('PDF export error:', err);
+    showToast(currentLang === 'ar' ? '❌ فشل التصدير' : '❌ Export failed');
+  } finally {
+    btn.disabled = false;
+    btn.innerHTML = originalText;
+    if(t) t.style.display = '';
+  }
+}
+
+// ═══════════════════════════════════════════════
+// 📤 مشاركة التقرير
+// ═══════════════════════════════════════════════
+async function shareReport(){
+  saveData();
+  const btn = document.querySelector('.btn-share');
+  const originalText = btn.innerHTML;
+
+  // إخفاء التوست والمودال
+  const t = document.getElementById('toast');
+  if(t){ t.classList.remove('show'); t.style.display = 'none'; }
+  const modal = document.getElementById('modal');
+  if(modal) modal.classList.remove('show');
+
+  try {
+    btn.disabled = true;
+    btn.innerHTML = '<span>⏳</span><span class="txt">جاري...</span>';
+
+    const page = document.getElementById('page');
+
+    document.querySelectorAll('.photo-rm').forEach(el => el.style.display = 'none');
+
+    const canvas = await html2canvas(page, {
+      scale: 2,
+      useCORS: true,
+      backgroundColor: '#fdfcf8',
+      logging: false
+    });
+
+    document.querySelectorAll('.photo-cell.filled .photo-rm').forEach(el => el.style.display = 'flex');
+
+    // تحويل canvas إلى blob
+    canvas.toBlob(async (blob) => {
+      const file = new File([blob], 'تقرير-يوم-العلم.png', { type: 'image/png' });
+
+      // Web Share API
+      if (navigator.share && navigator.canShare && navigator.canShare({ files: [file] })) {
+        try {
+          await navigator.share({
+            files: [file],
+            title: 'تقرير يوم العَلَم السعودي',
+            text: '🇸🇦 تقرير يوم العَلَم السعودي'
+          });
+          showToast(currentLang === 'ar' ? '✅ تم المشاركة' : '✅ Shared');
+        } catch(err) {
+          if (err.name !== 'AbortError') {
+            console.error('Share error:', err);
+            showToast(currentLang === 'ar' ? '❌ فشل المشاركة' : '❌ Share failed');
+          }
+        }
+      } else {
+        // Fallback: تنزيل الصورة
+        const link = document.createElement('a');
+        link.download = 'تقرير-يوم-العلم.png';
+        link.href = URL.createObjectURL(blob);
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+        showToast(currentLang === 'ar' ? '📥 تم التنزيل' : '📥 Downloaded');
+      }
+      btn.disabled = false;
+      btn.innerHTML = originalText;
+      if(t) t.style.display = '';
+    }, 'image/png');
+  } catch(err) {
+    console.error('Share error:', err);
+    showToast(currentLang === 'ar' ? '❌ فشل المشاركة' : '❌ Share failed');
+    btn.disabled = false;
+    btn.innerHTML = originalText;
+    if(t) t.style.display = '';
+  }
+}
+
+// نخلي اسم الدوال متاح globally
+window.saveAsImage = saveAsImage;
+window.savePDF = savePDF;
+window.shareReport = shareReport;
 
 document.querySelectorAll('input, textarea').forEach(el => {
   el.addEventListener('input', saveData);
@@ -1270,7 +1480,7 @@ loadData();
 applyLang();
 </script>
 
-<!-- 🔥 Firebase Integration (في نهاية body عشان ما يتعارض مع window.print) -->
-<script type="module" src="report-firebase.js?v=6"></script>
+<!-- 🔥 Firebase Integration (للحماية - يعترض saveAsImage/savePDF تلقائياً) -->
+<script type="module" src="report-firebase.js?v=7"></script>
 </body>
 </html>
