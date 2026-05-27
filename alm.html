@@ -1280,7 +1280,7 @@ function prepareTextareasForExport(){
     const value = ta.value || '';
     if(!value.trim()) return; // فاضي، تجاهل
 
-    // 🎯 احصل على الخصائص المرئية فقط (بدون cssText الكامل)
+    // 🎯 طريقة tasis: كل كلمة في span منفصل (يحافظ على اتصال الحروف)
     const computed = window.getComputedStyle(ta);
     const fontSize = computed.fontSize;
     const fontWeight = computed.fontWeight;
@@ -1288,11 +1288,8 @@ function prepareTextareasForExport(){
     const padding = computed.padding;
     const height = ta.offsetHeight;
 
-    // أنشئ div نظيف بـ inline styles فقط للأساسيات
     const div = document.createElement('div');
     div.className = 'textarea-export-clone';
-
-    // 🔥 inline styles نظيفة - بدون letter-spacing!
     div.style.cssText = `
       width: 100%;
       min-height: ${height}px;
@@ -1304,21 +1301,34 @@ function prepareTextareasForExport(){
       line-height: 1.5;
       letter-spacing: 0 !important;
       word-spacing: normal !important;
-      text-rendering: optimizeLegibility;
-      white-space: pre-wrap;
-      word-wrap: break-word;
-      overflow-wrap: break-word;
       direction: rtl;
       text-align: right;
       unicode-bidi: embed;
       background: transparent;
       border: none;
-      outline: none;
-      resize: none;
       box-sizing: border-box;
     `;
 
-    div.textContent = value;
+    // 🔥 منطق tasis: كل كلمة في span عشان html2canvas ما يفصل الحروف
+    const lines = value.split('\n');
+    lines.forEach((line, lineIdx) => {
+      if(lineIdx > 0){
+        div.appendChild(document.createElement('br'));
+      }
+      const words = line.split(' ');
+      words.forEach((word, wIdx) => {
+        if(word){
+          const wSpan = document.createElement('span');
+          wSpan.textContent = word;
+          wSpan.style.whiteSpace = 'nowrap';
+          wSpan.style.display = 'inline-block';
+          div.appendChild(wSpan);
+        }
+        if(wIdx < words.length - 1){
+          div.appendChild(document.createTextNode(' '));
+        }
+      });
+    });
 
     // استبدل textarea مؤقتاً
     ta.style.display = 'none';
