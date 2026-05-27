@@ -1373,6 +1373,10 @@ async function saveAsImage(){
 
     document.querySelectorAll('.photo-rm').forEach(el => el.style.display = 'none');
 
+    // 🚫 إخفاء أزرار الأكشن بار قبل التصدير
+    const actionBar = document.querySelector('.action-bar');
+    if(actionBar) actionBar.style.display = 'none';
+
     // 📝 معالجة textareas للحفاظ على الأسطر
     const textareaReplacements = prepareTextareasForExport();
 
@@ -1455,6 +1459,9 @@ async function saveAsImage(){
     // إعادة إظهار أزرار الحذف
     document.querySelectorAll('.photo-cell.filled .photo-rm').forEach(el => el.style.display = 'flex');
 
+    // ✅ إظهار أزرار الأكشن بار بعد التصدير
+    if(actionBar) actionBar.style.display = '';
+
     // 📝 إرجاع textareas
     restoreTextareasAfterExport(textareaReplacements);
 
@@ -1502,6 +1509,10 @@ async function savePDF(){
     page.style.direction = 'rtl';
 
     document.querySelectorAll('.photo-rm').forEach(el => el.style.display = 'none');
+
+    // 🚫 إخفاء أزرار الأكشن بار قبل التصدير
+    const actionBar = document.querySelector('.action-bar');
+    if(actionBar) actionBar.style.display = 'none';
 
     // 📝 معالجة textareas للحفاظ على الأسطر
     const textareaReplacements = prepareTextareasForExport();
@@ -1583,6 +1594,9 @@ async function savePDF(){
     });
 
     document.querySelectorAll('.photo-cell.filled .photo-rm').forEach(el => el.style.display = 'flex');
+
+    // ✅ إظهار أزرار الأكشن بار بعد التصدير
+    if(actionBar) actionBar.style.display = '';
 
     // 📝 إرجاع textareas
     restoreTextareasAfterExport(textareaReplacements);
@@ -1651,6 +1665,10 @@ async function shareReport(){
 
     document.querySelectorAll('.photo-rm').forEach(el => el.style.display = 'none');
 
+    // 🚫 إخفاء أزرار الأكشن بار قبل التصدير
+    const actionBar = document.querySelector('.action-bar');
+    if(actionBar) actionBar.style.display = 'none';
+
     // 📝 معالجة textareas للحفاظ على الأسطر
     const textareaReplacements = prepareTextareasForExport();
 
@@ -1731,6 +1749,9 @@ async function shareReport(){
     });
 
     document.querySelectorAll('.photo-cell.filled .photo-rm').forEach(el => el.style.display = 'flex');
+
+    // ✅ إظهار أزرار الأكشن بار بعد التصدير
+    if(actionBar) actionBar.style.display = '';
 
     // 📝 إرجاع textareas
     restoreTextareasAfterExport(textareaReplacements);
