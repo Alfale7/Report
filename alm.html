@@ -1288,6 +1288,11 @@ async function saveAsImage(){
     btn.disabled = true;
     btn.innerHTML = '<span>⏳</span><span class="txt">جاري...</span>';
 
+    // ⏳ ننتظر تحميل الخطوط (مهم جداً للعربية)
+    if (document.fonts && document.fonts.ready) {
+      await document.fonts.ready;
+    }
+
     const page = document.getElementById('page');
 
     // إخفاء أزرار الحذف للصور قبل التصدير
@@ -1296,10 +1301,27 @@ async function saveAsImage(){
     const canvas = await html2canvas(page, {
       scale: 2,
       useCORS: true,
+      allowTaint: true,
       backgroundColor: '#fdfcf8',
       logging: false,
-      windowWidth: page.scrollWidth,
-      windowHeight: page.scrollHeight
+      letterRendering: true,
+      foreignObjectRendering: false,
+      width: page.offsetWidth,
+      height: page.offsetHeight,
+      onclone: function(clonedDoc) {
+        // 🔧 نضمن RTL في النسخة المستنسخة
+        clonedDoc.documentElement.setAttribute('dir', 'rtl');
+        clonedDoc.documentElement.setAttribute('lang', 'ar');
+        if(clonedDoc.body){
+          clonedDoc.body.setAttribute('dir', 'rtl');
+          clonedDoc.body.style.direction = 'rtl';
+        }
+        const clonedPage = clonedDoc.getElementById('page');
+        if(clonedPage){
+          clonedPage.setAttribute('dir', 'rtl');
+          clonedPage.style.direction = 'rtl';
+        }
+      }
     });
 
     // إعادة إظهار أزرار الحذف
@@ -1342,6 +1364,11 @@ async function savePDF(){
     btn.disabled = true;
     btn.innerHTML = '<span>⏳</span><span class="txt">جاري...</span>';
 
+    // ⏳ ننتظر تحميل الخطوط
+    if (document.fonts && document.fonts.ready) {
+      await document.fonts.ready;
+    }
+
     const page = document.getElementById('page');
 
     // إخفاء أزرار الحذف
@@ -1350,8 +1377,26 @@ async function savePDF(){
     const canvas = await html2canvas(page, {
       scale: 2,
       useCORS: true,
+      allowTaint: true,
       backgroundColor: '#fdfcf8',
-      logging: false
+      logging: false,
+      letterRendering: true,
+      foreignObjectRendering: false,
+      width: page.offsetWidth,
+      height: page.offsetHeight,
+      onclone: function(clonedDoc) {
+        clonedDoc.documentElement.setAttribute('dir', 'rtl');
+        clonedDoc.documentElement.setAttribute('lang', 'ar');
+        if(clonedDoc.body){
+          clonedDoc.body.setAttribute('dir', 'rtl');
+          clonedDoc.body.style.direction = 'rtl';
+        }
+        const clonedPage = clonedDoc.getElementById('page');
+        if(clonedPage){
+          clonedPage.setAttribute('dir', 'rtl');
+          clonedPage.style.direction = 'rtl';
+        }
+      }
     });
 
     document.querySelectorAll('.photo-cell.filled .photo-rm').forEach(el => el.style.display = 'flex');
@@ -1412,6 +1457,11 @@ async function shareReport(){
     btn.disabled = true;
     btn.innerHTML = '<span>⏳</span><span class="txt">جاري...</span>';
 
+    // ⏳ ننتظر تحميل الخطوط
+    if (document.fonts && document.fonts.ready) {
+      await document.fonts.ready;
+    }
+
     const page = document.getElementById('page');
 
     document.querySelectorAll('.photo-rm').forEach(el => el.style.display = 'none');
@@ -1419,8 +1469,26 @@ async function shareReport(){
     const canvas = await html2canvas(page, {
       scale: 2,
       useCORS: true,
+      allowTaint: true,
       backgroundColor: '#fdfcf8',
-      logging: false
+      logging: false,
+      letterRendering: true,
+      foreignObjectRendering: false,
+      width: page.offsetWidth,
+      height: page.offsetHeight,
+      onclone: function(clonedDoc) {
+        clonedDoc.documentElement.setAttribute('dir', 'rtl');
+        clonedDoc.documentElement.setAttribute('lang', 'ar');
+        if(clonedDoc.body){
+          clonedDoc.body.setAttribute('dir', 'rtl');
+          clonedDoc.body.style.direction = 'rtl';
+        }
+        const clonedPage = clonedDoc.getElementById('page');
+        if(clonedPage){
+          clonedPage.setAttribute('dir', 'rtl');
+          clonedPage.style.direction = 'rtl';
+        }
+      }
     });
 
     document.querySelectorAll('.photo-cell.filled .photo-rm').forEach(el => el.style.display = 'flex');
