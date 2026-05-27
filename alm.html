@@ -1288,14 +1288,12 @@ async function saveAsImage(){
     btn.disabled = true;
     btn.innerHTML = '<span>⏳</span><span class="txt">جاري...</span>';
 
-    // ⏳ ننتظر تحميل الخطوط (مهم جداً للعربية)
-    if (document.fonts && document.fonts.ready) {
-      await document.fonts.ready;
-    }
+    // ⏳ ضمان تحميل الخطوط نهائياً
+    await ensureFontsLoaded();
 
     const page = document.getElementById('page');
 
-    // إخفاء أزرار الحذف للصور قبل التصدير
+    // إخفاء أزرار الحذف
     document.querySelectorAll('.photo-rm').forEach(el => el.style.display = 'none');
 
     const canvas = await html2canvas(page, {
@@ -1308,26 +1306,12 @@ async function saveAsImage(){
       foreignObjectRendering: false,
       width: page.offsetWidth,
       height: page.offsetHeight,
-      onclone: function(clonedDoc) {
-        // 🔧 نضمن RTL في النسخة المستنسخة
-        clonedDoc.documentElement.setAttribute('dir', 'rtl');
-        clonedDoc.documentElement.setAttribute('lang', 'ar');
-        if(clonedDoc.body){
-          clonedDoc.body.setAttribute('dir', 'rtl');
-          clonedDoc.body.style.direction = 'rtl';
-        }
-        const clonedPage = clonedDoc.getElementById('page');
-        if(clonedPage){
-          clonedPage.setAttribute('dir', 'rtl');
-          clonedPage.style.direction = 'rtl';
-        }
-      }
+      onclone: forceRTLAndFonts
     });
 
     // إعادة إظهار أزرار الحذف
     document.querySelectorAll('.photo-cell.filled .photo-rm').forEach(el => el.style.display = 'flex');
 
-    // تنزيل
     const link = document.createElement('a');
     link.download = 'تقرير-يوم-العلم-' + Date.now() + '.png';
     link.href = canvas.toDataURL('image/png');
@@ -1347,6 +1331,81 @@ async function saveAsImage(){
 }
 
 // ═══════════════════════════════════════════════
+// 🔥 دالة مساعدة: ضمان تحميل الخطوط
+// ═══════════════════════════════════════════════
+async function ensureFontsLoaded(){
+  // 1. ننتظر document.fonts.ready
+  if (document.fonts && document.fonts.ready) {
+    await document.fonts.ready;
+  }
+
+  // 2. نحمّل الخطوط صراحةً
+  if (document.fonts && document.fonts.load) {
+    try {
+      await Promise.all([
+        document.fonts.load('400 16px Tajawal'),
+        document.fonts.load('700 16px Tajawal'),
+        document.fonts.load('800 16px Tajawal'),
+        document.fonts.load('900 16px Tajawal'),
+        document.fonts.load('500 16px "Reem Kufi"'),
+        document.fonts.load('700 16px "Reem Kufi"'),
+        document.fonts.load('400 16px Amiri'),
+        document.fonts.load('700 16px Amiri'),
+      ]);
+    } catch(e) {
+      console.warn('Font preload warning:', e);
+    }
+  }
+
+  // 3. تأخير صغير للتأكد من الرسم
+  await new Promise(r => setTimeout(r, 100));
+}
+
+// ═══════════════════════════════════════════════
+// 🔥 دالة مساعدة: فرض RTL والخطوط في النسخة المستنسخة
+// ═══════════════════════════════════════════════
+function forceRTLAndFonts(clonedDoc){
+  // 1. تطبيق RTL على المستوى الأعلى
+  clonedDoc.documentElement.setAttribute('dir', 'rtl');
+  clonedDoc.documentElement.setAttribute('lang', 'ar');
+  clonedDoc.documentElement.style.direction = 'rtl';
+
+  if(clonedDoc.body){
+    clonedDoc.body.setAttribute('dir', 'rtl');
+    clonedDoc.body.style.direction = 'rtl';
+    clonedDoc.body.style.textAlign = 'right';
+  }
+
+  // 2. إنشاء style tag قوي يفرض RTL + الخطوط
+  const forceStyle = clonedDoc.createElement('style');
+  forceStyle.textContent = `
+    * {
+      direction: rtl !important;
+      font-family: 'Tajawal', 'Tahoma', 'Arial', sans-serif !important;
+    }
+    html, body, #page, #page * {
+      direction: rtl !important;
+    }
+    .photo-grid, .grid, .row, .field-row, [class*="grid"], [class*="flex"] {
+      direction: rtl !important;
+    }
+    /* استثناء العناصر اللاتينية */
+    [lang="en"], .ltr, [dir="ltr"] {
+      direction: ltr !important;
+    }
+  `;
+  clonedDoc.head.appendChild(forceStyle);
+
+  // 3. تطبيق RTL على كل العناصر يدوياً
+  const allElements = clonedDoc.querySelectorAll('*');
+  allElements.forEach(el => {
+    if(!el.hasAttribute('dir') || el.getAttribute('dir') === 'auto'){
+      el.style.direction = 'rtl';
+    }
+  });
+}
+
+// ═══════════════════════════════════════════════
 // 📄 تصدير كـ PDF
 // ═══════════════════════════════════════════════
 async function savePDF(){
@@ -1354,7 +1413,6 @@ async function savePDF(){
   const btn = document.querySelector('.btn-pdf');
   const originalText = btn.innerHTML;
 
-  // إخفاء التوست والمودال
   const t = document.getElementById('toast');
   if(t){ t.classList.remove('show'); t.style.display = 'none'; }
   const modal = document.getElementById('modal');
@@ -1364,14 +1422,10 @@ async function savePDF(){
     btn.disabled = true;
     btn.innerHTML = '<span>⏳</span><span class="txt">جاري...</span>';
 
-    // ⏳ ننتظر تحميل الخطوط
-    if (document.fonts && document.fonts.ready) {
-      await document.fonts.ready;
-    }
+    // ⏳ ضمان تحميل الخطوط
+    await ensureFontsLoaded();
 
     const page = document.getElementById('page');
-
-    // إخفاء أزرار الحذف
     document.querySelectorAll('.photo-rm').forEach(el => el.style.display = 'none');
 
     const canvas = await html2canvas(page, {
@@ -1384,19 +1438,7 @@ async function savePDF(){
       foreignObjectRendering: false,
       width: page.offsetWidth,
       height: page.offsetHeight,
-      onclone: function(clonedDoc) {
-        clonedDoc.documentElement.setAttribute('dir', 'rtl');
-        clonedDoc.documentElement.setAttribute('lang', 'ar');
-        if(clonedDoc.body){
-          clonedDoc.body.setAttribute('dir', 'rtl');
-          clonedDoc.body.style.direction = 'rtl';
-        }
-        const clonedPage = clonedDoc.getElementById('page');
-        if(clonedPage){
-          clonedPage.setAttribute('dir', 'rtl');
-          clonedPage.style.direction = 'rtl';
-        }
-      }
+      onclone: forceRTLAndFonts
     });
 
     document.querySelectorAll('.photo-cell.filled .photo-rm').forEach(el => el.style.display = 'flex');
@@ -1418,7 +1460,6 @@ async function savePDF(){
     if (imgHeight <= pdfHeight) {
       pdf.addImage(imgData, 'PNG', 0, 0, imgWidth, imgHeight);
     } else {
-      // التقرير طويل - نقسم على صفحات
       let position = 0;
       while (position < imgHeight) {
         if (position > 0) pdf.addPage();
@@ -1447,7 +1488,6 @@ async function shareReport(){
   const btn = document.querySelector('.btn-share');
   const originalText = btn.innerHTML;
 
-  // إخفاء التوست والمودال
   const t = document.getElementById('toast');
   if(t){ t.classList.remove('show'); t.style.display = 'none'; }
   const modal = document.getElementById('modal');
@@ -1457,13 +1497,10 @@ async function shareReport(){
     btn.disabled = true;
     btn.innerHTML = '<span>⏳</span><span class="txt">جاري...</span>';
 
-    // ⏳ ننتظر تحميل الخطوط
-    if (document.fonts && document.fonts.ready) {
-      await document.fonts.ready;
-    }
+    // ⏳ ضمان تحميل الخطوط
+    await ensureFontsLoaded();
 
     const page = document.getElementById('page');
-
     document.querySelectorAll('.photo-rm').forEach(el => el.style.display = 'none');
 
     const canvas = await html2canvas(page, {
@@ -1476,28 +1513,14 @@ async function shareReport(){
       foreignObjectRendering: false,
       width: page.offsetWidth,
       height: page.offsetHeight,
-      onclone: function(clonedDoc) {
-        clonedDoc.documentElement.setAttribute('dir', 'rtl');
-        clonedDoc.documentElement.setAttribute('lang', 'ar');
-        if(clonedDoc.body){
-          clonedDoc.body.setAttribute('dir', 'rtl');
-          clonedDoc.body.style.direction = 'rtl';
-        }
-        const clonedPage = clonedDoc.getElementById('page');
-        if(clonedPage){
-          clonedPage.setAttribute('dir', 'rtl');
-          clonedPage.style.direction = 'rtl';
-        }
-      }
+      onclone: forceRTLAndFonts
     });
 
     document.querySelectorAll('.photo-cell.filled .photo-rm').forEach(el => el.style.display = 'flex');
 
-    // تحويل canvas إلى blob
     canvas.toBlob(async (blob) => {
       const file = new File([blob], 'تقرير-يوم-العلم.png', { type: 'image/png' });
 
-      // Web Share API
       if (navigator.share && navigator.canShare && navigator.canShare({ files: [file] })) {
         try {
           await navigator.share({
@@ -1513,7 +1536,6 @@ async function shareReport(){
           }
         }
       } else {
-        // Fallback: تنزيل الصورة
         const link = document.createElement('a');
         link.download = 'تقرير-يوم-العلم.png';
         link.href = URL.createObjectURL(blob);
