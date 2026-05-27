@@ -427,20 +427,8 @@ setTimeout(() => {
     console.log('ℹ️ printReport موجودة - ليست معترضة');
   }
 
-  // 5️⃣ حماية اختصار Ctrl+P / Cmd+P - معطّلة لتجنب كسر الطباعة
-  // ملاحظة: الحماية من خلال بوابة الصفحة كافية
-  // document.addEventListener('keydown', function(e) { ... });
-
-  // 6️⃣ حماية beforeprint - للتتبع فقط (بدون منع)
-  let _printTracked = false;
-  window.addEventListener('beforeprint', function() {
-    if (_printTracked) return;
-    _printTracked = true;
-    setTimeout(() => { _printTracked = false; }, 2000);
-
-    // فقط للمشتركين Free نتتبع التحميل
-    if (_user && !isLifetime(_profile) && !isAdmin(_user)) {
-      window.trackDownload();
-    }
-  });
+  // 5️⃣ حماية اختصار Ctrl+P / Cmd+P - معطّلة
+  // 6️⃣ beforeprint - معطّلة نهائياً (كانت تكسر الطباعة الثانية في iOS)
+  // ملاحظة: التتبع للمشتركين Free يتم من خلال beforeprint مرة واحدة فقط
+  // لو احتجنا تتبع، نعمله من saveAsImage/savePDF بدلاً من الطباعة
 }, 1000);

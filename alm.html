@@ -787,8 +787,6 @@ background:linear-gradient(135deg, #003d1f, #006c35) !important;
 }
 </style>
 
-  <!-- 🔥 Firebase Integration (يجب أن يكون قبل أي محتوى) -->
-  <script type="module" src="report-firebase.js?v=4"></script>
 </head>
 <body>
 
@@ -1003,7 +1001,7 @@ background:linear-gradient(135deg, #003d1f, #006c35) !important;
     <button class="btn btn-lang" onclick="toggleLang()">
       <span>🌐</span><span id="langTxt">EN</span>
     </button>
-    <button class="btn btn-print" onclick="window.print()">
+    <button class="btn btn-print" onclick="printPage()">
       <span>🖨️</span><span class="txt" data-i18n="btnPrint">طباعة</span>
     </button>
   </div>
@@ -1256,11 +1254,12 @@ function doClear(){
 function printPage(){
   saveData();
   const t = document.getElementById('toast');
-  if(t){ t.classList.remove('show'); t.style.display='none'; }
+  if(t){ t.classList.remove('show'); t.style.display = 'none'; t.textContent = ''; }
   document.getElementById('modal').classList.remove('show');
-  // ⚡ window.print() مباشرة (iOS Safari يتطلب user gesture مباشر)
-  window.print();
-  setTimeout(() => { if(t) t.style.display=''; }, 500);
+  setTimeout(() => {
+    window.print();
+    setTimeout(() => { if(t) t.style.display = ''; }, 500);
+  }, 350);
 }
 
 document.querySelectorAll('input, textarea').forEach(el => {
@@ -1271,5 +1270,7 @@ loadData();
 applyLang();
 </script>
 
+<!-- 🔥 Firebase Integration (في نهاية body عشان ما يتعارض مع window.print) -->
+<script type="module" src="report-firebase.js?v=6"></script>
 </body>
 </html>
