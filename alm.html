@@ -1254,35 +1254,31 @@ function doClear(){
   showToast(dict[currentLang].msgCleared);
 }
 
-function printPage(){
-  console.log('🖨️ [DEBUG] تم الضغط على زر الطباعة');
-  console.log('🖨️ [DEBUG] window.print exists:', typeof window.print);
-  console.log('🖨️ [DEBUG] canDownload exists:', typeof window.canDownload);
+// 💾 احفظ النسخة الأصلية قبل ما Firebase يعترضها
+const _nativePrint = window.print.bind(window);
 
-  if (typeof window.canDownload === 'function') {
-    console.log('🖨️ [DEBUG] canDownload() result:', window.canDownload());
-  }
+function printPage(){
+  console.log('🖨️ Print button clicked');
 
   saveData();
 
   // إخفاء التوست والمودال
   const t = document.getElementById('toast');
-  if(t){ t.classList.remove('show'); t.style.display = 'none'; t.textContent = ''; }
+  if(t){ t.classList.remove('show'); t.style.display = 'none'; }
   const modal = document.getElementById('modal');
   if(modal) modal.classList.remove('show');
 
-  // طباعة
   setTimeout(() => {
+    console.log('🖨️ Calling window.print()');
     try {
-      console.log('🖨️ [DEBUG] جاري استدعاء window.print()...');
       window.print();
-      console.log('🖨️ [DEBUG] window.print() اكتمل');
     } catch(err) {
-      console.error('🖨️ [DEBUG] خطأ في الطباعة:', err);
-      alert('⚠️ خطأ في الطباعة:\n' + err.message);
+      console.error('Error:', err);
+      // Fallback: استدعاء النسخة الأصلية مباشرة
+      try { _nativePrint(); } catch(e) { console.error('Fallback failed:', e); }
     }
     setTimeout(() => { if(t) t.style.display = ''; }, 800);
-  }, 500);
+  }, 300);
 }
 
 document.querySelectorAll('input, textarea').forEach(el => {
