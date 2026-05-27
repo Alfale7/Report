@@ -1255,21 +1255,31 @@ function doClear(){
 }
 
 function printPage(){
+  console.log('🖨️ [DEBUG] تم الضغط على زر الطباعة');
+  console.log('🖨️ [DEBUG] window.print exists:', typeof window.print);
+  console.log('🖨️ [DEBUG] canDownload exists:', typeof window.canDownload);
+
+  if (typeof window.canDownload === 'function') {
+    console.log('🖨️ [DEBUG] canDownload() result:', window.canDownload());
+  }
+
   saveData();
 
-  // إخفاء التوست والمودال قبل الطباعة
+  // إخفاء التوست والمودال
   const t = document.getElementById('toast');
   if(t){ t.classList.remove('show'); t.style.display = 'none'; t.textContent = ''; }
   const modal = document.getElementById('modal');
   if(modal) modal.classList.remove('show');
 
-  // طباعة بعد تأخير كافي
-  // ملاحظة: window.print معترضة من report-firebase.js للتحقق من الاشتراك
+  // طباعة
   setTimeout(() => {
     try {
+      console.log('🖨️ [DEBUG] جاري استدعاء window.print()...');
       window.print();
+      console.log('🖨️ [DEBUG] window.print() اكتمل');
     } catch(err) {
-      console.error('Print error:', err);
+      console.error('🖨️ [DEBUG] خطأ في الطباعة:', err);
+      alert('⚠️ خطأ في الطباعة:\n' + err.message);
     }
     setTimeout(() => { if(t) t.style.display = ''; }, 800);
   }, 500);
