@@ -2277,13 +2277,18 @@ async function shareReport(){
 
   if(typeof showToast === 'function') showToast('⏳ جاري تحضير المشاركة...');
 
-  try {
-    const page = document.getElementById('page');
-    if(!page){
-      if(typeof showToast === 'function') showToast('❌ لم يتم العثور على التقرير');
-      return;
-    }
+  // البحث عن العنصر الرئيسي (المجلة المدرسية تستخدم 'magazine')
+  const page = document.getElementById('magazine') || document.getElementById('page');
+  if(!page){
+    if(typeof showToast === 'function') showToast('❌ لم يتم العثور على التقرير');
+    return;
+  }
 
+  // 🔥 استخدام prepareForExport الموجودة (تتعامل مع inputs + contenteditable)
+  page.classList.add('exporting');
+  const replacements = prepareForExport(page);
+
+  try {
     const actionButtons = document.querySelectorAll('.export-menu-wrap, .export-menu, [class*="action-bar"]');
     const hiddenStates = [];
     actionButtons.forEach(el => {
@@ -2292,17 +2297,19 @@ async function shareReport(){
     });
 
     await document.fonts.ready;
-    await new Promise(r => setTimeout(r, 300));
+    await new Promise(r => setTimeout(r, 500));
 
     const canvas = await html2canvas(page, {
-      backgroundColor: '#ffffff',
-      scale: 3,
+      backgroundColor: '#FFF8F0',
+      scale: 2.5,
       useCORS: true,
       logging: false,
       allowTaint: true,
+      width: page.offsetWidth,
+      height: page.offsetHeight,
       onclone: (doc) => {
         const style = doc.createElement('style');
-        style.textContent = "* { font-family: 'Tajawal','Arial Unicode MS','Tahoma',Arial,sans-serif !important; letter-spacing: 0 !important; }";
+        style.textContent = `*{letter-spacing:0 !important;font-feature-settings:"kern" 1, "liga" 1, "calt" 1, "rlig" 1 !important;font-kerning:normal !important;}`;
         doc.head.appendChild(style);
       }
     });
@@ -2339,6 +2346,10 @@ async function shareReport(){
   } catch(e) {
     console.error('Share error:', e);
     if(typeof showToast === 'function') showToast('❌ فشل التصدير');
+  } finally {
+    // إرجاع كل شي للحالة الأصلية
+    page.classList.remove('exporting');
+    restoreFromExport(replacements);
   }
 }
 
@@ -2355,6 +2366,8 @@ function loadJsPDF(){
 
 function prepareForExport(page){
   const replacements = [];
+
+  // 1️⃣ معالجة inputs و textareas
   const inputs = page.querySelectorAll('input[type="text"], input[type="number"], textarea');
   inputs.forEach(el => {
     const computed = window.getComputedStyle(el);
@@ -2377,15 +2390,52 @@ function prepareForExport(page){
     span.style.cssText = `display:${isTextarea?'block':'inline-block'};width:100%;box-sizing:border-box;font-family:${computed.fontFamily};font-size:${computed.fontSize};font-weight:${computed.fontWeight};color:${computed.color};text-align:${computed.textAlign};line-height:${computed.lineHeight};padding:${computed.padding};direction:rtl;unicode-bidi:embed;letter-spacing:0;min-height:${isTextarea?computed.minHeight:'auto'};`;
     el.style.display = 'none';
     el.parentNode.insertBefore(span, el);
-    replacements.push({orig:el, span});
+    replacements.push({orig:el, span, type:'input'});
   });
+
+  // 2️⃣ معالجة contenteditable للنصوص الطويلة (lead-text, cover-deck, etc.)
+  // نلف كل كلمة بـ span عشان html2canvas ما يفصل الحروف عند wrap
+  const editables = page.querySelectorAll('[contenteditable="true"]');
+  editables.forEach(el => {
+    const text = el.textContent || '';
+    if(!text.trim() || text.length < 30) return; // النصوص القصيرة ما تحتاج
+
+    // نحفظ المحتوى الأصلي للإرجاع
+    const originalHTML = el.innerHTML;
+
+    // نبني المحتوى الجديد: كل كلمة في span
+    const lines = text.split('\n');
+    let newHTML = '';
+    lines.forEach((line, lineIdx) => {
+      if(lineIdx > 0) newHTML += '<br>';
+      const words = line.split(/(\s+)/);
+      words.forEach(p => {
+        if(!p) return;
+        if(/^\s+$/.test(p)){
+          newHTML += p;
+        } else {
+          newHTML += `<span style="display:inline-block;white-space:nowrap;letter-spacing:0;direction:rtl;unicode-bidi:embed;">${p.replace(/</g,'&lt;').replace(/>/g,'&gt;')}</span>`;
+        }
+      });
+    });
+
+    el.innerHTML = newHTML;
+    replacements.push({orig:el, originalHTML, type:'editable'});
+  });
+
   return replacements;
 }
 
 function restoreFromExport(replacements){
-  replacements.forEach(({orig, span}) => {
-    orig.style.display = '';
-    if(span.parentNode) span.parentNode.removeChild(span);
+  replacements.forEach(({orig, span, originalHTML, type}) => {
+    if(type === 'editable'){
+      // إرجاع contenteditable للحالة الأصلية
+      if(originalHTML !== undefined) orig.innerHTML = originalHTML;
+    } else {
+      // إرجاع input/textarea
+      orig.style.display = '';
+      if(span && span.parentNode) span.parentNode.removeChild(span);
+    }
   });
 }
 
