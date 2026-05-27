@@ -1290,7 +1290,12 @@ async function saveAsImage(){
 
     const page = document.getElementById('page');
 
-    // إخفاء أزرار حذف الصور
+    // 🔧 ضمان RTL قبل التصدير
+    document.documentElement.setAttribute('dir', 'rtl');
+    document.body.setAttribute('dir', 'rtl');
+    page.setAttribute('dir', 'rtl');
+    page.style.direction = 'rtl';
+
     document.querySelectorAll('.photo-rm').forEach(el => el.style.display = 'none');
 
     // 🔥 منطق tasis: warm canvas + انتظار الخطوط
@@ -1309,7 +1314,38 @@ async function saveAsImage(){
       allowTaint: true,
       onclone: (doc) => {
         const style = doc.createElement('style');
-        style.textContent = "* { font-family: 'Tajawal','Arial Unicode MS','Tahoma',Arial,sans-serif !important; }";
+        style.textContent = `
+          * {
+            font-family: 'Tajawal','Arial Unicode MS','Tahoma',Arial,sans-serif !important;
+          }
+          html, body, .page, .fields, .field {
+            direction: rtl !important;
+          }
+          .fields {
+            direction: rtl !important;
+            display: grid !important;
+            grid-template-columns: 1fr 1fr !important;
+            gap: 10px !important;
+            unicode-bidi: embed !important;
+          }
+          .field {
+            direction: rtl !important;
+            text-align: right !important;
+            unicode-bidi: embed !important;
+          }
+          .field-full {
+            grid-column: 1 / -1 !important;
+          }
+          input, textarea, label, span, p, div, h1, h2, h3, h4, h5, h6 {
+            text-align: right !important;
+            direction: rtl !important;
+            unicode-bidi: embed !important;
+          }
+          [lang="en"], [dir="ltr"] {
+            direction: ltr !important;
+            text-align: left !important;
+          }
+        `;
         doc.head.appendChild(style);
       }
     });
@@ -1353,6 +1389,13 @@ async function savePDF(){
     btn.innerHTML = '<span>⏳</span><span class="txt">جاري...</span>';
 
     const page = document.getElementById('page');
+
+    // 🔧 ضمان RTL قبل التصدير
+    document.documentElement.setAttribute('dir', 'rtl');
+    document.body.setAttribute('dir', 'rtl');
+    page.setAttribute('dir', 'rtl');
+    page.style.direction = 'rtl';
+
     document.querySelectorAll('.photo-rm').forEach(el => el.style.display = 'none');
 
     // 🔥 منطق tasis: warm canvas + انتظار الخطوط
@@ -1371,7 +1414,38 @@ async function savePDF(){
       allowTaint: true,
       onclone: (doc) => {
         const style = doc.createElement('style');
-        style.textContent = "* { font-family: 'Tajawal','Arial Unicode MS','Tahoma',Arial,sans-serif !important; }";
+        style.textContent = `
+          * {
+            font-family: 'Tajawal','Arial Unicode MS','Tahoma',Arial,sans-serif !important;
+          }
+          html, body, .page, .fields, .field {
+            direction: rtl !important;
+          }
+          .fields {
+            direction: rtl !important;
+            display: grid !important;
+            grid-template-columns: 1fr 1fr !important;
+            gap: 10px !important;
+            unicode-bidi: embed !important;
+          }
+          .field {
+            direction: rtl !important;
+            text-align: right !important;
+            unicode-bidi: embed !important;
+          }
+          .field-full {
+            grid-column: 1 / -1 !important;
+          }
+          input, textarea, label, span, p, div, h1, h2, h3, h4, h5, h6 {
+            text-align: right !important;
+            direction: rtl !important;
+            unicode-bidi: embed !important;
+          }
+          [lang="en"], [dir="ltr"] {
+            direction: ltr !important;
+            text-align: left !important;
+          }
+        `;
         doc.head.appendChild(style);
       }
     });
@@ -1433,6 +1507,13 @@ async function shareReport(){
     btn.innerHTML = '<span>⏳</span><span class="txt">جاري...</span>';
 
     const page = document.getElementById('page');
+
+    // 🔧 ضمان RTL قبل التصدير
+    document.documentElement.setAttribute('dir', 'rtl');
+    document.body.setAttribute('dir', 'rtl');
+    page.setAttribute('dir', 'rtl');
+    page.style.direction = 'rtl';
+
     document.querySelectorAll('.photo-rm').forEach(el => el.style.display = 'none');
 
     // 🔥 منطق tasis: warm canvas + انتظار الخطوط
@@ -1451,7 +1532,38 @@ async function shareReport(){
       allowTaint: true,
       onclone: (doc) => {
         const style = doc.createElement('style');
-        style.textContent = "* { font-family: 'Tajawal','Arial Unicode MS','Tahoma',Arial,sans-serif !important; }";
+        style.textContent = `
+          * {
+            font-family: 'Tajawal','Arial Unicode MS','Tahoma',Arial,sans-serif !important;
+          }
+          html, body, .page, .fields, .field {
+            direction: rtl !important;
+          }
+          .fields {
+            direction: rtl !important;
+            display: grid !important;
+            grid-template-columns: 1fr 1fr !important;
+            gap: 10px !important;
+            unicode-bidi: embed !important;
+          }
+          .field {
+            direction: rtl !important;
+            text-align: right !important;
+            unicode-bidi: embed !important;
+          }
+          .field-full {
+            grid-column: 1 / -1 !important;
+          }
+          input, textarea, label, span, p, div, h1, h2, h3, h4, h5, h6 {
+            text-align: right !important;
+            direction: rtl !important;
+            unicode-bidi: embed !important;
+          }
+          [lang="en"], [dir="ltr"] {
+            direction: ltr !important;
+            text-align: left !important;
+          }
+        `;
         doc.head.appendChild(style);
       }
     });
