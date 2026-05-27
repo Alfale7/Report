@@ -1280,16 +1280,44 @@ function prepareTextareasForExport(){
     const value = ta.value || '';
     if(!value.trim()) return; // فاضي، تجاهل
 
-    // أنشئ div يعرض النص مع line-breaks
+    // 🎯 احصل على الخصائص المرئية فقط (بدون cssText الكامل)
+    const computed = window.getComputedStyle(ta);
+    const fontSize = computed.fontSize;
+    const fontWeight = computed.fontWeight;
+    const color = computed.color;
+    const padding = computed.padding;
+    const height = ta.offsetHeight;
+
+    // أنشئ div نظيف بـ inline styles فقط للأساسيات
     const div = document.createElement('div');
-    div.className = ta.className + ' textarea-export-clone';
-    div.style.cssText = window.getComputedStyle(ta).cssText;
-    div.style.minHeight = ta.offsetHeight + 'px';
-    div.style.whiteSpace = 'pre-wrap';
-    div.style.wordWrap = 'break-word';
-    div.style.direction = 'rtl';
-    div.style.textAlign = 'right';
-    div.style.fontFamily = "'Tajawal','Tahoma','Arial',sans-serif";
+    div.className = 'textarea-export-clone';
+
+    // 🔥 inline styles نظيفة - بدون letter-spacing!
+    div.style.cssText = `
+      width: 100%;
+      min-height: ${height}px;
+      padding: ${padding};
+      font-family: 'Tajawal','Tahoma','Arial',sans-serif !important;
+      font-size: ${fontSize};
+      font-weight: ${fontWeight};
+      color: ${color};
+      line-height: 1.5;
+      letter-spacing: 0 !important;
+      word-spacing: normal !important;
+      text-rendering: optimizeLegibility;
+      white-space: pre-wrap;
+      word-wrap: break-word;
+      overflow-wrap: break-word;
+      direction: rtl;
+      text-align: right;
+      unicode-bidi: embed;
+      background: transparent;
+      border: none;
+      outline: none;
+      resize: none;
+      box-sizing: border-box;
+    `;
+
     div.textContent = value;
 
     // استبدل textarea مؤقتاً
@@ -1396,8 +1424,14 @@ async function saveAsImage(){
             text-align: right !important;
             direction: rtl !important;
             font-family: 'Tajawal','Tahoma','Arial',sans-serif !important;
+            font-feature-settings: "liga" 1, "calt" 1 !important;
+            -webkit-font-feature-settings: "liga" 1, "calt" 1 !important;
             line-height: 1.5 !important;
             min-height: 2em !important;
+            letter-spacing: 0 !important;
+            word-spacing: normal !important;
+            text-rendering: optimizeLegibility !important;
+            unicode-bidi: embed !important;
           }
           [lang="en"], [dir="ltr"] {
             direction: ltr !important;
@@ -1520,8 +1554,14 @@ async function savePDF(){
             text-align: right !important;
             direction: rtl !important;
             font-family: 'Tajawal','Tahoma','Arial',sans-serif !important;
+            font-feature-settings: "liga" 1, "calt" 1 !important;
+            -webkit-font-feature-settings: "liga" 1, "calt" 1 !important;
             line-height: 1.5 !important;
             min-height: 2em !important;
+            letter-spacing: 0 !important;
+            word-spacing: normal !important;
+            text-rendering: optimizeLegibility !important;
+            unicode-bidi: embed !important;
           }
           [lang="en"], [dir="ltr"] {
             direction: ltr !important;
@@ -1662,8 +1702,14 @@ async function shareReport(){
             text-align: right !important;
             direction: rtl !important;
             font-family: 'Tajawal','Tahoma','Arial',sans-serif !important;
+            font-feature-settings: "liga" 1, "calt" 1 !important;
+            -webkit-font-feature-settings: "liga" 1, "calt" 1 !important;
             line-height: 1.5 !important;
             min-height: 2em !important;
+            letter-spacing: 0 !important;
+            word-spacing: normal !important;
+            text-rendering: optimizeLegibility !important;
+            unicode-bidi: embed !important;
           }
           [lang="en"], [dir="ltr"] {
             direction: ltr !important;
