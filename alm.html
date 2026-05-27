@@ -1317,9 +1317,17 @@ async function saveAsImage(){
         style.textContent = `
           * {
             font-family: 'Tajawal','Arial Unicode MS','Tahoma',Arial,sans-serif !important;
+            letter-spacing: 0 !important;
+            word-spacing: 0 !important;
+            text-rendering: optimizeLegibility !important;
           }
           html, body, .page, .fields, .field {
             direction: rtl !important;
+          }
+          /* العنوان الرئيسي - بدون letter-spacing */
+          .title-ar, .title-date, .title-en, .verse, .l1, .l2 {
+            letter-spacing: 0 !important;
+            word-spacing: normal !important;
           }
           .fields {
             direction: rtl !important;
@@ -1417,9 +1425,17 @@ async function savePDF(){
         style.textContent = `
           * {
             font-family: 'Tajawal','Arial Unicode MS','Tahoma',Arial,sans-serif !important;
+            letter-spacing: 0 !important;
+            word-spacing: 0 !important;
+            text-rendering: optimizeLegibility !important;
           }
           html, body, .page, .fields, .field {
             direction: rtl !important;
+          }
+          /* العنوان الرئيسي - بدون letter-spacing */
+          .title-ar, .title-date, .title-en, .verse, .l1, .l2 {
+            letter-spacing: 0 !important;
+            word-spacing: normal !important;
           }
           .fields {
             direction: rtl !important;
@@ -1535,9 +1551,17 @@ async function shareReport(){
         style.textContent = `
           * {
             font-family: 'Tajawal','Arial Unicode MS','Tahoma',Arial,sans-serif !important;
+            letter-spacing: 0 !important;
+            word-spacing: 0 !important;
+            text-rendering: optimizeLegibility !important;
           }
           html, body, .page, .fields, .field {
             direction: rtl !important;
+          }
+          /* العنوان الرئيسي - بدون letter-spacing */
+          .title-ar, .title-date, .title-en, .verse, .l1, .l2 {
+            letter-spacing: 0 !important;
+            word-spacing: normal !important;
           }
           .fields {
             direction: rtl !important;
