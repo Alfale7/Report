@@ -1256,12 +1256,11 @@ function doClear(){
 function printPage(){
   saveData();
   const t = document.getElementById('toast');
-  if(t){ t.classList.remove('show'); t.style.display = 'none'; t.textContent = ''; }
+  if(t){ t.classList.remove('show'); t.style.display='none'; }
   document.getElementById('modal').classList.remove('show');
-  setTimeout(() => {
-    window.print();
-    setTimeout(() => { if(t) t.style.display = ''; }, 500);
-  }, 350);
+  // ⚡ window.print() مباشرة (iOS Safari يتطلب user gesture مباشر)
+  window.print();
+  setTimeout(() => { if(t) t.style.display=''; }, 500);
 }
 
 document.querySelectorAll('input, textarea').forEach(el => {
