@@ -1734,125 +1734,91 @@ backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);
   50%{transform:scale(1.08);}
 }
 
-/* ⏰ مؤقت العرض التنازلي */
-.offer-countdown{
-  background:linear-gradient(135deg,#0a3447,#1e6b8a);
-  border-radius:18px;
-  padding:18px 14px 16px;
-  margin:14px 4px;
+/* ⏰ المؤقت التنازلي - النسخة المدمجة في الهيدر */
+.hero-countdown{
+  margin:14px auto 8px;
+  max-width:380px;
+  text-align:center;
   position:relative;
-  overflow:hidden;
-  box-shadow:0 14px 32px rgba(10,52,71,0.4);
-  animation:ocFadeIn 0.6s ease-out;
+  z-index:5;
+  animation:hcFadeIn 0.5s ease-out;
 }
-@keyframes ocFadeIn{
-  from{opacity:0;transform:translateY(-10px);}
+@keyframes hcFadeIn{
+  from{opacity:0;transform:translateY(-8px);}
   to{opacity:1;transform:translateY(0);}
 }
-.offer-countdown::before{
-  content:"";
-  position:absolute;
-  top:-50%;
-  right:-50%;
-  width:200%;
-  height:200%;
-  background:radial-gradient(circle, rgba(212,166,87,0.15) 0%, transparent 50%);
-  animation:ocShine 4s linear infinite;
-  pointer-events:none;
-}
-@keyframes ocShine{
-  0%{transform:rotate(0deg);}
-  100%{transform:rotate(360deg);}
-}
-.oc-ribbon{
-  display:inline-block;
-  background:linear-gradient(135deg,#d4a657,#b8923d);
-  color:#fff;
-  padding:5px 16px;
-  border-radius:99px;
+.hc-label{
+  font-family:'Reem Kufi','Tajawal',sans-serif;
   font-size:0.78rem;
   font-weight:900;
-  margin-bottom:12px;
-  box-shadow:0 6px 16px rgba(212,166,87,0.5);
-  position:relative;
-  z-index:2;
+  color:rgba(255,255,255,0.92);
+  margin-bottom:8px;
+  letter-spacing:0.4px;
+  text-shadow:0 2px 6px rgba(0,0,0,0.3);
 }
-.oc-content{position:relative;z-index:2;text-align:center;}
-.oc-title{
-  font-family:'Reem Kufi','Tajawal',sans-serif;
-  font-size:1.2rem;
-  font-weight:900;
-  color:#fff;
-  margin-bottom:4px;
-  text-shadow:0 2px 8px rgba(0,0,0,0.3);
-}
-.oc-sub{
-  font-size:0.88rem;
-  color:rgba(255,255,255,0.85);
-  font-weight:700;
-  margin-bottom:14px;
-}
-.oc-timer{
+.hc-timer{
   display:flex;
   align-items:center;
   justify-content:center;
-  gap:6px;
+  gap:4px;
+  flex-wrap:nowrap;
 }
-.oc-time{
-  background:rgba(255,255,255,0.15);
-  border:1px solid rgba(255,255,255,0.25);
-  border-radius:12px;
-  padding:9px 10px;
-  min-width:54px;
+.hc-time{
+  background:rgba(255,255,255,0.12);
+  border:1px solid rgba(212,166,87,0.4);
+  border-radius:9px;
+  padding:6px 8px;
+  min-width:46px;
   backdrop-filter:blur(8px);
   -webkit-backdrop-filter:blur(8px);
+  box-shadow:0 4px 12px rgba(0,0,0,0.15);
   transition:all 0.3s;
 }
-.oc-time.pulse{
-  background:rgba(212,166,87,0.25);
-  border-color:rgba(212,166,87,0.5);
-  animation:ocPulse 1s ease-in-out infinite;
+.hc-time.pulse{
+  background:linear-gradient(135deg,rgba(212,166,87,0.3),rgba(245,158,11,0.2));
+  border-color:rgba(212,166,87,0.7);
+  animation:hcPulse 1s ease-in-out infinite;
 }
-@keyframes ocPulse{
-  0%,100%{transform:scale(1);}
-  50%{transform:scale(1.05);}
+@keyframes hcPulse{
+  0%,100%{transform:scale(1);box-shadow:0 4px 12px rgba(212,166,87,0.3);}
+  50%{transform:scale(1.06);box-shadow:0 6px 18px rgba(212,166,87,0.5);}
 }
-.oc-time span{
+.hc-time span{
   display:block;
   font-family:'Reem Kufi','Tajawal',sans-serif;
-  font-size:1.5rem;
+  font-size:1.25rem;
   font-weight:900;
   color:#fff;
   line-height:1;
   text-shadow:0 2px 6px rgba(0,0,0,0.4);
 }
-.oc-time small{
+.hc-time small{
   display:block;
-  font-size:0.66rem;
-  color:rgba(255,255,255,0.75);
+  font-size:0.58rem;
+  color:rgba(255,255,255,0.78);
   font-weight:800;
-  margin-top:4px;
+  margin-top:2px;
+  letter-spacing:0.3px;
 }
-.oc-sep{
+.hc-sep{
   font-family:'Reem Kufi','Tajawal',sans-serif;
-  font-size:1.4rem;
+  font-size:1.1rem;
   font-weight:900;
-  color:rgba(255,255,255,0.5);
-  padding-bottom:18px;
-  animation:ocSepBlink 1s ease-in-out infinite;
+  color:rgba(212,166,87,0.8);
+  padding-bottom:14px;
+  animation:hcBlink 1s ease-in-out infinite;
 }
-@keyframes ocSepBlink{
-  0%,100%{opacity:0.4;}
+@keyframes hcBlink{
+  0%,100%{opacity:0.5;}
   50%{opacity:1;}
 }
 
-@media (max-width:420px){
-  .oc-time{min-width:46px;padding:7px 6px;}
-  .oc-time span{font-size:1.25rem;}
-  .oc-time small{font-size:0.6rem;}
-  .oc-sep{font-size:1.2rem;}
-  .oc-title{font-size:1.05rem;}
-  .oc-sub{font-size:0.8rem;}
+@media (max-width:380px){
+  .hc-time{min-width:40px;padding:5px 6px;}
+  .hc-time span{font-size:1.1rem;}
+  .hc-time small{font-size:0.55rem;}
+  .hc-sep{font-size:1rem;padding-bottom:12px;}
+  .hc-label{font-size:0.74rem;}
 }
 
 /* عدّاد التحميلات المجانية */
@@ -3949,6 +3915,23 @@ font-size:0.78rem;text-align:center;margin-top:12px;display:none;
       <span class="lb-pulse"></span>
     </div>
 
+    <!-- ⏰ المؤقت التنازلي (يظهر تحت البنر) -->
+    <div class="hero-countdown" id="offerCountdownBanner" style="display:none;">
+      <div class="hc-label" id="ocSub">⏳ ينتهي العرض خلال</div>
+      <div class="hc-timer">
+        <div class="hc-time"><span id="ocDays">00</span><small>يوم</small></div>
+        <div class="hc-sep">:</div>
+        <div class="hc-time"><span id="ocHours">00</span><small>ساعة</small></div>
+        <div class="hc-sep">:</div>
+        <div class="hc-time"><span id="ocMins">00</span><small>دق</small></div>
+        <div class="hc-sep">:</div>
+        <div class="hc-time pulse"><span id="ocSecs">00</span><small>ثا</small></div>
+      </div>
+      <!-- عناصر مخفية لتوافق مع الكود الموجود -->
+      <span id="ocTitle" style="display:none;"></span>
+      <span id="ocRibbon" style="display:none;"></span>
+    </div>
+
     <div class="app-logo">
       <div class="app-logo-inner">📋</div>
     </div>
@@ -4102,24 +4085,6 @@ font-size:0.78rem;text-align:center;margin-top:12px;display:none;
         <span class="gift-cta-text" data-i18n="giftCta">حمّل</span>
       </div>
     </a>
-
-    <!-- ⏰ مؤقت العرض التنازلي (يديره الأدمن) -->
-    <div class="offer-countdown" id="offerCountdownBanner" style="display:none;">
-      <div class="oc-ribbon" id="ocRibbon">عرض حصري</div>
-      <div class="oc-content">
-        <div class="oc-title" id="ocTitle">🔥 عرض إطلاق محدود</div>
-        <div class="oc-sub" id="ocSub">الفرصة الذهبية للاشتراك</div>
-        <div class="oc-timer">
-          <div class="oc-time"><span id="ocDays">00</span><small>يوم</small></div>
-          <div class="oc-sep">:</div>
-          <div class="oc-time"><span id="ocHours">00</span><small>ساعة</small></div>
-          <div class="oc-sep">:</div>
-          <div class="oc-time"><span id="ocMins">00</span><small>دقيقة</small></div>
-          <div class="oc-sep">:</div>
-          <div class="oc-time pulse"><span id="ocSecs">00</span><small>ثانية</small></div>
-        </div>
-      </div>
-    </div>
 
     <!-- ═══ عدّاد التجربة المجانية ═══ -->
     <div class="free-counter" id="freeCounter">
