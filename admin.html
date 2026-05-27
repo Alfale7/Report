@@ -552,6 +552,18 @@ body{font-family:'Tajawal','Cairo',sans-serif;background:linear-gradient(135deg,
   white-space:nowrap;
   border:1px solid #e2e8f0;
   flex-shrink:0;
+  color:#1a3a4e;
+  transition:all 0.3s;
+}
+.os-status.active-status{
+  background:linear-gradient(135deg,#dcfce7,#bbf7d0);
+  border-color:#86efac;
+  color:#15803d;
+}
+.os-status.inactive-status{
+  background:linear-gradient(135deg,#fee2e2,#fecaca);
+  border-color:#fca5a5;
+  color:#991b1b;
 }
 .os-status-dot{
   width:8px;
@@ -564,7 +576,7 @@ body{font-family:'Tajawal','Cairo',sans-serif;background:linear-gradient(135deg,
   box-shadow:0 0 8px rgba(22,163,74,0.6);
   animation:pulseDot 2s ease-in-out infinite;
 }
-.os-status-dot.inactive{background:#cbd5e1;}
+.os-status-dot.inactive{background:#dc2626;}
 
 .os-form{
   display:flex;
@@ -1998,12 +2010,22 @@ async function loadOfferSettings() {
 function updateOfferStatus(active) {
   const dot = document.getElementById('osStatusDot');
   const text = document.getElementById('osStatusText');
+  const wrapper = dot?.parentElement; // .os-status
+
   if (active) {
     dot.className = 'os-status-dot active';
     text.textContent = '✅ العرض مفعّل';
+    if (wrapper) {
+      wrapper.classList.remove('inactive-status');
+      wrapper.classList.add('active-status');
+    }
   } else {
     dot.className = 'os-status-dot inactive';
     text.textContent = '⏸️ العرض متوقف';
+    if (wrapper) {
+      wrapper.classList.remove('active-status');
+      wrapper.classList.add('inactive-status');
+    }
   }
 }
 
