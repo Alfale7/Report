@@ -414,12 +414,42 @@ setTimeout(() => {
   }
 
   // 3️⃣ الطباعة (window.print)
-  const _originalPrint = window.print;
+  const _originalPrint = window.print.bind(window);
   window.print = function(...args) {
-    if (!window.canDownload()) return;
-    // نسجّل التحميل قبل ما تفتح نافذة الطباعة
+    // ✅ Lifetime/Admin → اطبع مباشرة بدون انتظار
+    if (isLifetime(_profile) || isAdmin(_user)) {
+      try {
+        return _originalPrint.apply(this, args);
+      } catch(e) {
+        console.error('Print error:', e);
+        return _originalPrint();
+      }
+    }
+
+    // 🔒 لو ما عنده مستخدم
+    if (!_user) {
+      console.warn('⚠️ لم يتم تحميل بيانات المستخدم بعد');
+      return;
+    }
+
+    // 🆓 Free user → افحص الحد
+    const used = _profile?.downloadsUsed || 0;
+    const limit = _profile?.downloadsLimit || SITE_CONFIG.FREE_DOWNLOADS_LIMIT || 2;
+
+    if (used >= limit) {
+      showSubscribeGate();
+      alert('🎁 لقد استخدمت جميع تحميلاتك المجانية\n\nاشترك مرة واحدة فقط بـ 30 ريال 💎');
+      return;
+    }
+
+    // سجّل التحميل (لا ننتظر) ثم اطبع
     window.trackDownload();
-    return _originalPrint.apply(this, args);
+    try {
+      return _originalPrint.apply(this, args);
+    } catch(e) {
+      console.error('Print error:', e);
+      return _originalPrint();
+    }
   };
   console.log('🔗 تم ربط window.print بـ Firebase');
 
@@ -427,7 +457,20 @@ setTimeout(() => {
   if (typeof window.printReport === 'function') {
     const _origPrintReport = window.printReport;
     window.printReport = function(...args) {
-      if (!window.canDownload()) return;
+      // ✅ Lifetime/Admin → اطبع مباشرة
+      if (isLifetime(_profile) || isAdmin(_user)) {
+        return _origPrintReport.apply(this, args);
+      }
+      if (!_user) return;
+
+      const used = _profile?.downloadsUsed || 0;
+      const limit = _profile?.downloadsLimit || SITE_CONFIG.FREE_DOWNLOADS_LIMIT || 2;
+
+      if (used >= limit) {
+        showSubscribeGate();
+        alert('🎁 لقد استخدمت جميع تحميلاتك المجانية\n\nاشترك مرة واحدة فقط بـ 30 ريال 💎');
+        return;
+      }
       window.trackDownload();
       return _origPrintReport.apply(this, args);
     };
