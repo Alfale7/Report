@@ -14,7 +14,7 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Amiri:wght@400;700&family=Tajawal:wght@400;500;700;800;900&family=Reem+Kufi:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;800;900&display=swap" rel="stylesheet">
 <style>
 /* ═══════════════════════════════════════════════
    هوية يوم العَلَم السعودي · فخم رسمي
@@ -40,7 +40,7 @@
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
 
 html,body{
-font-family:‘Tajawal’,‘Tahoma’,‘Arial’,sans-serif;
+font-family:'Tajawal','Tahoma','Arial',sans-serif;
 background:
 radial-gradient(ellipse at top right, rgba(0,108,53,0.06) 0%, transparent 60%),
 radial-gradient(ellipse at bottom left, rgba(184,146,61,0.05) 0%, transparent 55%),
@@ -199,7 +199,7 @@ text-align:center;
 padding:0 6px;
 }
 .title-ar{
-font-family:‘Reem Kufi’,‘Tajawal’,sans-serif;
+font-family:'Tajawal','Tahoma','Arial',sans-serif;
 font-size:1.15rem;
 font-weight:700;
 color:#fff;
@@ -251,7 +251,7 @@ position:relative;
 z-index:2;
 }
 .header-quote .verse{
-font-family:‘Amiri’,‘Tajawal’,serif;
+font-family:'Tajawal','Tahoma','Arial',sans-serif;
 font-size:0.88rem;
 font-weight:700;
 color:#f5e8c4;
@@ -308,7 +308,7 @@ width:100%;
 max-width:380px;
 border:none;
 background:transparent;
-font-family:‘Reem Kufi’,‘Tajawal’,sans-serif;
+font-family:'Tajawal','Tahoma','Arial',sans-serif;
 font-size:0.95rem;
 font-weight:700;
 color:#003d1f;
@@ -373,7 +373,7 @@ flex-shrink:0;
 box-shadow:0 2px 4px rgba(0,0,0,0.25), inset 0 1px 0 rgba(255,255,255,0.4);
 }
 .zone-head .title{
-font-family:‘Reem Kufi’,‘Tajawal’,sans-serif;
+font-family:'Tajawal','Tahoma','Arial',sans-serif;
 color:#fff;
 font-size:0.92rem;
 font-weight:700;
@@ -534,7 +534,7 @@ text-align:center;
 padding:8px 6px;
 }
 .sig-role{
-font-family:‘Reem Kufi’,‘Tajawal’,sans-serif;
+font-family:'Tajawal','Tahoma','Arial',sans-serif;
 font-size:0.78rem;
 font-weight:700;
 color:#003d1f;
@@ -599,7 +599,7 @@ background:linear-gradient(90deg, transparent, #d4a548, transparent);
 margin:0 auto 10px;
 }
 .footer .motto{
-font-family:‘Amiri’,‘Tajawal’,serif;
+font-family:'Tajawal','Tahoma','Arial',sans-serif;
 font-size:0.78rem;
 font-weight:700;
 color:#003d1f;
@@ -637,7 +637,7 @@ gap:5px;
 padding:10px 15px;
 border:none;
 border-radius:40px;
-font-family:‘Tajawal’,sans-serif;
+font-family:'Tajawal','Tahoma','Arial',sans-serif;
 font-size:0.8rem;
 font-weight:700;
 cursor:pointer;
@@ -1271,7 +1271,7 @@ function doClear(){
 }
 
 // ═══════════════════════════════════════════════
-// 🖼️ تصدير كصورة PNG
+// 🖼️ تصدير كصورة PNG (مبني على منطق tasis)
 // ═══════════════════════════════════════════════
 async function saveAsImage(){
   saveData();
@@ -1279,8 +1279,8 @@ async function saveAsImage(){
   const originalText = btn.innerHTML;
 
   // إخفاء التوست والمودال
-  const t = document.getElementById('toast');
-  if(t){ t.classList.remove('show'); t.style.display = 'none'; }
+  const toastEl = document.getElementById('toast');
+  if(toastEl){ toastEl.classList.remove('show'); toastEl.style.display='none'; }
   const modal = document.getElementById('modal');
   if(modal) modal.classList.remove('show');
 
@@ -1288,25 +1288,30 @@ async function saveAsImage(){
     btn.disabled = true;
     btn.innerHTML = '<span>⏳</span><span class="txt">جاري...</span>';
 
-    // ⏳ ضمان تحميل الخطوط نهائياً
-    await ensureFontsLoaded();
-
     const page = document.getElementById('page');
 
-    // إخفاء أزرار الحذف
+    // إخفاء أزرار حذف الصور
     document.querySelectorAll('.photo-rm').forEach(el => el.style.display = 'none');
 
+    // 🔥 منطق tasis: warm canvas + انتظار الخطوط
+    await document.fonts.ready;
+    const warm = document.createElement('canvas');
+    const wctx = warm.getContext('2d');
+    wctx.font = '900 20px Tajawal,Arial';
+    wctx.fillText('يوم العَلَم المملكة العربية السعودية الراية', 0, 30);
+    await new Promise(r => setTimeout(r, 500));
+
     const canvas = await html2canvas(page, {
-      scale: 2,
-      useCORS: true,
-      allowTaint: true,
       backgroundColor: '#fdfcf8',
+      scale: 3,
+      useCORS: true,
       logging: false,
-      letterRendering: true,
-      foreignObjectRendering: false,
-      width: page.offsetWidth,
-      height: page.offsetHeight,
-      onclone: forceRTLAndFonts
+      allowTaint: true,
+      onclone: (doc) => {
+        const style = doc.createElement('style');
+        style.textContent = "* { font-family: 'Tajawal','Arial Unicode MS','Tahoma',Arial,sans-serif !important; }";
+        doc.head.appendChild(style);
+      }
     });
 
     // إعادة إظهار أزرار الحذف
@@ -1326,95 +1331,20 @@ async function saveAsImage(){
   } finally {
     btn.disabled = false;
     btn.innerHTML = originalText;
-    if(t) t.style.display = '';
+    if(toastEl) toastEl.style.display = '';
   }
 }
 
 // ═══════════════════════════════════════════════
-// 🔥 دالة مساعدة: ضمان تحميل الخطوط
-// ═══════════════════════════════════════════════
-async function ensureFontsLoaded(){
-  // 1. ننتظر document.fonts.ready
-  if (document.fonts && document.fonts.ready) {
-    await document.fonts.ready;
-  }
-
-  // 2. نحمّل الخطوط صراحةً
-  if (document.fonts && document.fonts.load) {
-    try {
-      await Promise.all([
-        document.fonts.load('400 16px Tajawal'),
-        document.fonts.load('700 16px Tajawal'),
-        document.fonts.load('800 16px Tajawal'),
-        document.fonts.load('900 16px Tajawal'),
-        document.fonts.load('500 16px "Reem Kufi"'),
-        document.fonts.load('700 16px "Reem Kufi"'),
-        document.fonts.load('400 16px Amiri'),
-        document.fonts.load('700 16px Amiri'),
-      ]);
-    } catch(e) {
-      console.warn('Font preload warning:', e);
-    }
-  }
-
-  // 3. تأخير صغير للتأكد من الرسم
-  await new Promise(r => setTimeout(r, 100));
-}
-
-// ═══════════════════════════════════════════════
-// 🔥 دالة مساعدة: فرض RTL والخطوط في النسخة المستنسخة
-// ═══════════════════════════════════════════════
-function forceRTLAndFonts(clonedDoc){
-  // 1. تطبيق RTL على المستوى الأعلى
-  clonedDoc.documentElement.setAttribute('dir', 'rtl');
-  clonedDoc.documentElement.setAttribute('lang', 'ar');
-  clonedDoc.documentElement.style.direction = 'rtl';
-
-  if(clonedDoc.body){
-    clonedDoc.body.setAttribute('dir', 'rtl');
-    clonedDoc.body.style.direction = 'rtl';
-    clonedDoc.body.style.textAlign = 'right';
-  }
-
-  // 2. إنشاء style tag قوي يفرض RTL + الخطوط
-  const forceStyle = clonedDoc.createElement('style');
-  forceStyle.textContent = `
-    * {
-      direction: rtl !important;
-      font-family: 'Tajawal', 'Tahoma', 'Arial', sans-serif !important;
-    }
-    html, body, #page, #page * {
-      direction: rtl !important;
-    }
-    .photo-grid, .grid, .row, .field-row, [class*="grid"], [class*="flex"] {
-      direction: rtl !important;
-    }
-    /* استثناء العناصر اللاتينية */
-    [lang="en"], .ltr, [dir="ltr"] {
-      direction: ltr !important;
-    }
-  `;
-  clonedDoc.head.appendChild(forceStyle);
-
-  // 3. تطبيق RTL على كل العناصر يدوياً
-  const allElements = clonedDoc.querySelectorAll('*');
-  allElements.forEach(el => {
-    if(!el.hasAttribute('dir') || el.getAttribute('dir') === 'auto'){
-      el.style.direction = 'rtl';
-    }
-  });
-}
-
-// ═══════════════════════════════════════════════
-// 📄 تصدير كـ PDF
+// 📄 تصدير كـ PDF (مبني على منطق tasis)
 // ═══════════════════════════════════════════════
 async function savePDF(){
   saveData();
   const btn = document.querySelector('.btn-pdf');
   const originalText = btn.innerHTML;
 
-  const t = document.getElementById('toast');
-  if(t){ t.classList.remove('show'); t.style.display = 'none'; }
+  const toastEl = document.getElementById('toast');
+  if(toastEl){ toastEl.classList.remove('show'); toastEl.style.display='none'; }
   const modal = document.getElementById('modal');
   if(modal) modal.classList.remove('show');
 
@@ -1422,23 +1352,28 @@ async function savePDF(){
     btn.disabled = true;
     btn.innerHTML = '<span>⏳</span><span class="txt">جاري...</span>';
 
-    // ⏳ ضمان تحميل الخطوط
-    await ensureFontsLoaded();
-
     const page = document.getElementById('page');
     document.querySelectorAll('.photo-rm').forEach(el => el.style.display = 'none');
 
+    // 🔥 منطق tasis: warm canvas + انتظار الخطوط
+    await document.fonts.ready;
+    const warm = document.createElement('canvas');
+    const wctx = warm.getContext('2d');
+    wctx.font = '900 20px Tajawal,Arial';
+    wctx.fillText('يوم العَلَم المملكة العربية السعودية الراية', 0, 30);
+    await new Promise(r => setTimeout(r, 500));
+
     const canvas = await html2canvas(page, {
-      scale: 2,
-      useCORS: true,
-      allowTaint: true,
       backgroundColor: '#fdfcf8',
+      scale: 3,
+      useCORS: true,
       logging: false,
-      letterRendering: true,
-      foreignObjectRendering: false,
-      width: page.offsetWidth,
-      height: page.offsetHeight,
-      onclone: forceRTLAndFonts
+      allowTaint: true,
+      onclone: (doc) => {
+        const style = doc.createElement('style');
+        style.textContent = "* { font-family: 'Tajawal','Arial Unicode MS','Tahoma',Arial,sans-serif !important; }";
+        doc.head.appendChild(style);
+      }
     });
 
     document.querySelectorAll('.photo-cell.filled .photo-rm').forEach(el => el.style.display = 'flex');
@@ -1476,20 +1411,20 @@ async function savePDF(){
   } finally {
     btn.disabled = false;
     btn.innerHTML = originalText;
-    if(t) t.style.display = '';
+    if(toastEl) toastEl.style.display = '';
   }
 }
 
 // ═══════════════════════════════════════════════
-// 📤 مشاركة التقرير
+// 📤 مشاركة التقرير (مبني على منطق tasis)
 // ═══════════════════════════════════════════════
 async function shareReport(){
   saveData();
   const btn = document.querySelector('.btn-share');
   const originalText = btn.innerHTML;
 
-  const t = document.getElementById('toast');
-  if(t){ t.classList.remove('show'); t.style.display = 'none'; }
+  const toastEl = document.getElementById('toast');
+  if(toastEl){ toastEl.classList.remove('show'); toastEl.style.display='none'; }
   const modal = document.getElementById('modal');
   if(modal) modal.classList.remove('show');
 
@@ -1497,23 +1432,28 @@ async function shareReport(){
     btn.disabled = true;
     btn.innerHTML = '<span>⏳</span><span class="txt">جاري...</span>';
 
-    // ⏳ ضمان تحميل الخطوط
-    await ensureFontsLoaded();
-
     const page = document.getElementById('page');
     document.querySelectorAll('.photo-rm').forEach(el => el.style.display = 'none');
 
+    // 🔥 منطق tasis: warm canvas + انتظار الخطوط
+    await document.fonts.ready;
+    const warm = document.createElement('canvas');
+    const wctx = warm.getContext('2d');
+    wctx.font = '900 20px Tajawal,Arial';
+    wctx.fillText('يوم العَلَم المملكة العربية السعودية الراية', 0, 30);
+    await new Promise(r => setTimeout(r, 500));
+
     const canvas = await html2canvas(page, {
-      scale: 2,
-      useCORS: true,
-      allowTaint: true,
       backgroundColor: '#fdfcf8',
+      scale: 3,
+      useCORS: true,
       logging: false,
-      letterRendering: true,
-      foreignObjectRendering: false,
-      width: page.offsetWidth,
-      height: page.offsetHeight,
-      onclone: forceRTLAndFonts
+      allowTaint: true,
+      onclone: (doc) => {
+        const style = doc.createElement('style');
+        style.textContent = "* { font-family: 'Tajawal','Arial Unicode MS','Tahoma',Arial,sans-serif !important; }";
+        doc.head.appendChild(style);
+      }
     });
 
     document.querySelectorAll('.photo-cell.filled .photo-rm').forEach(el => el.style.display = 'flex');
@@ -1546,18 +1486,17 @@ async function shareReport(){
       }
       btn.disabled = false;
       btn.innerHTML = originalText;
-      if(t) t.style.display = '';
+      if(toastEl) toastEl.style.display = '';
     }, 'image/png');
   } catch(err) {
     console.error('Share error:', err);
     showToast(currentLang === 'ar' ? '❌ فشل المشاركة' : '❌ Share failed');
     btn.disabled = false;
     btn.innerHTML = originalText;
-    if(t) t.style.display = '';
+    if(toastEl) toastEl.style.display = '';
   }
 }
 
-// نخلي اسم الدوال متاح globally
 window.saveAsImage = saveAsImage;
 window.savePDF = savePDF;
 window.shareReport = shareReport;
@@ -1570,7 +1509,7 @@ loadData();
 applyLang();
 </script>
 
-<!-- 🔥 Firebase Integration (للحماية - يعترض saveAsImage/savePDF تلقائياً) -->
-<script type="module" src="report-firebase.js?v=7"></script>
+<!-- 🔥 Firebase Integration (للحماية) -->
+<script type="module" src="report-firebase.js?v=8"></script>
 </body>
 </html>
