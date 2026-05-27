@@ -413,119 +413,34 @@ setTimeout(() => {
     console.log('🔗 تم ربط savePDF بـ Firebase');
   }
 
-  // 3️⃣ الطباعة (window.print) - مع دعم iOS Safari
-  const _originalPrint = window.print.bind(window);
+  // 3️⃣ الطباعة (window.print) - معطّل!
+  // ⚠️ الاعتراض كان يكسر window.print في iOS Safari
+  // الحماية تتم من خلال بوابة الصفحة (handleAccess)
+  // لا حاجة لاعتراض window.print هنا
+  console.log('ℹ️ window.print غير معترض - الحماية من بوابة الصفحة');
+  window._firebasePrintWrapped = false;
 
-  // كاشف iOS
-  const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
-
-  // دالة طباعة متوافقة مع iOS
-  function safePrint() {
-    if (isIOS) {
-      // طريقة iOS: نستخدم setTimeout + focus
-      setTimeout(() => {
-        try {
-          _originalPrint();
-        } catch(e) {
-          console.error('iOS print error:', e);
-          // محاولة احتياطية
-          window.focus();
-          _originalPrint();
-        }
-      }, 100);
-    } else {
-      // باقي المتصفحات
-      try {
-        _originalPrint();
-      } catch(e) {
-        console.error('Print error:', e);
-      }
-    }
-  }
-
-  window.print = function(...args) {
-    console.log('🖨️ [DEBUG] window.print called, isIOS:', isIOS);
-    console.log('🖨️ [DEBUG] _user:', _user ? _user.uid : 'null');
-    console.log('🖨️ [DEBUG] isLifetime:', isLifetime(_profile));
-
-    // ✅ Lifetime/Admin → اطبع مباشرة
-    if (isLifetime(_profile) || isAdmin(_user)) {
-      console.log('✅ [DEBUG] Lifetime - calling safePrint');
-      return safePrint();
-    }
-
-    // 🔒 لو ما عنده مستخدم
-    if (!_user) {
-      console.warn('⚠️ No user loaded yet');
-      alert('⚠️ يرجى الانتظار لحظة وأعد المحاولة');
-      return;
-    }
-
-    // 🆓 Free user → افحص الحد
-    const used = _profile?.downloadsUsed || 0;
-    const limit = _profile?.downloadsLimit || SITE_CONFIG.FREE_DOWNLOADS_LIMIT || 2;
-
-    if (used >= limit) {
-      showSubscribeGate();
-      alert('🎁 لقد استخدمت جميع تحميلاتك المجانية\n\nاشترك مرة واحدة فقط بـ 30 ريال 💎');
-      return;
-    }
-
-    // سجّل التحميل ثم اطبع
-    window.trackDownload();
-    return safePrint();
-  };
-  console.log('🔗 تم ربط window.print بـ Firebase (iOS-safe)');
-  window._firebasePrintWrapped = true;
-
-  // 4️⃣ printReport (لو الموقع يستخدم دالة مخصصة)
+  // 4️⃣ printReport - معطّل أيضاً (لتجنب كسر الطباعة)
+  // إذا كان الموقع يستخدم printReport، تشتغل عادي بدون اعتراض
+  // الحماية من بوابة الصفحة كافية
   if (typeof window.printReport === 'function') {
-    const _origPrintReport = window.printReport;
-    window.printReport = function(...args) {
-      // ✅ Lifetime/Admin → اطبع مباشرة
-      if (isLifetime(_profile) || isAdmin(_user)) {
-        return _origPrintReport.apply(this, args);
-      }
-      if (!_user) return;
-
-      const used = _profile?.downloadsUsed || 0;
-      const limit = _profile?.downloadsLimit || SITE_CONFIG.FREE_DOWNLOADS_LIMIT || 2;
-
-      if (used >= limit) {
-        showSubscribeGate();
-        alert('🎁 لقد استخدمت جميع تحميلاتك المجانية\n\nاشترك مرة واحدة فقط بـ 30 ريال 💎');
-        return;
-      }
-      window.trackDownload();
-      return _origPrintReport.apply(this, args);
-    };
-    console.log('🔗 تم ربط printReport بـ Firebase');
+    console.log('ℹ️ printReport موجودة - ليست معترضة');
   }
 
-  // 5️⃣ حماية اختصار Ctrl+P / Cmd+P
-  document.addEventListener('keydown', function(e) {
-    if ((e.ctrlKey || e.metaKey) && e.key === 'p') {
-      // فحص الصلاحية
-      if (!window.canDownload()) {
-        e.preventDefault();
-        return false;
-      }
-      // مسموح → سجّل التحميل
-      window.trackDownload();
-    }
-  });
+  // 5️⃣ حماية اختصار Ctrl+P / Cmd+P - معطّلة لتجنب كسر الطباعة
+  // ملاحظة: الحماية من خلال بوابة الصفحة كافية
+  // document.addEventListener('keydown', function(e) { ... });
 
-  // 6️⃣ حماية beforeprint (يطلق قبل أي طباعة)
+  // 6️⃣ حماية beforeprint - للتتبع فقط (بدون منع)
   let _printTracked = false;
   window.addEventListener('beforeprint', function() {
     if (_printTracked) return;
     _printTracked = true;
     setTimeout(() => { _printTracked = false; }, 2000);
 
-    if (!window.canDownload()) {
-      // ما نقدر نوقفها هنا لكن نسجل اشتراك مطلوب
-      return;
+    // فقط للمشتركين Free نتتبع التحميل
+    if (_user && !isLifetime(_profile) && !isAdmin(_user)) {
+      window.trackDownload();
     }
-    window.trackDownload();
   });
 }, 1000);
