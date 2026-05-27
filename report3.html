@@ -914,6 +914,7 @@ body{
 .export-option .ico.png{background:linear-gradient(135deg, var(--mint), #38a3a3);}
 .export-option .ico.pdf{background:linear-gradient(135deg, var(--coral), #d54a1f);}
 .export-option .ico.print{background:linear-gradient(135deg, var(--sky), #0876b8);}
+.export-option .ico.share{background:linear-gradient(135deg,#16a34a,#15803d);}
 
 .export-option .opt-text{flex:1;}
 .export-option .opt-title{font-weight:900; font-size:0.95rem; margin-bottom:2px;}
@@ -1686,6 +1687,9 @@ body{
 .modal-actions{display:flex; gap:10px;}
 .modal-actions .btn{padding:10px; font-size:0.8rem;}
 </style>
+
+  <!-- 🔥 Firebase Integration (يجب أن يكون قبل أي محتوى) -->
+  <script type="module" src="report-firebase.js?v=4"></script>
 </head>
 <body>
 
@@ -2005,11 +2009,11 @@ body{
     </span>
     <span class="arrow">‹</span>
   </button>
-  <button class="export-option" onclick="printReport()">
-    <span class="ico print">🖨</span>
+  <button class="export-option" onclick="shareReport()">
+    <span class="ico share">📤</span>
     <span class="opt-text">
-      <div class="opt-title" data-i18n="optPrint">طباعة مباشرة</div>
-      <div class="opt-desc" data-i18n="optPrintDesc">يفتح نافذة الطباعة</div>
+      <div class="opt-title" data-i18n="optShare">مشاركة</div>
+      <div class="opt-desc" data-i18n="optShareDesc">شارك التقرير عبر تطبيقاتك</div>
     </span>
     <span class="arrow">‹</span>
   </button>
@@ -2256,7 +2260,87 @@ function closeExportMenu(){
 }
 
 function exportAsImage(){ closeExportMenu(); setTimeout(() => saveAsImage(), 200); }
-function printReport(){ closeExportMenu(); setTimeout(() => window.print(), 300); }
+function printReport(){
+  shareReport();
+}
+
+// ═══════════════════════════════════════════════
+// 📤 مشاركة التقرير (Web Share API)
+// ═══════════════════════════════════════════════
+async function shareReport(){
+  closeExportMenu();
+
+  if (typeof window.checkDownloadAccess === 'function') {
+    const allowed = await window.checkDownloadAccess();
+    if (!allowed) return;
+  }
+
+  if(typeof showToast === 'function') showToast('⏳ جاري تحضير المشاركة...');
+
+  try {
+    const page = document.getElementById('page');
+    if(!page){
+      if(typeof showToast === 'function') showToast('❌ لم يتم العثور على التقرير');
+      return;
+    }
+
+    const actionButtons = document.querySelectorAll('.export-menu-wrap, .export-menu, [class*="action-bar"]');
+    const hiddenStates = [];
+    actionButtons.forEach(el => {
+      hiddenStates.push({el, prev: el.style.display});
+      el.style.display = 'none';
+    });
+
+    await document.fonts.ready;
+    await new Promise(r => setTimeout(r, 300));
+
+    const canvas = await html2canvas(page, {
+      backgroundColor: '#ffffff',
+      scale: 3,
+      useCORS: true,
+      logging: false,
+      allowTaint: true,
+      onclone: (doc) => {
+        const style = doc.createElement('style');
+        style.textContent = "* { font-family: 'Tajawal','Arial Unicode MS','Tahoma',Arial,sans-serif !important; letter-spacing: 0 !important; }";
+        doc.head.appendChild(style);
+      }
+    });
+
+    hiddenStates.forEach(({el, prev}) => { el.style.display = prev; });
+
+    canvas.toBlob(async (blob) => {
+      const file = new File([blob], 'المجلة_المدرسية.png', { type: 'image/png' });
+
+      if (navigator.share && navigator.canShare && navigator.canShare({ files: [file] })) {
+        try {
+          await navigator.share({
+            files: [file],
+            title: document.title,
+            text: '🇸🇦 ' + document.title
+          });
+          if(typeof showToast === 'function') showToast('✅ تم المشاركة');
+        } catch(err) {
+          if (err.name !== 'AbortError') {
+            console.error('Share error:', err);
+            if(typeof showToast === 'function') showToast('❌ فشل المشاركة');
+          }
+        }
+      } else {
+        const link = document.createElement('a');
+        link.download = 'المجلة_المدرسية.png';
+        link.href = URL.createObjectURL(blob);
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+        if(typeof showToast === 'function') showToast('📥 تم التنزيل');
+      }
+    }, 'image/png');
+  } catch(e) {
+    console.error('Share error:', e);
+    if(typeof showToast === 'function') showToast('❌ فشل التصدير');
+  }
+}
 
 function loadJsPDF(){
   return new Promise((resolve, reject) => {
@@ -2306,6 +2390,12 @@ function restoreFromExport(replacements){
 }
 
 async function saveAsImage(){
+  // 🔥 فحص Firebase أولاً - الحماية الفعلية
+  if (typeof window.checkDownloadAccess === 'function') {
+    const allowed = await window.checkDownloadAccess();
+    if (!allowed) return;
+  }
+
   showToast(I18N[currentLang].toastPrep);
   const page = document.getElementById('magazine');
   page.classList.add('exporting');
@@ -2386,10 +2476,5 @@ if(el && MOE_LOGO.length > 100) el.src = 'data:image/png;base64,' + MOE_LOGO;
 applyLang();
 loadData();
 attachAutoSave();
-</script>
-
-
-<!-- 🔥 Firebase Integration -->
-<script type="module" src="report-firebase.js"></script>
-</body>
+</script></body>
 </html>
