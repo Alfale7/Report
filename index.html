@@ -1734,6 +1734,127 @@ backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);
   50%{transform:scale(1.08);}
 }
 
+/* ⏰ مؤقت العرض التنازلي */
+.offer-countdown{
+  background:linear-gradient(135deg,#0a3447,#1e6b8a);
+  border-radius:18px;
+  padding:18px 14px 16px;
+  margin:14px 4px;
+  position:relative;
+  overflow:hidden;
+  box-shadow:0 14px 32px rgba(10,52,71,0.4);
+  animation:ocFadeIn 0.6s ease-out;
+}
+@keyframes ocFadeIn{
+  from{opacity:0;transform:translateY(-10px);}
+  to{opacity:1;transform:translateY(0);}
+}
+.offer-countdown::before{
+  content:"";
+  position:absolute;
+  top:-50%;
+  right:-50%;
+  width:200%;
+  height:200%;
+  background:radial-gradient(circle, rgba(212,166,87,0.15) 0%, transparent 50%);
+  animation:ocShine 4s linear infinite;
+  pointer-events:none;
+}
+@keyframes ocShine{
+  0%{transform:rotate(0deg);}
+  100%{transform:rotate(360deg);}
+}
+.oc-ribbon{
+  display:inline-block;
+  background:linear-gradient(135deg,#d4a657,#b8923d);
+  color:#fff;
+  padding:5px 16px;
+  border-radius:99px;
+  font-size:0.78rem;
+  font-weight:900;
+  margin-bottom:12px;
+  box-shadow:0 6px 16px rgba(212,166,87,0.5);
+  position:relative;
+  z-index:2;
+}
+.oc-content{position:relative;z-index:2;text-align:center;}
+.oc-title{
+  font-family:'Reem Kufi','Tajawal',sans-serif;
+  font-size:1.2rem;
+  font-weight:900;
+  color:#fff;
+  margin-bottom:4px;
+  text-shadow:0 2px 8px rgba(0,0,0,0.3);
+}
+.oc-sub{
+  font-size:0.88rem;
+  color:rgba(255,255,255,0.85);
+  font-weight:700;
+  margin-bottom:14px;
+}
+.oc-timer{
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  gap:6px;
+}
+.oc-time{
+  background:rgba(255,255,255,0.15);
+  border:1px solid rgba(255,255,255,0.25);
+  border-radius:12px;
+  padding:9px 10px;
+  min-width:54px;
+  backdrop-filter:blur(8px);
+  -webkit-backdrop-filter:blur(8px);
+  transition:all 0.3s;
+}
+.oc-time.pulse{
+  background:rgba(212,166,87,0.25);
+  border-color:rgba(212,166,87,0.5);
+  animation:ocPulse 1s ease-in-out infinite;
+}
+@keyframes ocPulse{
+  0%,100%{transform:scale(1);}
+  50%{transform:scale(1.05);}
+}
+.oc-time span{
+  display:block;
+  font-family:'Reem Kufi','Tajawal',sans-serif;
+  font-size:1.5rem;
+  font-weight:900;
+  color:#fff;
+  line-height:1;
+  text-shadow:0 2px 6px rgba(0,0,0,0.4);
+}
+.oc-time small{
+  display:block;
+  font-size:0.66rem;
+  color:rgba(255,255,255,0.75);
+  font-weight:800;
+  margin-top:4px;
+}
+.oc-sep{
+  font-family:'Reem Kufi','Tajawal',sans-serif;
+  font-size:1.4rem;
+  font-weight:900;
+  color:rgba(255,255,255,0.5);
+  padding-bottom:18px;
+  animation:ocSepBlink 1s ease-in-out infinite;
+}
+@keyframes ocSepBlink{
+  0%,100%{opacity:0.4;}
+  50%{opacity:1;}
+}
+
+@media (max-width:420px){
+  .oc-time{min-width:46px;padding:7px 6px;}
+  .oc-time span{font-size:1.25rem;}
+  .oc-time small{font-size:0.6rem;}
+  .oc-sep{font-size:1.2rem;}
+  .oc-title{font-size:1.05rem;}
+  .oc-sub{font-size:0.8rem;}
+}
+
 /* عدّاد التحميلات المجانية */
 .free-counter{
   background:linear-gradient(135deg, rgba(255,107,107,0.15), rgba(255,159,67,0.15));
@@ -3981,6 +4102,24 @@ font-size:0.78rem;text-align:center;margin-top:12px;display:none;
         <span class="gift-cta-text" data-i18n="giftCta">حمّل</span>
       </div>
     </a>
+
+    <!-- ⏰ مؤقت العرض التنازلي (يديره الأدمن) -->
+    <div class="offer-countdown" id="offerCountdownBanner" style="display:none;">
+      <div class="oc-ribbon" id="ocRibbon">عرض حصري</div>
+      <div class="oc-content">
+        <div class="oc-title" id="ocTitle">🔥 عرض إطلاق محدود</div>
+        <div class="oc-sub" id="ocSub">الفرصة الذهبية للاشتراك</div>
+        <div class="oc-timer">
+          <div class="oc-time"><span id="ocDays">00</span><small>يوم</small></div>
+          <div class="oc-sep">:</div>
+          <div class="oc-time"><span id="ocHours">00</span><small>ساعة</small></div>
+          <div class="oc-sep">:</div>
+          <div class="oc-time"><span id="ocMins">00</span><small>دقيقة</small></div>
+          <div class="oc-sep">:</div>
+          <div class="oc-time pulse"><span id="ocSecs">00</span><small>ثانية</small></div>
+        </div>
+      </div>
+    </div>
 
     <!-- ═══ عدّاد التجربة المجانية ═══ -->
     <div class="free-counter" id="freeCounter">
@@ -6491,7 +6630,7 @@ document.getElementById('loginModal').addEventListener('click', function(e){
 
 <!-- ═══ Firebase Integration ═══ -->
 <script type="module">
-import { onUserChange, logout, isLifetime, isAdmin, SITE_CONFIG, db } from './firebase-config.js';
+import { onUserChange, logout, isLifetime, isAdmin, SITE_CONFIG, db, listenToOffer } from './firebase-config.js';
 import { doc, onSnapshot, updateDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
 let _indexProfileUnsub = null;
@@ -6623,6 +6762,9 @@ function updateFreeCounter(profile, isLifetimeUser) {
   const limit = profile?.downloadsLimit || 2;
   const remaining = Math.max(0, limit - used);
 
+  // 🐛 Debug log
+  console.log('🎁 Free Counter:', { used, limit, remaining, profile });
+
   const valueEl = document.getElementById('freeCounterValue');
   const textEl = counter.querySelector('.free-counter-text');
   const iconEl = counter.querySelector('.free-counter-icon');
@@ -6670,6 +6812,81 @@ function updateFreeCounter(profile, isLifetimeUser) {
     }
   }
 }
+
+// ⏰ المؤقت التنازلي للعرض (يديره الأدمن)
+let _offerInterval = null;
+let _offerEndTime = 0;
+
+function initOfferCountdown() {
+  if (typeof listenToOffer !== 'function') return;
+
+  listenToOffer((settings) => {
+    const banner = document.getElementById('offerCountdownBanner');
+    if (!banner) return;
+
+    // إذا غير مفعّل أو ما في تاريخ → اخفِ
+    if (!settings.active || !settings.endDate) {
+      banner.style.display = 'none';
+      if (_offerInterval) {
+        clearInterval(_offerInterval);
+        _offerInterval = null;
+      }
+      return;
+    }
+
+    const endTime = new Date(settings.endDate).getTime();
+    if (isNaN(endTime) || endTime <= Date.now()) {
+      banner.style.display = 'none';
+      return;
+    }
+
+    // عرض المؤقت
+    banner.style.display = '';
+    document.getElementById('ocTitle').textContent = settings.title || '🔥 عرض إطلاق محدود';
+    document.getElementById('ocSub').textContent = settings.subtitle || 'الفرصة الذهبية للاشتراك';
+    document.getElementById('ocRibbon').textContent = settings.ribbonText || 'عرض حصري';
+
+    _offerEndTime = endTime;
+    updateOfferTimer();
+
+    if (_offerInterval) clearInterval(_offerInterval);
+    _offerInterval = setInterval(updateOfferTimer, 1000);
+  });
+}
+
+function updateOfferTimer() {
+  const banner = document.getElementById('offerCountdownBanner');
+  if (!banner || !_offerEndTime) return;
+
+  const now = Date.now();
+  const diff = _offerEndTime - now;
+
+  if (diff <= 0) {
+    banner.style.display = 'none';
+    if (_offerInterval) {
+      clearInterval(_offerInterval);
+      _offerInterval = null;
+    }
+    return;
+  }
+
+  const days = Math.floor(diff / (1000 * 60 * 60 * 24));
+  const hours = Math.floor((diff / (1000 * 60 * 60)) % 24);
+  const mins = Math.floor((diff / (1000 * 60)) % 60);
+  const secs = Math.floor((diff / 1000) % 60);
+
+  const dEl = document.getElementById('ocDays');
+  const hEl = document.getElementById('ocHours');
+  const mEl = document.getElementById('ocMins');
+  const sEl = document.getElementById('ocSecs');
+  if (dEl) dEl.textContent = String(days).padStart(2, '0');
+  if (hEl) hEl.textContent = String(hours).padStart(2, '0');
+  if (mEl) mEl.textContent = String(mins).padStart(2, '0');
+  if (sEl) sEl.textContent = String(secs).padStart(2, '0');
+}
+
+// بدء المؤقت لما تحمّل الصفحة
+setTimeout(initOfferCountdown, 800);
 
 // 🎉 شاشة الاحتفال بالتفعيل (Lifetime)
 function showWelcomeCelebration(user, profile) {

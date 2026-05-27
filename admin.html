@@ -480,6 +480,334 @@ body{font-family:'Tajawal','Cairo',sans-serif;background:linear-gradient(135deg,
 }
 /* ════════════════════════════════════════════════ */
 
+/* ════════════════════════════════════════════════ */
+/* ⏰ إعدادات المؤقت التنازلي والعرض                  */
+/* ════════════════════════════════════════════════ */
+.offer-settings{
+  background:linear-gradient(135deg,#fff,#f8fafc);
+  border-radius:20px;
+  padding:22px 20px;
+  margin-bottom:16px;
+  box-shadow:0 8px 24px rgba(0,0,0,0.08);
+  border:1.5px solid #fef3c7;
+  position:relative;
+  overflow:hidden;
+}
+.offer-settings::before{
+  content:"";
+  position:absolute;
+  top:0;left:0;right:0;
+  height:4px;
+  background:linear-gradient(90deg,#d4a657,#fbbf24,#dc2626);
+}
+
+.os-header{
+  display:flex;
+  align-items:flex-start;
+  justify-content:space-between;
+  gap:12px;
+  margin-bottom:20px;
+  padding-bottom:16px;
+  border-bottom:1px solid #f0f4f8;
+}
+.os-title-wrap{
+  display:flex;
+  gap:12px;
+  align-items:center;
+}
+.os-icon{
+  width:48px;
+  height:48px;
+  background:linear-gradient(135deg,#d4a657,#b8923d);
+  border-radius:14px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  font-size:1.6rem;
+  flex-shrink:0;
+  box-shadow:0 8px 20px rgba(212,166,87,0.35);
+}
+.os-title{
+  font-family:'Reem Kufi','Tajawal',sans-serif;
+  font-size:1.05rem;
+  font-weight:900;
+  color:#1a3a4e;
+  margin:0;
+}
+.os-sub{
+  font-size:0.78rem;
+  color:#5a7080;
+  font-weight:700;
+  margin:2px 0 0;
+}
+.os-status{
+  display:flex;
+  align-items:center;
+  gap:6px;
+  background:#f8fafc;
+  padding:6px 12px;
+  border-radius:99px;
+  font-size:0.78rem;
+  font-weight:900;
+  white-space:nowrap;
+  border:1px solid #e2e8f0;
+  flex-shrink:0;
+}
+.os-status-dot{
+  width:8px;
+  height:8px;
+  border-radius:50%;
+  background:#94a3b8;
+}
+.os-status-dot.active{
+  background:#16a34a;
+  box-shadow:0 0 8px rgba(22,163,74,0.6);
+  animation:pulseDot 2s ease-in-out infinite;
+}
+.os-status-dot.inactive{background:#cbd5e1;}
+
+.os-form{
+  display:flex;
+  flex-direction:column;
+  gap:14px;
+}
+.os-field{
+  display:flex;
+  flex-direction:column;
+  gap:6px;
+}
+.os-label{
+  display:flex;
+  flex-direction:column;
+  font-size:0.85rem;
+  font-weight:900;
+  color:#1a3a4e;
+}
+.os-label-hint{
+  font-size:0.7rem;
+  color:#5a7080;
+  font-weight:700;
+  margin-top:2px;
+}
+.os-input{
+  background:#fff;
+  border:1.5px solid #cbd5e1;
+  border-radius:11px;
+  padding:11px 14px;
+  font-family:inherit;
+  font-weight:800;
+  font-size:0.92rem;
+  color:#1a3a4e;
+  outline:none;
+  transition:all 0.2s;
+}
+.os-input:focus{
+  border-color:#d4a657;
+  box-shadow:0 0 0 3px rgba(212,166,87,0.15);
+}
+
+/* Toggle Switch */
+.os-toggle-field{
+  background:linear-gradient(135deg,#fef3c7,#fff8e1);
+  border:1.5px solid rgba(212,166,87,0.3);
+  border-radius:14px;
+  padding:14px 16px;
+}
+.os-toggle-label{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:12px;
+  cursor:pointer;
+}
+.os-toggle-text{
+  display:flex;
+  flex-direction:column;
+  gap:2px;
+}
+.os-toggle-text strong{
+  font-size:0.92rem;
+  color:#7c2d12;
+}
+.os-toggle-hint{
+  font-size:0.72rem;
+  color:#92400e;
+  font-weight:700;
+}
+.os-switch{
+  position:relative;
+  display:inline-block;
+  width:52px;
+  height:28px;
+  flex-shrink:0;
+}
+.os-switch input{opacity:0;width:0;height:0;}
+.os-slider{
+  position:absolute;
+  cursor:pointer;
+  inset:0;
+  background:#cbd5e1;
+  border-radius:99px;
+  transition:0.3s;
+}
+.os-slider::before{
+  content:"";
+  position:absolute;
+  height:22px;
+  width:22px;
+  right:3px;
+  top:3px;
+  background:#fff;
+  border-radius:50%;
+  transition:0.3s;
+  box-shadow:0 2px 6px rgba(0,0,0,0.2);
+}
+.os-switch input:checked + .os-slider{
+  background:linear-gradient(135deg,#16a34a,#15803d);
+}
+.os-switch input:checked + .os-slider::before{
+  transform:translateX(-24px);
+}
+
+/* اختصارات سريعة */
+.os-shortcuts{
+  display:flex;
+  flex-wrap:wrap;
+  gap:6px;
+  margin-top:6px;
+}
+.os-shortcut{
+  background:#f0f4f8;
+  border:1px solid #cbd5e1;
+  color:#1e6b8a;
+  padding:6px 12px;
+  border-radius:8px;
+  font-family:inherit;
+  font-size:0.74rem;
+  font-weight:900;
+  cursor:pointer;
+  transition:all 0.2s;
+}
+.os-shortcut:hover{
+  background:#1e6b8a;
+  color:#fff;
+  border-color:#1e6b8a;
+  transform:translateY(-1px);
+}
+
+/* المعاينة */
+.os-preview{
+  background:linear-gradient(135deg,#0a3447,#1e6b8a);
+  border-radius:16px;
+  padding:18px;
+  margin-top:6px;
+  position:relative;
+  overflow:hidden;
+}
+.os-preview-label{
+  font-size:0.74rem;
+  color:rgba(255,255,255,0.7);
+  font-weight:800;
+  margin-bottom:10px;
+}
+.os-preview-content{
+  text-align:center;
+  position:relative;
+}
+.osp-ribbon{
+  display:inline-block;
+  background:linear-gradient(135deg,#d4a657,#b8923d);
+  color:#fff;
+  padding:4px 14px;
+  border-radius:99px;
+  font-size:0.72rem;
+  font-weight:900;
+  margin-bottom:10px;
+  box-shadow:0 4px 12px rgba(212,166,87,0.4);
+}
+.osp-title{
+  font-family:'Reem Kufi','Tajawal',sans-serif;
+  font-size:1.1rem;
+  font-weight:900;
+  color:#fff;
+  margin-bottom:4px;
+}
+.osp-sub{
+  font-size:0.82rem;
+  color:rgba(255,255,255,0.8);
+  font-weight:700;
+  margin-bottom:14px;
+}
+.osp-countdown{
+  display:flex;
+  justify-content:center;
+  gap:8px;
+}
+.osp-time{
+  background:rgba(255,255,255,0.15);
+  border:1px solid rgba(255,255,255,0.2);
+  border-radius:10px;
+  padding:8px 10px;
+  min-width:50px;
+  backdrop-filter:blur(8px);
+}
+.osp-time span{
+  display:block;
+  font-family:'Reem Kufi','Tajawal',sans-serif;
+  font-size:1.3rem;
+  font-weight:900;
+  color:#fff;
+  line-height:1;
+}
+.osp-time small{
+  display:block;
+  font-size:0.66rem;
+  color:rgba(255,255,255,0.7);
+  font-weight:800;
+  margin-top:3px;
+}
+
+/* أزرار الحفظ */
+.os-actions{
+  display:flex;
+  gap:10px;
+  margin-top:8px;
+}
+.os-btn-save, .os-btn-reset{
+  flex:1;
+  padding:13px;
+  border:none;
+  border-radius:12px;
+  font-family:inherit;
+  font-size:0.92rem;
+  font-weight:900;
+  cursor:pointer;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  gap:6px;
+  transition:all 0.2s;
+}
+.os-btn-save{
+  background:linear-gradient(135deg,#16a34a,#15803d);
+  color:#fff;
+  box-shadow:0 8px 22px rgba(22,163,74,0.35);
+}
+.os-btn-save:hover{transform:translateY(-2px);box-shadow:0 12px 26px rgba(22,163,74,0.45);}
+.os-btn-save:disabled{background:#94a3b8;cursor:wait;}
+.os-btn-reset{
+  background:#f1f5f9;
+  color:#5a7080;
+}
+.os-btn-reset:hover{background:#e2e8f0;}
+
+@media (max-width:600px){
+  .os-actions{flex-direction:column;}
+  .osp-time{min-width:42px;padding:6px 8px;}
+  .osp-time span{font-size:1.1rem;}
+  .osp-time small{font-size:0.6rem;}
+}
+/* ════════════════════════════════════════════════ */
 
 .search-bar{
   background:rgba(255,255,255,0.97);
@@ -984,6 +1312,116 @@ body{font-family:'Tajawal','Cairo',sans-serif;background:linear-gradient(135deg,
 
     <!-- ════════════════════════════════════════════════ -->
 
+    <!-- ════════════════════════════════════════════════ -->
+    <!-- ⏰ إعدادات المؤقت التنازلي والعرض                 -->
+    <!-- ════════════════════════════════════════════════ -->
+    <div class="offer-settings">
+      <div class="os-header">
+        <div class="os-title-wrap">
+          <span class="os-icon">⏰</span>
+          <div>
+            <h3 class="os-title">إعدادات العرض والمؤقت</h3>
+            <p class="os-sub">تحكّم بالمؤقت التنازلي الذي يظهر للمستخدمين</p>
+          </div>
+        </div>
+        <div class="os-status">
+          <span class="os-status-dot" id="osStatusDot"></span>
+          <span id="osStatusText">جاري التحميل...</span>
+        </div>
+      </div>
+
+      <!-- نموذج الإعدادات -->
+      <div class="os-form">
+
+        <!-- تفعيل/إيقاف العرض -->
+        <div class="os-field os-toggle-field">
+          <label class="os-toggle-label">
+            <span class="os-toggle-text">
+              <strong>🔥 تفعيل العرض</strong>
+              <span class="os-toggle-hint">عند الإيقاف، العرض يختفي من index</span>
+            </span>
+            <label class="os-switch">
+              <input type="checkbox" id="osActive">
+              <span class="os-slider"></span>
+            </label>
+          </label>
+        </div>
+
+        <!-- عنوان العرض -->
+        <div class="os-field">
+          <label class="os-label">
+            🏷️ عنوان العرض
+            <span class="os-label-hint">يظهر بشكل بارز</span>
+          </label>
+          <input type="text" id="osTitle" class="os-input" placeholder="🔥 عرض إطلاق محدود" maxlength="60">
+        </div>
+
+        <!-- العنوان الفرعي -->
+        <div class="os-field">
+          <label class="os-label">
+            📝 النص الفرعي
+            <span class="os-label-hint">وصف صغير تحت العنوان</span>
+          </label>
+          <input type="text" id="osSubtitle" class="os-input" placeholder="الفرصة الذهبية للاشتراك" maxlength="80">
+        </div>
+
+        <!-- نص الشريط -->
+        <div class="os-field">
+          <label class="os-label">
+            🎀 نص الشريط
+            <span class="os-label-hint">الشريط الصغير الذهبي</span>
+          </label>
+          <input type="text" id="osRibbon" class="os-input" placeholder="عرض حصري" maxlength="30">
+        </div>
+
+        <!-- تاريخ ووقت الانتهاء -->
+        <div class="os-field">
+          <label class="os-label">
+            🗓️ تاريخ ووقت انتهاء العرض
+            <span class="os-label-hint">المؤقت يحسب الوقت المتبقي</span>
+          </label>
+          <input type="datetime-local" id="osEndDate" class="os-input">
+          <!-- اختصارات سريعة -->
+          <div class="os-shortcuts">
+            <button type="button" class="os-shortcut" onclick="setOfferDuration(1)">+ يوم</button>
+            <button type="button" class="os-shortcut" onclick="setOfferDuration(3)">+ 3 أيام</button>
+            <button type="button" class="os-shortcut" onclick="setOfferDuration(7)">+ أسبوع</button>
+            <button type="button" class="os-shortcut" onclick="setOfferDuration(14)">+ أسبوعين</button>
+            <button type="button" class="os-shortcut" onclick="setOfferDuration(30)">+ شهر</button>
+          </div>
+        </div>
+
+        <!-- معاينة مباشرة -->
+        <div class="os-preview" id="osPreview">
+          <div class="os-preview-label">👁️ معاينة كما يراها المستخدم</div>
+          <div class="os-preview-content">
+            <div class="osp-ribbon" id="ospRibbon">عرض حصري</div>
+            <div class="osp-title" id="ospTitle">🔥 عرض إطلاق محدود</div>
+            <div class="osp-sub" id="ospSub">الفرصة الذهبية للاشتراك</div>
+            <div class="osp-countdown" id="ospCountdown">
+              <div class="osp-time"><span id="ospDays">00</span><small>يوم</small></div>
+              <div class="osp-time"><span id="ospHours">00</span><small>ساعة</small></div>
+              <div class="osp-time"><span id="ospMins">00</span><small>دقيقة</small></div>
+              <div class="osp-time"><span id="ospSecs">00</span><small>ثانية</small></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- أزرار الحفظ -->
+        <div class="os-actions">
+          <button class="os-btn-save" onclick="saveOfferSettings()" id="osSaveBtn">
+            <span>💾</span><span>حفظ التغييرات</span>
+          </button>
+          <button class="os-btn-reset" onclick="resetOfferSettings()">
+            <span>↩️</span><span>إعادة تعيين</span>
+          </button>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- ════════════════════════════════════════════════ -->
+
     <div class="search-bar">
       <input type="text" id="searchInput" placeholder="🔍 ابحث بالإيميل أو الجوال أو 🆔 معرّف العميل..." onkeyup="if(event.key==='Enter')handleSearch()">
       <button onclick="handleSearch()">بحث</button>
@@ -1032,6 +1470,8 @@ import {
   findUser,
   activateUserLifetime,
   deactivateUser,
+  getOfferSettings,
+  setOfferSettings,
   db
 } from './firebase-config.js';
 
@@ -1519,6 +1959,185 @@ window.handleLogout = async function() {
   await logout();
   window.location.href = 'login.html';
 };
+
+// ═══════════════════════════════════════════════════
+// ⏰ إدارة المؤقت التنازلي والعرض
+// ═══════════════════════════════════════════════════
+
+let _previewInterval = null;
+
+// تحميل الإعدادات عند فتح الصفحة
+async function loadOfferSettings() {
+  try {
+    const settings = await getOfferSettings();
+    if (!settings) return;
+
+    document.getElementById('osActive').checked = settings.active === true;
+    document.getElementById('osTitle').value = settings.title || '';
+    document.getElementById('osSubtitle').value = settings.subtitle || '';
+    document.getElementById('osRibbon').value = settings.ribbonText || '';
+
+    if (settings.endDate) {
+      // تحويل ISO إلى datetime-local format
+      const d = new Date(settings.endDate);
+      if (!isNaN(d.getTime())) {
+        const localISO = new Date(d.getTime() - d.getTimezoneOffset() * 60000).toISOString().slice(0, 16);
+        document.getElementById('osEndDate').value = localISO;
+      }
+    }
+
+    updateOfferStatus(settings.active);
+    updateOfferPreview();
+    startPreviewCountdown();
+  } catch (err) {
+    console.error('loadOfferSettings:', err);
+  }
+}
+
+// تحديث حالة العرض
+function updateOfferStatus(active) {
+  const dot = document.getElementById('osStatusDot');
+  const text = document.getElementById('osStatusText');
+  if (active) {
+    dot.className = 'os-status-dot active';
+    text.textContent = '✅ العرض مفعّل';
+  } else {
+    dot.className = 'os-status-dot inactive';
+    text.textContent = '⏸️ العرض متوقف';
+  }
+}
+
+// إضافة مدة سريعة
+window.setOfferDuration = function(days) {
+  const date = new Date();
+  date.setDate(date.getDate() + days);
+  date.setHours(23, 59, 0, 0);
+  const localISO = new Date(date.getTime() - date.getTimezoneOffset() * 60000).toISOString().slice(0, 16);
+  document.getElementById('osEndDate').value = localISO;
+  updateOfferPreview();
+  showToast(`✅ تم تحديد ${days} يوم`, 'success');
+};
+
+// تحديث المعاينة
+function updateOfferPreview() {
+  const title = document.getElementById('osTitle').value || '🔥 عرض إطلاق محدود';
+  const subtitle = document.getElementById('osSubtitle').value || 'الفرصة الذهبية للاشتراك';
+  const ribbon = document.getElementById('osRibbon').value || 'عرض حصري';
+
+  document.getElementById('ospTitle').textContent = title;
+  document.getElementById('ospSub').textContent = subtitle;
+  document.getElementById('ospRibbon').textContent = ribbon;
+}
+
+// بدء العدّاد في المعاينة
+function startPreviewCountdown() {
+  if (_previewInterval) clearInterval(_previewInterval);
+
+  _previewInterval = setInterval(() => {
+    const endVal = document.getElementById('osEndDate').value;
+    if (!endVal) {
+      document.getElementById('ospDays').textContent = '00';
+      document.getElementById('ospHours').textContent = '00';
+      document.getElementById('ospMins').textContent = '00';
+      document.getElementById('ospSecs').textContent = '00';
+      return;
+    }
+
+    const end = new Date(endVal).getTime();
+    const now = Date.now();
+    const diff = end - now;
+
+    if (diff <= 0) {
+      document.getElementById('ospDays').textContent = '00';
+      document.getElementById('ospHours').textContent = '00';
+      document.getElementById('ospMins').textContent = '00';
+      document.getElementById('ospSecs').textContent = '00';
+      return;
+    }
+
+    const days = Math.floor(diff / (1000 * 60 * 60 * 24));
+    const hours = Math.floor((diff / (1000 * 60 * 60)) % 24);
+    const mins = Math.floor((diff / (1000 * 60)) % 60);
+    const secs = Math.floor((diff / 1000) % 60);
+
+    document.getElementById('ospDays').textContent = String(days).padStart(2, '0');
+    document.getElementById('ospHours').textContent = String(hours).padStart(2, '0');
+    document.getElementById('ospMins').textContent = String(mins).padStart(2, '0');
+    document.getElementById('ospSecs').textContent = String(secs).padStart(2, '0');
+  }, 1000);
+}
+
+// حفظ الإعدادات
+window.saveOfferSettings = async function() {
+  const active = document.getElementById('osActive').checked;
+  const title = document.getElementById('osTitle').value.trim();
+  const subtitle = document.getElementById('osSubtitle').value.trim();
+  const ribbon = document.getElementById('osRibbon').value.trim();
+  const endDateVal = document.getElementById('osEndDate').value;
+
+  if (active && !endDateVal) {
+    showToast('⚠️ حدد تاريخ انتهاء للعرض', 'error');
+    return;
+  }
+  if (active && !title) {
+    showToast('⚠️ اكتب عنوان للعرض', 'error');
+    return;
+  }
+
+  const btn = document.getElementById('osSaveBtn');
+  btn.disabled = true;
+  btn.innerHTML = '<span>⏳</span><span>جاري الحفظ...</span>';
+
+  try {
+    const settings = {
+      active,
+      title: title || '🔥 عرض إطلاق محدود',
+      subtitle: subtitle || 'الفرصة الذهبية للاشتراك',
+      ribbonText: ribbon || 'عرض حصري',
+      endDate: endDateVal ? new Date(endDateVal).toISOString() : null
+    };
+
+    const result = await setOfferSettings(settings);
+    if (result.success) {
+      showToast('✅ تم حفظ الإعدادات', 'success');
+      updateOfferStatus(active);
+    } else {
+      showToast(`❌ ${result.error}`, 'error');
+    }
+  } catch (err) {
+    showToast(`❌ ${err.message}`, 'error');
+  } finally {
+    btn.disabled = false;
+    btn.innerHTML = '<span>💾</span><span>حفظ التغييرات</span>';
+  }
+};
+
+// إعادة تعيين
+window.resetOfferSettings = function() {
+  if (!confirm('⚠️ إعادة تعيين الحقول؟\n(لن يتم حفظ التغييرات تلقائياً)')) return;
+  document.getElementById('osActive').checked = false;
+  document.getElementById('osTitle').value = '🔥 عرض إطلاق محدود';
+  document.getElementById('osSubtitle').value = 'الفرصة الذهبية للاشتراك';
+  document.getElementById('osRibbon').value = 'عرض حصري';
+  document.getElementById('osEndDate').value = '';
+  updateOfferPreview();
+  updateOfferStatus(false);
+  showToast('↩️ تم إعادة التعيين (احفظ للتأكيد)', 'success');
+};
+
+// ربط تحديث المعاينة بالحقول
+['osTitle', 'osSubtitle', 'osRibbon', 'osEndDate'].forEach(id => {
+  const el = document.getElementById(id);
+  if (el) el.addEventListener('input', updateOfferPreview);
+});
+
+// تحميل الإعدادات عند فتح الصفحة (بعد تأكيد الأدمن)
+setTimeout(() => {
+  if (typeof getOfferSettings === 'function') {
+    loadOfferSettings();
+  }
+}, 1500);
+
 </script>
 
 </body>

@@ -33,7 +33,8 @@ import {
   getDocs,
   serverTimestamp,
   Timestamp,
-  increment
+  increment,
+  onSnapshot
 } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
 // ═══ Config ═══
@@ -242,6 +243,58 @@ export async function incrementDownloadCount(uid) {
   } catch (error) {
     return { success: false, error: error.message };
   }
+}
+
+// ═══ إعدادات العرض والمؤقت ═══
+
+export async function getOfferSettings() {
+  try {
+    const ref = doc(db, 'settings', 'offer');
+    const snap = await getDoc(ref);
+    if (snap.exists()) {
+      return snap.data();
+    }
+    // افتراضي
+    return {
+      active: false,
+      title: '🔥 عرض إطلاق محدود',
+      subtitle: 'الفرصة الذهبية للاشتراك',
+      endDate: null,
+      ribbonText: 'عرض حصري'
+    };
+  } catch (error) {
+    console.error('getOfferSettings:', error);
+    return null;
+  }
+}
+
+export async function setOfferSettings(settings) {
+  try {
+    await setDoc(doc(db, 'settings', 'offer'), {
+      ...settings,
+      updatedAt: serverTimestamp()
+    }, { merge: true });
+    return { success: true };
+  } catch (error) {
+    return { success: false, error: error.message };
+  }
+}
+
+export function listenToOffer(callback) {
+  const ref = doc(db, 'settings', 'offer');
+  return onSnapshot(ref, (snap) => {
+    if (snap.exists()) {
+      callback(snap.data());
+    } else {
+      callback({
+        active: false,
+        title: '🔥 عرض إطلاق محدود',
+        subtitle: 'الفرصة الذهبية للاشتراك',
+        endDate: null,
+        ribbonText: 'عرض حصري'
+      });
+    }
+  });
 }
 
 // ═══ الصلاحيات ═══
