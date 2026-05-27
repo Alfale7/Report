@@ -413,22 +413,51 @@ setTimeout(() => {
     console.log('🔗 تم ربط savePDF بـ Firebase');
   }
 
-  // 3️⃣ الطباعة (window.print)
+  // 3️⃣ الطباعة (window.print) - مع دعم iOS Safari
   const _originalPrint = window.print.bind(window);
-  window.print = function(...args) {
-    // ✅ Lifetime/Admin → اطبع مباشرة بدون انتظار
-    if (isLifetime(_profile) || isAdmin(_user)) {
+
+  // كاشف iOS
+  const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
+
+  // دالة طباعة متوافقة مع iOS
+  function safePrint() {
+    if (isIOS) {
+      // طريقة iOS: نستخدم setTimeout + focus
+      setTimeout(() => {
+        try {
+          _originalPrint();
+        } catch(e) {
+          console.error('iOS print error:', e);
+          // محاولة احتياطية
+          window.focus();
+          _originalPrint();
+        }
+      }, 100);
+    } else {
+      // باقي المتصفحات
       try {
-        return _originalPrint.apply(this, args);
+        _originalPrint();
       } catch(e) {
         console.error('Print error:', e);
-        return _originalPrint();
       }
+    }
+  }
+
+  window.print = function(...args) {
+    console.log('🖨️ [DEBUG] window.print called, isIOS:', isIOS);
+    console.log('🖨️ [DEBUG] _user:', _user ? _user.uid : 'null');
+    console.log('🖨️ [DEBUG] isLifetime:', isLifetime(_profile));
+
+    // ✅ Lifetime/Admin → اطبع مباشرة
+    if (isLifetime(_profile) || isAdmin(_user)) {
+      console.log('✅ [DEBUG] Lifetime - calling safePrint');
+      return safePrint();
     }
 
     // 🔒 لو ما عنده مستخدم
     if (!_user) {
-      console.warn('⚠️ لم يتم تحميل بيانات المستخدم بعد');
+      console.warn('⚠️ No user loaded yet');
+      alert('⚠️ يرجى الانتظار لحظة وأعد المحاولة');
       return;
     }
 
@@ -442,16 +471,12 @@ setTimeout(() => {
       return;
     }
 
-    // سجّل التحميل (لا ننتظر) ثم اطبع
+    // سجّل التحميل ثم اطبع
     window.trackDownload();
-    try {
-      return _originalPrint.apply(this, args);
-    } catch(e) {
-      console.error('Print error:', e);
-      return _originalPrint();
-    }
+    return safePrint();
   };
-  console.log('🔗 تم ربط window.print بـ Firebase');
+  console.log('🔗 تم ربط window.print بـ Firebase (iOS-safe)');
+  window._firebasePrintWrapped = true;
 
   // 4️⃣ printReport (لو الموقع يستخدم دالة مخصصة)
   if (typeof window.printReport === 'function') {
