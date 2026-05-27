@@ -1270,6 +1270,43 @@ function doClear(){
   showToast(dict[currentLang].msgCleared);
 }
 
+
+// ═══════════════════════════════════════════════
+// 🔧 معالجة textareas للتصدير
+// ═══════════════════════════════════════════════
+function prepareTextareasForExport(){
+  const replacements = [];
+  document.querySelectorAll('textarea').forEach(ta => {
+    const value = ta.value || '';
+    if(!value.trim()) return; // فاضي، تجاهل
+
+    // أنشئ div يعرض النص مع line-breaks
+    const div = document.createElement('div');
+    div.className = ta.className + ' textarea-export-clone';
+    div.style.cssText = window.getComputedStyle(ta).cssText;
+    div.style.minHeight = ta.offsetHeight + 'px';
+    div.style.whiteSpace = 'pre-wrap';
+    div.style.wordWrap = 'break-word';
+    div.style.direction = 'rtl';
+    div.style.textAlign = 'right';
+    div.style.fontFamily = "'Tajawal','Tahoma','Arial',sans-serif";
+    div.textContent = value;
+
+    // استبدل textarea مؤقتاً
+    ta.style.display = 'none';
+    ta.parentNode.insertBefore(div, ta);
+    replacements.push({textarea: ta, div: div});
+  });
+  return replacements;
+}
+
+function restoreTextareasAfterExport(replacements){
+  replacements.forEach(({textarea, div}) => {
+    if(div.parentNode) div.parentNode.removeChild(div);
+    textarea.style.display = '';
+  });
+}
+
 // ═══════════════════════════════════════════════
 // 🖼️ تصدير كصورة PNG (مبني على منطق tasis)
 // ═══════════════════════════════════════════════
@@ -1297,6 +1334,9 @@ async function saveAsImage(){
     page.style.direction = 'rtl';
 
     document.querySelectorAll('.photo-rm').forEach(el => el.style.display = 'none');
+
+    // 📝 معالجة textareas للحفاظ على الأسطر
+    const textareaReplacements = prepareTextareasForExport();
 
     // 🔥 منطق tasis: warm canvas + انتظار الخطوط
     await document.fonts.ready;
@@ -1349,6 +1389,16 @@ async function saveAsImage(){
             direction: rtl !important;
             unicode-bidi: embed !important;
           }
+          .textarea-export-clone {
+            white-space: pre-wrap !important;
+            word-wrap: break-word !important;
+            overflow-wrap: break-word !important;
+            text-align: right !important;
+            direction: rtl !important;
+            font-family: 'Tajawal','Tahoma','Arial',sans-serif !important;
+            line-height: 1.5 !important;
+            min-height: 2em !important;
+          }
           [lang="en"], [dir="ltr"] {
             direction: ltr !important;
             text-align: left !important;
@@ -1360,6 +1410,9 @@ async function saveAsImage(){
 
     // إعادة إظهار أزرار الحذف
     document.querySelectorAll('.photo-cell.filled .photo-rm').forEach(el => el.style.display = 'flex');
+
+    // 📝 إرجاع textareas
+    restoreTextareasAfterExport(textareaReplacements);
 
     const link = document.createElement('a');
     link.download = 'تقرير-يوم-العلم-' + Date.now() + '.png';
@@ -1406,6 +1459,9 @@ async function savePDF(){
 
     document.querySelectorAll('.photo-rm').forEach(el => el.style.display = 'none');
 
+    // 📝 معالجة textareas للحفاظ على الأسطر
+    const textareaReplacements = prepareTextareasForExport();
+
     // 🔥 منطق tasis: warm canvas + انتظار الخطوط
     await document.fonts.ready;
     const warm = document.createElement('canvas');
@@ -1457,6 +1513,16 @@ async function savePDF(){
             direction: rtl !important;
             unicode-bidi: embed !important;
           }
+          .textarea-export-clone {
+            white-space: pre-wrap !important;
+            word-wrap: break-word !important;
+            overflow-wrap: break-word !important;
+            text-align: right !important;
+            direction: rtl !important;
+            font-family: 'Tajawal','Tahoma','Arial',sans-serif !important;
+            line-height: 1.5 !important;
+            min-height: 2em !important;
+          }
           [lang="en"], [dir="ltr"] {
             direction: ltr !important;
             text-align: left !important;
@@ -1467,6 +1533,9 @@ async function savePDF(){
     });
 
     document.querySelectorAll('.photo-cell.filled .photo-rm').forEach(el => el.style.display = 'flex');
+
+    // 📝 إرجاع textareas
+    restoreTextareasAfterExport(textareaReplacements);
 
     const { jsPDF } = window.jspdf;
     const pdf = new jsPDF({
@@ -1532,6 +1601,9 @@ async function shareReport(){
 
     document.querySelectorAll('.photo-rm').forEach(el => el.style.display = 'none');
 
+    // 📝 معالجة textareas للحفاظ على الأسطر
+    const textareaReplacements = prepareTextareasForExport();
+
     // 🔥 منطق tasis: warm canvas + انتظار الخطوط
     await document.fonts.ready;
     const warm = document.createElement('canvas');
@@ -1583,6 +1655,16 @@ async function shareReport(){
             direction: rtl !important;
             unicode-bidi: embed !important;
           }
+          .textarea-export-clone {
+            white-space: pre-wrap !important;
+            word-wrap: break-word !important;
+            overflow-wrap: break-word !important;
+            text-align: right !important;
+            direction: rtl !important;
+            font-family: 'Tajawal','Tahoma','Arial',sans-serif !important;
+            line-height: 1.5 !important;
+            min-height: 2em !important;
+          }
           [lang="en"], [dir="ltr"] {
             direction: ltr !important;
             text-align: left !important;
@@ -1593,6 +1675,9 @@ async function shareReport(){
     });
 
     document.querySelectorAll('.photo-cell.filled .photo-rm').forEach(el => el.style.display = 'flex');
+
+    // 📝 إرجاع textareas
+    restoreTextareasAfterExport(textareaReplacements);
 
     canvas.toBlob(async (blob) => {
       const file = new File([blob], 'تقرير-يوم-العلم.png', { type: 'image/png' });
