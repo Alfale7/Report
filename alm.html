@@ -8,9 +8,6 @@
 <meta name="theme-color" content="#006c35">
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
 <title>تقرير يوم العَلَم السعودي</title>
-
-<!-- 🔐 حماية الاشتراك -->
-<script type="module" src="./report-firebase.js"></script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Amiri:wght@400;700&family=Tajawal:wght@400;500;700;800;900&family=Reem+Kufi:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -1254,31 +1251,15 @@ function doClear(){
   showToast(dict[currentLang].msgCleared);
 }
 
-// 💾 احفظ النسخة الأصلية قبل ما Firebase يعترضها
-const _nativePrint = window.print.bind(window);
-
 function printPage(){
-  console.log('🖨️ Print button clicked');
-
   saveData();
-
-  // إخفاء التوست والمودال
   const t = document.getElementById('toast');
-  if(t){ t.classList.remove('show'); t.style.display = 'none'; }
-  const modal = document.getElementById('modal');
-  if(modal) modal.classList.remove('show');
-
+  if(t){ t.classList.remove('show'); t.style.display = 'none'; t.textContent = ''; }
+  document.getElementById('modal').classList.remove('show');
   setTimeout(() => {
-    console.log('🖨️ Calling window.print()');
-    try {
-      window.print();
-    } catch(err) {
-      console.error('Error:', err);
-      // Fallback: استدعاء النسخة الأصلية مباشرة
-      try { _nativePrint(); } catch(e) { console.error('Fallback failed:', e); }
-    }
-    setTimeout(() => { if(t) t.style.display = ''; }, 800);
-  }, 300);
+    window.print();
+    setTimeout(() => { if(t) t.style.display = ''; }, 500);
+  }, 350);
 }
 
 document.querySelectorAll('input, textarea').forEach(el => {
