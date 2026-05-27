@@ -3908,14 +3908,14 @@ font-size:0.78rem;text-align:center;margin-top:12px;display:none;
       </button>
     </div>
 
-    <!-- 🔥 عرض محدود -->
-    <div class="limited-badge" id="limitedBadge">
+    <!-- 🔥 بنر العرض المحدود (يظهر مع المؤقت فقط) -->
+    <div class="limited-badge" id="limitedBadge" style="display:none;">
       <span class="lb-fire">🔥</span>
-      <span class="lb-text" data-i18n="limitedOffer">عرض إطلاق محدود</span>
+      <span class="lb-text" id="ocTitle">عرض إطلاق محدود</span>
       <span class="lb-pulse"></span>
     </div>
 
-    <!-- ⏰ المؤقت التنازلي (يظهر تحت البنر) -->
+    <!-- ⏰ المؤقت التنازلي (يظهر مع البنر) -->
     <div class="hero-countdown" id="offerCountdownBanner" style="display:none;">
       <div class="hc-label" id="ocSub">⏳ ينتهي العرض خلال</div>
       <div class="hc-timer">
@@ -3927,8 +3927,7 @@ font-size:0.78rem;text-align:center;margin-top:12px;display:none;
         <div class="hc-sep">:</div>
         <div class="hc-time pulse"><span id="ocSecs">00</span><small>ثا</small></div>
       </div>
-      <!-- عناصر مخفية لتوافق مع الكود الموجود -->
-      <span id="ocTitle" style="display:none;"></span>
+      <!-- عناصر مخفية للتوافق -->
       <span id="ocRibbon" style="display:none;"></span>
     </div>
 
@@ -6787,11 +6786,13 @@ function initOfferCountdown() {
 
   listenToOffer((settings) => {
     const banner = document.getElementById('offerCountdownBanner');
+    const limitedBadge = document.getElementById('limitedBadge');
     if (!banner) return;
 
-    // إذا غير مفعّل أو ما في تاريخ → اخفِ
+    // إذا غير مفعّل أو ما في تاريخ → اخفِ الاثنين
     if (!settings.active || !settings.endDate) {
       banner.style.display = 'none';
+      if (limitedBadge) limitedBadge.style.display = 'none';
       if (_offerInterval) {
         clearInterval(_offerInterval);
         _offerInterval = null;
@@ -6802,14 +6803,29 @@ function initOfferCountdown() {
     const endTime = new Date(settings.endDate).getTime();
     if (isNaN(endTime) || endTime <= Date.now()) {
       banner.style.display = 'none';
+      if (limitedBadge) limitedBadge.style.display = 'none';
       return;
     }
 
-    // عرض المؤقت
+    // 🔥 إظهار البنر والمؤقت معاً
     banner.style.display = '';
-    document.getElementById('ocTitle').textContent = settings.title || '🔥 عرض إطلاق محدود';
-    document.getElementById('ocSub').textContent = settings.subtitle || 'الفرصة الذهبية للاشتراك';
-    document.getElementById('ocRibbon').textContent = settings.ribbonText || 'عرض حصري';
+    if (limitedBadge) limitedBadge.style.display = '';
+
+    // البنر يحمل العنوان من الأدمن
+    const titleEl = document.getElementById('ocTitle');
+    if (titleEl) {
+      titleEl.textContent = settings.title || 'عرض إطلاق محدود';
+    }
+
+    // المؤقت يحمل النص الفرعي
+    const labelEl = document.getElementById('ocSub');
+    if (labelEl) {
+      labelEl.textContent = settings.subtitle || '⏳ ينتهي العرض خلال';
+    }
+
+    // ribbon (مخفي - للتوافق فقط)
+    const ribbonEl = document.getElementById('ocRibbon');
+    if (ribbonEl) ribbonEl.textContent = settings.ribbonText || '';
 
     _offerEndTime = endTime;
     updateOfferTimer();
