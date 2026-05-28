@@ -1516,8 +1516,9 @@ async function saveAsImage(){
     await document.fonts.ready;
     await new Promise(r => setTimeout(r, 600));
 
-    const pageWidth = page.offsetWidth;
-    const pageHeight = page.offsetHeight;
+    // 🔥 استخدم scrollHeight لضمان التقاط كل المحتوى (signature + footer)
+    const pageWidth = page.scrollWidth;
+    const pageHeight = page.scrollHeight;
 
     const canvas = await html2canvas(page, {
       backgroundColor: '#fff',
@@ -1527,8 +1528,6 @@ async function saveAsImage(){
       allowTaint: true,
       width: pageWidth,
       height: pageHeight,
-      windowWidth: pageWidth,
-      windowHeight: pageHeight,
       x: 0, y: 0, scrollX: 0, scrollY: 0,
       foreignObjectRendering: false,
       onclone: (doc) => {
@@ -1852,16 +1851,15 @@ async function exportAsPDFv2(){
     await new Promise(r => setTimeout(r, 400));
     
     // ═══ التقاط الصفحة ═══
+    // 🔥 استخدم scrollHeight لضمان التقاط كل المحتوى
     const canvas = await html2canvas(page, {
       backgroundColor: '#fff',
       scale: 2.5,
       useCORS: true,
       logging: false,
       allowTaint: true,
-      width: page.offsetWidth,
-      height: page.offsetHeight,
-      windowWidth: page.offsetWidth,
-      windowHeight: page.offsetHeight,
+      width: page.scrollWidth,
+      height: page.scrollHeight,
       onclone: (doc) => {
         const style = doc.createElement('style');
         style.textContent = `
