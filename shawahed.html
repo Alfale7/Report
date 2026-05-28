@@ -1,0 +1,983 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>شواهد الأداء الوظيفي · التقارير الذكية</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Amiri:wght@400;700&family=Tajawal:wght@400;500;700;800;900&family=Reem+Kufi:wght@400;500;600;700&family=Aref+Ruqaa:wght@400;700&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/dom-to-image-more@3.4.4/dist/dom-to-image-more.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<style>
+:root{
+  --navy:#050a12; --navy2:#0a1620; --navy3:#0f1f2e;
+  --surface:#0d1925; --surface2:#12202f;
+  --teal:#1e6b8a; --teal2:#2a8aab; --teal-bright:#3aa8d0;
+  --gold:#d4a657; --gold2:#d99a2b; --gold-bright:#f0b855; --gold-deep:#b8923d;
+  --green:#16a34a;
+  --ink:#eef4f8;
+}
+*{margin:0; padding:0; box-sizing:border-box;}
+body{
+  font-family:'Tajawal',sans-serif; background:var(--navy); color:var(--ink);
+  min-height:100vh; position:relative; overflow-x:hidden;
+}
+/* خلفية */
+.bg-fx{position:fixed; inset:0; z-index:0; overflow:hidden; pointer-events:none;}
+.orb{position:absolute; border-radius:50%; filter:blur(80px); opacity:0.18;}
+.orb1{width:420px; height:420px; background:var(--teal); top:-120px; right:-100px; animation:float1 18s ease-in-out infinite;}
+.orb2{width:360px; height:360px; background:var(--gold); bottom:-100px; left:-80px; animation:float2 20s ease-in-out infinite;}
+@keyframes float1{0%,100%{transform:translate(0,0);}50%{transform:translate(-40px,40px);}}
+@keyframes float2{0%,100%{transform:translate(0,0);}50%{transform:translate(40px,-30px);}}
+.dot-grid{position:fixed; inset:0; z-index:0; opacity:0.03;
+  background-image:radial-gradient(circle, #fff 1px, transparent 1px); background-size:34px 34px; pointer-events:none;}
+
+.wrap{position:relative; z-index:1; max-width:760px; margin:0 auto; padding:18px 14px 60px;}
+
+/* الهيدر */
+.page-header{text-align:center; padding:14px 0 20px;}
+.ph-badge{
+  display:inline-block; padding:6px 16px; border-radius:99px;
+  background:linear-gradient(135deg,rgba(212,166,87,0.15),rgba(217,154,43,0.08));
+  border:1px solid rgba(212,166,87,0.3); color:var(--gold-bright);
+  font-size:0.78rem; font-weight:700; margin-bottom:14px;
+}
+.page-header h1{
+  font-family:'Aref Ruqaa',serif; font-size:2rem; font-weight:700;
+  background:linear-gradient(135deg,var(--gold-bright),var(--gold),var(--gold-deep));
+  -webkit-background-clip:text; background-clip:text; -webkit-text-fill-color:transparent;
+  margin-bottom:8px; line-height:1.4;
+}
+.page-header .sub{color:rgba(255,255,255,0.6); font-size:0.92rem; font-weight:500;}
+
+/* شاشات */
+.screen{display:none;}
+.screen.active{display:block; animation:fadeUp 0.4s ease;}
+@keyframes fadeUp{from{opacity:0; transform:translateY(10px);}to{opacity:1; transform:translateY(0);}}
+
+.section-label{font-family:'Reem Kufi',sans-serif; font-size:1.05rem; font-weight:700; color:#fff; margin:8px 0 16px; text-align:center;}
+
+/* بطاقة بيانات المعلم */
+.teacher-card{
+  background:var(--surface); border:1px solid rgba(42,138,171,0.2);
+  border-radius:18px; padding:18px; margin-bottom:18px;
+}
+.tc-title{font-size:0.92rem; font-weight:800; color:#fff; margin-bottom:14px; display:flex; align-items:center; gap:8px;}
+.field-grid{display:grid; grid-template-columns:1fr 1fr; gap:10px;}
+@media (max-width:440px){.field-grid{grid-template-columns:1fr;}}
+.field-item{display:flex; flex-direction:column;}
+.field-item label{font-size:0.74rem; font-weight:700; color:rgba(255,255,255,0.6); margin-bottom:5px;}
+.field-item input{
+  width:100%; padding:11px 13px; border:1.5px solid rgba(42,138,171,0.25);
+  border-radius:10px; background:var(--navy3); color:var(--ink);
+  font-family:inherit; font-size:0.88rem; font-weight:600; outline:none; transition:all 0.2s;
+}
+.field-item input:focus{border-color:var(--teal2);}
+.field-item input::placeholder{color:rgba(255,255,255,0.3);}
+
+/* رفع الشعار */
+.logo-row{display:flex; align-items:center; gap:12px; margin-top:14px; padding-top:14px; border-top:1px solid rgba(42,138,171,0.15);}
+.logo-upload-box{
+  width:70px; height:70px; border-radius:12px; border:2px dashed rgba(42,138,171,0.4);
+  display:flex; align-items:center; justify-content:center; cursor:pointer;
+  background:var(--navy3); flex-shrink:0; overflow:hidden; transition:all 0.2s;
+  font-size:0.62rem; color:rgba(255,255,255,0.5); text-align:center; line-height:1.3;
+}
+.logo-upload-box:hover{border-color:var(--teal2);}
+.logo-upload-box img{width:100%; height:100%; object-fit:contain;}
+.logo-info{flex:1;}
+.logo-info .li-title{font-size:0.82rem; font-weight:700; color:#fff; margin-bottom:3px;}
+.logo-info .li-sub{font-size:0.72rem; color:rgba(255,255,255,0.5);}
+
+/* شبكة العناصر */
+.elements-grid{display:grid; grid-template-columns:1fr; gap:12px;}
+.element-card{
+  background:var(--surface); border:1px solid rgba(42,138,171,0.2);
+  border-radius:16px; padding:16px; cursor:pointer; transition:all 0.25s;
+  display:flex; align-items:center; gap:14px; position:relative; overflow:hidden;
+}
+.element-card:hover{border-color:var(--teal2); transform:translateY(-2px);}
+.element-card.done{border-color:rgba(22,163,74,0.4);}
+.ec-icon{
+  width:52px; height:52px; border-radius:13px; flex-shrink:0;
+  display:flex; align-items:center; justify-content:center; font-size:1.5rem;
+  background:linear-gradient(135deg,var(--teal),var(--navy3));
+}
+.ec-body{flex:1; min-width:0;}
+.ec-num{font-size:0.7rem; color:var(--gold-bright); font-weight:800; margin-bottom:2px;}
+.ec-title{font-size:0.92rem; font-weight:800; color:#fff; line-height:1.3; margin-bottom:3px;}
+.ec-weight{font-size:0.74rem; color:rgba(255,255,255,0.55); font-weight:600;}
+.ec-arrow{color:var(--teal-bright); font-size:1.2rem; flex-shrink:0;}
+.ec-check{
+  position:absolute; top:10px; left:10px; width:22px; height:22px; border-radius:50%;
+  background:var(--green); color:#fff; display:none; align-items:center; justify-content:center;
+  font-size:0.7rem; font-weight:800;
+}
+.element-card.done .ec-check{display:flex;}
+
+/* زر تصدير الكل */
+.export-all-bar{margin-top:18px; display:grid; grid-template-columns:1fr; gap:10px;}
+.btn-export-all{
+  padding:15px; border:none; border-radius:14px; cursor:pointer;
+  font-family:inherit; font-size:0.95rem; font-weight:800;
+  display:flex; align-items:center; justify-content:center; gap:8px;
+  background:linear-gradient(135deg,var(--gold-bright),var(--gold)); color:var(--navy);
+  box-shadow:0 8px 22px rgba(212,166,87,0.3); transition:transform 0.2s;
+}
+.btn-export-all:active{transform:scale(0.98);}
+
+/* شاشة المحرر */
+.editor-head{
+  display:flex; align-items:center; gap:12px; margin-bottom:18px;
+  background:var(--surface); border:1px solid rgba(42,138,171,0.2);
+  border-radius:14px; padding:14px;
+}
+.back-btn{
+  background:rgba(42,138,171,0.15); border:1px solid rgba(42,138,171,0.3);
+  color:var(--teal-bright); width:40px; height:40px; border-radius:10px;
+  font-size:1.2rem; cursor:pointer; flex-shrink:0; transition:all 0.2s;
+}
+.back-btn:hover{background:rgba(42,138,171,0.25);}
+.eh-info{flex:1;}
+.eh-info .eh-num{font-size:0.7rem; color:var(--gold-bright); font-weight:800;}
+.eh-info .eh-title{font-size:1rem; font-weight:800; color:#fff; line-height:1.3;}
+
+/* صفحة الفاصل (معاينة) */
+.cover-stage{margin-bottom:18px;}
+.cover-paper{
+  width:100%; aspect-ratio:1 / 1.414; background:#fdfcf8; border-radius:8px;
+  box-shadow:0 20px 60px rgba(0,0,0,0.5); position:relative; overflow:hidden;
+  padding:8% 7%; display:flex; flex-direction:column; color:#1c2820;
+}
+
+/* بطاقة رفع الشواهد */
+.shawahed-section{
+  background:var(--surface); border:1px solid rgba(42,138,171,0.2);
+  border-radius:16px; padding:16px; margin-bottom:16px;
+}
+.ss-label{font-size:0.88rem; font-weight:800; color:#fff; margin-bottom:6px; display:flex; align-items:center; gap:6px;}
+.ss-hint{font-size:0.74rem; color:rgba(255,255,255,0.5); margin-bottom:14px; line-height:1.6;}
+.req-list{background:var(--navy3); border-radius:11px; padding:12px 14px; margin-bottom:14px;}
+.req-list .rl-title{font-size:0.76rem; font-weight:800; color:var(--gold-bright); margin-bottom:8px;}
+.req-list ul{list-style:none; display:flex; flex-direction:column; gap:6px;}
+.req-list li{font-size:0.78rem; color:rgba(255,255,255,0.75); font-weight:500; padding-right:18px; position:relative; line-height:1.5;}
+.req-list li::before{content:"📌"; position:absolute; right:0; font-size:0.7rem;}
+
+/* رفع صور الشواهد */
+.evidence-uploads{display:flex; flex-direction:column; gap:14px;}
+
+/* بلوك الشاهد الواحد */
+.shahed-block{background:var(--navy3); border-radius:13px; padding:13px; border:1px solid rgba(42,138,171,0.18);}
+.shahed-head{display:flex; align-items:center; gap:7px; margin-bottom:10px;}
+.shahed-dot{font-size:0.85rem;}
+.shahed-name{font-size:0.82rem; font-weight:800; color:#fff; flex:1; line-height:1.4;}
+.shahed-count{font-size:0.68rem; font-weight:700; color:var(--teal-bright); background:rgba(42,138,171,0.15); padding:2px 9px; border-radius:99px;}
+.shahed-images{display:grid; grid-template-columns:1fr 1fr; gap:9px;}
+@media (max-width:440px){.shahed-images{grid-template-columns:1fr 1fr;}}
+.evidence-slot{
+  aspect-ratio:1.3 / 1; border-radius:12px; border:2px dashed rgba(42,138,171,0.4);
+  background:var(--navy3); cursor:pointer; overflow:hidden; position:relative;
+  display:flex; flex-direction:column; align-items:center; justify-content:center; gap:6px;
+  transition:all 0.2s;
+}
+.evidence-slot:hover{border-color:var(--teal2);}
+.evidence-slot img{width:100%; height:100%; object-fit:cover;}
+.evidence-slot .es-icon{font-size:1.8rem; opacity:0.6;}
+.evidence-slot .es-text{font-size:0.74rem; color:rgba(255,255,255,0.5); font-weight:600;}
+.evidence-slot .es-remove{
+  position:absolute; top:6px; left:6px; width:24px; height:24px; border-radius:50%;
+  background:rgba(220,50,50,0.9); color:#fff; border:none; cursor:pointer;
+  display:none; align-items:center; justify-content:center; font-size:0.85rem; z-index:2;
+}
+.evidence-slot.filled .es-remove{display:flex;}
+.evidence-slot.filled .es-icon, .evidence-slot.filled .es-text{display:none;}
+.evidence-slot .es-num{
+  position:absolute; top:6px; right:6px; min-width:22px; height:22px; padding:0 6px;
+  border-radius:11px; background:rgba(30,107,138,0.92); color:#fff;
+  display:flex; align-items:center; justify-content:center; font-size:0.72rem; font-weight:800; z-index:2;
+}
+.evidence-add{border-style:dashed; border-color:rgba(42,138,171,0.5); background:rgba(42,138,171,0.06);}
+.evidence-add:hover{border-color:var(--teal-bright); background:rgba(42,138,171,0.12);}
+.evidence-add .es-icon{color:var(--teal-bright); opacity:0.9;}
+.evidence-add .es-text{color:var(--teal-bright);}
+
+/* زر إضافة شاهد بارز */
+.btn-add-evidence{
+  width:100%; margin-top:12px; padding:14px;
+  border:2px dashed rgba(42,138,171,0.5); border-radius:13px;
+  background:rgba(42,138,171,0.08); color:var(--teal-bright);
+  font-family:inherit; font-size:0.92rem; font-weight:800; cursor:pointer;
+  display:flex; align-items:center; justify-content:center; gap:8px; transition:all 0.2s;
+}
+.btn-add-evidence:hover{background:rgba(42,138,171,0.16); border-color:var(--teal-bright);}
+.btn-add-evidence:active{transform:scale(0.98);}
+
+/* عنوان معاينة الفاصل */
+.cover-label{font-size:0.8rem; font-weight:700; color:rgba(255,255,255,0.6); margin-bottom:8px; text-align:center;}
+
+/* أزرار التصدير */
+.export-row{display:grid; grid-template-columns:1fr; gap:10px; margin-top:8px;}
+.exp-btn{
+  padding:14px; border:none; border-radius:13px; cursor:pointer;
+  font-family:inherit; font-size:0.92rem; font-weight:800;
+  display:flex; align-items:center; justify-content:center; gap:8px; transition:transform 0.2s;
+}
+.exp-btn:active{transform:scale(0.98);}
+.exp-preview{background:linear-gradient(135deg,var(--teal),#0f3b4d); color:#fff;}
+.exp-grid3{display:grid; grid-template-columns:1fr 1fr 1fr; gap:10px;}
+.exp-img{background:linear-gradient(135deg,#2a9d8f,#1a7a8a); color:#fff;}
+.exp-pdf{background:linear-gradient(135deg,#e63946,#c1121f); color:#fff;}
+.exp-share{background:linear-gradient(135deg,var(--green),#15803d); color:#fff;}
+
+/* نافذة المعاينة */
+.preview-overlay{
+  position:fixed; inset:0; background:rgba(5,10,18,0.92);
+  backdrop-filter:blur(8px); -webkit-backdrop-filter:blur(8px);
+  display:none; align-items:center; justify-content:center; z-index:9999; padding:16px;
+}
+.preview-overlay.show{display:flex; animation:fadeIn 0.25s ease;}
+@keyframes fadeIn{from{opacity:0;}to{opacity:1;}}
+.preview-box{
+  background:var(--surface2); border:1px solid rgba(42,138,171,0.3);
+  border-radius:18px; padding:18px; max-width:600px; width:100%;
+  position:relative; max-height:92vh; overflow-y:auto;
+}
+.preview-close{
+  position:absolute; top:14px; left:14px; width:34px; height:34px; border-radius:50%;
+  background:rgba(255,255,255,0.1); border:1px solid rgba(255,255,255,0.2);
+  color:#fff; font-size:1rem; cursor:pointer; z-index:2;
+}
+.preview-title{font-family:'Reem Kufi',sans-serif; font-size:1rem; font-weight:700; color:#fff; text-align:center; margin-bottom:14px;}
+.preview-img-wrap{background:var(--navy2); border-radius:12px; padding:10px; min-height:200px; display:flex; align-items:center; justify-content:center;}
+.preview-img-wrap img{width:100%; height:auto; border-radius:8px;}
+.preview-loading{color:rgba(255,255,255,0.6); font-weight:700; padding:60px 0;}
+
+/* تبويبات نوع التصدير */
+.export-tabs{display:flex; gap:8px; margin-bottom:14px; background:var(--navy2); padding:5px; border-radius:13px; border:1px solid rgba(42,138,171,0.18);}
+.export-tab{flex:1; padding:11px; border:none; border-radius:9px; background:transparent; color:rgba(255,255,255,0.55); font-family:inherit; font-size:0.82rem; font-weight:800; cursor:pointer; transition:all 0.3s; display:flex; align-items:center; justify-content:center; gap:6px;}
+.export-tab.active{background:linear-gradient(135deg,var(--teal2),var(--teal)); color:#fff;}
+
+/* progress + toast */
+.progress-overlay{position:fixed; inset:0; background:rgba(5,10,18,0.85); backdrop-filter:blur(6px); display:none; align-items:center; justify-content:center; z-index:10000;}
+.progress-overlay.show{display:flex;}
+.progress-box{background:var(--surface2); border:1px solid rgba(42,138,171,0.3); border-radius:16px; padding:26px 32px; text-align:center; min-width:240px;}
+.progress-text{font-size:0.92rem; font-weight:700; color:#fff; margin-bottom:14px;}
+.progress-bar{height:8px; background:var(--navy3); border-radius:99px; overflow:hidden;}
+.progress-fill{height:100%; background:linear-gradient(90deg,var(--teal2),var(--gold)); width:0%; transition:width 0.3s; border-radius:99px;}
+.toast{position:fixed; bottom:24px; left:50%; transform:translateX(-50%) translateY(100px); background:var(--surface2); border:1px solid rgba(42,138,171,0.4); color:#fff; padding:13px 22px; border-radius:13px; font-weight:700; font-size:0.88rem; z-index:10001; opacity:0; transition:all 0.35s; box-shadow:0 12px 30px rgba(0,0,0,0.5);}
+.toast.show{transform:translateX(-50%) translateY(0); opacity:1;}
+
+.foot-link{text-align:center; padding:24px 0; font-size:0.78rem; color:rgba(255,255,255,0.4);}
+.foot-link a{color:var(--teal-bright); text-decoration:none; font-weight:700;}
+
+#hidden-render-container{position:fixed; left:-99999px; top:0; z-index:-1;}
+</style>
+  <script type="module" src="report-firebase.js?v=4"></script>
+</head>
+<body>
+
+<div class="bg-fx"><div class="orb orb1"></div><div class="orb orb2"></div></div>
+<div class="dot-grid"></div>
+
+<div class="wrap">
+  <div class="page-header">
+    <div class="ph-badge">🗂️ توثيق احترافي</div>
+    <h1>شواهد الأداء الوظيفي</h1>
+    <div class="sub">وثّق شواهدك وفق المعايير الرسمية الـ11 · للمعلمين والمعلمات</div>
+  </div>
+
+  <!-- ═══ شاشة العناصر ═══ -->
+  <div class="screen active" id="screen-list">
+    <!-- بيانات المعلم -->
+    <div class="teacher-card">
+      <div class="tc-title">👤 بياناتك (تظهر في كل الصفحات)</div>
+      <div class="field-grid">
+        <div class="field-item">
+          <label>الاسم</label>
+          <input type="text" id="tName" placeholder="اسم المعلم/ة" oninput="saveData()">
+        </div>
+        <div class="field-item">
+          <label>المادة</label>
+          <input type="text" id="tSubject" placeholder="المادة" oninput="saveData()">
+        </div>
+        <div class="field-item">
+          <label>المدرسة</label>
+          <input type="text" id="tSchool" placeholder="اسم المدرسة" oninput="saveData()">
+        </div>
+        <div class="field-item">
+          <label>العام الدراسي</label>
+          <input type="text" id="tYear" placeholder="1447 هـ" oninput="saveData()">
+        </div>
+      </div>
+      <div class="logo-row">
+        <div class="logo-upload-box" id="logoBox" onclick="document.getElementById('logoInput').click()">
+          اضغط<br>لشعار<br>المدرسة
+        </div>
+        <div class="logo-info">
+          <div class="li-title">شعار المدرسة (اختياري)</div>
+          <div class="li-sub">يظهر أعلى كل صفحة فاصل</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="section-label">📋 عناصر التقييم الـ11 — اضغط لتوثيق الشواهد</div>
+    <div class="elements-grid" id="elementsGrid"></div>
+
+    <div class="export-all-bar">
+      <button class="btn-export-all" onclick="exportAll()">
+        <span>📦</span><span>تصدير الملف كامل (ZIP)</span>
+      </button>
+    </div>
+  </div>
+
+  <!-- ═══ شاشة المحرر ═══ -->
+  <div class="screen" id="screen-editor">
+    <div class="editor-head">
+      <button class="back-btn" onclick="backToList()">→</button>
+      <div class="eh-info">
+        <div class="eh-num" id="ehNum">العنصر 1</div>
+        <div class="eh-title" id="ehTitle">أداء الواجبات الوظيفية</div>
+      </div>
+    </div>
+
+    <!-- معاينة الفاصل -->
+    <div class="cover-stage" id="coverStage">
+      <div class="cover-label">📄 صفحة الفاصل (تُنشأ تلقائياً)</div>
+      <div class="cover-paper" id="cover-paper"></div>
+    </div>
+
+    <!-- رفع صور الشواهد (حقل لكل شاهد) -->
+    <div class="shawahed-section" id="evidencePanel">
+      <div class="ss-label">🖼️ صور الشواهد <span id="evidenceCounter" style="font-size:0.72rem;color:var(--teal-bright);font-weight:700;margin-right:auto;">لا توجد شواهد بعد</span></div>
+      <div class="ss-hint">لكل شاهد مطلوب حقل خاص بالأسفل. اضغط <b style="color:var(--teal-bright);">➕</b> تحت كل شاهد وارفع صورته (تقدر ترفع أكثر من صورة لنفس الشاهد).</div>
+      <div class="evidence-uploads" id="evidenceUploads"></div>
+    </div>
+
+    <!-- أزرار التصدير -->
+    <div class="export-row">
+      <button class="exp-btn exp-preview" onclick="previewCurrent()">
+        <span>👁️</span><span>معاينة</span>
+      </button>
+      <div class="exp-grid3">
+        <button class="exp-btn exp-img" onclick="exportCurrent('image')"><span>🖼️</span><span>صورة</span></button>
+        <button class="exp-btn exp-pdf" onclick="exportCurrent('pdf')"><span>📄</span><span>PDF</span></button>
+        <button class="exp-btn exp-share" onclick="exportCurrent('share')"><span>📤</span><span>مشاركة</span></button>
+      </div>
+    </div>
+  </div>
+
+  <div class="foot-link">
+    🗂️ وثّق شواهدك باحترافية · <a href="index.html">← الرئيسية</a>
+  </div>
+</div>
+
+<!-- نافذة المعاينة -->
+<div class="preview-overlay" id="previewOverlay" onclick="closePreview(event)">
+  <div class="preview-box">
+    <button class="preview-close" onclick="closePreview()">✕</button>
+    <div class="preview-title">👁️ معاينة الصفحة</div>
+    <div class="preview-img-wrap" id="previewImgWrap"><div class="preview-loading">⏳ جاري التحضير...</div></div>
+  </div>
+</div>
+
+<div class="progress-overlay" id="progressOverlay">
+  <div class="progress-box">
+    <div class="progress-text" id="progressText">جاري المعالجة...</div>
+    <div class="progress-bar"><div class="progress-fill" id="progressFill"></div></div>
+  </div>
+</div>
+<div class="toast" id="toast"></div>
+<div id="hidden-render-container"></div>
+<input type="file" id="logoInput" accept="image/*" style="display:none;">
+
+<script>
+// ═══════════════════════════════════════════════
+// 📋 العناصر الرسمية الـ11
+// ═══════════════════════════════════════════════
+const ELEMENTS = [
+  { icon:'📌', title:'أداء الواجبات الوظيفية', weight:'10%',
+    examples:['التقيّد بالدوام الرسمي','تأدية الحصص وفق الجدول','المشاركة في الإشراف والمناوبة','إعداد ومتابعة الدروس والواجبات'],
+    shawahed:['سجل الدوام الرسمي','سجل المناوبة والإشراف اليومي','سجل الانتظار','خطة توزيع المنهج'] },
+  { icon:'🤝', title:'التفاعل مع المجتمع المهني', weight:'10%',
+    examples:['المشاركة في مجتمعات التعلم المهنية','تبادل الزيارات','الدروس التطبيقية وبحث الدرس','حضور الدورات والورش'],
+    shawahed:['سجل مجتمعات التعلم المهنية','سجل تبادل الزيارات','تقرير تنفيذ درس تطبيقي','شهادات حضور الدورات والورش'] },
+  { icon:'👨‍👩‍👧', title:'التفاعل مع أولياء الأمور', weight:'10%',
+    examples:['التواصل الفعّال مع أولياء الأمور','تزويدهم بمستويات الطلاب','إيصال الملاحظات المهمة','المشاركة في الجمعية العمومية'],
+    shawahed:['صور من الجمعية العمومية','تقرير اجتماع ولي الأمر','نسخة من الخطة الأسبوعية'] },
+  { icon:'🎯', title:'التنويع في استراتيجيات التدريس', weight:'10%',
+    examples:['استخدام استراتيجيات متنوعة','مراعاة الفروق الفردية','مناسبة الاستراتيجية لمستوى الطلاب'],
+    shawahed:['تقرير عن تطبيق استراتيجية','ملف إنجاز المعلم'] },
+  { icon:'📈', title:'تحسين نتائج المتعلمين', weight:'10%',
+    examples:['معالجة الفاقد التعليمي','خطط علاجية للطلاب الضعاف','خطط إثرائية للمتميزين','تكريم المتحسّنين'],
+    shawahed:['نتائج الاختبار القبلي والبعدي','كشف متابعة الطلاب'] },
+  { icon:'📋', title:'إعداد وتنفيذ خطة التعلم', weight:'10%',
+    examples:['توزيع المنهج وإعداد الدروس','إعداد الواجبات والاختبارات','تنفيذ الدروس'],
+    shawahed:['خطة توزيع المنهج','نموذج من إعداد الدروس','نماذج من الواجبات والاختبارات'] },
+  { icon:'💻', title:'توظيف تقنيات ووسائل التعلم', weight:'10%',
+    examples:['دمج التقنية في التعليم','التنويع في الوسائل التعليمية'],
+    shawahed:['صور من الوسائل التعليمية','تقرير عن برنامج تقني مستخدم'] },
+  { icon:'🏫', title:'تهيئة البيئة التعليمية', weight:'5%',
+    examples:['مراعاة حاجات الطلاب','التهيئة النفسية','التحفيز المادي والمعنوي','توفير متطلبات الدرس'],
+    shawahed:['تقرير تصنيف الطلاب وفق أنماط التعلم','نماذج من التحفيز المادي والمعنوي'] },
+  { icon:'👨‍🏫', title:'الإدارة الصفية', weight:'5%',
+    examples:['ضبط سلوك الطلاب','شد انتباه الطلاب','مراعاة الفروق الفردية','متابعة الحضور والغياب'],
+    shawahed:['كشف المتابعة','تطبيق إدارة الصف'] },
+  { icon:'📊', title:'تحليل نتائج المتعلمين وتشخيص مستوياتهم', weight:'10%',
+    examples:['تحليل نتائج الاختبارات الفترية والنهائية','تصنيف الطلاب وفق نتائجهم','معالجة الفاقد التعليمي','تحديد نقاط القوة والضعف'],
+    shawahed:['تقرير تحليل نتائج الطلاب','سجل معالجة الفاقد التعليمي'] },
+  { icon:'✅', title:'تنويع أساليب التقويم', weight:'10%',
+    examples:['الاختبارات الورقية والإلكترونية','المشاريع الطلابية','المهام الأدائية','ملفات إنجاز الطلاب'],
+    shawahed:['نماذج من الاختبارات','نماذج من ملفات إنجاز الطلاب','نماذج من المهام الأدائية'] }
+];
+
+// لون مميز لكل عنصر
+const PALETTE = [
+  {a:'#1e6b8a',a2:'#2a8aab'}, {a:'#0f766e',a2:'#14b8a6'}, {a:'#b8923d',a2:'#d4a657'},
+  {a:'#7c3aed',a2:'#a78bfa'}, {a:'#16a34a',a2:'#4ade80'}, {a:'#0369a1',a2:'#0ea5e9'},
+  {a:'#c2410c',a2:'#fb923c'}, {a:'#be185d',a2:'#f472b6'}, {a:'#4338ca',a2:'#818cf8'},
+  {a:'#0891b2',a2:'#22d3ee'}, {a:'#15803d',a2:'#22c55e'}
+];
+
+let currentIdx = 0;
+let uploadedLogo = null;
+let teacherData = { name:'', subject:'', school:'', year:'' };
+// صور الشواهد: evidenceImages[elementIdx][shahedIdx] = [dataUrl, ...]
+// كل عنصر له عدد شواهد = ELEMENTS[i].shawahed.length
+let evidenceImages = ELEMENTS.map(el => el.shawahed.map(() => []));
+
+// ═══════════════════════════════════════════════
+// تهيئة
+// ═══════════════════════════════════════════════
+document.addEventListener('DOMContentLoaded', function(){
+  buildElementsGrid();
+  document.getElementById('logoInput').addEventListener('change', handleLogoUpload);
+});
+
+function saveData(){
+  teacherData.name = document.getElementById('tName').value.trim();
+  teacherData.subject = document.getElementById('tSubject').value.trim();
+  teacherData.school = document.getElementById('tSchool').value.trim();
+  teacherData.year = document.getElementById('tYear').value.trim();
+}
+
+// عدد الصور الكلي لعنصر
+function elementImageCount(idx){
+  return evidenceImages[idx].reduce((sum, arr) => sum + arr.length, 0);
+}
+
+function buildElementsGrid(){
+  const grid = document.getElementById('elementsGrid');
+  grid.innerHTML = '';
+  ELEMENTS.forEach((el, i) => {
+    const p = PALETTE[i];
+    const imgCount = elementImageCount(i);
+    const card = document.createElement('div');
+    card.className = 'element-card' + (imgCount > 0 ? ' done' : '');
+    card.onclick = () => openEditor(i);
+    card.innerHTML = `
+      <div class="ec-check">✓</div>
+      <div class="ec-icon" style="background:linear-gradient(135deg,${p.a},${p.a2});">${el.icon}</div>
+      <div class="ec-body">
+        <div class="ec-num">العنصر ${i+1} · ${el.weight}</div>
+        <div class="ec-title">${el.title}</div>
+        <div class="ec-weight">${imgCount > 0 ? '✅ '+imgCount+' صورة' : 'اضغط للتوثيق'}</div>
+      </div>
+      <div class="ec-arrow">‹</div>`;
+    grid.appendChild(card);
+  });
+}
+
+// ═══════════════════════════════════════════════
+// رفع الشعار (معالجة canvas للثبات)
+// ═══════════════════════════════════════════════
+function handleLogoUpload(e){
+  const file = e.target.files[0];
+  if(!file) return;
+  if(!file.type.startsWith('image/')){ showToast('⚠️ اختر صورة فقط'); return; }
+  const reader = new FileReader();
+  reader.onload = function(ev){
+    const img = new Image();
+    img.onload = function(){
+      const canvas = document.createElement('canvas');
+      const size = 300; canvas.width = size; canvas.height = size;
+      const ctx = canvas.getContext('2d');
+      const ratio = Math.min(size/img.width, size/img.height);
+      const w = img.width*ratio, h = img.height*ratio;
+      ctx.drawImage(img, (size-w)/2, (size-h)/2, w, h);
+      uploadedLogo = canvas.toDataURL('image/png');
+      document.getElementById('logoBox').innerHTML = '<img src="'+uploadedLogo+'" alt="شعار">';
+      showToast('✅ تم رفع الشعار');
+    };
+    img.onerror = function(){
+      uploadedLogo = ev.target.result;
+      document.getElementById('logoBox').innerHTML = '<img src="'+uploadedLogo+'" alt="شعار">';
+    };
+    img.src = ev.target.result;
+  };
+  reader.readAsDataURL(file);
+}
+
+// ═══════════════════════════════════════════════
+// فتح المحرر
+// ═══════════════════════════════════════════════
+function openEditor(idx){
+  currentIdx = idx;
+  saveData();
+  const el = ELEMENTS[idx];
+  document.getElementById('ehNum').textContent = `العنصر ${idx+1} · الوزن ${el.weight}`;
+  document.getElementById('ehTitle').textContent = el.title;
+  renderCover();
+  buildEvidenceUploads();
+  document.getElementById('screen-list').classList.remove('active');
+  document.getElementById('screen-editor').classList.add('active');
+  window.scrollTo({top:0});
+}
+
+function backToList(){
+  buildElementsGrid();
+  document.getElementById('screen-editor').classList.remove('active');
+  document.getElementById('screen-list').classList.add('active');
+  window.scrollTo({top:0});
+}
+
+// ═══════════════════════════════════════════════
+// رسم صفحة الفاصل
+// ═══════════════════════════════════════════════
+function renderCover(){
+  const el = ELEMENTS[currentIdx];
+  const p = PALETTE[currentIdx];
+  const paper = document.getElementById('cover-paper');
+  saveData();
+
+  const logoHtml = uploadedLogo
+    ? `<img src="${uploadedLogo}" style="width:60px;height:60px;object-fit:contain;">`
+    : '';
+
+  const examplesHtml = el.examples.map(e => `<li>${e}</li>`).join('');
+  const shawahedHtml = el.shawahed.map(s => `<li>${s}</li>`).join('');
+
+  paper.innerHTML = `
+    ${getCoverDeco(p)}
+    <div class="cv-layer" style="position:relative;z-index:1;display:flex;flex-direction:column;height:100%;">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:4%;">
+        <div style="text-align:right;">
+          <div style="font-size:0.72rem;color:#666;font-weight:700;">المملكة العربية السعودية</div>
+          <div style="font-size:0.72rem;color:#666;font-weight:700;">وزارة التعليم</div>
+          <div class="cv-school" style="font-size:0.82rem;color:#1c2820;font-weight:800;margin-top:2px;">${teacherData.school || 'اسم المدرسة'}</div>
+        </div>
+        <div style="width:60px;height:60px;display:flex;align-items:center;justify-content:center;">${logoHtml}</div>
+      </div>
+
+      <div style="text-align:center;margin:6% 0 4%;">
+        <div style="font-size:2.4rem;line-height:1;margin-bottom:3%;">${el.icon}</div>
+        <div class="cv-eyebrow" style="font-size:0.82rem;color:${p.a};font-weight:800;letter-spacing:1px;">شواهد الأداء الوظيفي</div>
+        <div class="cv-elnum" style="display:inline-block;margin:3% 0;padding:4px 16px;border-radius:99px;background:${p.a};color:#fff;font-size:0.78rem;font-weight:800;">العنصر ${currentIdx+1} · الوزن النسبي ${el.weight}</div>
+        <div class="cv-title" style="font-family:'Aref Ruqaa',serif;font-size:1.5rem;color:${p.a};font-weight:700;line-height:1.4;padding:0 4%;">${el.title}</div>
+      </div>
+
+      <div style="height:2px;background:linear-gradient(90deg,transparent,${p.a},transparent);margin:3% 0;"></div>
+
+      <div style="display:flex;gap:4%;flex:1;">
+        <div style="flex:1;">
+          <div class="cv-sec-title" style="font-size:0.82rem;font-weight:800;color:${p.a};margin-bottom:3%;">📋 أمثلة التحقّق</div>
+          <ul class="cv-list" style="list-style:none;display:flex;flex-direction:column;gap:6px;">${examplesHtml}</ul>
+        </div>
+        <div style="width:1px;background:rgba(0,0,0,0.1);"></div>
+        <div style="flex:1;">
+          <div class="cv-sec-title" style="font-size:0.82rem;font-weight:800;color:${p.a};margin-bottom:3%;">🟢 الشواهد المطلوبة</div>
+          <ul class="cv-list" style="list-style:none;display:flex;flex-direction:column;gap:6px;">${shawahedHtml}</ul>
+        </div>
+      </div>
+
+      <div style="margin-top:auto;display:flex;align-items:center;justify-content:space-between;padding-top:4%;border-top:1px solid rgba(0,0,0,0.1);">
+        <div class="cv-teacher" style="font-size:0.8rem;color:#1c2820;font-weight:700;">${teacherData.name ? 'إعداد: '+teacherData.name : 'إعداد المعلم/ة'}</div>
+        <div class="cv-year" style="font-size:0.78rem;color:#666;font-weight:700;">${teacherData.year || '1447 هـ'}</div>
+      </div>
+    </div>`;
+
+  // تنسيق عناصر القوائم
+  paper.querySelectorAll('.cv-list li').forEach(li => {
+    li.style.fontSize = '0.74rem'; li.style.color = '#333'; li.style.fontWeight = '500';
+    li.style.paddingRight = '16px'; li.style.position = 'relative'; li.style.lineHeight = '1.5';
+    li.insertAdjacentHTML('afterbegin', '<span style="position:absolute;right:0;color:'+p.a+';">•</span>');
+  });
+}
+
+// زخرفة صفحة الفاصل
+function getCoverDeco(p){
+  return `
+  <svg style="position:absolute;inset:0;width:100%;height:100%;pointer-events:none;z-index:0;" viewBox="0 0 595 842" preserveAspectRatio="none">
+    <rect x="18" y="18" width="559" height="806" fill="none" stroke="${p.a}" stroke-width="2" opacity="0.3" rx="6"/>
+    <rect x="26" y="26" width="543" height="790" fill="none" stroke="${p.a2}" stroke-width="1" opacity="0.25" rx="6"/>
+    <circle cx="60" cy="60" r="50" fill="${p.a}" opacity="0.06"/>
+    <circle cx="535" cy="782" r="60" fill="${p.a2}" opacity="0.06"/>
+    <circle cx="535" cy="60" r="35" fill="${p.a2}" opacity="0.05"/>
+    <circle cx="60" cy="782" r="40" fill="${p.a}" opacity="0.05"/>
+  </svg>`;
+}
+
+// ═══════════════════════════════════════════════
+// قائمة الشواهد المطلوبة + رفع الصور
+// ═══════════════════════════════════════════════
+function buildEvidenceUploads(){
+  const wrap = document.getElementById('evidenceUploads');
+  wrap.innerHTML = '';
+  const el = ELEMENTS[currentIdx];
+  const elImgs = evidenceImages[currentIdx];
+
+  // حقل لكل شاهد مطلوب
+  el.shawahed.forEach((shahedName, si) => {
+    const imgs = elImgs[si] || [];
+    const block = document.createElement('div');
+    block.className = 'shahed-block';
+
+    // عنوان الشاهد
+    let inner = `<div class="shahed-head">
+        <span class="shahed-dot">📌</span>
+        <span class="shahed-name">${shahedName}</span>
+        <span class="shahed-count">${imgs.length > 0 ? imgs.length+' صورة' : ''}</span>
+      </div>
+      <div class="shahed-images">`;
+
+    // الصور المرفوعة لهذا الشاهد
+    imgs.forEach((src, ii) => {
+      inner += `<div class="evidence-slot filled">
+        <img src="${src}" alt="${shahedName}">
+        <button class="es-remove" onclick="removeEvidence(${si},${ii},event)">✕</button>
+      </div>`;
+    });
+
+    // خانة إضافة صورة لهذا الشاهد
+    inner += `<div class="evidence-slot evidence-add" onclick="addEvidence(${si})">
+        <div class="es-icon">➕</div><div class="es-text">${imgs.length > 0 ? 'صورة أخرى' : 'أضف صورة'}</div>
+      </div>`;
+
+    inner += `</div>`;
+    block.innerHTML = inner;
+    wrap.appendChild(block);
+  });
+
+  // تحديث العدّاد
+  const totalImgs = elImgs.reduce((sum, arr) => sum + arr.length, 0);
+  const filledShawahed = elImgs.filter(arr => arr.length > 0).length;
+  const counter = document.getElementById('evidenceCounter');
+  if(counter) counter.textContent = totalImgs > 0 ? `📎 ${filledShawahed}/${el.shawahed.length} شاهد · ${totalImgs} صورة` : 'لا توجد شواهد بعد';
+}
+
+let _evidenceInput = null;
+let _currentShahedIdx = 0;
+function addEvidence(shahedIdx){
+  _currentShahedIdx = shahedIdx;
+  if(!_evidenceInput){
+    _evidenceInput = document.createElement('input');
+    _evidenceInput.type = 'file'; _evidenceInput.accept = 'image/*';
+    _evidenceInput.multiple = true;
+    _evidenceInput.style.display = 'none';
+    document.body.appendChild(_evidenceInput);
+  }
+  _evidenceInput.value = '';
+  _evidenceInput.onchange = function(e){
+    const files = Array.from(e.target.files).filter(f => f.type.startsWith('image/'));
+    if(files.length === 0) return;
+    const targetShahed = _currentShahedIdx;
+    let processed = 0;
+    files.forEach(file => {
+      const reader = new FileReader();
+      reader.onload = function(ev){
+        const img = new Image();
+        img.onload = function(){
+          const canvas = document.createElement('canvas');
+          const maxW = 900;
+          const scale = Math.min(1, maxW/img.width);
+          canvas.width = img.width*scale; canvas.height = img.height*scale;
+          const ctx = canvas.getContext('2d');
+          ctx.fillStyle = '#fff'; ctx.fillRect(0,0,canvas.width,canvas.height);
+          ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+          evidenceImages[currentIdx][targetShahed].push(canvas.toDataURL('image/jpeg', 0.9));
+          processed++;
+          buildEvidenceUploads();
+          if(processed === files.length) showToast(`✅ تمت إضافة ${files.length} صورة`);
+        };
+        img.onerror = function(){
+          evidenceImages[currentIdx][targetShahed].push(ev.target.result);
+          processed++;
+          buildEvidenceUploads();
+        };
+        img.src = ev.target.result;
+      };
+      reader.readAsDataURL(file);
+    });
+  };
+  _evidenceInput.click();
+}
+
+function removeEvidence(shahedIdx, imgIdx, e){
+  if(e) e.stopPropagation();
+  evidenceImages[currentIdx][shahedIdx].splice(imgIdx, 1);
+  buildEvidenceUploads();
+  showToast('🗑️ تم الحذف');
+}
+
+// ═══════════════════════════════════════════════
+// 🔤 تضمين الخطوط base64
+// ═══════════════════════════════════════════════
+let _embeddedFontCSS = null;
+async function getEmbeddedFontCSS(){
+  if(_embeddedFontCSS !== null) return _embeddedFontCSS;
+  try {
+    const fontUrl = 'https://fonts.googleapis.com/css2?family=Amiri:wght@400;700&family=Tajawal:wght@400;500;700;800;900&family=Reem+Kufi:wght@400;500;600;700&family=Aref+Ruqaa:wght@400;700&display=swap';
+    const cssResp = await fetch(fontUrl);
+    let cssText = await cssResp.text();
+    const urls = [...cssText.matchAll(/url\((https:\/\/[^)]+\.woff2)\)/g)].map(m => m[1]);
+    const uniqueUrls = [...new Set(urls)];
+    for(const url of uniqueUrls){
+      try {
+        const fontResp = await fetch(url);
+        const buf = await fontResp.arrayBuffer();
+        let binary = ''; const bytes = new Uint8Array(buf);
+        for(let i=0; i<bytes.length; i++) binary += String.fromCharCode(bytes[i]);
+        const dataUrl = `data:font/woff2;base64,${btoa(binary)}`;
+        cssText = cssText.split(url).join(dataUrl);
+      } catch(e){ console.warn('font fail', e); }
+    }
+    _embeddedFontCSS = cssText;
+    return cssText;
+  } catch(e){ _embeddedFontCSS = ''; return ''; }
+}
+
+// ═══════════════════════════════════════════════
+// بناء صفحة الفاصل للتصدير (A4 عمودي)
+// ═══════════════════════════════════════════════
+async function buildCoverClone(idx){
+  const realIdx = currentIdx;
+  currentIdx = idx;
+  renderCover();
+  const original = document.getElementById('cover-paper');
+  const clone = original.cloneNode(true);
+  clone.removeAttribute('id');
+  clone.style.position = 'absolute';
+  clone.style.width = '794px';
+  clone.style.height = '1123px';
+  clone.style.padding = '56px 50px';
+  clone.querySelectorAll('*').forEach(el => { el.style.letterSpacing = '0'; });
+  currentIdx = realIdx;
+  // حقن الخطوط
+  const css = await getEmbeddedFontCSS();
+  if(css){ const s = document.createElement('style'); s.textContent = css; clone.insertBefore(s, clone.firstChild); }
+  return clone;
+}
+
+// بناء صفحة صور الشواهد للتصدير
+async function buildEvidenceClone(idx){
+  const el = ELEMENTS[idx];
+  const p = PALETTE[idx];
+  const elImgs = evidenceImages[idx];
+  saveData();
+
+  const page = document.createElement('div');
+  page.style.cssText = 'position:absolute;width:794px;height:1123px;background:#fdfcf8;padding:50px 44px;box-sizing:border-box;display:flex;flex-direction:column;font-family:Tajawal,sans-serif;color:#1c2820;';
+
+  const logoHtml = uploadedLogo ? `<img src="${uploadedLogo}" style="width:54px;height:54px;object-fit:contain;">` : '';
+
+  // ترويسة
+  let html = `
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;padding-bottom:14px;border-bottom:2px solid ${p.a};">
+      <div style="text-align:right;">
+        <div style="font-size:13px;color:#666;font-weight:700;">شواهد الأداء الوظيفي · العنصر ${idx+1}</div>
+        <div style="font-size:18px;color:${p.a};font-weight:800;font-family:'Aref Ruqaa',serif;">${el.title}</div>
+        <div style="font-size:12px;color:#888;font-weight:600;">${teacherData.name || 'المعلم/ة'} · ${teacherData.school || 'المدرسة'}</div>
+      </div>
+      <div style="width:54px;height:54px;">${logoHtml}</div>
+    </div>`;
+
+  const totalImgs = elImgs.reduce((sum, arr) => sum + arr.length, 0);
+
+  if(totalImgs === 0){
+    html += `<div style="flex:1;display:flex;align-items:center;justify-content:center;color:#aaa;font-size:16px;font-weight:600;">لم تُرفع صور شواهد بعد</div>`;
+  } else {
+    html += `<div style="flex:1;display:flex;flex-direction:column;gap:16px;overflow:hidden;">`;
+    // كل شاهد بعنوانه + صوره
+    el.shawahed.forEach((shahedName, si) => {
+      const imgs = elImgs[si] || [];
+      if(imgs.length === 0) return; // نتخطى الشواهد الفارغة
+      html += `<div>
+        <div style="background:${p.a};color:#fff;font-size:13px;font-weight:800;padding:7px 14px;border-radius:8px;margin-bottom:8px;">📌 ${shahedName}</div>
+        <div style="display:grid;grid-template-columns:repeat(${imgs.length === 1 ? 1 : 2},1fr);gap:10px;">`;
+      imgs.forEach(src => {
+        html += `<div style="border:1.5px solid ${p.a2};border-radius:8px;overflow:hidden;background:#fff;box-shadow:0 3px 10px rgba(0,0,0,0.07);">
+          <img src="${src}" style="width:100%;display:block;max-height:280px;object-fit:contain;background:#fff;">
+        </div>`;
+      });
+      html += `</div></div>`;
+    });
+    html += `</div>`;
+  }
+
+  // تذييل
+  html += `<div style="margin-top:16px;padding-top:12px;border-top:1px solid rgba(0,0,0,0.1);text-align:center;font-size:11px;color:#999;font-weight:600;">${teacherData.year || '1447 هـ'} · www.ksa2030.one</div>`;
+
+  page.innerHTML = html;
+  page.querySelectorAll('*').forEach(el => { el.style.letterSpacing = '0'; });
+  const css = await getEmbeddedFontCSS();
+  if(css){ const s = document.createElement('style'); s.textContent = css; page.insertBefore(s, page.firstChild); }
+  return page;
+}
+
+// ═══════════════════════════════════════════════
+// المعاينة
+// ═══════════════════════════════════════════════
+async function previewCurrent(){
+  if(typeof domtoimage === 'undefined'){ showToast('❌ جاري التحميل، انتظر'); return; }
+  const overlay = document.getElementById('previewOverlay');
+  const wrap = document.getElementById('previewImgWrap');
+  wrap.innerHTML = '<div class="preview-loading">⏳ جاري التحضير...</div>';
+  overlay.classList.add('show');
+  try {
+    const renderC = document.getElementById('hidden-render-container');
+    // الفاصل
+    const coverClone = await buildCoverClone(currentIdx);
+    renderC.innerHTML = ''; renderC.appendChild(coverClone);
+    await new Promise(r => setTimeout(r, 350));
+    if(document.fonts && document.fonts.ready) await document.fonts.ready;
+    const coverUrl = await domtoimage.toPng(coverClone, { quality:1.0, width:794, height:1123 });
+    renderC.innerHTML = '';
+
+    let html = '<div style="margin-bottom:6px;color:#fff;font-size:0.78rem;font-weight:700;">📄 صفحة الفاصل</div>';
+    html += '<img src="'+coverUrl+'" alt="فاصل" style="margin-bottom:16px;">';
+
+    // الشواهد (إذا فيه صور)
+    if(elementImageCount(currentIdx) > 0){
+      const evClone = await buildEvidenceClone(currentIdx);
+      renderC.innerHTML = ''; renderC.appendChild(evClone);
+      await new Promise(r => setTimeout(r, 350));
+      if(document.fonts && document.fonts.ready) await document.fonts.ready;
+      const evUrl = await domtoimage.toPng(evClone, { quality:1.0, width:794, height:1123 });
+      renderC.innerHTML = '';
+      html += '<div style="margin-bottom:6px;color:#fff;font-size:0.78rem;font-weight:700;">🖼️ صفحة الشواهد</div>';
+      html += '<img src="'+evUrl+'" alt="شواهد">';
+    }
+    wrap.innerHTML = html;
+  } catch(err){ console.error(err); wrap.innerHTML = '<div class="preview-loading">❌ تعذّرت المعاينة</div>'; }
+}
+function closePreview(e){
+  if(e && e.target && !e.target.classList.contains('preview-overlay') && !e.target.classList.contains('preview-close')) return;
+  document.getElementById('previewOverlay').classList.remove('show');
+}
+
+// ═══════════════════════════════════════════════
+// التصدير (صورة / PDF / مشاركة)
+// ═══════════════════════════════════════════════
+async function makeBlob(idx, type){
+  const clone = type === 'cover' ? await buildCoverClone(idx) : await buildEvidenceClone(idx);
+  const renderC = document.getElementById('hidden-render-container');
+  renderC.innerHTML = ''; renderC.appendChild(clone);
+  await new Promise(r => setTimeout(r, 350));
+  if(document.fonts && document.fonts.ready) await document.fonts.ready;
+  const blob = await domtoimage.toBlob(clone, { quality:1.0, width:794, height:1123 });
+  renderC.innerHTML = '';
+  return blob;
+}
+
+async function exportCurrent(mode){
+  if(typeof domtoimage === 'undefined'){ showToast('❌ جاري التحميل، انتظر'); return; }
+  const el = ELEMENTS[currentIdx];
+  const hasEvidence = elementImageCount(currentIdx) > 0;
+  showProgress('⏳ جاري إنشاء الصفحات...', 0, 1);
+  try {
+    const coverBlob = await makeBlob(currentIdx, 'cover');
+    const evBlob = hasEvidence ? await makeBlob(currentIdx, 'evidence') : null;
+    const base = `${currentIdx+1}_${sanitize(el.title)}`;
+
+    if(mode === 'image'){
+      downloadBlob(coverBlob, base+'_فاصل.png');
+      if(evBlob){ await new Promise(r=>setTimeout(r,300)); downloadBlob(evBlob, base+'_شواهد.png'); }
+      showToast(hasEvidence ? '✅ تم تحميل الصفحتين' : '✅ تم تحميل الفاصل');
+    } else if(mode === 'pdf'){
+      const { jsPDF } = window.jspdf;
+      const pdf = new jsPDF({ orientation:'portrait', unit:'mm', format:'a4' });
+      const pw = pdf.internal.pageSize.getWidth(), ph = pdf.internal.pageSize.getHeight();
+      pdf.addImage(await blobToDataUrl(coverBlob), 'PNG', 0, 0, pw, ph);
+      if(evBlob){ pdf.addPage(); pdf.addImage(await blobToDataUrl(evBlob), 'PNG', 0, 0, pw, ph); }
+      pdf.save(base+'.pdf');
+      showToast('✅ تم تحميل PDF');
+    } else if(mode === 'share'){
+      const file = new File([coverBlob], base+'_فاصل.png', {type:'image/png'});
+      if(navigator.share && navigator.canShare && navigator.canShare({files:[file]})){
+        hideProgress();
+        const files = [file];
+        if(evBlob) files.push(new File([evBlob], base+'_شواهد.png', {type:'image/png'}));
+        await navigator.share({ files, title:'شواهد الأداء الوظيفي', text:'🗂️ شواهد الأداء الوظيفي\n\n🌐 www.ksa2030.one\nالتقارير الذكية' });
+        showToast('✅ تم المشاركة'); return;
+      } else { downloadBlob(coverBlob, base+'_فاصل.png'); showToast('📥 تم التنزيل'); }
+    }
+    updateProgress(1,1);
+  } catch(err){ console.error(err); showToast('❌ حدث خطأ'); }
+  finally { hideProgress(); }
+}
+
+// تصدير الكل ZIP (فواصل + شواهد لكل عنصر فيه شواهد)
+async function exportAll(){
+  if(typeof domtoimage === 'undefined' || typeof JSZip === 'undefined'){ showToast('❌ جاري التحميل، انتظر'); return; }
+  saveData();
+  const realIdx = currentIdx;
+  const total = ELEMENTS.length;
+  showProgress('📦 جاري التهيئة...', 0, total*2);
+  try {
+    const zip = new JSZip();
+    let step = 0;
+    for(let i=0; i<total; i++){
+      const el = ELEMENTS[i];
+      // الفاصل
+      showProgress(`📄 فاصل العنصر ${i+1}...`, step, total*2);
+      const coverBlob = await makeBlob(i, 'cover');
+      zip.file(`${String(i+1).padStart(2,'0')}_أ_فاصل_${sanitize(el.title)}.png`, coverBlob);
+      step++; updateProgress(step, total*2);
+      // الشواهد (إذا فيه صور)
+      if(elementImageCount(i) > 0){
+        showProgress(`🖼️ شواهد العنصر ${i+1}...`, step, total*2);
+        const evBlob = await makeBlob(i, 'evidence');
+        zip.file(`${String(i+1).padStart(2,'0')}_ب_شواهد_${sanitize(el.title)}.png`, evBlob);
+      }
+      step++; updateProgress(step, total*2);
+    }
+    currentIdx = realIdx;
+    showProgress('📦 جاري ضغط الملف...', total*2, total*2);
+    const zipBlob = await zip.generateAsync({type:'blob'});
+    downloadBlob(zipBlob, 'شواهد_الأداء_الوظيفي.zip');
+    showToast('✅ تم حفظ الملف كامل');
+  } catch(err){ console.error(err); showToast('❌ حدث خطأ في التصدير'); }
+  finally { hideProgress(); }
+}
+
+// ═══════════════════════════════════════════════
+// أدوات مساعدة
+// ═══════════════════════════════════════════════
+function blobToDataUrl(blob){
+  return new Promise(res => { const r = new FileReader(); r.onload = () => res(r.result); r.readAsDataURL(blob); });
+}
+function downloadBlob(blob, filename){
+  const url = URL.createObjectURL(blob);
+  const link = document.createElement('a');
+  link.href = url; link.download = filename;
+  document.body.appendChild(link); link.click(); document.body.removeChild(link);
+  setTimeout(() => URL.revokeObjectURL(url), 1000);
+}
+function sanitize(s){ return (s||'').replace(/[\\/:*?"<>|]/g,'_').replace(/\s+/g,'_').substring(0,40); }
+function showProgress(text, cur, total){
+  document.getElementById('progressText').textContent = text;
+  document.getElementById('progressFill').style.width = total ? Math.round(cur/total*100)+'%' : '0%';
+  document.getElementById('progressOverlay').classList.add('show');
+}
+function updateProgress(cur, total){ document.getElementById('progressFill').style.width = Math.round(cur/total*100)+'%'; }
+function hideProgress(){ document.getElementById('progressOverlay').classList.remove('show'); }
+let _toastT;
+function showToast(msg){
+  const t = document.getElementById('toast');
+  t.textContent = msg; t.classList.add('show');
+  clearTimeout(_toastT); _toastT = setTimeout(() => t.classList.remove('show'), 2600);
+}
+</script>
+</body>
+</html>

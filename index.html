@@ -1426,6 +1426,47 @@ box-shadow:0 4px 12px rgba(0,0,0,0.2),inset 0 1px 0 rgba(255,255,255,0.2);
 }
 @keyframes starIconSweep{0%,70%{left:-70%;}85%,100%{left:150%;}}
 
+/* أيقونة شواهد الأداء + لمعة */
+.cat-icon.shawahed{background:linear-gradient(135deg,#1e6b8a,#0f3b4d);position:relative;overflow:hidden;}
+.cat-icon.shawahed::after{
+  content:"";position:absolute;top:-50%;left:-70%;
+  width:45%;height:200%;
+  background:linear-gradient(90deg,transparent,rgba(255,255,255,0.55),transparent);
+  transform:rotate(22deg);
+  animation:shawahedIconSweep 4s ease-in-out infinite;
+}
+@keyframes shawahedIconSweep{0%,72%{left:-70%;}87%,100%{left:150%;}}
+
+/* ═══ كرت شواهد الأداء ═══ */
+.thumb-shawahed{
+  background:linear-gradient(160deg,#13202c,#0a1620);
+  display:flex;align-items:center;justify-content:center;
+  position:relative;overflow:hidden;
+}
+.shawahed-snap{
+  width:78%;height:82%;
+  background:linear-gradient(160deg,#fdfcf8,#f4f8fb);
+  border:2px solid #1e6b8a;border-radius:8px;
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  gap:5px;position:relative;overflow:hidden;
+  box-shadow:0 8px 20px rgba(0,0,0,0.3);
+}
+.shawahed-snap-glow{
+  position:absolute;top:-40%;left:-60%;
+  width:50%;height:200%;
+  background:linear-gradient(90deg,transparent,rgba(42,138,171,0.35),transparent);
+  transform:rotate(22deg);
+  animation:shawahedSnapSweep 3.6s ease-in-out infinite;
+}
+@keyframes shawahedSnapSweep{0%,68%{left:-60%;}84%,100%{left:160%;}}
+.shawahed-snap-head{font-size:1.5rem;line-height:1;position:relative;z-index:1;}
+.shawahed-snap-title{font-family:'Reem Kufi',sans-serif;font-size:0.78rem;font-weight:800;color:#0f3b4d;position:relative;z-index:1;}
+.shawahed-snap-bars{display:flex;flex-direction:column;gap:3px;width:55%;position:relative;z-index:1;}
+.shawahed-snap-bars span{height:4px;border-radius:2px;background:linear-gradient(90deg,#1e6b8a,#2a8aab);}
+.shawahed-snap-bars span:nth-child(2){width:80%;}
+.shawahed-snap-bars span:nth-child(3){width:60%;}
+.shawahed-snap-badge{font-size:0.58rem;font-weight:800;color:#fff;background:#1e6b8a;padding:2px 10px;border-radius:99px;position:relative;z-index:1;}
+
 /* ═══ كرت نجم الأسبوع ═══ */
 .thumb-star{
   background:linear-gradient(160deg,#1a2535,#0f1a28);
@@ -4377,6 +4418,58 @@ font-size:0.78rem;text-align:center;margin-top:12px;display:none;
       </button>
     </div>
 
+
+    <!-- ═══ تصنيف: شواهد الأداء الوظيفي (مدفوع) ═══ -->
+    <div class="cat-section" data-cat="shawahed">
+      <div class="cat-header" onclick="toggleCategory(this)">
+        <div class="cat-icon shawahed">🗂️</div>
+        <div class="cat-text">
+          <div class="cat-title">
+            <span data-i18n="catShawahed">شواهد الأداء الوظيفي</span>
+            <span class="cat-count">1</span>
+          </div>
+          <div class="cat-sub" data-i18n="catShawahedSub">11 عنصر رسمي · فواصل + صور شواهد</div>
+        </div>
+        <div class="cat-chevron">▼</div>
+      </div>
+      <div class="cat-body">
+        <div class="cat-cards">
+
+    <div class="preview-card r-shawahed locked" data-target="shawahed.html" onclick="handleCardClick(this)">
+      <span class="card-badge badge-new">✨ <span data-i18n="badgeShawahed">جديد</span></span>
+      <div class="thumb thumb-shawahed">
+        <div class="shawahed-snap">
+          <div class="shawahed-snap-glow"></div>
+          <div class="shawahed-snap-head">🗂️</div>
+          <div class="shawahed-snap-title">شواهد الأداء</div>
+          <div class="shawahed-snap-bars">
+            <span></span><span></span><span></span>
+          </div>
+          <div class="shawahed-snap-badge">11 عنصر رسمي</div>
+        </div>
+        <div class="lock-overlay">
+          <div class="lock-cta">
+            <span>🔑</span>
+            <span data-i18n="lockCta">سجّل الدخول للوصول</span>
+          </div>
+        </div>
+      </div>
+      <div class="card-content">
+        <div class="card-icon-wrap">
+          <div class="card-icon">🗂️</div>
+        </div>
+        <div class="card-text">
+          <div class="card-title" data-i18n="shawahedCardTitle">شواهد الأداء الوظيفي</div>
+          <div class="card-desc" data-i18n="shawahedCardDesc">11 عنصر رسمي · رفع صور الشواهد · تصدير PDF</div>
+        </div>
+        <div class="card-action">‹</div>
+      </div>
+    </div>
+
+        </div>
+      </div>
+    </div>
+
     <!-- ═══ تصنيف: المناسبات الوطنية ═══ -->
     <div class="cat-section" data-cat="events">
       <div class="cat-header" onclick="toggleCategory(this)">
@@ -5492,6 +5585,7 @@ font-size:0.78rem;text-align:center;margin-top:12px;display:none;
     </div>
 
 
+
   </div>
 
   <div class="section-head">
@@ -6255,6 +6349,11 @@ const I18N = {
     badgeStar: "جديد",
     starCardTitle: "شهادات نجم الأسبوع",
     starCardDesc: "5 تصاميم احترافية · رفع شعار · تكريم جماعي",
+    catShawahed: "شواهد الأداء الوظيفي",
+    catShawahedSub: "11 عنصر رسمي · فواصل + صور شواهد",
+    badgeShawahed: "جديد",
+    shawahedCardTitle: "شواهد الأداء الوظيفي",
+    shawahedCardDesc: "11 عنصر رسمي · رفع صور الشواهد · تصدير PDF",
     catTools: "أدوات مجانية",
     catToolsSub: "مولّد باركود QR للصور والروابط · مجاني للجميع",
     badgeToolFree: "مجاني تماماً",
@@ -6524,6 +6623,11 @@ const I18N = {
     badgeStar: "New",
     starCardTitle: "Star of the Week Certificates",
     starCardDesc: "5 pro designs · Logo upload · Bulk awards",
+    catShawahed: "Performance Evidence",
+    catShawahedSub: "11 official elements · Covers + evidence images",
+    badgeShawahed: "New",
+    shawahedCardTitle: "Job Performance Evidence",
+    shawahedCardDesc: "11 official elements · Upload evidence · Export PDF",
     catTools: "Free Tools",
     catToolsSub: "QR code generator for images & links · Free for everyone",
     badgeToolFree: "100% Free",
