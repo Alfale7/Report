@@ -1671,11 +1671,11 @@ async function saveAsImage(){
     await document.fonts.ready;
     await new Promise(r => setTimeout(r, 500));
     const canvas = await html2canvas(page, {
-      backgroundColor:'#ffffff', scale:2.5, useCORS:true, logging:false, allowTaint:true,
+      backgroundColor:'#fbf9f4', scale:2.5, useCORS:true, logging:false, allowTaint:true,
       width:page.offsetWidth, height:page.offsetHeight,
       onclone:(doc) => {
         const style = doc.createElement('style');
-        style.textContent = `*{letter-spacing:0 !important;font-feature-settings:"kern" 1,"liga" 1,"calt" 1,"rlig" 1 !important;font-kerning:normal !important;}`;
+        style.textContent = `*{letter-spacing:0 !important;font-feature-settings:"kern" 1,"liga" 1,"calt" 1,"rlig" 1 !important;font-kerning:normal !important;-webkit-print-color-adjust:exact !important;print-color-adjust:exact !important;color-adjust:exact !important;}`;
         doc.head.appendChild(style);
       }
     });
@@ -1707,11 +1707,11 @@ async function exportAsPDFv2(){
     await document.fonts.ready;
     await new Promise(r => setTimeout(r, 500));
     const canvas = await html2canvas(page, {
-      backgroundColor:'#ffffff', scale:2.5, useCORS:true, logging:false, allowTaint:true,
+      backgroundColor:'#fbf9f4', scale:2.5, useCORS:true, logging:false, allowTaint:true,
       width:page.offsetWidth, height:page.offsetHeight,
       onclone:(doc) => {
         const style = doc.createElement('style');
-        style.textContent = `*{letter-spacing:0 !important; font-kerning:normal !important;}`;
+        style.textContent = `*{letter-spacing:0 !important; font-kerning:normal !important;-webkit-print-color-adjust:exact !important;print-color-adjust:exact !important;color-adjust:exact !important;}`;
         doc.head.appendChild(style);
       }
     });
@@ -1768,11 +1768,11 @@ async function shareReport(){
     await document.fonts.ready;
     await new Promise(r => setTimeout(r, 500));
     const canvas = await html2canvas(page, {
-      backgroundColor:'#ffffff', scale:3, useCORS:true, logging:false, allowTaint:true,
+      backgroundColor:'#fbf9f4', scale:3, useCORS:true, logging:false, allowTaint:true,
       width:page.offsetWidth, height:page.offsetHeight,
       onclone:(doc) => {
         const style = doc.createElement('style');
-        style.textContent = `*{letter-spacing:0 !important; font-kerning:normal !important;}`;
+        style.textContent = `*{letter-spacing:0 !important; font-kerning:normal !important;-webkit-print-color-adjust:exact !important;print-color-adjust:exact !important;color-adjust:exact !important;}`;
         doc.head.appendChild(style);
       }
     });
