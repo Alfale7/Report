@@ -990,6 +990,7 @@ async function downloadSingle(){
 
   try {
     const clone = prepareClone();
+    await injectFonts(clone);
     const renderC = document.getElementById('hidden-render-container');
     renderC.innerHTML = '';
     renderC.appendChild(clone);
@@ -1009,6 +1010,16 @@ async function downloadSingle(){
   }
 }
 
+// حقن الخطوط المضمّنة (base64) داخل النسخة
+async function injectFonts(clone){
+  const css = await getEmbeddedFontCSS();
+  if(css){
+    const styleEl = document.createElement('style');
+    styleEl.textContent = css;
+    clone.insertBefore(styleEl, clone.firstChild);
+  }
+}
+
 // ═══════════════════════════════════════════════
 // إنشاء صورة الشهادة (blob) - مشترك
 // ═══════════════════════════════════════════════
@@ -1021,6 +1032,7 @@ async function buildCertBlob(){
   await new Promise(r => setTimeout(r, 50));
 
   const clone = prepareClone();
+  await injectFonts(clone);
   const renderC = document.getElementById('hidden-render-container');
   renderC.innerHTML = '';
   renderC.appendChild(clone);
@@ -1123,6 +1135,7 @@ async function downloadBulk(){
   await new Promise(r => setTimeout(r, 350));
 
   const clone = prepareClone();
+  await injectFonts(clone);
   const renderC = document.getElementById('hidden-render-container');
   renderC.innerHTML = '';
   renderC.appendChild(clone);
@@ -1167,6 +1180,42 @@ async function downloadBulk(){
 // ═══════════════════════════════════════════════
 // تجهيز نسخة للتصدير (بأبعاد ثابتة)
 // ═══════════════════════════════════════════════
+// ═══════════════════════════════════════════════
+// 🔤 جلب الخطوط وتحويلها base64 (لتضمينها في التصدير)
+// ═══════════════════════════════════════════════
+let _embeddedFontCSS = null;
+async function getEmbeddedFontCSS(){
+  if(_embeddedFontCSS !== null) return _embeddedFontCSS;
+  try {
+    const fontUrl = 'https://fonts.googleapis.com/css2?family=Amiri:wght@400;700&family=Tajawal:wght@400;500;700;800;900&family=Reem+Kufi:wght@400;500;600;700&family=Aref+Ruqaa:wght@400;700&display=swap';
+    const cssResp = await fetch(fontUrl);
+    let cssText = await cssResp.text();
+
+    // استخرج روابط woff2 وحوّلها base64
+    const urls = [...cssText.matchAll(/url\((https:\/\/[^)]+\.woff2)\)/g)].map(m => m[1]);
+    const uniqueUrls = [...new Set(urls)];
+
+    for(const url of uniqueUrls){
+      try {
+        const fontResp = await fetch(url);
+        const buf = await fontResp.arrayBuffer();
+        let binary = '';
+        const bytes = new Uint8Array(buf);
+        for(let i=0; i<bytes.length; i++) binary += String.fromCharCode(bytes[i]);
+        const b64 = btoa(binary);
+        const dataUrl = `data:font/woff2;base64,${b64}`;
+        cssText = cssText.split(url).join(dataUrl);
+      } catch(e){ console.warn('font fetch failed', url, e); }
+    }
+    _embeddedFontCSS = cssText;
+    return cssText;
+  } catch(e){
+    console.warn('embed fonts failed', e);
+    _embeddedFontCSS = '';
+    return '';
+  }
+}
+
 function prepareClone(){
   const original = document.getElementById('cert-paper');
   const clone = original.cloneNode(true);
