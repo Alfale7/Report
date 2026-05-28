@@ -273,8 +273,8 @@ body{
   color:#fff; font-size:1rem; cursor:pointer; z-index:2;
 }
 .preview-title{font-family:'Reem Kufi',sans-serif; font-size:1rem; font-weight:700; color:#fff; text-align:center; margin-bottom:14px;}
-.preview-img-wrap{background:var(--navy2); border-radius:12px; padding:10px; min-height:200px; display:flex; align-items:center; justify-content:center;}
-.preview-img-wrap img{width:100%; height:auto; border-radius:8px;}
+.preview-img-wrap{background:var(--navy2); border-radius:12px; padding:10px; min-height:200px; display:flex; flex-direction:column; align-items:center; justify-content:flex-start;}
+.preview-img-wrap img{width:100%; height:auto; border-radius:8px; display:block;}
 .preview-loading{color:rgba(255,255,255,0.6); font-weight:700; padding:60px 0;}
 
 /* تبويبات نوع التصدير */
@@ -364,6 +364,9 @@ body{
       <button class="btn-export-all" onclick="exportAll()">
         <span>📦</span><span>تصدير الملف كامل (ZIP)</span>
       </button>
+      <div style="text-align:center;font-size:0.72rem;color:rgba(255,255,255,0.4);margin-top:4px;">
+        💾 بياناتك تُحفظ تلقائياً في جهازك · <span onclick="clearSaved()" style="color:#e07070;cursor:pointer;font-weight:700;text-decoration:underline;">مسح الكل</span>
+      </div>
     </div>
   </div>
 
@@ -491,12 +494,70 @@ let shahedNames = ELEMENTS.map(el => [...el.shawahed]);
 let evidenceImages = ELEMENTS.map(el => el.shawahed.map(() => []));
 
 // ═══════════════════════════════════════════════
-// تهيئة
+// تهيئة + الحفظ التلقائي (localStorage)
 // ═══════════════════════════════════════════════
+const STORAGE_KEY = 'shawahed_data_v1';
+
 document.addEventListener('DOMContentLoaded', function(){
+  loadSaved();
   buildElementsGrid();
   document.getElementById('logoInput').addEventListener('change', handleLogoUpload);
 });
+
+// حفظ كل البيانات
+function persistAll(){
+  try {
+    const data = {
+      teacherData: teacherData,
+      shahedNames: shahedNames,
+      evidenceImages: evidenceImages,
+      uploadedLogo: uploadedLogo
+    };
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+  } catch(e){
+    // التخزين امتلأ (الصور كبيرة) — نحفظ النصوص فقط دون الصور
+    try {
+      const lite = {
+        teacherData: teacherData,
+        shahedNames: shahedNames,
+        evidenceImages: shahedNames.map(arr => arr.map(() => [])),
+        uploadedLogo: null,
+        _noImages: true
+      };
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(lite));
+    } catch(e2){ console.warn('storage full', e2); }
+  }
+}
+
+// استعادة البيانات المحفوظة
+function loadSaved(){
+  try {
+    const raw = localStorage.getItem(STORAGE_KEY);
+    if(!raw) return;
+    const data = JSON.parse(raw);
+    if(data.teacherData) teacherData = data.teacherData;
+    if(data.shahedNames) shahedNames = data.shahedNames;
+    if(data.evidenceImages) evidenceImages = data.evidenceImages;
+    if(data.uploadedLogo){
+      uploadedLogo = data.uploadedLogo;
+      const box = document.getElementById('logoBox');
+      if(box) box.innerHTML = '<img src="'+uploadedLogo+'" alt="شعار">';
+    }
+    // ملء حقول البيانات
+    const map = {tName:'name',tSubject:'subject',tSchool:'school',tYear:'year',tAdmin:'admin',tOffice:'office',tSite:'site'};
+    Object.keys(map).forEach(id => {
+      const elInput = document.getElementById(id);
+      if(elInput && teacherData[map[id]]) elInput.value = teacherData[map[id]];
+    });
+  } catch(e){ console.warn('load fail', e); }
+}
+
+// مسح كل البيانات المحفوظة
+function clearSaved(){
+  if(!confirm('هل تريد مسح كل البيانات المحفوظة (الحقول والصور)؟')) return;
+  localStorage.removeItem(STORAGE_KEY);
+  location.reload();
+}
 
 function saveData(){
   teacherData.name = document.getElementById('tName').value.trim();
@@ -506,6 +567,7 @@ function saveData(){
   teacherData.admin = document.getElementById('tAdmin').value.trim();
   teacherData.office = document.getElementById('tOffice').value.trim();
   teacherData.site = document.getElementById('tSite').value.trim();
+  persistAll();
 }
 
 // عدد الصور الكلي لعنصر
@@ -559,6 +621,7 @@ function handleLogoUpload(e){
       ctx.drawImage(img, 0, 0, w, h);
       uploadedLogo = canvas.toDataURL('image/png');
       document.getElementById('logoBox').innerHTML = '<img src="'+uploadedLogo+'" alt="شعار">';
+      persistAll();
       showToast('✅ تم رفع الشعار بدقة عالية');
     };
     img.onerror = function(){
@@ -721,12 +784,14 @@ function buildEvidenceUploads(){
 
 function updateShahedName(si, val){
   shahedNames[currentIdx][si] = val;
+  persistAll();
 }
 
 function addShahed(){
   shahedNames[currentIdx].push('');
   evidenceImages[currentIdx].push([]);
   buildEvidenceUploads();
+  persistAll();
   setTimeout(() => {
     const inputs = document.querySelectorAll('.shahed-name-input');
     if(inputs.length) inputs[inputs.length-1].focus();
@@ -738,6 +803,7 @@ function removeShahed(si){
   shahedNames[currentIdx].splice(si, 1);
   evidenceImages[currentIdx].splice(si, 1);
   buildEvidenceUploads();
+  persistAll();
   showToast('🗑️ تم حذف الشاهد');
 }
 
@@ -773,12 +839,13 @@ function addEvidence(shahedIdx){
           evidenceImages[currentIdx][targetShahed].push(canvas.toDataURL('image/jpeg', 0.9));
           processed++;
           buildEvidenceUploads();
-          if(processed === files.length) showToast(`✅ تمت إضافة ${files.length} صورة`);
+          if(processed === files.length){ persistAll(); showToast(`✅ تمت إضافة ${files.length} صورة`); }
         };
         img.onerror = function(){
           evidenceImages[currentIdx][targetShahed].push(ev.target.result);
           processed++;
           buildEvidenceUploads();
+          persistAll();
         };
         img.src = ev.target.result;
       };
@@ -792,6 +859,7 @@ function removeEvidence(shahedIdx, imgIdx, e){
   if(e) e.stopPropagation();
   evidenceImages[currentIdx][shahedIdx].splice(imgIdx, 1);
   buildEvidenceUploads();
+  persistAll();
   showToast('🗑️ تم الحذف');
 }
 
@@ -941,8 +1009,10 @@ async function previewCurrent(){
     const coverClone = await buildCoverClone(currentIdx);
     renderC.innerHTML = ''; renderC.appendChild(coverClone);
     await waitForImages(coverClone);
-    await new Promise(r => setTimeout(r, 250));
     if(document.fonts && document.fonts.ready) await document.fonts.ready;
+    await new Promise(r => setTimeout(r, 400));
+    try { await domtoimage.toPng(coverClone, { quality:1.0, width:794, height:1123 }); } catch(e){}
+    await new Promise(r => setTimeout(r, 200));
     const coverUrl = await domtoimage.toPng(coverClone, { quality:1.0, width:794, height:1123 });
     renderC.innerHTML = '';
 
@@ -953,8 +1023,10 @@ async function previewCurrent(){
       const evClone = await buildEvidenceClone(currentIdx);
       renderC.innerHTML = ''; renderC.appendChild(evClone);
       await waitForImages(evClone);
-      await new Promise(r => setTimeout(r, 250));
       if(document.fonts && document.fonts.ready) await document.fonts.ready;
+      await new Promise(r => setTimeout(r, 400));
+      try { await domtoimage.toPng(evClone, { quality:1.0, width:794, height:1123 }); } catch(e){}
+      await new Promise(r => setTimeout(r, 200));
       const evUrl = await domtoimage.toPng(evClone, { quality:1.0, width:794, height:1123 });
       renderC.innerHTML = '';
       html += '<div style="margin-bottom:6px;color:#fff;font-size:0.78rem;font-weight:700;">🖼️ صفحة الشواهد</div>';
@@ -988,9 +1060,14 @@ async function makeBlob(idx, type){
   const clone = type === 'cover' ? await buildCoverClone(idx) : await buildEvidenceClone(idx);
   const renderC = document.getElementById('hidden-render-container');
   renderC.innerHTML = ''; renderC.appendChild(clone);
+  // انتظار تحميل الصور فعلياً
   await waitForImages(clone);
-  await new Promise(r => setTimeout(r, 250));
   if(document.fonts && document.fonts.ready) await document.fonts.ready;
+  await new Promise(r => setTimeout(r, 400));
+  // التقاط أولي (تحضيري - يجبر dom-to-image على تجهيز كل الموارد)
+  try { await domtoimage.toPng(clone, { quality:1.0, width:794, height:1123 }); } catch(e){}
+  await new Promise(r => setTimeout(r, 200));
+  // التقاط نهائي مضمون
   const blob = await domtoimage.toBlob(clone, { quality:1.0, width:794, height:1123 });
   renderC.innerHTML = '';
   return blob;
