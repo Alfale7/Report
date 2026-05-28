@@ -288,6 +288,40 @@ html,body{
 .exp-share{background:linear-gradient(135deg,#16a34a,#15803d); color:#fff; box-shadow:0 8px 22px rgba(22,163,74,0.3);}
 .exp-bulk{background:linear-gradient(135deg,var(--gold-bright),var(--gold)); color:var(--navy); box-shadow:0 8px 22px rgba(212,166,87,0.3);}
 .single-exports{display:grid; grid-template-columns:1fr 1fr 1fr; gap:10px;}
+
+/* زر المعاينة */
+.exp-preview{background:linear-gradient(135deg,#1e6b8a,#0f3b4d); color:#fff; box-shadow:0 8px 22px rgba(30,107,138,0.3); margin-bottom:10px;}
+
+/* نافذة المعاينة */
+.preview-overlay{
+  position:fixed; inset:0; background:rgba(5,10,18,0.92);
+  backdrop-filter:blur(8px); -webkit-backdrop-filter:blur(8px);
+  display:none; align-items:center; justify-content:center; z-index:9999; padding:16px;
+}
+.preview-overlay.show{display:flex; animation:fadeIn 0.25s ease;}
+@keyframes fadeIn{from{opacity:0;}to{opacity:1;}}
+.preview-box{
+  background:#12202f; border:1px solid rgba(42,138,171,0.3);
+  border-radius:18px; padding:18px; max-width:760px; width:100%;
+  position:relative; max-height:92vh; overflow-y:auto;
+  animation:popUp 0.35s cubic-bezier(0.34,1.56,0.64,1);
+}
+@keyframes popUp{from{opacity:0; transform:scale(0.94);}to{opacity:1; transform:scale(1);}}
+.preview-close{
+  position:absolute; top:14px; left:14px;
+  width:34px; height:34px; border-radius:50%;
+  background:rgba(255,255,255,0.1); border:1px solid rgba(255,255,255,0.2);
+  color:#fff; font-size:1rem; cursor:pointer; transition:all 0.2s; z-index:2;
+}
+.preview-close:hover{background:rgba(255,255,255,0.2);}
+.preview-title{font-family:'Reem Kufi',sans-serif; font-size:1.05rem; font-weight:700; color:#fff; text-align:center; margin-bottom:14px;}
+.preview-img-wrap{
+  background:#0a1620; border-radius:12px; padding:10px;
+  min-height:200px; display:flex; align-items:center; justify-content:center;
+}
+.preview-img-wrap img{width:100%; height:auto; border-radius:8px; box-shadow:0 12px 30px rgba(0,0,0,0.5);}
+.preview-loading{color:rgba(255,255,255,0.6); font-weight:700; padding:60px 0;}
+.preview-hint{font-size:0.74rem; color:rgba(255,255,255,0.5); text-align:center; margin-top:12px; font-weight:600;}
 .exp-btn:hover{transform:translateY(-2px);}
 .exp-btn:active{transform:translateY(0);}
 
@@ -492,6 +526,10 @@ html,body{
   </div>
 
   <div class="export-row">
+    <!-- زر المعاينة (دائماً ظاهر) -->
+    <button class="exp-btn exp-preview" onclick="previewCert()">
+      <span>👁️</span><span>معاينة الشهادة</span>
+    </button>
     <!-- وضع طالب واحد: 3 أزرار -->
     <div class="single-exports" id="singleExports">
       <button class="exp-btn exp-img" onclick="downloadSingle()">
@@ -508,6 +546,18 @@ html,body{
     <button class="exp-btn exp-bulk" id="exportBulk" onclick="downloadBulk()" style="display:none;">
       <span>📦</span><span>تحميل كل الشهادات (ZIP)</span>
     </button>
+  </div>
+</div>
+
+<!-- ═══ نافذة المعاينة ═══ -->
+<div class="preview-overlay" id="previewOverlay" onclick="closePreview(event)">
+  <div class="preview-box">
+    <button class="preview-close" onclick="closePreview()">✕</button>
+    <div class="preview-title">👁️ معاينة الشهادة</div>
+    <div class="preview-img-wrap" id="previewImgWrap">
+      <div class="preview-loading">⏳ جاري التحضير...</div>
+    </div>
+    <div class="preview-hint">هذي معاينة دقيقة لما ستصدّره · أغلق وعدّل أو صدّر مباشرة</div>
   </div>
 </div>
 
@@ -1052,6 +1102,53 @@ async function buildCertBlob(){
     const blob = await domtoimage.toBlob(clone, { quality:1.0, width:1000, height:707 });
   renderC.innerHTML = '';
   return { blob, name };
+}
+
+// ═══════════════════════════════════════════════
+// 👁️ معاينة الشهادة
+// ═══════════════════════════════════════════════
+async function previewCert(){
+  // في وضع المجموعة: نعاين أول اسم
+  if(currentMode === 'bulk'){
+    const raw = document.getElementById('bulkNames').value.trim();
+    const names = raw ? raw.split('\n').map(s=>s.trim()).filter(s=>s) : [];
+    if(names.length > 0){
+      const nameEl = document.querySelector('#cert-paper .cert-name');
+      if(nameEl) nameEl.textContent = names[0];
+    }
+  } else {
+    const inputVal = document.getElementById('singleName').value.trim();
+    const nameEl = document.querySelector('#cert-paper .cert-name');
+    if(nameEl && inputVal) nameEl.textContent = inputVal;
+  }
+
+  if(typeof domtoimage === 'undefined'){ showToast('❌ جاري تحميل النظام، انتظر ثانية'); return; }
+
+  const overlay = document.getElementById('previewOverlay');
+  const wrap = document.getElementById('previewImgWrap');
+  wrap.innerHTML = '<div class="preview-loading">⏳ جاري التحضير...</div>';
+  overlay.classList.add('show');
+
+  try {
+    const clone = prepareClone();
+    await injectFonts(clone);
+    const renderC = document.getElementById('hidden-render-container');
+    renderC.innerHTML = '';
+    renderC.appendChild(clone);
+    await new Promise(r => setTimeout(r, 350));
+    if(document.fonts && document.fonts.ready){ await document.fonts.ready; }
+    const dataUrl = await domtoimage.toPng(clone, { quality:1.0, width:1000, height:707 });
+    renderC.innerHTML = '';
+    wrap.innerHTML = '<img src="' + dataUrl + '" alt="معاينة الشهادة">';
+  } catch(err){
+    console.error(err);
+    wrap.innerHTML = '<div class="preview-loading">❌ تعذّر إنشاء المعاينة</div>';
+  }
+}
+
+function closePreview(e){
+  if(e && e.target && !e.target.classList.contains('preview-overlay') && !e.target.classList.contains('preview-close')) return;
+  document.getElementById('previewOverlay').classList.remove('show');
 }
 
 // ═══════════════════════════════════════════════
