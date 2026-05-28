@@ -13,6 +13,7 @@
 
 <script src="https://cdn.jsdelivr.net/npm/dom-to-image-more@3.4.4/dist/dom-to-image-more.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 
 <style>
 :root{
@@ -272,7 +273,10 @@ html,body{
   display:flex; align-items:center; justify-content:center; gap:8px;
 }
 .exp-img{background:linear-gradient(135deg,#2a9d8f,#1a7a8a); color:#fff; box-shadow:0 8px 22px rgba(42,157,143,0.3);}
+.exp-pdf{background:linear-gradient(135deg,#e63946,#c1121f); color:#fff; box-shadow:0 8px 22px rgba(230,57,70,0.3);}
+.exp-share{background:linear-gradient(135deg,#16a34a,#15803d); color:#fff; box-shadow:0 8px 22px rgba(22,163,74,0.3);}
 .exp-bulk{background:linear-gradient(135deg,var(--gold-bright),var(--gold)); color:var(--navy); box-shadow:0 8px 22px rgba(212,166,87,0.3);}
+.single-exports{display:grid; grid-template-columns:1fr 1fr 1fr; gap:10px;}
 .exp-btn:hover{transform:translateY(-2px);}
 .exp-btn:active{transform:translateY(0);}
 
@@ -391,12 +395,28 @@ html,body{
           <label>الأسبوع</label>
           <input type="text" id="fieldWeek" placeholder="الأسبوع: الخامس" oninput="syncField('cert-week', this.value)">
         </div>
+      </div>
+
+      <div class="ctrl-label" style="margin-top:14px;">✒️ التوقيع الأول</div>
+      <div class="field-grid">
         <div class="field-item">
-          <label>مدير/ة المدرسة</label>
-          <input type="text" id="fieldPrincipal" placeholder="الاسم" oninput="syncSign(0, this.value)">
+          <label>المسمّى</label>
+          <input type="text" id="roleP" placeholder="مثال: مدير المدرسة" oninput="syncRole(0, this.value)">
         </div>
         <div class="field-item">
-          <label>رائد النشاط</label>
+          <label>الاسم</label>
+          <input type="text" id="fieldPrincipal" placeholder="الاسم" oninput="syncSign(0, this.value)">
+        </div>
+      </div>
+
+      <div class="ctrl-label" style="margin-top:12px;">✒️ التوقيع الثاني</div>
+      <div class="field-grid">
+        <div class="field-item">
+          <label>المسمّى</label>
+          <input type="text" id="roleL" placeholder="معلم · موجه · رائد نشاط..." oninput="syncRole(1, this.value)">
+        </div>
+        <div class="field-item">
+          <label>الاسم</label>
           <input type="text" id="fieldLeader" placeholder="الاسم" oninput="syncSign(1, this.value)">
         </div>
       </div>
@@ -407,14 +427,65 @@ html,body{
       <div class="ctrl-label">👥 أسماء الطلاب</div>
       <textarea class="bulk-textarea" id="bulkNames" placeholder="اكتب اسم كل طالب في سطر منفصل&#10;مثال:&#10;عبدالله محمد&#10;سارة أحمد&#10;فيصل العتيبي"></textarea>
       <div class="ctrl-hint">💡 اكتب كل اسم في سطر منفصل، وسيتم إنشاء شهادة لكل طالب في ملف ZIP واحد.</div>
+
+      <div class="ctrl-divider"></div>
+
+      <div class="ctrl-label">📝 سبب التكريم <span style="font-size:0.68rem;color:rgba(255,255,255,0.45);font-weight:600;">(لكل الطلاب)</span></div>
+      <textarea class="reason-input" id="fieldReasonB" placeholder="مثال: لتميّزهم وحُسن سلوكهم وتفوّقهم..." oninput="syncField('cert-reason', this.value)"></textarea>
+
+      <div class="ctrl-label" style="margin-top:14px;">🏫 بيانات الشهادة <span style="font-size:0.68rem;color:rgba(255,255,255,0.45);font-weight:600;">(لكل الطلاب)</span></div>
+      <div class="field-grid">
+        <div class="field-item">
+          <label>اسم المدرسة</label>
+          <input type="text" id="fieldSchoolB" placeholder="اسم المدرسة" oninput="syncField('cert-school-name', this.value)">
+        </div>
+        <div class="field-item">
+          <label>الأسبوع</label>
+          <input type="text" id="fieldWeekB" placeholder="الأسبوع: الخامس" oninput="syncField('cert-week', this.value)">
+        </div>
+      </div>
+
+      <div class="ctrl-label" style="margin-top:14px;">✒️ التوقيع الأول</div>
+      <div class="field-grid">
+        <div class="field-item">
+          <label>المسمّى</label>
+          <input type="text" id="rolePB" placeholder="مثال: مدير المدرسة" oninput="syncRole(0, this.value)">
+        </div>
+        <div class="field-item">
+          <label>الاسم</label>
+          <input type="text" id="fieldPrincipalB" placeholder="الاسم" oninput="syncSign(0, this.value)">
+        </div>
+      </div>
+
+      <div class="ctrl-label" style="margin-top:12px;">✒️ التوقيع الثاني</div>
+      <div class="field-grid">
+        <div class="field-item">
+          <label>المسمّى</label>
+          <input type="text" id="roleLB" placeholder="معلم · موجه · رائد نشاط..." oninput="syncRole(1, this.value)">
+        </div>
+        <div class="field-item">
+          <label>الاسم</label>
+          <input type="text" id="fieldLeaderB" placeholder="الاسم" oninput="syncSign(1, this.value)">
+        </div>
+      </div>
     </div>
   </div>
 
   <div class="export-row">
-    <button class="exp-btn exp-img mode-export" id="exportSingle" onclick="downloadSingle()">
-      <span>🖼️</span><span>تحميل شهادة الطالب</span>
-    </button>
-    <button class="exp-btn exp-bulk mode-export" id="exportBulk" onclick="downloadBulk()" style="display:none;">
+    <!-- وضع طالب واحد: 3 أزرار -->
+    <div class="single-exports" id="singleExports">
+      <button class="exp-btn exp-img" onclick="downloadSingle()">
+        <span>🖼️</span><span>صورة</span>
+      </button>
+      <button class="exp-btn exp-pdf" onclick="downloadPDF()">
+        <span>📄</span><span>PDF</span>
+      </button>
+      <button class="exp-btn exp-share" onclick="shareCert()">
+        <span>📤</span><span>مشاركة</span>
+      </button>
+    </div>
+    <!-- وضع عدة طلاب -->
+    <button class="exp-btn exp-bulk" id="exportBulk" onclick="downloadBulk()" style="display:none;">
       <span>📦</span><span>تحميل كل الشهادات (ZIP)</span>
     </button>
   </div>
@@ -570,6 +641,10 @@ function reSyncAllFields(){
   if(fP && fP.value.trim()) syncSign(0, fP.value);
   const fL = document.getElementById('fieldLeader');
   if(fL && fL.value.trim()) syncSign(1, fL.value);
+  const rP = document.getElementById('roleP');
+  if(rP && rP.value.trim()) syncRole(0, rP.value);
+  const rL = document.getElementById('roleL');
+  if(rL && rL.value.trim()) syncRole(1, rL.value);
 }
 
 function backToSelect(){
@@ -610,12 +685,12 @@ function renderCertificate(d){
     <div class="cert-reason" contenteditable="true">لتميّزه وحُسن سلوكه وتفوّقه الدراسي خلال هذا الأسبوع، نسأل الله له دوام التوفيق والنجاح.</div>
     <div class="cert-footer">
       <div class="cert-sign">
-        <div class="cert-sign-label">مدير/ة المدرسة</div>
+        <div class="cert-sign-label cert-role-0" contenteditable="true">مدير/ة المدرسة</div>
         <div class="cert-sign-line" contenteditable="true" style="border-color:${d.dark?'rgba(255,255,255,0.3)':'rgba(0,0,0,0.2)'};">.............</div>
       </div>
       <div class="cert-week" contenteditable="true" style="color:${d.accent};">الأسبوع: ......</div>
       <div class="cert-sign">
-        <div class="cert-sign-label">رائد النشاط</div>
+        <div class="cert-sign-label cert-role-1" contenteditable="true">رائد النشاط</div>
         <div class="cert-sign-line" contenteditable="true" style="border-color:${d.dark?'rgba(255,255,255,0.3)':'rgba(0,0,0,0.2)'};">.............</div>
       </div>
     </div>
@@ -664,7 +739,7 @@ function switchMode(mode){
   document.getElementById('tabBulk').classList.toggle('active', !isSingle);
   document.getElementById('panelSingle').classList.toggle('active', isSingle);
   document.getElementById('panelBulk').classList.toggle('active', !isSingle);
-  document.getElementById('exportSingle').style.display = isSingle ? 'flex' : 'none';
+  document.getElementById('singleExports').style.display = isSingle ? 'grid' : 'none';
   document.getElementById('exportBulk').style.display = isSingle ? 'none' : 'flex';
 }
 
@@ -699,6 +774,15 @@ function syncSign(idx, val){
   const lines = document.querySelectorAll('#cert-paper .cert-sign-line');
   if(lines[idx]){
     lines[idx].textContent = val.trim() || '.............';
+  }
+}
+
+// مزامنة مسمّى التوقيع (مرن)
+function syncRole(idx, val){
+  const el = document.querySelector('#cert-paper .cert-role-' + idx);
+  if(el){
+    const def = idx === 0 ? 'مدير/ة المدرسة' : 'رائد النشاط';
+    el.textContent = val.trim() || def;
   }
 }
 
@@ -744,16 +828,16 @@ async function downloadSingle(){
   if(typeof domtoimage === 'undefined'){ showToast('❌ جاري تحميل النظام، انتظر ثانية'); return; }
 
   showProgress('🖼️ جاري إنشاء الشهادة...', 0, 1);
-  await new Promise(r => setTimeout(r, 200));
+  await new Promise(r => setTimeout(r, 350));
 
   try {
     const clone = prepareClone();
     const renderC = document.getElementById('hidden-render-container');
     renderC.innerHTML = '';
     renderC.appendChild(clone);
-    await new Promise(r => setTimeout(r, 200));
+    await new Promise(r => setTimeout(r, 350));
 
-    const blob = await domtoimage.toBlob(clone, { quality:1.0, width:1000, height:707, cacheBust:true });
+    const blob = await domtoimage.toBlob(clone, { quality:1.0, width:1000, height:707 });
     downloadBlob(blob, `نجم_الأسبوع_${sanitize(name)}.png`);
     updateProgress(1,1);
     showToast('✅ تم تحميل الشهادة');
@@ -762,6 +846,97 @@ async function downloadSingle(){
     console.error(err);
     showToast('❌ حدث خطأ في التصدير');
   } finally {
+    hideProgress();
+  }
+}
+
+// ═══════════════════════════════════════════════
+// إنشاء صورة الشهادة (blob) - مشترك
+// ═══════════════════════════════════════════════
+async function buildCertBlob(){
+  const inputVal = document.getElementById('singleName').value.trim();
+  const nameEl = document.querySelector('#cert-paper .cert-name');
+  const name = inputVal || (nameEl ? nameEl.textContent.trim() : '');
+  if(!name || name === 'اكتب الاسم هنا'){ showToast('❌ اكتب اسم الطالب أولاً'); return null; }
+  if(nameEl) nameEl.textContent = name;
+  await new Promise(r => setTimeout(r, 50));
+
+  const clone = prepareClone();
+  const renderC = document.getElementById('hidden-render-container');
+  renderC.innerHTML = '';
+  renderC.appendChild(clone);
+  await new Promise(r => setTimeout(r, 350));
+  const blob = await domtoimage.toBlob(clone, { quality:1.0, width:1000, height:707 });
+  renderC.innerHTML = '';
+  return { blob, name };
+}
+
+// ═══════════════════════════════════════════════
+// تصدير PDF
+// ═══════════════════════════════════════════════
+async function downloadPDF(){
+  if(typeof domtoimage === 'undefined' || !window.jspdf){ showToast('❌ جاري تحميل النظام، انتظر ثانية'); return; }
+  showProgress('📄 جاري إنشاء PDF...', 0, 1);
+  try {
+    const result = await buildCertBlob();
+    if(!result){ hideProgress(); return; }
+    const dataUrl = await new Promise(res => {
+      const reader = new FileReader();
+      reader.onload = () => res(reader.result);
+      reader.readAsDataURL(result.blob);
+    });
+    const { jsPDF } = window.jspdf;
+    // A4 أفقي
+    const pdf = new jsPDF({ orientation:'landscape', unit:'mm', format:'a4' });
+    const pw = pdf.internal.pageSize.getWidth();
+    const ph = pdf.internal.pageSize.getHeight();
+    // نسبة الشهادة 1000×707
+    const imgRatio = 1000/707;
+    let iw = pw, ih = pw/imgRatio;
+    if(ih > ph){ ih = ph; iw = ph*imgRatio; }
+    const x = (pw-iw)/2, y = (ph-ih)/2;
+    pdf.addImage(dataUrl, 'PNG', x, y, iw, ih);
+    pdf.save(`نجم_الأسبوع_${sanitize(result.name)}.pdf`);
+    updateProgress(1,1);
+    showToast('✅ تم تحميل PDF');
+  } catch(err){
+    console.error(err);
+    showToast('❌ حدث خطأ في PDF');
+  } finally {
+    hideProgress();
+  }
+}
+
+// ═══════════════════════════════════════════════
+// مشاركة (واتساب وغيره)
+// ═══════════════════════════════════════════════
+async function shareCert(){
+  if(typeof domtoimage === 'undefined'){ showToast('❌ جاري تحميل النظام، انتظر ثانية'); return; }
+  showProgress('📤 جاري التحضير للمشاركة...', 0, 1);
+  try {
+    const result = await buildCertBlob();
+    if(!result){ hideProgress(); return; }
+    updateProgress(1,1);
+    hideProgress();
+
+    const file = new File([result.blob], `نجم_الأسبوع_${sanitize(result.name)}.png`, {type:'image/png'});
+    if(navigator.share && navigator.canShare && navigator.canShare({files:[file]})){
+      await navigator.share({
+        files:[file],
+        title:'شهادة نجم الأسبوع',
+        text:'🌟 شهادة نجم الأسبوع\n\n🌐 www.ksa2030.one\nالتقارير الذكية — منصة تقارير المدرسة'
+      });
+      showToast('✅ تم المشاركة');
+    } else {
+      // fallback: تنزيل
+      downloadBlob(result.blob, `نجم_الأسبوع_${sanitize(result.name)}.png`);
+      showToast('📥 تم التنزيل (المشاركة غير مدعومة)');
+    }
+  } catch(err){
+    if(err.name !== 'AbortError'){
+      console.error(err);
+      showToast('❌ حدث خطأ في المشاركة');
+    }
     hideProgress();
   }
 }
@@ -785,7 +960,7 @@ async function downloadBulk(){
   }
 
   showProgress('📦 جاري التهيئة...', 0, names.length);
-  await new Promise(r => setTimeout(r, 200));
+  await new Promise(r => setTimeout(r, 350));
 
   const clone = prepareClone();
   const renderC = document.getElementById('hidden-render-container');
@@ -797,7 +972,7 @@ async function downloadBulk(){
     if(names.length === 1){
       targetName.textContent = names[0];
       await new Promise(r => setTimeout(r, 180));
-      const blob = await domtoimage.toBlob(clone, { quality:1.0, width:1000, height:707, cacheBust:true });
+      const blob = await domtoimage.toBlob(clone, { quality:1.0, width:1000, height:707 });
       downloadBlob(blob, `نجم_الأسبوع_${sanitize(names[0])}.png`);
       updateProgress(1,1);
       showToast('✅ تم تحميل الشهادة');
@@ -808,7 +983,7 @@ async function downloadBulk(){
         targetName.textContent = names[i];
         await new Promise(r => setTimeout(r, 150));
         try {
-          const blob = await domtoimage.toBlob(clone, { quality:1.0, width:1000, height:707, cacheBust:true });
+          const blob = await domtoimage.toBlob(clone, { quality:1.0, width:1000, height:707 });
           if(blob) zip.file(`نجم_الأسبوع_${(i+1).toString().padStart(2,'0')}_${sanitize(names[i])}.png`, blob);
         } catch(e){ console.error(e); }
         updateProgress(i+1, names.length);
@@ -888,7 +1063,20 @@ function prepareClone(){
   if(wk){ wk.style.fontSize = '1.05rem'; wk.style.whiteSpace = 'nowrap'; }
 
   const lb = clone.querySelector('.cert-logo-box');
-  if(lb){ lb.style.width = '90px'; lb.style.height = '90px'; lb.style.flexShrink = '0'; }
+  if(lb){
+    lb.style.width = '90px'; lb.style.height = '90px'; lb.style.flexShrink = '0';
+    // ضمان ظهور الشعار في التصدير
+    if(uploadedLogo){
+      lb.style.border = 'none';
+      lb.innerHTML = '';
+      const img = document.createElement('img');
+      img.src = uploadedLogo;
+      img.style.width = '100%';
+      img.style.height = '100%';
+      img.style.objectFit = 'contain';
+      lb.appendChild(img);
+    }
+  }
   const ls = clone.querySelector('.cert-logo-spacer');
   if(ls){ ls.style.width = '90px'; ls.style.flexShrink = '0'; }
 
