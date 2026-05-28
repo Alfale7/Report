@@ -1585,6 +1585,13 @@ function loadJsPDF(){
 function prepareForExport(page){
   const replacements = [];
 
+  // 🔥 إلغاء أي أنيميشن/شفافية على الحاوية نفسها (تمنع البهتان وقت الالتقاط)
+  replacements.push({orig:page, prevCss:page.style.cssText, type:'css'});
+  page.style.animation = 'none';
+  page.style.webkitAnimation = 'none';
+  page.style.opacity = '1';
+  page.style.transform = 'none';
+
   // 0️⃣ إخفاء العناصر التفاعلية اللي ما تظهر في التصدير
   const hideSelectors = '.mode-selector, .add-controls, .col-delete, .row-delete, .row-delete-cell, .school-logo-remove, #toast, .modal-overlay';
   page.querySelectorAll(hideSelectors).forEach(el => {
@@ -1643,8 +1650,10 @@ function prepareForExport(page){
 }
 
 function restoreFromExport(replacements){
-  replacements.forEach(({orig, span, originalHTML, prevDisplay, type}) => {
-    if(type === 'hide'){
+  replacements.forEach(({orig, span, originalHTML, prevDisplay, prevCss, type}) => {
+    if(type === 'css'){
+      orig.style.cssText = prevCss || '';
+    } else if(type === 'hide'){
       orig.style.display = prevDisplay || '';
     } else if(type === 'editable'){
       if(originalHTML !== undefined) orig.innerHTML = originalHTML;
@@ -1675,7 +1684,7 @@ async function saveAsImage(){
       width:page.offsetWidth, height:page.offsetHeight,
       onclone:(doc) => {
         const style = doc.createElement('style');
-        style.textContent = `*{letter-spacing:0 !important;font-feature-settings:"kern" 1,"liga" 1,"calt" 1,"rlig" 1 !important;font-kerning:normal !important;-webkit-print-color-adjust:exact !important;print-color-adjust:exact !important;color-adjust:exact !important;}`;
+        style.textContent = `*{letter-spacing:0 !important;font-feature-settings:"kern" 1,"liga" 1,"calt" 1,"rlig" 1 !important;font-kerning:normal !important;-webkit-print-color-adjust:exact !important;print-color-adjust:exact !important;color-adjust:exact !important;animation:none !important;-webkit-animation:none !important;transition:none !important;transform:none !important;} .container,body,.header-card,.table-card,.signatures-card{opacity:1 !important;animation:none !important;-webkit-animation:none !important;}`;
         doc.head.appendChild(style);
       }
     });
@@ -1711,7 +1720,7 @@ async function exportAsPDFv2(){
       width:page.offsetWidth, height:page.offsetHeight,
       onclone:(doc) => {
         const style = doc.createElement('style');
-        style.textContent = `*{letter-spacing:0 !important; font-kerning:normal !important;-webkit-print-color-adjust:exact !important;print-color-adjust:exact !important;color-adjust:exact !important;}`;
+        style.textContent = `*{letter-spacing:0 !important; font-kerning:normal !important;-webkit-print-color-adjust:exact !important;print-color-adjust:exact !important;color-adjust:exact !important;animation:none !important;-webkit-animation:none !important;transition:none !important;transform:none !important;} .container,body,.header-card,.table-card,.signatures-card{opacity:1 !important;animation:none !important;-webkit-animation:none !important;}`;
         doc.head.appendChild(style);
       }
     });
@@ -1772,7 +1781,7 @@ async function shareReport(){
       width:page.offsetWidth, height:page.offsetHeight,
       onclone:(doc) => {
         const style = doc.createElement('style');
-        style.textContent = `*{letter-spacing:0 !important; font-kerning:normal !important;-webkit-print-color-adjust:exact !important;print-color-adjust:exact !important;color-adjust:exact !important;}`;
+        style.textContent = `*{letter-spacing:0 !important; font-kerning:normal !important;-webkit-print-color-adjust:exact !important;print-color-adjust:exact !important;color-adjust:exact !important;animation:none !important;-webkit-animation:none !important;transition:none !important;transform:none !important;} .container,body,.header-card,.table-card,.signatures-card{opacity:1 !important;animation:none !important;-webkit-animation:none !important;}`;
         doc.head.appendChild(style);
       }
     });
