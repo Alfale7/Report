@@ -144,12 +144,12 @@ body{
 .eh-info .eh-num{font-size:0.7rem; color:var(--gold-bright); font-weight:800;}
 .eh-info .eh-title{font-size:1rem; font-weight:800; color:#fff; line-height:1.3;}
 
-/* صفحة الفاصل (معاينة) */
+/* صفحة الفاصل (معاينة) — بهوية قالب وزارة التعليم */
 .cover-stage{margin-bottom:18px;}
 .cover-paper{
-  width:100%; aspect-ratio:1 / 1.414; background:#fdfcf8; border-radius:8px;
+  width:100%; aspect-ratio:1 / 1.414; background:#e2e3dd; border-radius:8px;
   box-shadow:0 20px 60px rgba(0,0,0,0.5); position:relative; overflow:hidden;
-  padding:8% 7%; display:flex; flex-direction:column; color:#1c2820;
+  display:flex; flex-direction:column; color:#1c2820;
 }
 
 /* بطاقة رفع الشواهد */
@@ -333,6 +333,18 @@ body{
           <label>العام الدراسي</label>
           <input type="text" id="tYear" placeholder="1447 هـ" oninput="saveData()">
         </div>
+        <div class="field-item">
+          <label>الإدارة العامة للتعليم</label>
+          <input type="text" id="tAdmin" placeholder="مثال: بمنطقة الجوف" oninput="saveData()">
+        </div>
+        <div class="field-item">
+          <label>مكتب التعليم</label>
+          <input type="text" id="tOffice" placeholder="مثال: مكتب التعليم بسكاكا" oninput="saveData()">
+        </div>
+        <div class="field-item">
+          <label>رابط الموقع (الفوتر)</label>
+          <input type="text" id="tSite" placeholder="مثال: SITES.MOE.GOV.SA/JOUF" oninput="saveData()">
+        </div>
       </div>
       <div class="logo-row">
         <div class="logo-upload-box" id="logoBox" onclick="document.getElementById('logoInput').click()">
@@ -455,17 +467,24 @@ const ELEMENTS = [
     shawahed:['نماذج من الاختبارات','نماذج من ملفات إنجاز الطلاب','نماذج من المهام الأدائية'] }
 ];
 
-// لون مميز لكل عنصر
+// لون مميز لكل عنصر — من الهوية البصرية الرسمية لوزارة التعليم (الإصدار الثالث)
 const PALETTE = [
-  {a:'#1e6b8a',a2:'#2a8aab'}, {a:'#0f766e',a2:'#14b8a6'}, {a:'#b8923d',a2:'#d4a657'},
-  {a:'#7c3aed',a2:'#a78bfa'}, {a:'#16a34a',a2:'#4ade80'}, {a:'#0369a1',a2:'#0ea5e9'},
-  {a:'#c2410c',a2:'#fb923c'}, {a:'#be185d',a2:'#f472b6'}, {a:'#4338ca',a2:'#818cf8'},
-  {a:'#0891b2',a2:'#22d3ee'}, {a:'#15803d',a2:'#22c55e'}
+  {a:'#15445a',a2:'#3078a6'},
+  {a:'#07a869',a2:'#0da9a6'},
+  {a:'#3d7eb9',a2:'#69cee3'},
+  {a:'#0da9a6',a2:'#218caa'},
+  {a:'#351375',a2:'#7258a4'},
+  {a:'#3078a6',a2:'#218caa'},
+  {a:'#7258a4',a2:'#7a80ff'},
+  {a:'#218caa',a2:'#69cee3'},
+  {a:'#15445a',a2:'#3d7eb9'},
+  {a:'#07a869',a2:'#0da9a6'},
+  {a:'#3078a6',a2:'#69cee3'}
 ];
 
 let currentIdx = 0;
 let uploadedLogo = null;
-let teacherData = { name:'', subject:'', school:'', year:'' };
+let teacherData = { name:'', subject:'', school:'', year:'', admin:'', office:'', site:'' };
 // أسماء الشواهد لكل عنصر (قابلة للتعديل من المعلم) — تبدأ من القيم الرسمية
 let shahedNames = ELEMENTS.map(el => [...el.shawahed]);
 // صور الشواهد: evidenceImages[elementIdx][shahedIdx] = [dataUrl, ...]
@@ -484,6 +503,9 @@ function saveData(){
   teacherData.subject = document.getElementById('tSubject').value.trim();
   teacherData.school = document.getElementById('tSchool').value.trim();
   teacherData.year = document.getElementById('tYear').value.trim();
+  teacherData.admin = document.getElementById('tAdmin').value.trim();
+  teacherData.office = document.getElementById('tOffice').value.trim();
+  teacherData.site = document.getElementById('tSite').value.trim();
 }
 
 // عدد الصور الكلي لعنصر
@@ -524,7 +546,6 @@ function handleLogoUpload(e){
   reader.onload = function(ev){
     const img = new Image();
     img.onload = function(){
-      // دقة عالية + الحفاظ على نسبة الشعار الأصلية (بلا تشويه)
       const maxDim = 600;
       const ratio = Math.min(maxDim/img.width, maxDim/img.height, 1);
       const w = Math.round(img.width * ratio);
@@ -532,12 +553,11 @@ function handleLogoUpload(e){
       const canvas = document.createElement('canvas');
       canvas.width = w; canvas.height = h;
       const ctx = canvas.getContext('2d');
-      // تنعيم عالي الجودة
       ctx.imageSmoothingEnabled = true;
       ctx.imageSmoothingQuality = 'high';
       ctx.clearRect(0, 0, w, h);
       ctx.drawImage(img, 0, 0, w, h);
-      uploadedLogo = canvas.toDataURL('image/png'); // PNG = بلا فقد جودة + يحفظ الشفافية
+      uploadedLogo = canvas.toDataURL('image/png');
       document.getElementById('logoBox').innerHTML = '<img src="'+uploadedLogo+'" alt="شعار">';
       showToast('✅ تم رفع الشعار بدقة عالية');
     };
@@ -583,32 +603,39 @@ function renderCover(){
   saveData();
 
   const logoHtml = uploadedLogo
-    ? `<img src="${uploadedLogo}" style="max-width:78px;max-height:78px;width:auto;height:auto;object-fit:contain;display:block;">`
-    : '';
+    ? `<img src="${uploadedLogo}" style="max-width:64px;max-height:64px;width:auto;height:auto;object-fit:contain;display:block;">`
+    : `<div style="font-size:0.62rem;color:rgba(255,255,255,0.55);font-weight:700;text-align:center;line-height:1.5;">شعار<br>الوزارة</div>`;
 
   const examplesHtml = el.examples.map(e => `<li>${e}</li>`).join('');
   const shawahedHtml = shahedNames[currentIdx].filter(s => s && s.trim()).map(s => `<li>${s}</li>`).join('');
 
+  const adminTxt = teacherData.admin || 'الإدارة العامة للتعليم';
+  const officeTxt = teacherData.office || 'مكتب التعليم';
+  const siteTxt = teacherData.site || 'SITES.MOE.GOV.SA';
+
   paper.innerHTML = `
-    ${getCoverDeco(p)}
-    <div class="cv-layer" style="position:relative;z-index:1;display:flex;flex-direction:column;height:100%;">
-      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:4%;">
-        <div style="text-align:right;">
-          <div style="font-size:0.72rem;color:#666;font-weight:700;">المملكة العربية السعودية</div>
-          <div style="font-size:0.72rem;color:#666;font-weight:700;">وزارة التعليم</div>
-          <div class="cv-school" style="font-size:0.82rem;color:#1c2820;font-weight:800;margin-top:2px;">${teacherData.school || 'اسم المدرسة'}</div>
+    <div class="cv-header" style="position:relative;flex-shrink:0;">
+      <div style="height:5px;background:linear-gradient(90deg,#2782b1 0%,#2c979d 50%,#3ba87e 100%);"></div>
+      <div style="background:radial-gradient(circle at 88% 12%,rgba(52,174,125,0.55),transparent 38%),radial-gradient(circle at 12% 12%,rgba(43,126,176,0.5),transparent 38%),#0b3946;border-radius:0 0 26px 26px;padding:18px 26px;display:flex;align-items:center;justify-content:space-between;gap:14px;">
+        <div style="text-align:right;flex:1;">
+          <div style="font-size:0.96rem;color:#fff;font-weight:800;line-height:1.5;">الإدارة العامة للتعليم ${adminTxt !== 'الإدارة العامة للتعليم' ? adminTxt : ''}</div>
+          <div style="font-size:0.9rem;color:#3fb6a8;font-weight:800;line-height:1.5;">${officeTxt}</div>
+          ${teacherData.school ? `<div style="font-size:0.74rem;color:rgba(255,255,255,0.85);font-weight:600;margin-top:3px;">${teacherData.school}</div>` : ''}
         </div>
-        <div style="width:80px;height:80px;display:flex;align-items:center;justify-content:center;flex-shrink:0;">${logoHtml}</div>
+        <div style="width:1.5px;height:48px;background:rgba(255,255,255,0.3);flex-shrink:0;"></div>
+        <div style="width:74px;height:74px;display:flex;align-items:center;justify-content:center;flex-shrink:0;">${logoHtml}</div>
+      </div>
+    </div>
+
+    <div class="cv-body" style="position:relative;flex:1;display:flex;flex-direction:column;padding:6% 7% 4%;">
+      <div style="text-align:center;margin-bottom:4%;">
+        <div style="font-size:2.2rem;line-height:1;margin-bottom:3%;">${el.icon}</div>
+        <div class="cv-eyebrow" style="font-size:0.8rem;color:${p.a};font-weight:800;letter-spacing:1px;">شواهد الأداء الوظيفي</div>
+        <div class="cv-elnum" style="display:inline-block;margin:3% 0;padding:5px 18px;border-radius:99px;background:linear-gradient(135deg,${p.a},${p.a2});color:#fff;font-size:0.78rem;font-weight:800;box-shadow:0 4px 12px ${p.a}40;">العنصر ${currentIdx+1} · الوزن النسبي ${el.weight}</div>
+        <div class="cv-title" style="font-family:'Aref Ruqaa',serif;font-size:1.45rem;color:${p.a};font-weight:700;line-height:1.4;padding:0 4%;">${el.title}</div>
       </div>
 
-      <div style="text-align:center;margin:6% 0 4%;">
-        <div style="font-size:2.4rem;line-height:1;margin-bottom:3%;">${el.icon}</div>
-        <div class="cv-eyebrow" style="font-size:0.82rem;color:${p.a};font-weight:800;letter-spacing:1px;">شواهد الأداء الوظيفي</div>
-        <div class="cv-elnum" style="display:inline-block;margin:3% 0;padding:4px 16px;border-radius:99px;background:${p.a};color:#fff;font-size:0.78rem;font-weight:800;">العنصر ${currentIdx+1} · الوزن النسبي ${el.weight}</div>
-        <div class="cv-title" style="font-family:'Aref Ruqaa',serif;font-size:1.5rem;color:${p.a};font-weight:700;line-height:1.4;padding:0 4%;">${el.title}</div>
-      </div>
-
-      <div style="height:2px;background:linear-gradient(90deg,transparent,${p.a},transparent);margin:3% 0;"></div>
+      <div style="height:2px;background:linear-gradient(90deg,transparent,${p.a},transparent);margin:2% 0 4%;"></div>
 
       <div style="display:flex;gap:4%;flex:1;">
         <div style="flex:1;">
@@ -624,29 +651,23 @@ function renderCover(){
 
       <div style="margin-top:auto;display:flex;align-items:center;justify-content:space-between;padding-top:4%;border-top:1px solid rgba(0,0,0,0.1);">
         <div class="cv-teacher" style="font-size:0.8rem;color:#1c2820;font-weight:700;">${teacherData.name ? 'إعداد: '+teacherData.name : 'إعداد المعلم/ة'}</div>
-        <div class="cv-year" style="font-size:0.78rem;color:#666;font-weight:700;">${teacherData.year || '1447 هـ'}</div>
+        <div class="cv-year" style="font-size:0.78rem;color:#5a5a5a;font-weight:700;">${teacherData.year || '1447 هـ'}</div>
       </div>
+    </div>
+
+    <div class="cv-footer" style="flex-shrink:0;position:relative;">
+      <div style="background:linear-gradient(90deg,#2581c0 0%,#359ca5 50%,#47b97e 100%);border-radius:26px 26px 0 0;padding:11px 26px;display:flex;align-items:center;justify-content:center;gap:8px;">
+        <span style="font-size:0.78rem;">🌐</span>
+        <span style="font-size:0.78rem;color:#fff;font-weight:800;letter-spacing:0.5px;">${siteTxt}</span>
+      </div>
+      <div style="height:4px;background:#35989e;"></div>
     </div>`;
 
-  // تنسيق عناصر القوائم
   paper.querySelectorAll('.cv-list li').forEach(li => {
     li.style.fontSize = '0.74rem'; li.style.color = '#333'; li.style.fontWeight = '500';
     li.style.paddingRight = '16px'; li.style.position = 'relative'; li.style.lineHeight = '1.5';
     li.insertAdjacentHTML('afterbegin', '<span style="position:absolute;right:0;color:'+p.a+';">•</span>');
   });
-}
-
-// زخرفة صفحة الفاصل
-function getCoverDeco(p){
-  return `
-  <svg style="position:absolute;inset:0;width:100%;height:100%;pointer-events:none;z-index:0;" viewBox="0 0 595 842" preserveAspectRatio="none">
-    <rect x="18" y="18" width="559" height="806" fill="none" stroke="${p.a}" stroke-width="2" opacity="0.3" rx="6"/>
-    <rect x="26" y="26" width="543" height="790" fill="none" stroke="${p.a2}" stroke-width="1" opacity="0.25" rx="6"/>
-    <circle cx="60" cy="60" r="50" fill="${p.a}" opacity="0.06"/>
-    <circle cx="535" cy="782" r="60" fill="${p.a2}" opacity="0.06"/>
-    <circle cx="535" cy="60" r="35" fill="${p.a2}" opacity="0.05"/>
-    <circle cx="60" cy="782" r="40" fill="${p.a}" opacity="0.05"/>
-  </svg>`;
 }
 
 // ═══════════════════════════════════════════════
@@ -658,7 +679,6 @@ function buildEvidenceUploads(){
   const names = shahedNames[currentIdx];
   const elImgs = evidenceImages[currentIdx];
 
-  // حقل لكل شاهد (الاسم قابل للتعديل)
   names.forEach((shahedName, si) => {
     const imgs = elImgs[si] || [];
     const block = document.createElement('div');
@@ -687,38 +707,32 @@ function buildEvidenceUploads(){
     wrap.appendChild(block);
   });
 
-  // زر إضافة شاهد جديد
   const addShahedBtn = document.createElement('button');
   addShahedBtn.className = 'btn-add-shahed';
   addShahedBtn.innerHTML = '<span>➕</span><span>إضافة شاهد جديد</span>';
   addShahedBtn.onclick = addShahed;
   wrap.appendChild(addShahedBtn);
 
-  // العدّاد
   const totalImgs = elImgs.reduce((sum, arr) => sum + arr.length, 0);
   const filledShawahed = elImgs.filter(arr => arr.length > 0).length;
   const counter = document.getElementById('evidenceCounter');
   if(counter) counter.textContent = totalImgs > 0 ? `📎 ${filledShawahed}/${names.length} شاهد · ${totalImgs} صورة` : 'لا توجد شواهد بعد';
 }
 
-// تعديل اسم الشاهد
 function updateShahedName(si, val){
   shahedNames[currentIdx][si] = val;
 }
 
-// إضافة شاهد جديد
 function addShahed(){
   shahedNames[currentIdx].push('');
   evidenceImages[currentIdx].push([]);
   buildEvidenceUploads();
-  // تركيز على آخر حقل اسم
   setTimeout(() => {
     const inputs = document.querySelectorAll('.shahed-name-input');
     if(inputs.length) inputs[inputs.length-1].focus();
   }, 50);
 }
 
-// حذف شاهد كامل
 function removeShahed(si){
   if(shahedNames[currentIdx].length <= 1){ showToast('⚠️ يجب إبقاء شاهد واحد على الأقل'); return; }
   shahedNames[currentIdx].splice(si, 1);
@@ -821,10 +835,10 @@ async function buildCoverClone(idx){
   clone.style.position = 'absolute';
   clone.style.width = '794px';
   clone.style.height = '1123px';
-  clone.style.padding = '56px 50px';
+  clone.style.padding = '0';
+  clone.style.overflow = 'hidden';
   clone.querySelectorAll('*').forEach(el => { el.style.letterSpacing = '0'; });
   currentIdx = realIdx;
-  // حقن الخطوط
   const css = await getEmbeddedFontCSS();
   if(css){ const s = document.createElement('style'); s.textContent = css; clone.insertBefore(s, clone.firstChild); }
   return clone;
@@ -838,20 +852,38 @@ async function buildEvidenceClone(idx){
   saveData();
 
   const page = document.createElement('div');
-  page.style.cssText = 'position:absolute;width:794px;height:1123px;background:#fdfcf8;padding:50px 44px;box-sizing:border-box;display:flex;flex-direction:column;font-family:Tajawal,sans-serif;color:#1c2820;';
+  page.style.cssText = 'position:absolute;width:794px;height:1123px;background:#e2e3dd;padding:0;box-sizing:border-box;display:flex;flex-direction:column;font-family:Tajawal,sans-serif;color:#1c2820;overflow:hidden;';
 
-  const logoHtml = uploadedLogo ? `<img src="${uploadedLogo}" style="max-width:64px;max-height:64px;width:auto;height:auto;object-fit:contain;display:block;">` : '';
+  const logoHtml = uploadedLogo
+    ? `<img src="${uploadedLogo}" style="max-width:58px;max-height:58px;width:auto;height:auto;object-fit:contain;display:block;">`
+    : `<div style="font-size:10px;color:rgba(255,255,255,0.55);font-weight:700;text-align:center;line-height:1.5;">شعار<br>الوزارة</div>`;
 
-  // ترويسة
+  const adminTxt = teacherData.admin ? 'الإدارة العامة للتعليم ' + teacherData.admin : 'الإدارة العامة للتعليم';
+  const officeTxt = teacherData.office || 'مكتب التعليم';
+  const siteTxt = teacherData.site || 'SITES.MOE.GOV.SA';
+
   let html = `
-    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;padding-bottom:14px;border-bottom:2px solid ${p.a};">
-      <div style="text-align:right;">
-        <div style="font-size:13px;color:#666;font-weight:700;">شواهد الأداء الوظيفي · العنصر ${idx+1}</div>
-        <div style="font-size:18px;color:${p.a};font-weight:800;font-family:'Aref Ruqaa',serif;">${el.title}</div>
-        <div style="font-size:12px;color:#888;font-weight:600;">${teacherData.name || 'المعلم/ة'} · ${teacherData.school || 'المدرسة'}</div>
+    <div style="flex-shrink:0;">
+      <div style="height:6px;background:linear-gradient(90deg,#2782b1 0%,#2c979d 50%,#3ba87e 100%);"></div>
+      <div style="background:radial-gradient(circle at 88% 15%,rgba(52,174,125,0.5),transparent 40%),radial-gradient(circle at 12% 15%,rgba(43,126,176,0.45),transparent 40%),#0b3946;border-radius:0 0 24px 24px;padding:18px 40px;display:flex;align-items:center;justify-content:space-between;gap:16px;">
+        <div style="text-align:right;flex:1;">
+          <div style="font-size:17px;color:#fff;font-weight:800;line-height:1.5;">${adminTxt}</div>
+          <div style="font-size:15px;color:#3fb6a8;font-weight:800;line-height:1.5;">${officeTxt}</div>
+          ${teacherData.school ? `<div style="font-size:12px;color:rgba(255,255,255,0.8);font-weight:600;margin-top:2px;">${teacherData.school}</div>` : ''}
+        </div>
+        <div style="width:1.5px;height:54px;background:rgba(255,255,255,0.3);flex-shrink:0;"></div>
+        <div style="width:64px;height:64px;display:flex;align-items:center;justify-content:center;flex-shrink:0;">${logoHtml}</div>
       </div>
-      <div style="width:64px;height:64px;display:flex;align-items:center;justify-content:center;flex-shrink:0;">${logoHtml}</div>
-    </div>`;
+    </div>
+
+    <div style="flex:1;display:flex;flex-direction:column;padding:24px 44px 16px;overflow:hidden;">
+      <div style="display:flex;align-items:center;gap:10px;margin-bottom:16px;padding-bottom:12px;border-bottom:2px solid ${p.a};">
+        <div style="width:42px;height:42px;border-radius:11px;background:linear-gradient(135deg,${p.a},${p.a2});display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0;">${el.icon}</div>
+        <div style="text-align:right;flex:1;">
+          <div style="font-size:12px;color:#777;font-weight:700;">شواهد الأداء الوظيفي · العنصر ${idx+1} · الوزن ${el.weight}</div>
+          <div style="font-size:18px;color:${p.a};font-weight:800;font-family:'Aref Ruqaa',serif;">${el.title}</div>
+        </div>
+      </div>`;
 
   const totalImgs = elImgs.reduce((sum, arr) => sum + arr.length, 0);
 
@@ -859,14 +891,13 @@ async function buildEvidenceClone(idx){
     html += `<div style="flex:1;display:flex;align-items:center;justify-content:center;color:#aaa;font-size:16px;font-weight:600;">لم تُرفع صور شواهد بعد</div>`;
   } else {
     html += `<div style="flex:1;display:flex;flex-direction:column;gap:16px;overflow:hidden;">`;
-    // كل شاهد بعنوانه (المعدّل) + صوره
     const names = shahedNames[idx];
     names.forEach((shahedName, si) => {
       const imgs = elImgs[si] || [];
-      if(imgs.length === 0) return; // نتخطى الشواهد الفارغة
+      if(imgs.length === 0) return;
       const label = (shahedName && shahedName.trim()) ? shahedName : `شاهد ${si+1}`;
       html += `<div>
-        <div style="background:${p.a};color:#fff;font-size:13px;font-weight:800;padding:7px 14px;border-radius:8px;margin-bottom:8px;">📌 ${label}</div>
+        <div style="background:linear-gradient(135deg,${p.a},${p.a2});color:#fff;font-size:13px;font-weight:800;padding:7px 14px;border-radius:8px;margin-bottom:8px;">📌 ${label}</div>
         <div style="display:grid;grid-template-columns:repeat(${imgs.length === 1 ? 1 : 2},1fr);gap:10px;">`;
       imgs.forEach(src => {
         html += `<div style="border:1.5px solid ${p.a2};border-radius:8px;overflow:hidden;background:#fff;box-shadow:0 3px 10px rgba(0,0,0,0.07);">
@@ -878,8 +909,16 @@ async function buildEvidenceClone(idx){
     html += `</div>`;
   }
 
-  // تذييل
-  html += `<div style="margin-top:16px;padding-top:12px;border-top:1px solid rgba(0,0,0,0.1);text-align:center;font-size:11px;color:#999;font-weight:600;">${teacherData.year || '1447 هـ'} · www.ksa2030.one</div>`;
+  html += `<div style="margin-top:12px;text-align:center;font-size:11px;color:#888;font-weight:600;">${teacherData.name ? 'إعداد: '+teacherData.name+' · ' : ''}${teacherData.year || '1447 هـ'}</div>
+    </div>
+
+    <div style="flex-shrink:0;">
+      <div style="background:linear-gradient(90deg,#2581c0 0%,#359ca5 50%,#47b97e 100%);border-radius:24px 24px 0 0;padding:11px 40px;display:flex;align-items:center;justify-content:center;gap:8px;">
+        <span style="font-size:13px;">🌐</span>
+        <span style="font-size:13px;color:#fff;font-weight:800;letter-spacing:0.5px;">${siteTxt}</span>
+      </div>
+      <div style="height:5px;background:#35989e;"></div>
+    </div>`;
 
   page.innerHTML = html;
   page.querySelectorAll('*').forEach(el => { el.style.letterSpacing = '0'; });
@@ -899,7 +938,6 @@ async function previewCurrent(){
   overlay.classList.add('show');
   try {
     const renderC = document.getElementById('hidden-render-container');
-    // الفاصل
     const coverClone = await buildCoverClone(currentIdx);
     renderC.innerHTML = ''; renderC.appendChild(coverClone);
     await waitForImages(coverClone);
@@ -911,7 +949,6 @@ async function previewCurrent(){
     let html = '<div style="margin-bottom:6px;color:#fff;font-size:0.78rem;font-weight:700;">📄 صفحة الفاصل</div>';
     html += '<img src="'+coverUrl+'" alt="فاصل" style="margin-bottom:16px;">';
 
-    // الشواهد (إذا فيه صور)
     if(elementImageCount(currentIdx) > 0){
       const evClone = await buildEvidenceClone(currentIdx);
       renderC.innerHTML = ''; renderC.appendChild(evClone);
@@ -934,7 +971,6 @@ function closePreview(e){
 // ═══════════════════════════════════════════════
 // التصدير (صورة / PDF / مشاركة)
 // ═══════════════════════════════════════════════
-// انتظار تحميل كل الصور داخل عنصر
 function waitForImages(container){
   const imgs = Array.from(container.querySelectorAll('img'));
   if(imgs.length === 0) return Promise.resolve();
@@ -943,7 +979,6 @@ function waitForImages(container){
     return new Promise(res => {
       img.onload = res;
       img.onerror = res;
-      // مهلة احتياطية
       setTimeout(res, 3000);
     });
   }));
@@ -953,17 +988,14 @@ async function makeBlob(idx, type){
   const clone = type === 'cover' ? await buildCoverClone(idx) : await buildEvidenceClone(idx);
   const renderC = document.getElementById('hidden-render-container');
   renderC.innerHTML = ''; renderC.appendChild(clone);
-  // ننتظر تحميل كل الصور فعلياً (مو مهلة ثابتة)
   await waitForImages(clone);
   await new Promise(r => setTimeout(r, 250));
   if(document.fonts && document.fonts.ready) await document.fonts.ready;
-  // محاولة ثانية للتأكد (الصور الكبيرة)
   const blob = await domtoimage.toBlob(clone, { quality:1.0, width:794, height:1123 });
   renderC.innerHTML = '';
   return blob;
 }
 
-// دمج صورتين عمودياً في صورة واحدة
 function mergeBlobsVertical(blob1, blob2){
   return new Promise((resolve, reject) => {
     const url1 = URL.createObjectURL(blob1);
@@ -977,7 +1009,7 @@ function mergeBlobsVertical(blob1, blob2){
       canvas.width = Math.max(img1.width, img2.width);
       canvas.height = img1.height + img2.height;
       const ctx = canvas.getContext('2d');
-      ctx.fillStyle = '#fdfcf8'; ctx.fillRect(0,0,canvas.width,canvas.height);
+      ctx.fillStyle = '#e2e3dd'; ctx.fillRect(0,0,canvas.width,canvas.height);
       ctx.drawImage(img1, 0, 0);
       ctx.drawImage(img2, 0, img1.height);
       canvas.toBlob(b => {
@@ -1002,7 +1034,6 @@ async function exportCurrent(mode){
     const base = `${currentIdx+1}_${sanitize(el.title)}`;
 
     if(mode === 'image'){
-      // دمج الفاصل + الشواهد في صورة واحدة (إن وُجدت شواهد)
       if(evBlob){
         const merged = await mergeBlobsVertical(coverBlob, evBlob);
         downloadBlob(merged, base+'.png');
@@ -1033,7 +1064,6 @@ async function exportCurrent(mode){
   finally { hideProgress(); }
 }
 
-// تصدير الكل ZIP (فواصل + شواهد لكل عنصر فيه شواهد)
 async function exportAll(){
   if(typeof domtoimage === 'undefined' || typeof JSZip === 'undefined'){ showToast('❌ جاري التحميل، انتظر'); return; }
   saveData();
@@ -1045,12 +1075,10 @@ async function exportAll(){
     let step = 0;
     for(let i=0; i<total; i++){
       const el = ELEMENTS[i];
-      // الفاصل
       showProgress(`📄 فاصل العنصر ${i+1}...`, step, total*2);
       const coverBlob = await makeBlob(i, 'cover');
       zip.file(`${String(i+1).padStart(2,'0')}_أ_فاصل_${sanitize(el.title)}.png`, coverBlob);
       step++; updateProgress(step, total*2);
-      // الشواهد (إذا فيه صور)
       if(elementImageCount(i) > 0){
         showProgress(`🖼️ شواهد العنصر ${i+1}...`, step, total*2);
         const evBlob = await makeBlob(i, 'evidence');
