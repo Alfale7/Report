@@ -931,6 +931,13 @@ function loadJsPDF(){
 function prepareForExport(page){
   const replacements = [];
 
+  // 0️⃣ إخفاء العناصر اللي ما تظهر في التصدير (الأزرار + الفوتر التفاعلي)
+  const hideSelectors = '.action-bar, #toast, .modal-overlay, .add-row-btn, .del-btn, .photo-rm';
+  page.querySelectorAll(hideSelectors).forEach(el => {
+    replacements.push({orig:el, prevDisplay:el.style.display, type:'hide'});
+    el.style.display = 'none';
+  });
+
   // 1️⃣ معالجة inputs و textareas
   const inputs = page.querySelectorAll('input[type="text"], input[type="number"], textarea');
   inputs.forEach(el => {
@@ -982,8 +989,10 @@ function prepareForExport(page){
 }
 
 function restoreFromExport(replacements){
-  replacements.forEach(({orig, span, originalHTML, type}) => {
-    if(type === 'editable'){
+  replacements.forEach(({orig, span, originalHTML, prevDisplay, type}) => {
+    if(type === 'hide'){
+      orig.style.display = prevDisplay || '';
+    } else if(type === 'editable'){
       if(originalHTML !== undefined) orig.innerHTML = originalHTML;
     } else {
       orig.style.display = '';
