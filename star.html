@@ -995,6 +995,7 @@ async function downloadSingle(){
     renderC.appendChild(clone);
     await new Promise(r => setTimeout(r, 350));
 
+    if(document.fonts && document.fonts.ready){ await document.fonts.ready; }
     const blob = await domtoimage.toBlob(clone, { quality:1.0, width:1000, height:707 });
     downloadBlob(blob, `نجم_الأسبوع_${sanitize(name)}.png`);
     updateProgress(1,1);
@@ -1024,7 +1025,8 @@ async function buildCertBlob(){
   renderC.innerHTML = '';
   renderC.appendChild(clone);
   await new Promise(r => setTimeout(r, 350));
-  const blob = await domtoimage.toBlob(clone, { quality:1.0, width:1000, height:707 });
+  if(document.fonts && document.fonts.ready){ await document.fonts.ready; }
+    const blob = await domtoimage.toBlob(clone, { quality:1.0, width:1000, height:707 });
   renderC.innerHTML = '';
   return { blob, name };
 }
@@ -1130,7 +1132,8 @@ async function downloadBulk(){
     if(names.length === 1){
       targetName.textContent = names[0];
       await new Promise(r => setTimeout(r, 180));
-      const blob = await domtoimage.toBlob(clone, { quality:1.0, width:1000, height:707 });
+      if(document.fonts && document.fonts.ready){ await document.fonts.ready; }
+    const blob = await domtoimage.toBlob(clone, { quality:1.0, width:1000, height:707 });
       downloadBlob(blob, `نجم_الأسبوع_${sanitize(names[0])}.png`);
       updateProgress(1,1);
       showToast('✅ تم تحميل الشهادة');
@@ -1141,7 +1144,8 @@ async function downloadBulk(){
         targetName.textContent = names[i];
         await new Promise(r => setTimeout(r, 150));
         try {
-          const blob = await domtoimage.toBlob(clone, { quality:1.0, width:1000, height:707 });
+          if(document.fonts && document.fonts.ready){ await document.fonts.ready; }
+    const blob = await domtoimage.toBlob(clone, { quality:1.0, width:1000, height:707 });
           if(blob) zip.file(`نجم_الأسبوع_${(i+1).toString().padStart(2,'0')}_${sanitize(names[i])}.png`, blob);
         } catch(e){ console.error(e); }
         updateProgress(i+1, names.length);
@@ -1240,9 +1244,10 @@ function prepareClone(){
     el.style.wordSpacing = 'normal';
   });
 
-  // 🔥 تطبيق الخط المختار على كل النصوص في النسخة
-  clone.querySelectorAll('.cert-name, .cert-reason, .cert-preamble, .cert-school-name, .cert-eyebrow, .cert-week, .cert-sign-label, .cert-sign-line').forEach(el => {
-    el.style.fontFamily = selectedFontFamily;
+  // 🔥 تطبيق الخط المختار بقوة على كل النصوص (عدا العنوان والأيقونة)
+  const fontTargets = '.cert-name, .cert-reason, .cert-preamble, .cert-school-name, .cert-eyebrow, .cert-week, .cert-sign-label, .cert-sign-line';
+  clone.querySelectorAll(fontTargets).forEach(el => {
+    el.style.setProperty('font-family', selectedFontFamily, 'important');
   });
 
   // تكبير وضبط كل عنصر للتصدير عالي الجودة
@@ -1250,7 +1255,7 @@ function prepareClone(){
   if(t){ t.style.fontSize = '3rem'; t.style.lineHeight = '1.3'; t.style.textAlign = 'center'; t.style.width = '100%'; t.style.whiteSpace = 'nowrap'; t.style.marginBottom = '8px'; }
 
   const n = clone.querySelector('.cert-name');
-  if(n){ n.style.fontSize = '3.1rem'; n.style.fontFamily = selectedFontFamily; n.style.lineHeight = '1.4'; n.style.textAlign = 'center'; n.style.width = '100%'; n.style.margin = '12px 0'; n.style.padding = '4px 20px'; n.style.borderBottom = 'none'; }
+  if(n){ n.style.fontSize = '3.1rem'; n.style.setProperty('font-family', selectedFontFamily, 'important'); n.style.lineHeight = '1.4'; n.style.textAlign = 'center'; n.style.width = '100%'; n.style.margin = '12px 0'; n.style.padding = '4px 20px'; n.style.borderBottom = 'none'; }
 
   const si = clone.querySelector('.cert-star-icon');
   if(si){ si.style.fontSize = '3.8rem'; si.style.lineHeight = '1'; si.style.marginBottom = '10px'; }
