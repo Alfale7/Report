@@ -1,0 +1,379 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="color-scheme" content="light only">
+<meta name="theme-color" content="#050a12">
+<title>تحويل الرابط إلى باركود · التقارير الذكية</title>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Aref+Ruqaa:wght@400;700&family=Tajawal:wght@400;500;700;800;900&family=Reem+Kufi:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+
+<style>
+:root{
+  --navy:#050a12;
+  --navy-2:#0a1620;
+  --navy-3:#0f1f2e;
+  --surface:#0d1925;
+  --surface-2:#12202f;
+  --teal:#2a8aab;
+  --teal-bright:#3aa8d0;
+  --teal-deep:#1e6b8a;
+  --gold:#f0b855;
+  --gold-soft:#d99a2b;
+  --text:#eef4f8;
+  --text-dim:#7d94a8;
+  --text-faint:#4a5d70;
+  --border:rgba(42,138,171,0.18);
+  --border-gold:rgba(240,184,85,0.25);
+  --green:#16a34a;
+}
+*{margin:0; padding:0; box-sizing:border-box;}
+body{
+  font-family:'Tajawal','Tahoma',sans-serif;
+  background:var(--navy);
+  color:var(--text);
+  min-height:100vh;
+  display:flex; flex-direction:column; align-items:center;
+  padding:32px 18px 70px;
+  position:relative; overflow-x:hidden;
+}
+.bg-fx{position:fixed; inset:0; z-index:0; pointer-events:none; overflow:hidden;}
+.bg-fx::before{
+  content:""; position:absolute; top:-15%; right:-10%;
+  width:500px; height:500px;
+  background:radial-gradient(circle, rgba(42,138,171,0.18) 0%, transparent 65%);
+  border-radius:50%; filter:blur(40px); animation:float1 14s ease-in-out infinite;
+}
+.bg-fx::after{
+  content:""; position:absolute; bottom:-10%; left:-15%;
+  width:550px; height:550px;
+  background:radial-gradient(circle, rgba(240,184,85,0.1) 0%, transparent 65%);
+  border-radius:50%; filter:blur(50px); animation:float2 18s ease-in-out infinite;
+}
+@keyframes float1{0%,100%{transform:translate(0,0) scale(1);}50%{transform:translate(-40px,40px) scale(1.1);}}
+@keyframes float2{0%,100%{transform:translate(0,0) scale(1);}50%{transform:translate(40px,-30px) scale(1.15);}}
+.bg-grid{
+  position:fixed; inset:0; z-index:0; pointer-events:none;
+  background-image:radial-gradient(circle, rgba(42,138,171,0.08) 1px, transparent 1px);
+  background-size:32px 32px;
+  -webkit-mask-image:radial-gradient(ellipse at center, black 0%, transparent 75%);
+  mask-image:radial-gradient(ellipse at center, black 0%, transparent 75%);
+}
+.wrap{width:100%; max-width:500px; position:relative; z-index:1;}
+
+.header{text-align:center; margin-bottom:32px; animation:fadeDown 0.7s cubic-bezier(0.22,1,0.36,1);}
+@keyframes fadeDown{from{opacity:0; transform:translateY(-16px);}to{opacity:1; transform:translateY(0);}}
+.brand-top{
+  display:inline-flex; align-items:center; gap:8px;
+  padding:7px 16px; background:rgba(42,138,171,0.1);
+  border:1px solid var(--border); border-radius:99px;
+  font-size:0.72rem; font-weight:700; color:var(--teal-bright);
+  letter-spacing:0.5px; margin-bottom:22px;
+}
+.brand-top .dot{width:6px; height:6px; background:var(--gold); border-radius:50%; box-shadow:0 0 8px var(--gold); animation:pulse 2s ease-in-out infinite;}
+@keyframes pulse{0%,100%{opacity:1;}50%{opacity:0.4;}}
+.logo-mark{width:78px; height:78px; margin:0 auto 20px; position:relative; display:flex; align-items:center; justify-content:center;}
+.logo-mark .ring{
+  position:absolute; inset:0; border-radius:22px;
+  background:linear-gradient(135deg, var(--teal), var(--gold)) border-box;
+  -webkit-mask:linear-gradient(#fff 0 0) padding-box, linear-gradient(#fff 0 0);
+  -webkit-mask-composite:xor; mask-composite:exclude; padding:2px;
+}
+.logo-mark .inner{
+  width:100%; height:100%;
+  background:linear-gradient(135deg, var(--surface), var(--navy-2));
+  border-radius:20px; display:flex; align-items:center; justify-content:center;
+  font-size:2.1rem; box-shadow:inset 0 1px 0 rgba(42,138,171,0.2), 0 10px 30px rgba(0,0,0,0.5);
+}
+.logo-mark::after{content:""; position:absolute; inset:-7px; border:1px solid var(--border); border-radius:26px; opacity:0.6;}
+.title{
+  font-family:'Aref Ruqaa','Reem Kufi',serif;
+  font-size:1.85rem; font-weight:700; margin-bottom:8px; line-height:1.3;
+  background:linear-gradient(135deg, var(--text) 30%, var(--teal-bright));
+  -webkit-background-clip:text; background-clip:text; -webkit-text-fill-color:transparent;
+}
+.subtitle{font-size:0.9rem; color:var(--text-dim); font-weight:500;}
+
+.card{
+  background:linear-gradient(160deg, var(--surface) 0%, var(--navy-2) 100%);
+  border:1px solid var(--border); border-radius:24px; padding:28px;
+  box-shadow:0 24px 64px rgba(0,0,0,0.5), inset 0 1px 0 rgba(42,138,171,0.1);
+  position:relative; animation:fadeUp 0.8s cubic-bezier(0.22,1,0.36,1) 0.1s both;
+}
+@keyframes fadeUp{from{opacity:0; transform:translateY(24px);}to{opacity:1; transform:translateY(0);}}
+.card::before{content:""; position:absolute; top:0; left:28px; right:28px; height:1px; background:linear-gradient(90deg, transparent, var(--teal), var(--gold), transparent); opacity:0.6;}
+
+.input-label{font-size:0.92rem; font-weight:700; color:var(--text); margin-bottom:12px; display:flex; align-items:center; gap:7px;}
+.input-label .badge{font-size:0.62rem; background:var(--border); color:var(--teal-bright); padding:2px 8px; border-radius:99px; font-weight:700; margin-right:auto;}
+.input-wrap{position:relative;}
+.url-input{
+  width:100%; padding:17px 18px 17px 48px;
+  border:1.5px solid var(--border); border-radius:15px;
+  background:var(--navy-3); color:var(--text);
+  font-family:inherit; font-size:0.95rem; font-weight:500;
+  outline:none; transition:all 0.3s; direction:ltr; text-align:left;
+}
+.url-input:focus{border-color:var(--teal); background:var(--navy-2); box-shadow:0 0 0 4px rgba(42,138,171,0.1);}
+.url-input::placeholder{color:var(--text-faint);}
+.input-icon{position:absolute; left:17px; top:50%; transform:translateY(-50%); font-size:1.15rem; opacity:0.7; pointer-events:none;}
+
+.quick-tags{display:flex; flex-wrap:wrap; gap:8px; margin-top:14px;}
+.quick-tag{
+  padding:7px 14px; border:1px solid var(--border); border-radius:99px;
+  background:var(--navy-3); color:var(--text-dim);
+  font-family:inherit; font-size:0.76rem; font-weight:600;
+  cursor:pointer; transition:all 0.25s; display:flex; align-items:center; gap:5px;
+}
+.quick-tag:hover{border-color:var(--teal); color:var(--teal-bright); background:rgba(42,138,171,0.08); transform:translateY(-1px);}
+
+.btn-main{
+  width:100%; margin-top:20px; padding:17px;
+  border:none; border-radius:15px;
+  background:linear-gradient(135deg, var(--teal-bright), var(--teal-deep));
+  color:#fff; font-family:inherit; font-size:1.08rem; font-weight:800;
+  cursor:pointer; transition:all 0.3s;
+  display:flex; align-items:center; justify-content:center; gap:9px;
+  box-shadow:0 10px 30px rgba(42,138,171,0.3); position:relative; overflow:hidden;
+}
+.btn-main::before{content:""; position:absolute; top:0; left:-100%; width:100%; height:100%; background:linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent); transition:left 0.6s;}
+.btn-main:hover:not(:disabled)::before{left:100%;}
+.btn-main:hover:not(:disabled){transform:translateY(-2px); box-shadow:0 14px 38px rgba(42,138,171,0.42);}
+.btn-main:active:not(:disabled){transform:translateY(0);}
+.btn-main:disabled{opacity:0.4; cursor:not-allowed;}
+
+.result{display:none; margin-top:28px; text-align:center;}
+.result.show{display:block; animation:popIn 0.6s cubic-bezier(0.34,1.56,0.64,1);}
+@keyframes popIn{from{opacity:0; transform:scale(0.9) translateY(10px);}to{opacity:1; transform:scale(1) translateY(0);}}
+
+.qr-frame{
+  display:inline-block; padding:22px 22px 18px;
+  background:#ffffff; border-radius:20px;
+  box-shadow:0 16px 48px rgba(0,0,0,0.55), 0 0 0 1px var(--border-gold);
+  margin-bottom:6px; position:relative;
+}
+.qr-frame::before{content:""; position:absolute; inset:-9px; border:1px solid var(--border-gold); border-radius:28px; pointer-events:none;}
+.qr-frame .corner{position:absolute; width:18px; height:18px; border:2.5px solid var(--gold);}
+.qr-frame .corner.tl{top:10px; right:10px; border-left:none; border-bottom:none; border-radius:0 6px 0 0;}
+.qr-frame .corner.tr{top:10px; left:10px; border-right:none; border-bottom:none; border-radius:6px 0 0 0;}
+.qr-frame .corner.bl{bottom:10px; right:10px; border-left:none; border-top:none; border-radius:0 0 0 6px;}
+.qr-frame .corner.br{bottom:10px; left:10px; border-right:none; border-top:none; border-radius:0 0 6px 0;}
+#qrcode{display:flex; justify-content:center;}
+#qrcode img, #qrcode canvas{display:block; border-radius:8px;}
+
+.qr-brand{margin-top:16px; padding-top:15px; border-top:1.5px solid rgba(5,10,18,0.1); text-align:center;}
+.qr-brand-name{font-family:'Aref Ruqaa','Reem Kufi',serif; font-size:1.05rem; font-weight:700; color:#0a1620; margin-bottom:3px;}
+.qr-brand-url{font-size:0.74rem; font-weight:800; color:#d99a2b; letter-spacing:1.5px; direction:ltr;}
+
+.result-label{font-size:0.84rem; color:var(--text-dim); margin:16px 0 20px; font-weight:500; display:flex; align-items:center; justify-content:center; gap:6px;}
+
+.actions{display:grid; grid-template-columns:1fr 1fr; gap:11px;}
+.act-btn{
+  padding:14px; border:1px solid var(--border); border-radius:13px;
+  background:var(--navy-3); color:var(--text);
+  font-family:inherit; font-size:0.9rem; font-weight:700;
+  cursor:pointer; transition:all 0.25s;
+  display:flex; align-items:center; justify-content:center; gap:7px;
+}
+.act-btn:hover{transform:translateY(-2px); background:var(--surface-2);}
+.act-btn:active{transform:translateY(0);}
+.act-btn.full{grid-column:1 / -1;}
+.act-btn .ico{font-size:1.1rem;}
+.act-download{border-color:var(--border-gold);}
+.act-download:hover{border-color:var(--gold); box-shadow:0 6px 18px rgba(240,184,85,0.18);}
+.act-share{border-color:rgba(22,163,74,0.4);}
+.act-share:hover{border-color:var(--green); box-shadow:0 6px 18px rgba(22,163,74,0.18);}
+.act-new{background:transparent; color:var(--text-faint); border-style:dashed;}
+.act-new:hover{color:var(--text-dim);}
+
+.toast{
+  position:fixed; bottom:28px; left:50%; transform:translateX(-50%) translateY(120px);
+  background:var(--surface-2); border:1px solid var(--teal); color:var(--text);
+  padding:13px 24px; border-radius:99px; font-size:0.9rem; font-weight:700;
+  box-shadow:0 14px 40px rgba(0,0,0,0.55);
+  transition:transform 0.45s cubic-bezier(0.22,1,0.36,1); z-index:999; white-space:nowrap;
+}
+.toast.show{transform:translateX(-50%) translateY(0);}
+
+.footer{margin-top:32px; text-align:center; font-size:0.78rem; color:var(--text-faint); animation:fadeUp 0.8s ease 0.3s both;}
+.footer .feats{display:flex; justify-content:center; gap:16px; margin-bottom:12px; flex-wrap:wrap;}
+.footer .feat{display:flex; align-items:center; gap:5px; color:var(--text-dim); font-weight:600;}
+.footer a{color:var(--teal-bright); text-decoration:none; font-weight:700;}
+.footer a:hover{color:var(--gold);}
+
+@media (max-width:400px){.title{font-size:1.55rem;}.actions{grid-template-columns:1fr;}.footer .feats{gap:10px;}}
+</style>
+</head>
+<body>
+
+<div class="bg-fx"></div>
+<div class="bg-grid"></div>
+
+<div class="wrap">
+  <div class="header">
+    <div class="brand-top">
+      <span class="dot"></span>
+      <span>التقارير الذكية · ksa2030.one</span>
+    </div>
+    <div class="logo-mark">
+      <div class="ring"></div>
+      <div class="inner">🔗</div>
+    </div>
+    <h1 class="title">محوّل الرابط لباركود</h1>
+    <p class="subtitle">الصق أي رابط واحصل على QR Code أنيق فوراً</p>
+  </div>
+
+  <div class="card">
+    <label class="input-label">
+      <span>🔗</span><span>أدخل الرابط</span>
+      <span class="badge">فوري</span>
+    </label>
+    <div class="input-wrap">
+      <input type="url" class="url-input" id="urlInput"
+             placeholder="https://example.com"
+             oninput="onUrlChange()"
+             onkeydown="if(event.key==='Enter') convertToQR()">
+      <span class="input-icon">🌐</span>
+    </div>
+    <div class="quick-tags">
+      <button class="quick-tag" onclick="fillExample('https://ksa2030.one')">🏠 الموقع</button>
+      <button class="quick-tag" onclick="pasteFromClipboard()">📋 لصق</button>
+      <button class="quick-tag" onclick="clearInput()">🗑️ مسح</button>
+    </div>
+    <button class="btn-main" id="convertBtn" onclick="convertToQR()" disabled>
+      <span>✨</span><span>توليد الباركود</span>
+    </button>
+
+    <div class="result" id="result">
+      <div class="qr-frame" id="qrFrame">
+        <span class="corner tl"></span>
+        <span class="corner tr"></span>
+        <span class="corner bl"></span>
+        <span class="corner br"></span>
+        <div id="qrcode"></div>
+        <div class="qr-brand">
+          <div class="qr-brand-name">التقارير الذكية</div>
+          <div class="qr-brand-url">ksa2030.one</div>
+        </div>
+      </div>
+      <div class="result-label">
+        <span>✅</span><span>امسح الباركود لفتح الرابط</span>
+      </div>
+      <div class="actions">
+        <button class="act-btn act-download" onclick="downloadQR()">
+          <span class="ico">⬇️</span><span>تحميل</span>
+        </button>
+        <button class="act-btn act-share" onclick="shareQR()">
+          <span class="ico">📤</span><span>مشاركة</span>
+        </button>
+        <button class="act-btn act-new full" onclick="resetTool()">
+          <span class="ico">🔄</span><span>رابط جديد</span>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <div class="footer">
+    <div class="feats">
+      <span class="feat">⚡ فوري</span>
+      <span class="feat">🔒 آمن</span>
+      <span class="feat">📤 مشاركة سهلة</span>
+    </div>
+    <a href="index.html">← العودة للرئيسية</a>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+let currentUrl = '';
+function onUrlChange(){
+  const val = document.getElementById('urlInput').value.trim();
+  document.getElementById('convertBtn').disabled = !val;
+  document.getElementById('result').classList.remove('show');
+}
+async function pasteFromClipboard(){
+  try {
+    const text = await navigator.clipboard.readText();
+    if(text){ document.getElementById('urlInput').value = text.trim(); onUrlChange(); showToast('✅ تم اللصق'); }
+    else { showToast('⚠️ الحافظة فارغة'); }
+  } catch(err){ showToast('⚠️ الصق الرابط يدوياً'); }
+}
+function fillExample(url){ document.getElementById('urlInput').value = url; onUrlChange(); }
+function clearInput(){ document.getElementById('urlInput').value = ''; onUrlChange(); document.getElementById('urlInput').focus(); }
+function convertToQR(){
+  let url = document.getElementById('urlInput').value.trim();
+  if(!url){ showToast('⚠️ أدخل رابطاً أولاً'); return; }
+  if(!/^https?:\/\//i.test(url) && !/^[a-z]+:/i.test(url)){ url = 'https://' + url; document.getElementById('urlInput').value = url; }
+  currentUrl = url;
+  generateQRCode(url);
+  const result = document.getElementById('result');
+  result.classList.add('show');
+  showToast('✅ تم إنشاء الباركود');
+  setTimeout(() => { result.scrollIntoView({behavior:'smooth', block:'center'}); }, 200);
+}
+function generateQRCode(url){
+  const container = document.getElementById('qrcode');
+  container.innerHTML = '';
+  new QRCode(container, { text: url, width: 230, height: 230, colorDark: '#0a1620', colorLight: '#ffffff', correctLevel: QRCode.CorrectLevel.H });
+}
+async function captureFrame(){
+  const frame = document.getElementById('qrFrame');
+  await new Promise(r => setTimeout(r, 100));
+  const canvas = await html2canvas(frame, { backgroundColor: '#ffffff', scale: 3, useCORS: true, logging: false });
+  return canvas.toDataURL('image/png');
+}
+async function downloadQR(){
+  try {
+    showToast('⏳ جاري التحضير...');
+    const dataUrl = await captureFrame();
+    const link = document.createElement('a');
+    link.download = 'باركود-التقارير-الذكية-' + Date.now() + '.png';
+    link.href = dataUrl;
+    document.body.appendChild(link); link.click(); document.body.removeChild(link);
+    showToast('✅ تم تحميل الباركود');
+  } catch(err){ console.error(err); showToast('❌ فشل التحميل'); }
+}
+async function shareQR(){
+  try {
+    showToast('⏳ جاري التحضير...');
+    const dataUrl = await captureFrame();
+    const res = await fetch(dataUrl);
+    const blob = await res.blob();
+    const file = new File([blob], 'باركود-التقارير-الذكية.png', {type:'image/png'});
+    if(navigator.share && navigator.canShare && navigator.canShare({files:[file]})){
+      await navigator.share({ files:[file], title:'التقارير الذكية · ksa2030.one', text:currentUrl });
+      showToast('✅ تم المشاركة');
+    } else {
+      const link = document.createElement('a');
+      link.download = 'باركود-التقارير-الذكية.png';
+      link.href = dataUrl;
+      document.body.appendChild(link); link.click(); document.body.removeChild(link);
+      showToast('📥 تم التنزيل');
+    }
+  } catch(err){ if(err.name !== 'AbortError'){ console.error(err); showToast('❌ فشلت المشاركة'); } }
+}
+function resetTool(){
+  currentUrl = '';
+  document.getElementById('urlInput').value = '';
+  document.getElementById('convertBtn').disabled = true;
+  document.getElementById('result').classList.remove('show');
+  window.scrollTo({top:0, behavior:'smooth'});
+  document.getElementById('urlInput').focus();
+}
+let toastTimer = null;
+function showToast(msg){
+  const toast = document.getElementById('toast');
+  toast.textContent = msg;
+  toast.classList.add('show');
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => { toast.classList.remove('show'); }, 3000);
+}
+</script>
+</body>
+</html>

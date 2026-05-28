@@ -1415,6 +1415,37 @@ box-shadow:0 4px 12px rgba(0,0,0,0.2),inset 0 1px 0 rgba(255,255,255,0.2);
 .cat-icon.admin{background:linear-gradient(135deg,#9c27b0,#673ab7);}
 .cat-icon.school{background:linear-gradient(135deg,#2a9d8f,#1a3c4e);}
 .cat-icon.docs{background:linear-gradient(135deg,#c9a45b,#8b6428);}
+.cat-icon.tools{background:linear-gradient(135deg,#f0b855,#d99a2b);}
+
+/* ═══ كروت الأدوات المجانية ═══ */
+.tool-card .thumb-tool{
+  background:linear-gradient(160deg,#0a1620,#0f1f2e);
+  display:flex;align-items:center;justify-content:center;
+  position:relative;overflow:hidden;
+}
+.tool-card .thumb-tool::before{
+  content:"";position:absolute;inset:0;
+  background:radial-gradient(circle at 50% 30%, rgba(42,138,171,0.2), transparent 60%);
+}
+.tool-snap{
+  display:flex;flex-direction:column;align-items:center;gap:6px;
+  position:relative;z-index:1;
+}
+.tool-ico-big{font-size:2.4rem;filter:drop-shadow(0 4px 10px rgba(0,0,0,0.4));}
+.tool-arrow{color:#f0b855;font-size:1.1rem;font-weight:900;animation:toolBounce 1.6s ease-in-out infinite;}
+@keyframes toolBounce{0%,100%{transform:translateY(0);}50%{transform:translateY(4px);}}
+.tool-qr-mini{
+  background:#fff;padding:8px;border-radius:8px;
+  box-shadow:0 6px 18px rgba(0,0,0,0.4);
+}
+.tool-qr-mini .qr-dots{
+  display:grid;grid-template-columns:repeat(5,1fr);gap:2px;width:50px;
+}
+.tool-qr-mini .qr-dots span{
+  width:8px;height:8px;background:transparent;border-radius:1px;
+}
+.tool-qr-mini .qr-dots span.b{background:#0a1620;}
+.tool-card:hover .tool-qr-mini{transform:scale(1.05);transition:transform 0.3s;}
 .cat-text{flex:1;min-width:0;}
 .cat-title{
 font-size:1.02rem;
@@ -5161,6 +5192,87 @@ font-size:0.78rem;text-align:center;margin-top:12px;display:none;
     </div>
 
 
+    <!-- ═══ تصنيف: أدوات مجانية (باركود QR) ═══ -->
+    <div class="cat-section open" data-cat="tools">
+      <div class="cat-header" onclick="toggleCategory(this)">
+        <div class="cat-icon tools">🎁</div>
+        <div class="cat-text">
+          <div class="cat-title">
+            <span data-i18n="catTools">أدوات مجانية</span>
+            <span class="cat-count">2</span>
+          </div>
+          <div class="cat-sub" data-i18n="catToolsSub">مولّد باركود QR للصور والروابط · مجاني للجميع</div>
+        </div>
+        <div class="cat-chevron">▼</div>
+      </div>
+      <div class="cat-body">
+        <div class="cat-cards">
+
+    <!-- أداة: صورة لباركود -->
+    <div class="preview-card tool-card" data-target="qr.html" onclick="openTool(this)">
+      <span class="card-badge badge-free">🎁 <span data-i18n="badgeToolFree">مجاني تماماً</span></span>
+      <div class="thumb thumb-tool tool-qr-img">
+        <div class="tool-snap">
+          <div class="tool-ico-big">📸</div>
+          <div class="tool-arrow">↓</div>
+          <div class="tool-qr-mini">
+            <div class="qr-dots">
+              <span></span><span></span><span></span><span></span><span></span>
+              <span></span><span class="b"></span><span class="b"></span><span></span><span></span>
+              <span></span><span class="b"></span><span></span><span class="b"></span><span></span>
+              <span></span><span></span><span class="b"></span><span></span><span></span>
+              <span></span><span class="b"></span><span></span><span></span><span></span>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="card-content">
+        <div class="card-icon-wrap">
+          <div class="card-icon">📸</div>
+        </div>
+        <div class="card-text">
+          <div class="card-title" data-i18n="toolImgTitle">صورة إلى باركود</div>
+          <div class="card-desc" data-i18n="toolImgDesc">حوّل أي صورة إلى QR للمشاركة الفورية</div>
+        </div>
+        <div class="card-action">‹</div>
+      </div>
+    </div>
+
+    <!-- أداة: رابط لباركود -->
+    <div class="preview-card tool-card" data-target="link-qr.html" onclick="openTool(this)">
+      <span class="card-badge badge-free">🎁 <span data-i18n="badgeToolFree2">مجاني تماماً</span></span>
+      <div class="thumb thumb-tool tool-qr-link">
+        <div class="tool-snap">
+          <div class="tool-ico-big">🔗</div>
+          <div class="tool-arrow">↓</div>
+          <div class="tool-qr-mini">
+            <div class="qr-dots">
+              <span class="b"></span><span></span><span class="b"></span><span></span><span class="b"></span>
+              <span></span><span class="b"></span><span></span><span class="b"></span><span></span>
+              <span class="b"></span><span></span><span class="b"></span><span></span><span class="b"></span>
+              <span></span><span class="b"></span><span></span><span class="b"></span><span></span>
+              <span class="b"></span><span></span><span class="b"></span><span></span><span class="b"></span>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="card-content">
+        <div class="card-icon-wrap">
+          <div class="card-icon">🔗</div>
+        </div>
+        <div class="card-text">
+          <div class="card-title" data-i18n="toolLinkTitle">رابط إلى باركود</div>
+          <div class="card-desc" data-i18n="toolLinkDesc">حوّل أي رابط إلى QR Code أنيق فوراً</div>
+        </div>
+        <div class="card-action">‹</div>
+      </div>
+    </div>
+
+        </div>
+      </div>
+    </div>
+
+
   </div>
 
   <div class="section-head">
@@ -5919,6 +6031,14 @@ const I18N = {
     metaThemesFlex: "6 ثيمات",
     catDocs: "الجداول والوثائق",
     catDocsSub: "جداول الاختبارات وشهايد الشكر",
+    catTools: "أدوات مجانية",
+    catToolsSub: "مولّد باركود QR للصور والروابط · مجاني للجميع",
+    badgeToolFree: "مجاني تماماً",
+    badgeToolFree2: "مجاني تماماً",
+    toolImgTitle: "صورة إلى باركود",
+    toolImgDesc: "حوّل أي صورة إلى QR للمشاركة الفورية",
+    toolLinkTitle: "رابط إلى باركود",
+    toolLinkDesc: "حوّل أي رابط إلى QR Code أنيق فوراً",
     comingSoon: "تقارير قادمة قريباً",
     loadingPreview: "جاري تحميل المعاينة",
     badgeFree: "جرّبني مجاناً",
@@ -6168,6 +6288,14 @@ const I18N = {
     metaThemesFlex: "6 themes",
     catDocs: "Schedules & Documents",
     catDocsSub: "Exam schedules and certificates",
+    catTools: "Free Tools",
+    catToolsSub: "QR code generator for images & links · Free for everyone",
+    badgeToolFree: "100% Free",
+    badgeToolFree2: "100% Free",
+    toolImgTitle: "Image to QR",
+    toolImgDesc: "Convert any image to a QR for instant sharing",
+    toolLinkTitle: "Link to QR",
+    toolLinkDesc: "Convert any link to an elegant QR Code instantly",
     comingSoon: "Coming Soon",
     loadingPreview: "Loading preview",
     badgeFree: "Try Free",
@@ -6465,6 +6593,14 @@ async function logout(){
   }
 
   location.reload();
+}
+
+// ═══════════════════════════════════════════════
+// 🎁 فتح الأدوات المجانية (بدون أي قيود - للجميع)
+// ═══════════════════════════════════════════════
+function openTool(card){
+  const target = card.getAttribute('data-target');
+  if(target) window.location.href = target;
 }
 
 function handleCardClick(card){
