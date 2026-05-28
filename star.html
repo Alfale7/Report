@@ -440,6 +440,14 @@ html,body{
       <textarea class="bulk-textarea" id="bulkNames" placeholder="اكتب اسم كل طالب في سطر منفصل&#10;مثال:&#10;عبدالله محمد&#10;سارة أحمد&#10;فيصل العتيبي"></textarea>
       <div class="ctrl-hint">💡 اكتب كل اسم في سطر منفصل، وسيتم إنشاء شهادة لكل طالب في ملف ZIP واحد.</div>
 
+      <div class="ctrl-label" style="font-size:0.78rem;margin:14px 0 8px;">✍️ اختر خط الأسماء:</div>
+      <div class="font-options" id="fontOptionsBulk">
+        <button class="font-opt active" data-font="'Aref Ruqaa','Amiri',serif" style="font-family:'Aref Ruqaa',serif;">أنيق</button>
+        <button class="font-opt" data-font="'Reem Kufi','Tajawal',sans-serif" style="font-family:'Reem Kufi',sans-serif;">عصري</button>
+        <button class="font-opt" data-font="'Amiri',serif" style="font-family:'Amiri',serif;">كلاسيكي</button>
+        <button class="font-opt" data-font="'Tajawal',sans-serif" style="font-family:'Tajawal',sans-serif;">بسيط</button>
+      </div>
+
       <div class="ctrl-divider"></div>
 
       <div class="ctrl-label">📝 سبب التكريم <span style="font-size:0.68rem;color:rgba(255,255,255,0.45);font-weight:600;">(لكل الطلاب)</span></div>
@@ -693,7 +701,7 @@ function renderCertificate(d){
     </div>
     <div class="cert-star-icon">${d.star}</div>
     <div class="cert-eyebrow" style="color:${d.accent};">شهادة تميّز</div>
-    <div class="cert-title" style="color:${d.titleColor};">نجم الأسبوع</div>
+    <div class="cert-title" style="color:${d.titleColor};">نجم/ة الأسبوع</div>
     <div class="cert-divider" style="background:${d.divider};"></div>
     <div class="cert-preamble">تتشرّف إدارة المدرسة بتكريم الطالب/ة</div>
     <div class="cert-name" contenteditable="true" style="font-family:${selectedFontFamily};color:${d.nameColor};">اكتب الاسم هنا</div>
@@ -868,9 +876,12 @@ function handleLogoUpload(e){
 function setupFontOptions(){
   document.querySelectorAll('.font-opt').forEach(btn => {
     btn.onclick = function(){
-      document.querySelectorAll('.font-opt').forEach(b => b.classList.remove('active'));
-      this.classList.add('active');
-      selectedFontFamily = this.getAttribute('data-font');
+      const font = this.getAttribute('data-font');
+      selectedFontFamily = font;
+      // مزامنة التفعيل في كل المجموعات (طالب واحد + عدة طلاب)
+      document.querySelectorAll('.font-opt').forEach(b => {
+        b.classList.toggle('active', b.getAttribute('data-font') === font);
+      });
       applyFont();
     };
   });
