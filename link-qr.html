@@ -168,7 +168,8 @@ body{
 
 .qr-brand{margin-top:16px; padding-top:15px; border-top:1.5px solid rgba(5,10,18,0.1); text-align:center;}
 .qr-brand-name{font-family:'Aref Ruqaa','Reem Kufi',serif; font-size:1.05rem; font-weight:700; color:#0a1620; margin-bottom:3px;}
-.qr-brand-url{font-size:0.74rem; font-weight:800; color:#d99a2b; letter-spacing:1.5px; direction:ltr;}
+.qr-brand-url{font-size:0.78rem; font-weight:800; color:#d99a2b; letter-spacing:1px; direction:ltr;}
+.qr-scan-hint{font-size:0.74rem; font-weight:700; color:#1e6b8a; margin-bottom:12px; text-align:center;}
 
 .result-label{font-size:0.84rem; color:var(--text-dim); margin:16px 0 20px; font-weight:500; display:flex; align-items:center; justify-content:center; gap:6px;}
 
@@ -255,14 +256,12 @@ body{
         <span class="corner tr"></span>
         <span class="corner bl"></span>
         <span class="corner br"></span>
+        <div class="qr-scan-hint">📲 امسح الباركود لفتح الرابط</div>
         <div id="qrcode"></div>
         <div class="qr-brand">
           <div class="qr-brand-name">التقارير الذكية</div>
-          <div class="qr-brand-url">ksa2030.one</div>
+          <div class="qr-brand-url">🌐 www.ksa2030.one</div>
         </div>
-      </div>
-      <div class="result-label">
-        <span>✅</span><span>امسح الباركود لفتح الرابط</span>
       </div>
       <div class="actions">
         <button class="act-btn act-download" onclick="downloadQR()">
