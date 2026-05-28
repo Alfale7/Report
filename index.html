@@ -1416,6 +1416,44 @@ box-shadow:0 4px 12px rgba(0,0,0,0.2),inset 0 1px 0 rgba(255,255,255,0.2);
 .cat-icon.school{background:linear-gradient(135deg,#2a9d8f,#1a3c4e);}
 .cat-icon.docs{background:linear-gradient(135deg,#c9a45b,#8b6428);}
 .cat-icon.tools{background:linear-gradient(135deg,#f0b855,#d99a2b);}
+.cat-icon.star{background:linear-gradient(135deg,#d4a657,#8b6914);position:relative;overflow:hidden;}
+.cat-icon.star::after{
+  content:"";position:absolute;top:-50%;left:-70%;
+  width:45%;height:200%;
+  background:linear-gradient(90deg,transparent,rgba(255,255,255,0.6),transparent);
+  transform:rotate(22deg);
+  animation:starIconSweep 3.8s ease-in-out infinite;
+}
+@keyframes starIconSweep{0%,70%{left:-70%;}85%,100%{left:150%;}}
+
+/* ═══ كرت نجم الأسبوع ═══ */
+.thumb-star{
+  background:linear-gradient(160deg,#1a2535,#0f1a28);
+  display:flex;align-items:center;justify-content:center;
+  position:relative;overflow:hidden;
+}
+.star-snap{
+  width:80%;height:80%;
+  background:linear-gradient(160deg,#fffdf7,#fdf6e8);
+  border:3px double #d4a657;border-radius:8px;
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  gap:4px;position:relative;overflow:hidden;
+  box-shadow:0 8px 20px rgba(0,0,0,0.3);
+}
+.star-snap-glow{
+  position:absolute;top:-40%;left:-60%;
+  width:50%;height:200%;
+  background:linear-gradient(90deg,transparent,rgba(212,166,87,0.4),transparent);
+  transform:rotate(22deg);
+  animation:starSnapSweep 3.5s ease-in-out infinite;
+}
+@keyframes starSnapSweep{0%,68%{left:-60%;}84%,100%{left:160%;}}
+.star-snap-icon{font-size:1.6rem;line-height:1;position:relative;z-index:1;}
+.star-snap-title{font-family:'Aref Ruqaa',serif;font-size:0.8rem;font-weight:700;color:#8b6914;position:relative;z-index:1;}
+.star-snap-line{width:36px;height:2.5px;background:linear-gradient(90deg,#d4a657,#b8923d);border-radius:2px;position:relative;z-index:1;}
+.star-snap-name{font-size:0.6rem;font-weight:700;color:#b8923d;position:relative;z-index:1;}
+.star-snap-badges{display:flex;gap:3px;margin-top:2px;position:relative;z-index:1;}
+.star-snap-badges span{font-size:0.6rem;}
 
 /* ═══ كروت الأدوات المجانية ═══ */
 .tool-card .thumb-tool{
@@ -5401,6 +5439,59 @@ font-size:0.78rem;text-align:center;margin-top:12px;display:none;
     </div>
 
 
+    <!-- ═══ تصنيف: نجم الأسبوع (مدفوع) ═══ -->
+    <div class="cat-section" data-cat="star">
+      <div class="cat-header" onclick="toggleCategory(this)">
+        <div class="cat-icon star">⭐</div>
+        <div class="cat-text">
+          <div class="cat-title">
+            <span data-i18n="catStar">نجم الأسبوع</span>
+            <span class="cat-count">1</span>
+          </div>
+          <div class="cat-sub" data-i18n="catStarSub">شهادات تكريم احترافية · 5 تصاميم متنوعة</div>
+        </div>
+        <div class="cat-chevron">▼</div>
+      </div>
+      <div class="cat-body">
+        <div class="cat-cards">
+
+    <div class="preview-card r-star locked" data-target="star.html" onclick="handleCardClick(this)">
+      <span class="card-badge badge-new">✨ <span data-i18n="badgeStar">جديد</span></span>
+      <div class="thumb thumb-star">
+        <div class="star-snap">
+          <div class="star-snap-glow"></div>
+          <div class="star-snap-icon">⭐</div>
+          <div class="star-snap-title">نجم الأسبوع</div>
+          <div class="star-snap-line"></div>
+          <div class="star-snap-name">شهادة تكريم</div>
+          <div class="star-snap-badges">
+            <span>🌟</span><span>⭐</span><span>🌈</span><span>🌿</span><span>✨</span>
+          </div>
+        </div>
+        <div class="lock-overlay">
+          <div class="lock-cta">
+            <span>🔑</span>
+            <span data-i18n="lockCta">سجّل الدخول للوصول</span>
+          </div>
+        </div>
+      </div>
+      <div class="card-content">
+        <div class="card-icon-wrap">
+          <div class="card-icon">⭐</div>
+        </div>
+        <div class="card-text">
+          <div class="card-title" data-i18n="starCardTitle">شهادات نجم الأسبوع</div>
+          <div class="card-desc" data-i18n="starCardDesc">5 تصاميم احترافية · رفع شعار · تكريم جماعي</div>
+        </div>
+        <div class="card-action">‹</div>
+      </div>
+    </div>
+
+        </div>
+      </div>
+    </div>
+
+
   </div>
 
   <div class="section-head">
@@ -6159,6 +6250,11 @@ const I18N = {
     metaThemesFlex: "6 ثيمات",
     catDocs: "الجداول والوثائق",
     catDocsSub: "جداول الاختبارات وشهايد الشكر",
+    catStar: "نجم الأسبوع",
+    catStarSub: "شهادات تكريم احترافية · 5 تصاميم متنوعة",
+    badgeStar: "جديد",
+    starCardTitle: "شهادات نجم الأسبوع",
+    starCardDesc: "5 تصاميم احترافية · رفع شعار · تكريم جماعي",
     catTools: "أدوات مجانية",
     catToolsSub: "مولّد باركود QR للصور والروابط · مجاني للجميع",
     badgeToolFree: "مجاني تماماً",
@@ -6423,6 +6519,11 @@ const I18N = {
     metaThemesFlex: "6 themes",
     catDocs: "Schedules & Documents",
     catDocsSub: "Exam schedules and certificates",
+    catStar: "Star of the Week",
+    catStarSub: "Professional award certificates · 5 designs",
+    badgeStar: "New",
+    starCardTitle: "Star of the Week Certificates",
+    starCardDesc: "5 pro designs · Logo upload · Bulk awards",
     catTools: "Free Tools",
     catToolsSub: "QR code generator for images & links · Free for everyone",
     badgeToolFree: "100% Free",
