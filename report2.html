@@ -1535,22 +1535,25 @@ async function shareReport(){
 
   if(typeof showToast === 'function') showToast('⏳ جاري تحضير المشاركة...');
 
+  const page = document.getElementById('page');
+  if(!page){
+    if(typeof showToast === 'function') showToast('❌ لم يتم العثور على التقرير');
+    return;
+  }
+
+  const actionButtons = document.querySelectorAll('.export-menu-wrap, .export-menu, [class*="action-bar"]');
+  const hiddenStates = [];
+  actionButtons.forEach(el => {
+    hiddenStates.push({el, prev: el.style.display});
+    el.style.display = 'none';
+  });
+
+  // 🔥 معالجة inputs + contenteditable لمنع تقطع الحروف
+  const replacements = prepareForExport(page);
+
   try {
-    const page = document.getElementById('page');
-    if(!page){
-      if(typeof showToast === 'function') showToast('❌ لم يتم العثور على التقرير');
-      return;
-    }
-
-    const actionButtons = document.querySelectorAll('.export-menu-wrap, .export-menu, [class*="action-bar"]');
-    const hiddenStates = [];
-    actionButtons.forEach(el => {
-      hiddenStates.push({el, prev: el.style.display});
-      el.style.display = 'none';
-    });
-
     await document.fonts.ready;
-    await new Promise(r => setTimeout(r, 300));
+    await new Promise(r => setTimeout(r, 500));
 
     const canvas = await html2canvas(page, {
       backgroundColor: '#ffffff',
@@ -1560,12 +1563,13 @@ async function shareReport(){
       allowTaint: true,
       onclone: (doc) => {
         const style = doc.createElement('style');
-        style.textContent = "* { font-family: 'Tajawal','Arial Unicode MS','Tahoma',Arial,sans-serif !important; letter-spacing: 0 !important; }";
+        style.textContent = "* { font-family: 'Tajawal','Arial Unicode MS','Tahoma',Arial,sans-serif !important; letter-spacing: 0 !important; font-kerning:normal !important; }";
         doc.head.appendChild(style);
       }
     });
 
     hiddenStates.forEach(({el, prev}) => { el.style.display = prev; });
+    restoreFromExport(replacements);
 
     canvas.toBlob(async (blob) => {
       const file = new File([blob], 'تقرير_الفعاليات.png', { type: 'image/png' });
@@ -1597,6 +1601,9 @@ async function shareReport(){
   } catch(e) {
     console.error('Share error:', e);
     if(typeof showToast === 'function') showToast('❌ فشل التصدير');
+    // ضمان الإرجاع في حالة الخطأ
+    hiddenStates.forEach(({el, prev}) => { el.style.display = prev; });
+    restoreFromExport(replacements);
   }
 }
 
@@ -1612,7 +1619,87 @@ function loadJsPDF(){
 }
 
 // ═══════════════════════════════════════════════
-// التصدير كصورة - مع معالجة الـ inputs
+// 🔥 prepareForExport - مطابق لمنطق report3
+// يعالج inputs + textareas + contenteditable للنصوص الطويلة
+// (يلف كل كلمة بـ span لمنع html2canvas من فصل الحروف عند wrap)
+// ═══════════════════════════════════════════════
+function prepareForExport(page){
+  const replacements = [];
+
+  // 1️⃣ معالجة inputs و textareas
+  const inputs = page.querySelectorAll('input[type="text"], input[type="number"], textarea');
+  inputs.forEach(el => {
+    const computed = window.getComputedStyle(el);
+    const value = el.value || '';
+    const isTextarea = el.tagName === 'TEXTAREA';
+    const span = document.createElement(isTextarea ? 'div' : 'span');
+    if(value.trim()){
+      const lines = isTextarea ? value.split('\n') : [value];
+      span.innerHTML = lines.map(line => {
+        const words = line.split(/(\s+)/);
+        return words.map(p => {
+          if(!p) return '';
+          if(/^\s+$/.test(p)) return p;
+          return `<span style="display:inline-block;white-space:nowrap;letter-spacing:0;direction:rtl;unicode-bidi:embed;">${p}</span>`;
+        }).join('');
+      }).join('<br>');
+    } else {
+      span.innerHTML = '&nbsp;';
+    }
+    span.style.cssText = `display:${isTextarea?'block':'inline-block'};width:100%;box-sizing:border-box;font-family:${computed.fontFamily};font-size:${computed.fontSize};font-weight:${computed.fontWeight};color:${computed.color};text-align:${computed.textAlign};line-height:${computed.lineHeight};padding:${computed.padding};direction:rtl;unicode-bidi:embed;letter-spacing:0;min-height:${isTextarea?computed.minHeight:'auto'};`;
+    el.style.display = 'none';
+    el.parentNode.insertBefore(span, el);
+    replacements.push({orig:el, span, type:'input'});
+  });
+
+  // 2️⃣ معالجة contenteditable للنصوص الطويلة (column-text, headline, etc.)
+  // نلف كل كلمة بـ span عشان html2canvas ما يفصل الحروف عند wrap
+  const editables = page.querySelectorAll('[contenteditable="true"]');
+  editables.forEach(el => {
+    const text = el.textContent || '';
+    if(!text.trim() || text.length < 30) return; // النصوص القصيرة ما تحتاج
+
+    // نحفظ المحتوى الأصلي للإرجاع
+    const originalHTML = el.innerHTML;
+
+    // نبني المحتوى الجديد: كل كلمة في span
+    const lines = text.split('\n');
+    let newHTML = '';
+    lines.forEach((line, lineIdx) => {
+      if(lineIdx > 0) newHTML += '<br>';
+      const words = line.split(/(\s+)/);
+      words.forEach(p => {
+        if(!p) return;
+        if(/^\s+$/.test(p)){
+          newHTML += p;
+        } else {
+          newHTML += `<span style="display:inline-block;white-space:nowrap;letter-spacing:0;direction:rtl;unicode-bidi:embed;">${p.replace(/</g,'&lt;').replace(/>/g,'&gt;')}</span>`;
+        }
+      });
+    });
+
+    el.innerHTML = newHTML;
+    replacements.push({orig:el, originalHTML, type:'editable'});
+  });
+
+  return replacements;
+}
+
+function restoreFromExport(replacements){
+  replacements.forEach(({orig, span, originalHTML, type}) => {
+    if(type === 'editable'){
+      // إرجاع contenteditable للحالة الأصلية
+      if(originalHTML !== undefined) orig.innerHTML = originalHTML;
+    } else {
+      // إرجاع input/textarea
+      orig.style.display = '';
+      if(span && span.parentNode) span.parentNode.removeChild(span);
+    }
+  });
+}
+
+// ═══════════════════════════════════════════════
+// التصدير كصورة - باستخدام prepareForExport
 // ═══════════════════════════════════════════════
 async function saveAsImage(){
   // 🔥 فحص Firebase أولاً - الحماية الفعلية
@@ -1623,47 +1710,11 @@ async function saveAsImage(){
 
   showToast(I18N[currentLang].toastPrep);
   const page = document.getElementById('page');
-
-  // معالجة الـ inputs - تحويلهم لـ spans مؤقتاً
-  const replacements = [];
-  const inputs = page.querySelectorAll('input[type="text"], input[type="number"]');
-  inputs.forEach(el => {
-    const computed = window.getComputedStyle(el);
-    const value = el.value || el.placeholder || '';
-    if(!value.trim()) return;
-
-    const span = document.createElement('span');
-    const words = value.split(/(\s+)/);
-    span.innerHTML = words.map(p => {
-      if(!p) return '';
-      if(/^\s+$/.test(p)) return p;
-      return `<span style="display:inline-block;white-space:nowrap;letter-spacing:0;direction:rtl;unicode-bidi:embed;">${p}</span>`;
-    }).join('');
-
-    span.style.cssText = `
-      display:inline-block;
-      width:${computed.width};
-      font-family:${computed.fontFamily};
-      font-size:${computed.fontSize};
-      font-weight:${computed.fontWeight};
-      color:${el.value ? computed.color : 'rgba(0,0,0,0.4)'};
-      text-align:${computed.textAlign};
-      padding:${computed.padding};
-      background:transparent;
-      direction:rtl;
-      unicode-bidi:embed;
-      vertical-align:middle;
-      letter-spacing:0;
-    `;
-
-    el.style.display = 'none';
-    el.parentNode.insertBefore(span, el);
-    replacements.push({orig:el, span});
-  });
+  const replacements = prepareForExport(page);
 
   try{
     await document.fonts.ready;
-    await new Promise(r => setTimeout(r, 400));
+    await new Promise(r => setTimeout(r, 500));
 
     const canvas = await html2canvas(page, {
       backgroundColor:'#f5ecd6',
@@ -1696,15 +1747,12 @@ async function saveAsImage(){
     console.error(e);
     showToast(I18N[currentLang].toastError);
   }finally{
-    replacements.forEach(({orig, span}) => {
-      orig.style.display = '';
-      if(span.parentNode) span.parentNode.removeChild(span);
-    });
+    restoreFromExport(replacements);
   }
 }
 
 // ═══════════════════════════════════════════════
-// التصدير كـ PDF
+// التصدير كـ PDF - باستخدام prepareForExport
 // ═══════════════════════════════════════════════
 async function exportAsPDFv2(){
   closeExportMenu();
@@ -1715,47 +1763,11 @@ async function exportAsPDFv2(){
   }
 
   const page = document.getElementById('page');
-
-  // نفس معالجة الـ inputs
-  const replacements = [];
-  const inputs = page.querySelectorAll('input[type="text"], input[type="number"]');
-  inputs.forEach(el => {
-    const computed = window.getComputedStyle(el);
-    const value = el.value || el.placeholder || '';
-    if(!value.trim()) return;
-
-    const span = document.createElement('span');
-    const words = value.split(/(\s+)/);
-    span.innerHTML = words.map(p => {
-      if(!p) return '';
-      if(/^\s+$/.test(p)) return p;
-      return `<span style="display:inline-block;white-space:nowrap;letter-spacing:0;direction:rtl;unicode-bidi:embed;">${p}</span>`;
-    }).join('');
-
-    span.style.cssText = `
-      display:inline-block;
-      width:${computed.width};
-      font-family:${computed.fontFamily};
-      font-size:${computed.fontSize};
-      font-weight:${computed.fontWeight};
-      color:${el.value ? computed.color : 'rgba(0,0,0,0.4)'};
-      text-align:${computed.textAlign};
-      padding:${computed.padding};
-      background:transparent;
-      direction:rtl;
-      unicode-bidi:embed;
-      vertical-align:middle;
-      letter-spacing:0;
-    `;
-
-    el.style.display = 'none';
-    el.parentNode.insertBefore(span, el);
-    replacements.push({orig:el, span});
-  });
+  const replacements = prepareForExport(page);
 
   try{
     await document.fonts.ready;
-    await new Promise(r => setTimeout(r, 400));
+    await new Promise(r => setTimeout(r, 500));
 
     const canvas = await html2canvas(page, {
       backgroundColor:'#f5ecd6',
@@ -1816,10 +1828,7 @@ async function exportAsPDFv2(){
     console.error(e);
     showToast(I18N[currentLang].toastError);
   }finally{
-    replacements.forEach(({orig, span}) => {
-      orig.style.display = '';
-      if(span.parentNode) span.parentNode.removeChild(span);
-    });
+    restoreFromExport(replacements);
   }
 }
 
