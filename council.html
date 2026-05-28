@@ -9,6 +9,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;800;900&family=Reem+Kufi:wght@400;500;600;700&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 <style>
 :root{color-scheme:light only;}
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
@@ -316,7 +317,9 @@ html,body{
   background:#fff;
   color:#1e3a6e;
 }
-.btn-print{background:linear-gradient(135deg, #ffd76b, #c9a45b); color:#fff;}
+.btn-img{background:linear-gradient(135deg,#2a9d8f,#1a7a8a); color:#fff;}
+.btn-pdf{background:linear-gradient(135deg,#d32f2f,#b71c1c); color:#fff;}
+.btn-share{background:linear-gradient(135deg,#16a34a,#15803d); color:#fff;}
 .btn-clear{background:transparent; color:#fff; border:1.5px solid rgba(255,255,255,0.35);}
 .btn-lang{
   background:rgba(255,255,255,0.12);
@@ -624,8 +627,14 @@ html,body{
     <button class="btn btn-lang" onclick="toggleLang()">
       <span>🌐</span><span id="langTxt">EN</span>
     </button>
-    <button class="btn btn-print" onclick="printPage()">
-      <span>🖨️</span><span class="txt">طباعة</span>
+    <button class="btn btn-img" onclick="saveAsImage()">
+      <span>🖼️</span><span class="txt">صورة</span>
+    </button>
+    <button class="btn btn-pdf" onclick="exportAsPDFv2()">
+      <span>📄</span><span class="txt">PDF</span>
+    </button>
+    <button class="btn btn-share" onclick="shareReport()">
+      <span>📤</span><span class="txt">مشاركة</span>
     </button>
   </div>
 
@@ -726,15 +735,239 @@ function doClear(){
   showToast('✅ تم تفريغ التقرير');
 }
 
-function printPage(){
+function loadJsPDF(){
+  return new Promise((resolve, reject) => {
+    if(typeof window.jspdf !== 'undefined'){ resolve(); return; }
+    const script = document.createElement('script');
+    script.src = 'https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js';
+    script.onload = () => resolve();
+    script.onerror = () => reject(new Error('jsPDF load failed'));
+    document.head.appendChild(script);
+  });
+}
+
+// ═══════════════════════════════════════════════
+// 🔥 prepareForExport - معالجة inputs + textareas + contenteditable
+// (يلف كل كلمة بـ span لمنع html2canvas من فصل الحروف عند wrap)
+// ═══════════════════════════════════════════════
+function prepareForExport(page){
+  const replacements = [];
+
+  // 0️⃣ إخفاء العناصر اللي ما تظهر في التصدير (الأزرار + الفوتر التفاعلي)
+  const hideSelectors = '.action-bar, #toast, .modal-overlay, .add-row-btn, .del-btn, .photo-rm';
+  page.querySelectorAll(hideSelectors).forEach(el => {
+    replacements.push({orig:el, prevDisplay:el.style.display, type:'hide'});
+    el.style.display = 'none';
+  });
+
+  // 1️⃣ معالجة inputs و textareas
+  const inputs = page.querySelectorAll('input[type="text"], input[type="number"], textarea');
+  inputs.forEach(el => {
+    const computed = window.getComputedStyle(el);
+    const value = el.value || '';
+    const isTextarea = el.tagName === 'TEXTAREA';
+    const span = document.createElement(isTextarea ? 'div' : 'span');
+    if(value.trim()){
+      const lines = isTextarea ? value.split('\n') : [value];
+      span.innerHTML = lines.map(line => {
+        const words = line.split(/(\s+)/);
+        return words.map(p => {
+          if(!p) return '';
+          if(/^\s+$/.test(p)) return p;
+          return `<span style="display:inline-block;white-space:nowrap;letter-spacing:0;direction:rtl;unicode-bidi:embed;">${p.replace(/</g,'&lt;').replace(/>/g,'&gt;')}</span>`;
+        }).join('');
+      }).join('<br>');
+    } else {
+      span.innerHTML = '&nbsp;';
+    }
+    span.style.cssText = `display:${isTextarea?'block':'inline-block'};width:100%;box-sizing:border-box;font-family:${computed.fontFamily};font-size:${computed.fontSize};font-weight:${computed.fontWeight};color:${computed.color};text-align:${computed.textAlign};line-height:${computed.lineHeight};padding:${computed.padding};direction:rtl;unicode-bidi:embed;letter-spacing:0;min-height:${isTextarea?computed.minHeight:'auto'};`;
+    el.style.display = 'none';
+    el.parentNode.insertBefore(span, el);
+    replacements.push({orig:el, span, type:'input'});
+  });
+
+  // 2️⃣ معالجة contenteditable للنصوص الطويلة
+  const editables = page.querySelectorAll('[contenteditable="true"]');
+  editables.forEach(el => {
+    const text = el.textContent || '';
+    if(!text.trim() || text.length < 30) return;
+    const originalHTML = el.innerHTML;
+    const lines = text.split('\n');
+    let newHTML = '';
+    lines.forEach((line, lineIdx) => {
+      if(lineIdx > 0) newHTML += '<br>';
+      const words = line.split(/(\s+)/);
+      words.forEach(p => {
+        if(!p) return;
+        if(/^\s+$/.test(p)){ newHTML += p; }
+        else { newHTML += `<span style="display:inline-block;white-space:nowrap;letter-spacing:0;direction:rtl;unicode-bidi:embed;">${p.replace(/</g,'&lt;').replace(/>/g,'&gt;')}</span>`; }
+      });
+    });
+    el.innerHTML = newHTML;
+    replacements.push({orig:el, originalHTML, type:'editable'});
+  });
+
+  return replacements;
+}
+
+function restoreFromExport(replacements){
+  replacements.forEach(({orig, span, originalHTML, prevDisplay, type}) => {
+    if(type === 'hide'){
+      orig.style.display = prevDisplay || '';
+    } else if(type === 'editable'){
+      if(originalHTML !== undefined) orig.innerHTML = originalHTML;
+    } else {
+      orig.style.display = '';
+      if(span && span.parentNode) span.parentNode.removeChild(span);
+    }
+  });
+}
+
+// ═══════════════════════════════════════════════
+// التصدير كصورة
+// ═══════════════════════════════════════════════
+async function saveAsImage(){
+  if (typeof window.checkDownloadAccess === 'function') {
+    const allowed = await window.checkDownloadAccess();
+    if (!allowed) return;
+  }
   saveData();
-  const t = document.getElementById('toast');
-  if(t){ t.classList.remove('show'); t.style.display='none'; }
-  document.getElementById('modal').classList.remove('show');
-  setTimeout(() => {
-    window.print();
-    setTimeout(() => { if(t) t.style.display=''; }, 500);
-  }, 350);
+  showToast('⏳ جاري تحضير الصورة...');
+  const page = document.getElementById('page');
+  const replacements = prepareForExport(page);
+  try{
+    await document.fonts.ready;
+    await new Promise(r => setTimeout(r, 500));
+    const canvas = await html2canvas(page, {
+      backgroundColor:'#ffffff', scale:2.5, useCORS:true, logging:false, allowTaint:true,
+      width:page.offsetWidth, height:page.offsetHeight,
+      onclone:(doc) => {
+        const style = doc.createElement('style');
+        style.textContent = `*{letter-spacing:0 !important;font-feature-settings:"kern" 1,"liga" 1,"calt" 1,"rlig" 1 !important;font-kerning:normal !important;}`;
+        doc.head.appendChild(style);
+      }
+    });
+    const link = document.createElement('a');
+    link.download = 'تقرير_مجلس_المعلمين.png';
+    link.href = canvas.toDataURL('image/png');
+    link.click();
+    showToast('✅ تم حفظ الصورة');
+  }catch(e){ console.error(e); showToast('❌ فشل التصدير'); }
+  finally{ restoreFromExport(replacements); }
+}
+
+// ═══════════════════════════════════════════════
+// التصدير كـ PDF
+// ═══════════════════════════════════════════════
+async function exportAsPDFv2(){
+  if (typeof window.checkDownloadAccess === 'function') {
+    const allowed = await window.checkDownloadAccess();
+    if (!allowed) return;
+  }
+  saveData();
+  showToast('⏳ جاري تحضير PDF...');
+  if(typeof window.jspdf === 'undefined'){
+    try{ await loadJsPDF(); }catch(e){ showToast('❌ فشل التصدير'); return; }
+  }
+  const page = document.getElementById('page');
+  const replacements = prepareForExport(page);
+  try{
+    await document.fonts.ready;
+    await new Promise(r => setTimeout(r, 500));
+    const canvas = await html2canvas(page, {
+      backgroundColor:'#ffffff', scale:2.5, useCORS:true, logging:false, allowTaint:true,
+      width:page.offsetWidth, height:page.offsetHeight,
+      onclone:(doc) => {
+        const style = doc.createElement('style');
+        style.textContent = `*{letter-spacing:0 !important; font-kerning:normal !important;}`;
+        doc.head.appendChild(style);
+      }
+    });
+    const { jsPDF } = window.jspdf;
+    const pdf = new jsPDF({orientation:'portrait', unit:'mm', format:'a4', compress:true});
+    const pdfWidth = 210, pdfHeight = 297;
+    const marginX = 8, marginY = 8;
+    const contentWidth = pdfWidth - (marginX*2);
+    const contentHeight = pdfHeight - (marginY*2);
+    const imgRatio = canvas.height / canvas.width;
+    const imgWidthMM = contentWidth;
+    const imgHeightMM = imgWidthMM * imgRatio;
+    if(imgHeightMM <= contentHeight + 5){
+      const imgData = canvas.toDataURL('image/jpeg', 0.92);
+      const yPos = (pdfHeight - imgHeightMM) / 2;
+      pdf.addImage(imgData, 'JPEG', marginX, yPos, imgWidthMM, imgHeightMM, undefined, 'FAST');
+    } else {
+      const pixelsPerPage = (contentHeight / imgHeightMM) * canvas.height;
+      const totalPages = Math.ceil(canvas.height / pixelsPerPage);
+      for(let i = 0; i < totalPages; i++){
+        if(i > 0) pdf.addPage();
+        const sourceY = i * pixelsPerPage;
+        const sourceHeight = Math.min(pixelsPerPage, canvas.height - sourceY);
+        const partCanvas = document.createElement('canvas');
+        partCanvas.width = canvas.width;
+        partCanvas.height = sourceHeight;
+        partCanvas.getContext('2d').drawImage(canvas, 0, sourceY, canvas.width, sourceHeight, 0, 0, canvas.width, sourceHeight);
+        const partData = partCanvas.toDataURL('image/jpeg', 0.92);
+        const partHeightMM = (sourceHeight / canvas.width) * imgWidthMM;
+        pdf.addImage(partData, 'JPEG', marginX, marginY, imgWidthMM, partHeightMM, undefined, 'FAST');
+      }
+    }
+    pdf.setProperties({title:'تقرير_مجلس_المعلمين', creator:'ksa2030.one'});
+    pdf.save('تقرير_مجلس_المعلمين.pdf');
+    showToast('✅ تم حفظ PDF');
+  }catch(e){ console.error(e); showToast('❌ فشل التصدير'); }
+  finally{ restoreFromExport(replacements); }
+}
+
+// ═══════════════════════════════════════════════
+// 📤 مشاركة التقرير (Web Share API)
+// ═══════════════════════════════════════════════
+async function shareReport(){
+  if (typeof window.checkDownloadAccess === 'function') {
+    const allowed = await window.checkDownloadAccess();
+    if (!allowed) return;
+  }
+  saveData();
+  showToast('⏳ جاري تحضير المشاركة...');
+  const page = document.getElementById('page');
+  if(!page){ showToast('❌ لم يتم العثور على التقرير'); return; }
+  const replacements = prepareForExport(page);
+  try{
+    await document.fonts.ready;
+    await new Promise(r => setTimeout(r, 500));
+    const canvas = await html2canvas(page, {
+      backgroundColor:'#ffffff', scale:3, useCORS:true, logging:false, allowTaint:true,
+      width:page.offsetWidth, height:page.offsetHeight,
+      onclone:(doc) => {
+        const style = doc.createElement('style');
+        style.textContent = `*{letter-spacing:0 !important; font-kerning:normal !important;}`;
+        doc.head.appendChild(style);
+      }
+    });
+    restoreFromExport(replacements);
+    canvas.toBlob(async (blob) => {
+      const file = new File([blob], 'تقرير_مجلس_المعلمين.png', { type: 'image/png' });
+      if (navigator.share && navigator.canShare && navigator.canShare({ files: [file] })) {
+        try{
+          await navigator.share({ files:[file], title:document.title, text:'🇸🇦 ' + document.title });
+          showToast('✅ تم المشاركة');
+        }catch(err){
+          if(err.name !== 'AbortError'){ console.error(err); showToast('❌ فشل المشاركة'); }
+        }
+      } else {
+        const link = document.createElement('a');
+        link.download = 'تقرير_مجلس_المعلمين.png';
+        link.href = URL.createObjectURL(blob);
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+        showToast('📥 تم التنزيل');
+      }
+    }, 'image/png');
+  }catch(e){
+    console.error(e); showToast('❌ فشل التصدير');
+    restoreFromExport(replacements);
+  }
 }
 
 // Photos
