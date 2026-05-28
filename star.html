@@ -1011,6 +1011,44 @@ function prepareClone(){
   clone.removeAttribute('id');
   clone.querySelectorAll('[contenteditable]').forEach(el => el.removeAttribute('contenteditable'));
 
+  // 🔥 تطبيق قيم الحقول صراحةً على النسخة (ضمان ظهور النصوص)
+  const gv = id => { const e = document.getElementById(id); return e ? e.value.trim() : ''; };
+  const isBulk = currentMode === 'bulk';
+
+  // الاسم
+  const nameVal = gv('singleName');
+  const cn = clone.querySelector('.cert-name');
+  if(cn && nameVal) cn.textContent = nameVal;
+
+  // سبب التكريم
+  const reasonVal = isBulk ? gv('fieldReasonB') : gv('fieldReason');
+  const cr = clone.querySelector('.cert-reason');
+  if(cr && reasonVal) cr.textContent = reasonVal;
+
+  // اسم المدرسة
+  const schoolVal = isBulk ? gv('fieldSchoolB') : gv('fieldSchool');
+  const csn = clone.querySelector('.cert-school-name');
+  if(csn && schoolVal) csn.textContent = schoolVal;
+
+  // الأسبوع
+  const weekVal = isBulk ? gv('fieldWeekB') : gv('fieldWeek');
+  const cw = clone.querySelector('.cert-week');
+  if(cw && weekVal) cw.textContent = weekVal;
+
+  // المسمّيات
+  const roleP = isBulk ? gv('rolePB') : gv('roleP');
+  const roleL = isBulk ? gv('roleLB') : gv('roleL');
+  const roles = clone.querySelectorAll('.cert-sign-label');
+  if(roles[0] && roleP) roles[0].textContent = roleP;
+  if(roles[1] && roleL) roles[1].textContent = roleL;
+
+  // أسماء الموقّعين
+  const signP = isBulk ? gv('fieldPrincipalB') : gv('fieldPrincipal');
+  const signL = isBulk ? gv('fieldLeaderB') : gv('fieldLeader');
+  const lines = clone.querySelectorAll('.cert-sign-line');
+  if(lines[0] && signP) lines[0].textContent = signP;
+  if(lines[1] && signL) lines[1].textContent = signL;
+
   // أبعاد ثابتة + تخطيط مضبوط
   clone.style.position = 'absolute';
   clone.style.width = '1000px';
