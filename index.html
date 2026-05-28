@@ -454,6 +454,47 @@ text-align:center;
 letter-spacing:0.5px;
 }
 
+/* ═══ زر المشاركة (احترافي عالمي + لمعة برق) ═══ */
+.share-btn{
+  position:relative;
+  display:inline-flex;
+  align-items:center;
+  gap:6px;
+  padding:5px 14px 5px 12px;
+  background:linear-gradient(135deg,#1e6b8a,#2a8aab 55%,#3aa8d0);
+  border:1px solid rgba(58,168,208,0.4);
+  border-radius:99px;
+  font-family:'Tajawal','Tahoma','Arial',sans-serif;
+  font-size:0.72rem;
+  color:#fff;
+  font-weight:800;
+  cursor:pointer;
+  overflow:hidden;
+  transition:all 0.25s;
+  box-shadow:0 4px 14px rgba(30,107,138,0.35);
+}
+.share-btn:hover{
+  transform:translateY(-1px);
+  box-shadow:0 6px 20px rgba(42,138,171,0.5);
+  border-color:rgba(58,168,208,0.7);
+}
+.share-btn:active{transform:scale(0.96);}
+.share-btn .share-ico{display:inline-flex;align-items:center;line-height:1;position:relative;z-index:1;}
+.share-btn .share-txt{position:relative;z-index:1;letter-spacing:0.3px;}
+/* لمعة برق تمرّ على الزر */
+.share-btn .share-shine{
+  position:absolute;
+  top:-50%;
+  left:-70%;
+  width:45%;
+  height:200%;
+  background:linear-gradient(90deg,transparent,rgba(255,255,255,0.55),transparent);
+  transform:rotate(22deg);
+  animation:shareShine 3.6s ease-in-out infinite;
+  pointer-events:none;
+}
+@keyframes shareShine{0%,72%{left:-70%;}88%,100%{left:160%;}}
+
 .app-logo{position:relative;width:90px;height:90px;margin:0 auto 18px;}
 .app-logo::before{
 content:"";position:absolute;inset:-12px;
@@ -4185,6 +4226,16 @@ font-size:0.78rem;text-align:center;margin-top:12px;display:none;
         <span class="globe">🌐</span>
         <span class="lang-code" id="langCode">EN</span>
       </button>
+      <button class="share-btn" onclick="shareSite()" aria-label="Share">
+        <span class="share-ico">
+          <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="18" cy="5" r="3"></circle><circle cx="6" cy="12" r="3"></circle><circle cx="18" cy="19" r="3"></circle>
+            <line x1="8.6" y1="10.6" x2="15.4" y2="6.4"></line><line x1="8.6" y1="13.4" x2="15.4" y2="17.6"></line>
+          </svg>
+        </span>
+        <span class="share-txt" data-i18n="shareBtn">مشاركة</span>
+        <span class="share-shine"></span>
+      </button>
     </div>
 
     <!-- 🔥 بنر العرض المحدود (يظهر مع المؤقت فقط) -->
@@ -6229,6 +6280,7 @@ const users = {
 const I18N = {
   ar: {
     brandMark: "المنصة متاحة الآن",
+    shareBtn: "مشاركة",
     appTitle: "التقارير الذكية",
     limitedOffer: "عرض إطلاق محدود · لفترة محدودة",
     hpcBadge: "اشتراك مدى الحياة",
@@ -6503,6 +6555,7 @@ const I18N = {
   },
   en: {
     brandMark: "Platform is Live",
+    shareBtn: "Share",
     appTitle: "Smart Reports",
     limitedOffer: "Limited Launch Offer",
     hpcBadge: "Lifetime Subscription",
@@ -6804,6 +6857,55 @@ function toggleLang(){
   applyLang(next);
   // تحديث العدّاد بعد تغيير اللغة
   if(typeof updateFreeCounter === 'function') updateFreeCounter();
+}
+
+// ═══ مشاركة الموقع (Web Share API + نسخ احتياطي) ═══
+async function shareSite(){
+  const lang = (typeof getCurrentLang === 'function') ? getCurrentLang() : 'ar';
+  const url = 'https://ksa2030.one';
+  const shareData = lang === 'ar' ? {
+    title: 'التقارير الذكية · ksa2030',
+    text: '🗂️ منصة التقارير الذكية للمعلمين والمعلمات\nشواهد الأداء · تقارير · شهادات · جداول — جاهزة باحترافية خلال ثوانٍ ✨\n',
+    url: url
+  } : {
+    title: 'Smart Reports · ksa2030',
+    text: '🗂️ Smart Reports platform for teachers\nPerformance evidence, reports, certificates & schedules — ready in seconds ✨\n',
+    url: url
+  };
+  try {
+    if(navigator.share){
+      await navigator.share(shareData);
+      return;
+    }
+  } catch(e){ if(e && e.name === 'AbortError') return; }
+  // نسخ احتياطي
+  try {
+    await navigator.clipboard.writeText(url);
+    showShareToast(lang === 'ar' ? '✅ تم نسخ رابط الموقع' : '✅ Link copied');
+  } catch(e){
+    // نسخ يدوي قديم
+    const ta = document.createElement('textarea');
+    ta.value = url; ta.style.position='fixed'; ta.style.opacity='0';
+    document.body.appendChild(ta); ta.select();
+    try { document.execCommand('copy'); showShareToast(lang === 'ar' ? '✅ تم نسخ الرابط' : '✅ Link copied'); }
+    catch(e2){ showShareToast(url); }
+    document.body.removeChild(ta);
+  }
+}
+
+let _shareToastT;
+function showShareToast(msg){
+  let t = document.getElementById('shareToast');
+  if(!t){
+    t = document.createElement('div');
+    t.id = 'shareToast';
+    t.style.cssText = 'position:fixed;bottom:26px;left:50%;transform:translateX(-50%) translateY(100px);background:linear-gradient(135deg,#1e6b8a,#2a8aab);color:#fff;padding:13px 24px;border-radius:14px;font-family:Tajawal,sans-serif;font-weight:800;font-size:0.9rem;z-index:100000;opacity:0;transition:all 0.35s;box-shadow:0 12px 30px rgba(0,0,0,0.4);';
+    document.body.appendChild(t);
+  }
+  t.textContent = msg;
+  requestAnimationFrame(() => { t.style.transform = 'translateX(-50%) translateY(0)'; t.style.opacity = '1'; });
+  clearTimeout(_shareToastT);
+  _shareToastT = setTimeout(() => { t.style.transform = 'translateX(-50%) translateY(100px)'; t.style.opacity = '0'; }, 2600);
 }
 
 // طبّق اللغة المحفوظة عند تحميل الصفحة (قبل DOMContentLoaded الرئيسي)
