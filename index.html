@@ -2704,6 +2704,7 @@ background:#4caf50;border-radius:1px;opacity:0.5;
 
 /* Thumb التقرير العام */
 .thumb-general{background:#fff;}
+.thumb-report4{background:#eef9f7;}
 .thumb-general .t-header{
 height:34px;
 background:linear-gradient(135deg,#1a3c4e,#2a6878);
@@ -4842,7 +4843,7 @@ font-size:0.78rem;text-align:center;margin-top:12px;display:none;
         <div class="cat-text">
           <div class="cat-title">
             <span data-i18n="catSchool">التقارير المدرسية</span>
-            <span class="cat-count">3</span>
+            <span class="cat-count">4</span>
           </div>
           <div class="cat-sub" data-i18n="catSchoolSub">تقارير الأنشطة والفعاليات</div>
         </div>
@@ -4988,6 +4989,37 @@ font-size:0.78rem;text-align:center;margin-top:12px;display:none;
             <span class="meta-pill">📷 <span data-i18n="metaPhotosMag">5 صور + شعار</span></span>
             <span class="meta-sep"></span>
             <span class="meta-pill">📝 <span data-i18n="metaFieldsMag">44 حقل تفاعلي</span></span>
+          </div>
+        </div>
+        <div class="card-action">‹</div>
+      </div>
+    </div>
+
+    <div class="preview-card r-report4 locked" data-target="report4.html" onclick="handleCardClick(this)">
+      <span class="card-badge badge-new">✨ <span data-i18n="badgeNew">جديد</span></span>
+      <div class="thumb thumb-report4">
+        <div class="iframe-snap-wrap" id="iframe-report4">
+          <div class="iframe-loading" data-i18n="loadingPreview">جاري تحميل المعاينة</div>
+          <iframe src="report4.html" loading="lazy" scrolling="no" sandbox="allow-same-origin allow-scripts" title="معاينة التقرير المرن" onload="this.parentElement.classList.add('loaded')"></iframe>
+        </div>
+        <div class="lock-overlay">
+          <div class="lock-cta">
+            <span>🔑</span>
+            <span data-i18n="lockCta">سجّل الدخول للوصول</span>
+          </div>
+        </div>
+      </div>
+      <div class="card-content">
+        <div class="card-icon-wrap">
+          <div class="card-icon">🎨</div>
+        </div>
+        <div class="card-text">
+          <div class="title" data-i18n="cardFlexTitle">التقرير المرن المتعدد</div>
+          <div class="desc" data-i18n="cardFlexDesc">عام أو خاص · أقسام مرنة · 6 ثيمات ملوّنة 🎨</div>
+          <div class="meta">
+            <span class="meta-pill">📷 <span data-i18n="metaPhotosFlex">3 صور + شعار</span></span>
+            <span class="meta-sep"></span>
+            <span class="meta-pill">🎨 <span data-i18n="metaThemesFlex">6 ثيمات</span></span>
           </div>
         </div>
         <div class="card-action">‹</div>
@@ -5881,6 +5913,10 @@ const I18N = {
     cardMagDesc: "8 أقسام · ألوان حيوية · تصميم مبهر 🎨",
     metaPhotosMag: "5 صور + شعار",
     metaFieldsMag: "44 حقل تفاعلي",
+    cardFlexTitle: "التقرير المرن المتعدد",
+    cardFlexDesc: "عام أو خاص · أقسام مرنة · 6 ثيمات ملوّنة 🎨",
+    metaPhotosFlex: "3 صور + شعار",
+    metaThemesFlex: "6 ثيمات",
     catDocs: "الجداول والوثائق",
     catDocsSub: "جداول الاختبارات وشهايد الشكر",
     comingSoon: "تقارير قادمة قريباً",
@@ -6126,6 +6162,10 @@ const I18N = {
     cardMagDesc: "8 sections · Vibrant colors · Stunning design 🎨",
     metaPhotosMag: "5 photos + logo",
     metaFieldsMag: "44 interactive fields",
+    cardFlexTitle: "Flexible Multi-Purpose Report",
+    cardFlexDesc: "General or specific · Flexible sections · 6 color themes 🎨",
+    metaPhotosFlex: "3 photos + logo",
+    metaThemesFlex: "6 themes",
     catDocs: "Schedules & Documents",
     catDocsSub: "Exam schedules and certificates",
     comingSoon: "Coming Soon",

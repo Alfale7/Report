@@ -1,0 +1,1182 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="color-scheme" content="light only">
+<meta name="theme-color" content="#0d6e6e">
+<title>تقرير مدرسي — عام / خاص</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;800;900&family=Reem+Kufi:wght@400;500;600;700&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+<style>
+:root{
+  color-scheme:light only;
+  --teal:#0d6e6e;
+  --teal-deep:#08494b;
+  --teal-bright:#16a3a3;
+  --teal-glow:#2fd0c8;
+  --coral:#ff6b5e;
+  --amber:#ffb627;
+  --mint:#d6f5f0;
+  --ink:#0c2b2b;
+  --ink-soft:#4a6a6a;
+  --paper:#f4fbfa;
+  --line:#cde8e4;
+  --white:#ffffff;
+}
+
+/* ═══════════ الثيمات ═══════════ */
+#page[data-theme="teal"]{
+  --teal:#0d6e6e; --teal-deep:#08494b; --teal-bright:#16a3a3; --teal-glow:#2fd0c8;
+  --coral:#ff6b5e; --amber:#ffb627; --mint:#d6f5f0;
+  --ink:#0c2b2b; --ink-soft:#4a6a6a; --paper:#f4fbfa; --line:#cde8e4;
+}
+#page[data-theme="indigo"]{
+  --teal:#3a3f9e; --teal-deep:#23286b; --teal-bright:#5560d4; --teal-glow:#8a93f0;
+  --coral:#ff7a9c; --amber:#ffc857; --mint:#e4e6fb;
+  --ink:#1a1c3d; --ink-soft:#565a7e; --paper:#f6f7fd; --line:#d9dcf2;
+}
+#page[data-theme="purple"]{
+  --teal:#7b3a9e; --teal-deep:#52206b; --teal-bright:#a45cc4; --teal-glow:#cf8ce8;
+  --coral:#ff6b9d; --amber:#ffb84d; --mint:#f1e2fa;
+  --ink:#2c1438; --ink-soft:#6a5076; --paper:#fbf6fd; --line:#ecd9f5;
+}
+#page[data-theme="green"]{
+  --teal:#2e7d4f; --teal-deep:#1a5435; --teal-bright:#43a86b; --teal-glow:#6fd897;
+  --coral:#ff7a59; --amber:#f5b53d; --mint:#dcf3e4;
+  --ink:#0f2e1c; --ink-soft:#4a6a56; --paper:#f4fbf6; --line:#cde8d6;
+}
+#page[data-theme="crimson"]{
+  --teal:#b03048; --teal-deep:#7a1f30; --teal-bright:#d6536c; --teal-glow:#f08aa0;
+  --coral:#ff8a5e; --amber:#ffb627; --mint:#fbe2e7;
+  --ink:#3a1018; --ink-soft:#76505a; --paper:#fdf6f7; --line:#f5d9df;
+}
+#page[data-theme="slate"]{
+  --teal:#37475a; --teal-deep:#222d3a; --teal-bright:#56697f; --teal-glow:#8fa3b8;
+  --coral:#ff7a59; --amber:#ffb627; --mint:#e3e8ee;
+  --ink:#1a222c; --ink-soft:#566270; --paper:#f6f8fa; --line:#d8e0e8;
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+
+body{
+  font-family:'Tajawal','Tahoma',sans-serif;
+  background:var(--paper);
+  background-image:
+    radial-gradient(circle at 12% 8%, rgba(47,208,200,0.12), transparent 42%),
+    radial-gradient(circle at 88% 92%, rgba(255,107,94,0.10), transparent 45%),
+    linear-gradient(170deg,#eef9f7 0%,#e3f4f1 100%);
+  background-attachment:fixed;
+  color:var(--ink);
+  min-height:100vh;
+  padding:20px 14px 110px;
+  -webkit-font-smoothing:antialiased;
+}
+
+/* ═══════════ PAGE ═══════════ */
+#page{
+  max-width:860px;
+  margin:0 auto;
+  background:var(--white);
+  border-radius:22px;
+  overflow:hidden;
+  box-shadow:0 24px 60px rgba(8,73,75,0.16), 0 4px 16px rgba(8,73,75,0.08);
+  position:relative;
+  animation:rise 0.7s cubic-bezier(0.16,1,0.3,1);
+}
+@keyframes rise{from{opacity:0;transform:translateY(24px);}to{opacity:1;transform:translateY(0);}}
+
+/* ═══════════ HEADER ═══════════ */
+.r-header{
+  position:relative;
+  background:linear-gradient(135deg,var(--teal-deep) 0%,var(--teal) 48%,var(--teal-bright) 100%);
+  color:#fff;
+  padding:26px 30px 56px;
+  overflow:hidden;
+}
+.r-header::before{
+  content:"";
+  position:absolute;
+  top:-60px;left:-40px;
+  width:200px;height:200px;
+  background:radial-gradient(circle,rgba(47,208,200,0.45),transparent 70%);
+  border-radius:50%;
+}
+.r-header::after{
+  content:"";
+  position:absolute;
+  bottom:-80px;right:-30px;
+  width:240px;height:240px;
+  background:radial-gradient(circle,rgba(255,182,39,0.22),transparent 70%);
+  border-radius:50%;
+}
+.r-header-top{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:14px;
+  position:relative;
+  z-index:2;
+  margin-bottom:18px;
+}
+.r-logo-box{
+  display:flex;align-items:center;gap:12px;
+}
+.r-logo{
+  min-width:54px;height:54px;
+  padding:0 12px;
+  border-radius:14px;
+  background:rgba(255,255,255,0.16);
+  border:1.5px dashed rgba(255,255,255,0.45);
+  display:flex;align-items:center;justify-content:center;
+  cursor:pointer;
+  overflow:hidden;
+  flex:0 0 auto;
+  transition:all 0.2s;
+}
+.r-logo:hover{background:rgba(255,255,255,0.26);}
+.r-logo img{width:54px;height:54px;object-fit:contain;display:none;}
+.r-logo.has-logo{padding:0;width:54px;border-style:solid;}
+.r-logo.has-logo img{display:block;}
+.r-logo.has-logo .r-logo-ph{display:none;}
+.r-logo-ph{font-size:0.78rem;font-weight:700;opacity:0.92;white-space:nowrap;}
+.r-logo-rm{
+  position:absolute;margin-top:-46px;margin-right:40px;
+  width:20px;height:20px;border-radius:50%;
+  background:var(--coral);color:#fff;border:none;
+  font-size:0.8rem;font-weight:900;cursor:pointer;
+  display:none;align-items:center;justify-content:center;line-height:1;
+}
+.r-logo.has-logo + .r-logo-rm{display:flex;}
+.r-org{
+  text-align:left;
+}
+.r-org input{
+  background:transparent;border:none;outline:none;
+  color:#fff;font-family:inherit;font-weight:700;
+  font-size:0.92rem;text-align:left;
+  border-bottom:1.5px dashed rgba(255,255,255,0.3);
+  padding:2px 4px;width:170px;
+}
+.r-org input::placeholder{color:rgba(255,255,255,0.6);}
+
+/* badge نوع التقرير */
+.r-type-badge{
+  display:inline-flex;align-items:center;gap:6px;
+  background:rgba(255,255,255,0.16);
+  border:1.5px solid rgba(255,255,255,0.3);
+  border-radius:30px;
+  padding:5px 14px;
+  position:relative;z-index:2;
+  margin-bottom:12px;
+}
+.r-type-badge select{
+  background:transparent;border:none;outline:none;
+  color:#fff;font-family:inherit;font-weight:800;font-size:0.82rem;
+  cursor:pointer;
+}
+.r-type-badge select option{color:#0c2b2b;}
+
+.r-title-input{
+  width:100%;
+  background:transparent;border:none;outline:none;
+  color:#fff;
+  font-family:'Reem Kufi',serif;
+  font-weight:700;font-size:1.8rem;line-height:1.25;
+  position:relative;z-index:2;
+  padding:2px 0;
+}
+.r-title-input::placeholder{color:rgba(255,255,255,0.55);}
+
+.r-meta-row{
+  display:flex;flex-wrap:wrap;gap:8px 18px;
+  position:relative;z-index:2;
+  margin-top:12px;
+}
+.r-meta-item{
+  display:flex;align-items:center;gap:6px;
+  font-size:0.82rem;
+}
+.r-meta-item .ic{opacity:0.85;}
+.r-meta-item input{
+  background:transparent;border:none;outline:none;
+  color:#fff;font-family:inherit;font-weight:600;font-size:0.82rem;
+  border-bottom:1px dashed rgba(255,255,255,0.3);
+  padding:1px 3px;width:130px;
+}
+.r-meta-item input::placeholder{color:rgba(255,255,255,0.55);}
+
+/* ═══════════ BODY ═══════════ */
+.r-body{
+  padding:0 28px 26px;
+  margin-top:-30px;
+  position:relative;
+  z-index:3;
+}
+
+/* بطاقة قسم */
+.r-card{
+  background:var(--white);
+  border:1px solid var(--line);
+  border-radius:16px;
+  padding:18px 18px 16px;
+  margin-bottom:16px;
+  box-shadow:0 6px 20px rgba(8,73,75,0.06);
+  position:relative;
+}
+.r-card-head{
+  display:flex;align-items:center;gap:10px;
+  margin-bottom:12px;
+}
+.r-card-icon{
+  width:36px;height:36px;flex:0 0 auto;
+  border-radius:11px;
+  background:linear-gradient(135deg,var(--teal),var(--teal-bright));
+  color:#fff;
+  display:flex;align-items:center;justify-content:center;
+  font-size:1.05rem;
+  box-shadow:0 4px 10px rgba(13,110,110,0.3);
+}
+.r-card-title{
+  font-family:'Reem Kufi',serif;
+  font-weight:700;font-size:1.05rem;color:var(--teal-deep);
+  flex:1;
+}
+.card-remove{
+  flex:0 0 auto;
+  width:28px;height:28px;border:none;border-radius:50%;
+  background:#ffe0dc;color:var(--coral);
+  font-size:1.05rem;font-weight:900;cursor:pointer;line-height:1;
+  transition:all 0.2s;
+}
+.card-remove:hover{background:var(--coral);color:#fff;}
+.restore-table-btn{
+  display:flex;align-items:center;justify-content:center;gap:8px;
+  width:100%;
+  background:var(--mint);color:var(--teal-deep);
+  border:1.5px dashed var(--teal-bright);
+  border-radius:14px;padding:14px;margin-bottom:16px;
+  font-family:inherit;font-weight:800;font-size:0.9rem;cursor:pointer;
+  transition:all 0.2s;
+}
+.restore-table-btn:hover{background:var(--teal-glow);color:#fff;border-color:var(--teal-glow);}
+
+/* الأقسام النصية الديناميكية */
+.section-block{
+  border:1px dashed var(--line);
+  border-radius:12px;
+  padding:12px;
+  margin-bottom:12px;
+  background:linear-gradient(180deg,rgba(214,245,240,0.25),transparent);
+  position:relative;
+}
+.section-head{
+  display:flex;align-items:center;gap:8px;
+  margin-bottom:8px;
+}
+.section-label{
+  flex:1;
+  background:transparent;border:none;outline:none;
+  font-family:'Reem Kufi',serif;
+  font-weight:700;font-size:0.95rem;color:var(--teal);
+  border-bottom:2px solid var(--teal-glow);
+  padding:3px 2px;
+}
+.section-label::placeholder{color:var(--teal);opacity:0.4;}
+.section-text{
+  width:100%;
+  background:transparent;border:none;outline:none;
+  font-family:inherit;font-size:0.88rem;font-weight:500;
+  color:var(--ink);line-height:1.8;
+  resize:vertical;min-height:60px;
+  text-align:justify;
+}
+.section-text::placeholder{color:var(--ink-soft);opacity:0.5;}
+.sec-del{
+  flex:0 0 auto;
+  width:26px;height:26px;border:none;border-radius:50%;
+  background:#ffe0dc;color:var(--coral);
+  font-size:1rem;font-weight:900;cursor:pointer;line-height:1;
+}
+.sec-del:hover{background:var(--coral);color:#fff;}
+
+/* قائمة التوصيات */
+.rec-list{list-style:none;}
+.rec-item{
+  display:flex;align-items:flex-start;gap:9px;
+  margin-bottom:8px;
+}
+.rec-bullet{
+  flex:0 0 auto;margin-top:6px;
+  width:9px;height:9px;border-radius:50%;
+  background:linear-gradient(135deg,var(--coral),var(--amber));
+}
+.rec-item input{
+  flex:1;
+  background:transparent;border:none;outline:none;
+  font-family:inherit;font-size:0.88rem;font-weight:600;color:var(--ink);
+  border-bottom:1px solid var(--line);padding:3px 2px;
+}
+.rec-item input::placeholder{color:var(--ink-soft);opacity:0.5;}
+.rec-del{
+  flex:0 0 auto;
+  width:24px;height:24px;border:none;border-radius:50%;
+  background:#ffe0dc;color:var(--coral);
+  font-size:0.95rem;font-weight:900;cursor:pointer;line-height:1;
+}
+.rec-del:hover{background:var(--coral);color:#fff;}
+
+/* جدول ديناميكي */
+.dyn-table{
+  width:100%;border-collapse:collapse;
+  border-radius:10px;overflow:hidden;
+  margin-bottom:10px;
+}
+.dyn-table thead th{
+  background:linear-gradient(135deg,var(--teal),var(--teal-bright));
+  color:#fff;font-weight:800;font-size:0.82rem;
+  padding:9px 8px;text-align:center;position:relative;
+}
+.dyn-table tbody td{
+  border:1px solid var(--line);
+  padding:4px 6px;text-align:center;
+  background:var(--white);
+}
+.dyn-table tbody tr:nth-child(even) td{background:rgba(214,245,240,0.3);}
+.dyn-table .row-num{
+  background:var(--mint);font-weight:800;color:var(--teal-deep);
+  font-size:0.78rem;width:34px;
+}
+.dyn-table input{
+  width:100%;border:none;background:transparent;outline:none;
+  font-family:inherit;font-size:0.82rem;font-weight:600;color:var(--ink);
+  text-align:center;
+}
+.dyn-table input::placeholder{color:var(--ink-soft);opacity:0.45;}
+.col-del,.row-del{
+  width:20px;height:20px;border:none;border-radius:50%;
+  background:rgba(255,107,94,0.85);color:#fff;
+  font-size:0.75rem;font-weight:900;cursor:pointer;line-height:1;
+  display:inline-flex;align-items:center;justify-content:center;
+}
+.row-del-cell{width:28px;background:var(--white)!important;border:none!important;}
+.col-del{position:absolute;top:4px;left:4px;display:none;}
+.dyn-table thead th:hover .col-del{display:inline-flex;}
+
+.add-controls{display:flex;gap:8px;flex-wrap:wrap;}
+.add-btn{
+  display:inline-flex;align-items:center;gap:5px;
+  background:var(--mint);color:var(--teal-deep);
+  border:1.5px dashed var(--teal-bright);
+  border-radius:30px;padding:7px 15px;
+  font-family:inherit;font-weight:700;font-size:0.8rem;cursor:pointer;
+  transition:all 0.2s;
+}
+.add-btn:hover{background:var(--teal-glow);color:#fff;border-color:var(--teal-glow);}
+
+/* الصور */
+.photos-grid{
+  display:grid;grid-template-columns:repeat(3,1fr);gap:10px;
+}
+.photo-slot{
+  aspect-ratio:4/3;border-radius:12px;
+  border:2px dashed var(--line);
+  background:var(--paper);
+  display:flex;align-items:center;justify-content:center;flex-direction:column;
+  cursor:pointer;position:relative;overflow:hidden;
+  color:var(--ink-soft);transition:all 0.2s;
+}
+.photo-slot:hover{border-color:var(--teal-bright);background:var(--mint);}
+.photo-slot .ph-ic{font-size:1.6rem;opacity:0.6;}
+.photo-slot .ph-tx{font-size:0.72rem;font-weight:600;margin-top:4px;}
+.photo-slot img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;display:none;}
+.photo-slot.has-image img{display:block;}
+.photo-slot.has-image .ph-ic,.photo-slot.has-image .ph-tx{display:none;}
+.photo-rm{
+  position:absolute;top:6px;left:6px;z-index:2;
+  width:24px;height:24px;border:none;border-radius:50%;
+  background:var(--coral);color:#fff;font-size:0.9rem;font-weight:900;
+  cursor:pointer;display:none;align-items:center;justify-content:center;line-height:1;
+}
+.photo-slot.has-image .photo-rm{display:flex;}
+
+/* التوقيعات */
+.sig-grid{
+  display:grid;grid-template-columns:1fr 1fr;gap:18px;
+}
+.sig-field{text-align:center;}
+.sig-role{
+  font-size:0.78rem;font-weight:800;color:var(--teal-deep);margin-bottom:30px;
+}
+.sig-field input{
+  width:100%;border:none;background:transparent;outline:none;
+  font-family:inherit;font-size:0.9rem;font-weight:700;color:var(--ink);
+  text-align:center;border-bottom:2px solid var(--teal-bright);padding-bottom:4px;
+}
+.sig-field input::placeholder{color:var(--ink-soft);opacity:0.5;}
+
+/* الفوتر */
+.r-footer{
+  text-align:center;
+  padding:16px;
+  font-size:0.74rem;color:var(--ink-soft);
+  border-top:1px solid var(--line);
+  background:var(--paper);
+}
+.r-footer .heart{color:var(--coral);}
+
+/* ═══════════ ACTION BAR ═══════════ */
+.action-bar{
+  position:fixed;bottom:0;left:0;right:0;
+  display:flex;justify-content:center;gap:9px;flex-wrap:wrap;
+  padding:12px 14px;
+  background:rgba(255,255,255,0.82);
+  backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);
+  border-top:1px solid var(--line);
+  z-index:100;
+}
+.btn{
+  display:inline-flex;align-items:center;gap:6px;
+  padding:11px 18px;border:none;border-radius:40px;
+  font-family:'Tajawal',sans-serif;font-weight:800;font-size:0.82rem;
+  cursor:pointer;transition:all 0.2s;white-space:nowrap;
+}
+.btn:active{transform:scale(0.96);}
+.btn-clear{background:#fff;color:var(--coral);border:1.5px solid rgba(255,107,94,0.35);}
+.btn-clear:hover{background:var(--coral);color:#fff;}
+.btn-img{background:linear-gradient(135deg,#2a9d8f,#1a7a8a);color:#fff;box-shadow:0 5px 14px rgba(42,157,143,0.3);}
+.btn-pdf{background:linear-gradient(135deg,#d32f2f,#b71c1c);color:#fff;box-shadow:0 5px 14px rgba(211,47,47,0.3);}
+.btn-share{background:linear-gradient(135deg,#16a34a,#15803d);color:#fff;box-shadow:0 5px 14px rgba(22,163,74,0.3);}
+.btn-img:hover,.btn-pdf:hover,.btn-share:hover{filter:brightness(1.06);transform:translateY(-1px);}
+
+/* ═══════════ TOAST ═══════════ */
+#toast{
+  position:fixed;bottom:78px;left:50%;
+  transform:translateX(-50%) translateY(20px);
+  background:var(--ink);color:#fff;
+  padding:11px 22px;border-radius:30px;
+  font-size:0.85rem;font-weight:700;
+  opacity:0;pointer-events:none;transition:all 0.3s;z-index:200;
+  box-shadow:0 8px 24px rgba(0,0,0,0.2);
+}
+#toast.show{opacity:1;transform:translateX(-50%) translateY(0);}
+
+/* ═══════════ MODAL ═══════════ */
+.modal-overlay{
+  position:fixed;inset:0;background:rgba(8,73,75,0.45);
+  backdrop-filter:blur(4px);
+  display:none;align-items:center;justify-content:center;z-index:300;padding:20px;
+}
+.modal-overlay.show{display:flex;}
+.modal-box{
+  background:#fff;border-radius:18px;padding:26px 24px;
+  max-width:340px;text-align:center;
+  box-shadow:0 20px 50px rgba(0,0,0,0.25);
+}
+.modal-box .m-ic{font-size:2rem;margin-bottom:10px;}
+.modal-box p{font-size:0.92rem;font-weight:600;color:var(--ink);margin-bottom:18px;line-height:1.6;}
+.modal-actions{display:flex;gap:10px;justify-content:center;}
+
+/* ═══════════ منتقي الثيمات ═══════════ */
+.theme-bar{
+  display:flex;align-items:center;justify-content:center;gap:9px;flex-wrap:wrap;
+  padding:10px 14px;
+  background:rgba(255,255,255,0.7);
+  border:1px solid var(--line);
+  border-radius:14px;
+  margin:0 auto 16px;
+  max-width:860px;
+}
+.theme-bar-label{
+  font-size:0.78rem;font-weight:800;color:var(--ink-soft);
+  display:flex;align-items:center;gap:5px;
+}
+.theme-dot{
+  width:30px;height:30px;border-radius:50%;
+  border:2.5px solid transparent;
+  cursor:pointer;position:relative;
+  transition:transform 0.15s, border-color 0.15s;
+  padding:0;
+}
+.theme-dot:hover{transform:scale(1.12);}
+.theme-dot.active{border-color:var(--ink);box-shadow:0 0 0 2px #fff inset;}
+.theme-dot[data-t="teal"]{background:linear-gradient(135deg,#08494b,#16a3a3);}
+.theme-dot[data-t="indigo"]{background:linear-gradient(135deg,#23286b,#5560d4);}
+.theme-dot[data-t="purple"]{background:linear-gradient(135deg,#52206b,#a45cc4);}
+.theme-dot[data-t="green"]{background:linear-gradient(135deg,#1a5435,#43a86b);}
+.theme-dot[data-t="crimson"]{background:linear-gradient(135deg,#7a1f30,#d6536c);}
+.theme-dot[data-t="slate"]{background:linear-gradient(135deg,#222d3a,#56697f);}
+
+@media print{
+  body{background:#fff;padding:0;}
+  .action-bar,#toast,.modal-overlay{display:none!important;}
+  #page{max-width:100%;box-shadow:none;border-radius:0;}
+}
+@media (max-width:600px){
+  .r-title-input{font-size:1.4rem;}
+  .photos-grid{grid-template-columns:repeat(2,1fr);}
+  .sig-grid{grid-template-columns:1fr;}
+  .r-body{padding:0 16px 20px;}
+  .r-header{padding:20px 18px 50px;}
+}
+</style>
+</head>
+<body>
+
+<!-- ═══════════ منتقي الثيمات ═══════════ -->
+<div class="theme-bar" id="theme-bar">
+  <span class="theme-bar-label">🎨 الثيم:</span>
+  <button class="theme-dot" data-t="teal" onclick="setTheme('teal')" title="تركواز"></button>
+  <button class="theme-dot" data-t="indigo" onclick="setTheme('indigo')" title="نيلي"></button>
+  <button class="theme-dot" data-t="purple" onclick="setTheme('purple')" title="بنفسجي"></button>
+  <button class="theme-dot" data-t="green" onclick="setTheme('green')" title="أخضر"></button>
+  <button class="theme-dot" data-t="crimson" onclick="setTheme('crimson')" title="قرمزي"></button>
+  <button class="theme-dot" data-t="slate" onclick="setTheme('slate')" title="رمادي"></button>
+</div>
+
+<div id="page" data-theme="teal">
+
+  <!-- ═══════════ HEADER ═══════════ -->
+  <div class="r-header">
+    <div class="r-header-top">
+      <div class="r-logo-box">
+        <div class="r-logo" id="logo-box" onclick="document.getElementById('logo-input').click()">
+          <span class="r-logo-ph">📷 ارفع الشعار</span>
+          <img id="logo-img" alt="">
+        </div>
+        <button class="r-logo-rm" onclick="removeLogo(event)" title="حذف الشعار">×</button>
+        <input type="file" id="logo-input" hidden accept="image/*" onchange="loadLogo(this)">
+      </div>
+      <div class="r-org">
+        <input type="text" id="org-name" placeholder="اسم المدرسة / الجهة">
+      </div>
+    </div>
+
+    <div class="r-type-badge">
+      <span>🏷️</span>
+      <select id="report-type">
+        <option value="تقرير عام">تقرير عام</option>
+        <option value="تقرير خاص">تقرير خاص</option>
+        <option value="تقرير متابعة">تقرير متابعة</option>
+        <option value="تقرير إنجاز">تقرير إنجاز</option>
+        <option value="تقرير نشاط">تقرير نشاط</option>
+      </select>
+    </div>
+
+    <input type="text" class="r-title-input" id="report-title" placeholder="اكتب عنوان التقرير هنا...">
+
+    <div class="r-meta-row">
+      <div class="r-meta-item"><span class="ic">✍️</span><input type="text" id="m-author" placeholder="مُعدّ التقرير"></div>
+      <div class="r-meta-item"><span class="ic">📅</span><input type="text" id="m-date" placeholder="التاريخ"></div>
+      <div class="r-meta-item"><span class="ic">📍</span><input type="text" id="m-place" placeholder="المكان / القسم"></div>
+    </div>
+  </div>
+
+  <!-- ═══════════ BODY ═══════════ -->
+  <div class="r-body">
+
+    <!-- الأقسام النصية -->
+    <div class="r-card">
+      <div class="r-card-head">
+        <div class="r-card-icon">📝</div>
+        <div class="r-card-title">محتوى التقرير</div>
+      </div>
+      <div id="sections-list"></div>
+      <button class="add-btn" onclick="addSection()"><span>+</span><span>إضافة قسم</span></button>
+    </div>
+
+    <!-- الجدول الاختياري -->
+    <div class="r-card" id="table-card">
+      <div class="r-card-head">
+        <div class="r-card-icon">📊</div>
+        <div class="r-card-title">جدول البيانات (اختياري)</div>
+        <button class="card-remove" onclick="hideTableCard()" title="حذف قسم الجدول">×</button>
+      </div>
+      <table class="dyn-table" id="data-table">
+        <thead id="table-head"></thead>
+        <tbody id="table-body"></tbody>
+      </table>
+      <div class="add-controls">
+        <button class="add-btn" onclick="addRow()"><span>+</span><span>إضافة صف</span></button>
+        <button class="add-btn" onclick="addColumn()"><span>+</span><span>إضافة عمود</span></button>
+      </div>
+    </div>
+
+    <!-- زر إرجاع قسم الجدول (يظهر عند حذفه) -->
+    <button class="restore-table-btn" id="restore-table-btn" onclick="showTableCard()" style="display:none;">
+      <span>📊</span><span>+ إضافة قسم جدول البيانات</span>
+    </button>
+
+    <!-- التوصيات -->
+    <div class="r-card">
+      <div class="r-card-head">
+        <div class="r-card-icon">⭐</div>
+        <div class="r-card-title">أبرز النقاط والتوصيات</div>
+      </div>
+      <ul class="rec-list" id="rec-list"></ul>
+      <button class="add-btn" onclick="addRec()"><span>+</span><span>إضافة توصية</span></button>
+    </div>
+
+    <!-- الصور -->
+    <div class="r-card">
+      <div class="r-card-head">
+        <div class="r-card-icon">📷</div>
+        <div class="r-card-title">صور مرفقة</div>
+      </div>
+      <div class="photos-grid">
+        <div class="photo-slot" data-slot="1" onclick="pickPhoto(1)">
+          <button class="photo-rm" onclick="removePhoto(event,1)">×</button>
+          <span class="ph-ic">🖼️</span><span class="ph-tx">صورة 1</span>
+          <img id="img-1" alt="">
+          <input type="file" id="file-1" hidden accept="image/*" onchange="uploadPhoto(event,1)">
+        </div>
+        <div class="photo-slot" data-slot="2" onclick="pickPhoto(2)">
+          <button class="photo-rm" onclick="removePhoto(event,2)">×</button>
+          <span class="ph-ic">🖼️</span><span class="ph-tx">صورة 2</span>
+          <img id="img-2" alt="">
+          <input type="file" id="file-2" hidden accept="image/*" onchange="uploadPhoto(event,2)">
+        </div>
+        <div class="photo-slot" data-slot="3" onclick="pickPhoto(3)">
+          <button class="photo-rm" onclick="removePhoto(event,3)">×</button>
+          <span class="ph-ic">🖼️</span><span class="ph-tx">صورة 3</span>
+          <img id="img-3" alt="">
+          <input type="file" id="file-3" hidden accept="image/*" onchange="uploadPhoto(event,3)">
+        </div>
+      </div>
+    </div>
+
+    <!-- التوقيعات -->
+    <div class="r-card">
+      <div class="r-card-head">
+        <div class="r-card-icon">✒️</div>
+        <div class="r-card-title">الاعتماد والتوقيعات</div>
+      </div>
+      <div class="sig-grid">
+        <div class="sig-field">
+          <div class="sig-role">مُعدّ التقرير</div>
+          <input type="text" id="sig-1" placeholder="الاسم">
+        </div>
+        <div class="sig-field">
+          <div class="sig-role">مدير/ة المدرسة</div>
+          <input type="text" id="sig-2" placeholder="الاسم">
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- الفوتر -->
+  <div class="r-footer">
+    صُمم بـ <span class="heart">♥</span> لخدمة العاملين في الميدان التربوي · ٢٠٢٦
+  </div>
+
+</div>
+
+<!-- ═══════════ ACTION BAR ═══════════ -->
+<div class="action-bar">
+  <button class="btn btn-clear" onclick="askClear()"><span>🗑️</span><span>تفريغ</span></button>
+  <button class="btn btn-img" onclick="saveAsImage()"><span>🖼️</span><span>صورة</span></button>
+  <button class="btn btn-pdf" onclick="exportAsPDFv2()"><span>📄</span><span>PDF</span></button>
+  <button class="btn btn-share" onclick="shareReport()"><span>📤</span><span>مشاركة</span></button>
+</div>
+
+<div id="toast"></div>
+
+<div class="modal-overlay" id="modal">
+  <div class="modal-box">
+    <div class="m-ic">⚠️</div>
+    <p>هل أنت متأكد من تفريغ جميع البيانات؟<br>لا يمكن التراجع عن هذا الإجراء.</p>
+    <div class="modal-actions">
+      <button class="btn btn-clear" onclick="closeModal()" style="border-color:var(--line);color:var(--ink-soft);">إلغاء</button>
+      <button class="btn btn-pdf" onclick="doClear()" style="background:linear-gradient(135deg,var(--coral),#e8443a);">نعم، تفريغ</button>
+    </div>
+  </div>
+</div>
+
+<script>
+const STORAGE_KEY = 'report4_v1';
+let currentTheme = 'teal';
+
+function setTheme(name){
+  currentTheme = name;
+  document.getElementById('page').setAttribute('data-theme', name);
+  document.querySelectorAll('.theme-dot').forEach(d => d.classList.toggle('active', d.dataset.t === name));
+  saveData();
+}
+
+function showToast(msg){
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  clearTimeout(t._timer);
+  t._timer = setTimeout(() => t.classList.remove('show'), 2200);
+}
+
+// ═══════════ الأقسام النصية الديناميكية ═══════════
+function addSection(label='', content=''){
+  const list = document.getElementById('sections-list');
+  const block = document.createElement('div');
+  block.className = 'section-block';
+  block.innerHTML = `
+    <div class="section-head">
+      <input type="text" class="section-label" placeholder="عنوان القسم (مثال: المقدمة، الأهداف، النتائج...)">
+      <button class="sec-del" onclick="this.closest('.section-block').remove(); saveData();" title="حذف القسم">×</button>
+    </div>
+    <textarea class="section-text" placeholder="اكتب محتوى هذا القسم..."></textarea>
+  `;
+  list.appendChild(block);
+  block.querySelector('.section-label').value = label;
+  block.querySelector('.section-text').value = content;
+  block.querySelectorAll('input, textarea').forEach(el => el.addEventListener('input', saveData));
+  return block;
+}
+function getSections(){
+  const arr = [];
+  document.querySelectorAll('#sections-list .section-block').forEach(b => {
+    arr.push({label:b.querySelector('.section-label').value, content:b.querySelector('.section-text').value});
+  });
+  return arr;
+}
+
+// ═══════════ التوصيات ═══════════
+function addRec(value=''){
+  const list = document.getElementById('rec-list');
+  const li = document.createElement('li');
+  li.className = 'rec-item';
+  li.innerHTML = `
+    <span class="rec-bullet"></span>
+    <input type="text" placeholder="اكتب التوصية أو النقطة...">
+    <button class="rec-del" onclick="this.closest('.rec-item').remove(); saveData();" title="حذف">×</button>
+  `;
+  list.appendChild(li);
+  li.querySelector('input').value = value;
+  li.querySelector('input').addEventListener('input', saveData);
+  return li;
+}
+function getRecs(){
+  const arr = [];
+  document.querySelectorAll('#rec-list .rec-item input').forEach(i => arr.push(i.value));
+  return arr;
+}
+
+// ═══════════ الجدول الديناميكي ═══════════
+let tableHeaders = ['البند','التفاصيل','الملاحظات'];
+let tableRows = [['','',''],['','','']];
+
+function renderTable(){
+  const head = document.getElementById('table-head');
+  const body = document.getElementById('table-body');
+  let h = '<tr><th class="row-num">م</th>';
+  tableHeaders.forEach((hd, i) => {
+    h += `<th><input type="text" value="${hd.replace(/"/g,'&quot;')}" oninput="tableHeaders[${i}]=this.value; saveData();" placeholder="العمود">${tableHeaders.length > 1 ? `<button class="col-del" onclick="deleteColumn(${i})" title="حذف العمود">×</button>` : ''}</th>`;
+  });
+  h += '<th class="row-del-cell"></th></tr>';
+  head.innerHTML = h;
+
+  let b = '';
+  tableRows.forEach((row, ri) => {
+    b += `<tr><td class="row-num">${ri+1}</td>`;
+    tableHeaders.forEach((_, ci) => {
+      const val = (row[ci]||'').replace(/"/g,'&quot;');
+      b += `<td><input type="text" value="${val}" oninput="tableRows[${ri}][${ci}]=this.value; saveData();" placeholder="..."></td>`;
+    });
+    b += `<td class="row-del-cell"><button class="row-del" onclick="deleteRow(${ri})" title="حذف الصف">×</button></td></tr>`;
+  });
+  body.innerHTML = b;
+}
+function addRow(){ tableRows.push(tableHeaders.map(()=>'')); renderTable(); saveData(); showToast('✅ تم إضافة صف'); }
+function addColumn(){ tableHeaders.push('عمود جديد'); tableRows.forEach(r => r.push('')); renderTable(); saveData(); showToast('✅ تم إضافة عمود'); }
+function deleteRow(i){ if(tableRows.length<=1){showToast('❌ لا يمكن حذف آخر صف'); return;} tableRows.splice(i,1); renderTable(); saveData(); }
+function deleteColumn(i){ if(tableHeaders.length<=1){showToast('❌ لا يمكن حذف آخر عمود'); return;} tableHeaders.splice(i,1); tableRows.forEach(r=>r.splice(i,1)); renderTable(); saveData(); }
+
+// إظهار/إخفاء قسم الجدول بالكامل
+let tableHidden = false;
+function hideTableCard(){
+  tableHidden = true;
+  document.getElementById('table-card').style.display = 'none';
+  document.getElementById('restore-table-btn').style.display = 'flex';
+  saveData();
+  showToast('🗑️ تم حذف قسم الجدول');
+}
+function showTableCard(){
+  tableHidden = false;
+  document.getElementById('table-card').style.display = '';
+  document.getElementById('restore-table-btn').style.display = 'none';
+  saveData();
+  showToast('✅ تم إضافة قسم الجدول');
+}
+
+// ═══════════ الشعار ═══════════
+function loadLogo(input){
+  const file = input.files[0];
+  if(!file || !file.type.startsWith('image/')) return;
+  if(file.size > 2*1024*1024){ showToast('❌ حجم الصورة كبير (الحد 2 ميجا)'); return; }
+  const reader = new FileReader();
+  reader.onload = e => {
+    const img = document.getElementById('logo-img');
+    img.src = e.target.result;
+    document.getElementById('logo-box').classList.add('has-logo');
+    saveData(); showToast('✅ تم رفع الشعار');
+  };
+  reader.readAsDataURL(file);
+  input.value = '';
+}
+function removeLogo(e){
+  e.stopPropagation();
+  document.getElementById('logo-img').src = '';
+  document.getElementById('logo-box').classList.remove('has-logo');
+  saveData();
+}
+
+// ═══════════ الصور ═══════════
+function pickPhoto(n){ document.getElementById('file-'+n).click(); }
+function uploadPhoto(e, n){
+  const file = e.target.files[0];
+  if(!file || !file.type.startsWith('image/')) return;
+  if(file.size > 3*1024*1024){ showToast('❌ الصورة كبيرة جداً'); return; }
+  const reader = new FileReader();
+  reader.onload = ev => {
+    const tmp = new Image();
+    tmp.onload = () => {
+      const c = document.createElement('canvas');
+      const max = 1000;
+      let w = tmp.width, h = tmp.height;
+      if(w > max || h > max){ if(w > h){ h = h*(max/w); w = max; } else { w = w*(max/h); h = max; } }
+      c.width = w; c.height = h;
+      c.getContext('2d').drawImage(tmp, 0, 0, w, h);
+      const slot = document.querySelector(`.photo-slot[data-slot="${n}"]`);
+      const img = document.getElementById('img-'+n);
+      img.src = c.toDataURL('image/jpeg', 0.85);
+      slot.classList.add('has-image');
+      saveData(); showToast('✅ تم رفع الصورة');
+    };
+    tmp.src = ev.target.result;
+  };
+  reader.readAsDataURL(file);
+  e.target.value = '';
+}
+function removePhoto(e, n){
+  e.stopPropagation();
+  const slot = document.querySelector(`.photo-slot[data-slot="${n}"]`);
+  document.getElementById('img-'+n).src = '';
+  slot.classList.remove('has-image');
+  saveData();
+}
+
+// ═══════════ الحفظ / التحميل ═══════════
+function saveData(){
+  const data = {};
+  document.querySelectorAll('input[id], select[id]').forEach(el => { if(el.id) data[el.id] = el.value; });
+  data['sections'] = getSections();
+  data['recs'] = getRecs();
+  data['tableHeaders'] = tableHeaders;
+  data['tableRows'] = tableRows;
+  data['tableHidden'] = tableHidden;
+  data['theme'] = currentTheme;
+  // logo
+  const logoImg = document.getElementById('logo-img');
+  if(document.getElementById('logo-box').classList.contains('has-logo') && logoImg.src) data['logo'] = logoImg.src;
+  // photos
+  document.querySelectorAll('.photo-slot').forEach((slot,i) => {
+    if(slot.classList.contains('has-image')){
+      const img = slot.querySelector('img');
+      if(img) data['photo_'+i] = img.src;
+    }
+  });
+  try{ localStorage.setItem(STORAGE_KEY, JSON.stringify(data)); }catch(e){}
+}
+
+function loadData(){
+  let parsed = null;
+  try{
+    const raw = localStorage.getItem(STORAGE_KEY);
+    if(raw) parsed = JSON.parse(raw);
+  }catch(e){}
+
+  if(parsed){
+    // sections
+    if(Array.isArray(parsed.sections)){
+      document.getElementById('sections-list').innerHTML = '';
+      parsed.sections.forEach(s => addSection(s.label||'', s.content||''));
+    }
+    // recs
+    if(Array.isArray(parsed.recs)){
+      document.getElementById('rec-list').innerHTML = '';
+      parsed.recs.forEach(r => addRec(r||''));
+    }
+    // table
+    if(Array.isArray(parsed.tableHeaders)) tableHeaders = parsed.tableHeaders;
+    if(Array.isArray(parsed.tableRows)) tableRows = parsed.tableRows;
+    if(typeof parsed.tableHidden === 'boolean') tableHidden = parsed.tableHidden;
+    if(parsed.theme) currentTheme = parsed.theme;
+    // simple fields
+    Object.keys(parsed).forEach(k => {
+      if(['sections','recs','tableHeaders','tableRows','tableHidden','theme','logo'].includes(k) || k.startsWith('photo_')) return;
+      const el = document.getElementById(k);
+      if(el) el.value = parsed[k];
+    });
+    // logo
+    if(parsed.logo){
+      document.getElementById('logo-img').src = parsed.logo;
+      document.getElementById('logo-box').classList.add('has-logo');
+    }
+    // photos
+    Object.keys(parsed).forEach(k => {
+      if(k.startsWith('photo_')){
+        const i = parseInt(k.split('_')[1]);
+        const slots = document.querySelectorAll('.photo-slot');
+        if(slots[i]){
+          const img = slots[i].querySelector('img');
+          if(img && parsed[k]){ img.src = parsed[k]; slots[i].classList.add('has-image'); }
+        }
+      }
+    });
+  }
+
+  // افتراضي إذا فاضي
+  if(document.querySelectorAll('#sections-list .section-block').length === 0){
+    addSection('المقدمة','');
+    addSection('أبرز ما تم تنفيذه','');
+  }
+  if(document.querySelectorAll('#rec-list .rec-item').length === 0){
+    addRec(''); addRec('');
+  }
+  renderTable();
+  // تطبيق حالة إخفاء قسم الجدول
+  if(tableHidden){
+    document.getElementById('table-card').style.display = 'none';
+    document.getElementById('restore-table-btn').style.display = 'flex';
+  } else {
+    document.getElementById('table-card').style.display = '';
+    document.getElementById('restore-table-btn').style.display = 'none';
+  }
+  // تطبيق الثيم
+  setTheme(currentTheme);
+}
+
+// ═══════════ التفريغ ═══════════
+function askClear(){ document.getElementById('modal').classList.add('show'); }
+function closeModal(){ document.getElementById('modal').classList.remove('show'); }
+function doClear(){
+  closeModal();
+  document.querySelectorAll('input, textarea').forEach(el => el.value = '');
+  document.getElementById('report-type').selectedIndex = 0;
+  document.getElementById('logo-img').src = '';
+  document.getElementById('logo-box').classList.remove('has-logo');
+  document.querySelectorAll('.photo-slot').forEach(slot => {
+    slot.classList.remove('has-image');
+    const img = slot.querySelector('img'); if(img) img.src = '';
+  });
+  document.getElementById('sections-list').innerHTML = '';
+  document.getElementById('rec-list').innerHTML = '';
+  addSection('المقدمة',''); addSection('أبرز ما تم تنفيذه','');
+  addRec(''); addRec('');
+  tableHeaders = ['البند','التفاصيل','الملاحظات'];
+  tableRows = [['','',''],['','','']];
+  tableHidden = false;
+  document.getElementById('table-card').style.display = '';
+  document.getElementById('restore-table-btn').style.display = 'none';
+  setTheme('teal');
+  renderTable();
+  localStorage.removeItem(STORAGE_KEY);
+  showToast('✅ تم تفريغ التقرير');
+}
+
+// ═══════════════════════════════════════════════
+// التصدير (المنطق القياسي المعتمد)
+// ═══════════════════════════════════════════════
+function loadJsPDF(){
+  return new Promise((resolve, reject) => {
+    if(typeof window.jspdf !== 'undefined'){ resolve(); return; }
+    const script = document.createElement('script');
+    script.src = 'https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js';
+    script.onload = () => resolve();
+    script.onerror = () => reject(new Error('jsPDF load failed'));
+    document.head.appendChild(script);
+  });
+}
+
+function prepareForExport(page){
+  const replacements = [];
+
+  // إلغاء أنيميشن/شفافية الحاوية قبل الالتقاط (تمنع البهتان)
+  replacements.push({orig:page, prevCss:page.style.cssText, type:'css'});
+  page.style.animation = 'none';
+  page.style.webkitAnimation = 'none';
+  page.style.opacity = '1';
+  page.style.transform = 'none';
+
+  // إخفاء العناصر التفاعلية
+  const hideSelectors = '.action-bar, #toast, .modal-overlay, .add-btn, .add-controls, .sec-del, .rec-del, .col-del, .row-del, .row-del-cell, .r-logo-rm, .photo-rm, .card-remove, .restore-table-btn';
+  page.querySelectorAll(hideSelectors).forEach(el => {
+    replacements.push({orig:el, prevDisplay:el.style.display, type:'hide'});
+    el.style.display = 'none';
+  });
+
+  // inputs و textareas
+  const inputs = page.querySelectorAll('input[type="text"], input[type="number"], textarea');
+  inputs.forEach(el => {
+    const computed = window.getComputedStyle(el);
+    const value = el.value || '';
+    const isTextarea = el.tagName === 'TEXTAREA';
+    const span = document.createElement(isTextarea ? 'div' : 'span');
+    if(value.trim()){
+      const lines = isTextarea ? value.split('\n') : [value];
+      span.innerHTML = lines.map(line => {
+        const words = line.split(/(\s+)/);
+        return words.map(p => {
+          if(!p) return '';
+          if(/^\s+$/.test(p)) return p;
+          return `<span style="display:inline-block;white-space:nowrap;letter-spacing:0;direction:rtl;unicode-bidi:embed;">${p.replace(/</g,'&lt;').replace(/>/g,'&gt;')}</span>`;
+        }).join('');
+      }).join('<br>');
+    } else { span.innerHTML = '&nbsp;'; }
+    span.style.cssText = `display:${isTextarea?'block':'inline-block'};width:100%;box-sizing:border-box;font-family:${computed.fontFamily};font-size:${computed.fontSize};font-weight:${computed.fontWeight};color:${computed.color};text-align:${computed.textAlign};line-height:${computed.lineHeight};padding:${computed.padding};direction:rtl;unicode-bidi:embed;letter-spacing:0;min-height:${isTextarea?computed.minHeight:'auto'};`;
+    el.style.display = 'none';
+    el.parentNode.insertBefore(span, el);
+    replacements.push({orig:el, span, type:'input'});
+  });
+
+  // select (نوع التقرير)
+  page.querySelectorAll('select').forEach(el => {
+    const computed = window.getComputedStyle(el);
+    const span = document.createElement('span');
+    span.textContent = el.options[el.selectedIndex] ? el.options[el.selectedIndex].text : '';
+    span.style.cssText = `display:inline-block;font-family:${computed.fontFamily};font-size:${computed.fontSize};font-weight:${computed.fontWeight};color:${computed.color};letter-spacing:0;`;
+    el.style.display = 'none';
+    el.parentNode.insertBefore(span, el);
+    replacements.push({orig:el, span, type:'input'});
+  });
+
+  return replacements;
+}
+
+function restoreFromExport(replacements){
+  replacements.forEach(({orig, span, prevDisplay, prevCss, type}) => {
+    if(type === 'css'){ orig.style.cssText = prevCss || ''; }
+    else if(type === 'hide'){ orig.style.display = prevDisplay || ''; }
+    else { orig.style.display = ''; if(span && span.parentNode) span.parentNode.removeChild(span); }
+  });
+}
+
+async function saveAsImage(){
+  if (typeof window.checkDownloadAccess === 'function'){ const allowed = await window.checkDownloadAccess(); if(!allowed) return; }
+  saveData();
+  showToast('⏳ جاري تحضير الصورة...');
+  const page = document.getElementById('page');
+  const replacements = prepareForExport(page);
+  try{
+    await document.fonts.ready;
+    await new Promise(r => setTimeout(r, 500));
+    const canvas = await html2canvas(page, {
+      backgroundColor:'#ffffff', scale:2.5, useCORS:true, logging:false, allowTaint:true,
+      width:page.offsetWidth, height:page.offsetHeight,
+      onclone:(doc) => {
+        const style = doc.createElement('style');
+        style.textContent = `*{letter-spacing:0 !important;font-feature-settings:"kern" 1,"liga" 1,"calt" 1,"rlig" 1 !important;font-kerning:normal !important;-webkit-print-color-adjust:exact !important;print-color-adjust:exact !important;color-adjust:exact !important;animation:none !important;-webkit-animation:none !important;transition:none !important;} #page{opacity:1 !important;animation:none !important;-webkit-animation:none !important;transform:none !important;}`;
+        doc.head.appendChild(style);
+      }
+    });
+    const link = document.createElement('a');
+    link.download = 'تقرير_مدرسي.png';
+    link.href = canvas.toDataURL('image/png');
+    link.click();
+    showToast('✅ تم حفظ الصورة');
+  }catch(e){ console.error(e); showToast('❌ فشل التصدير'); }
+  finally{ restoreFromExport(replacements); }
+}
+
+async function exportAsPDFv2(){
+  if (typeof window.checkDownloadAccess === 'function'){ const allowed = await window.checkDownloadAccess(); if(!allowed) return; }
+  saveData();
+  showToast('⏳ جاري تحضير PDF...');
+  if(typeof window.jspdf === 'undefined'){ try{ await loadJsPDF(); }catch(e){ showToast('❌ فشل التصدير'); return; } }
+  const page = document.getElementById('page');
+  const replacements = prepareForExport(page);
+  try{
+    await document.fonts.ready;
+    await new Promise(r => setTimeout(r, 500));
+    const canvas = await html2canvas(page, {
+      backgroundColor:'#ffffff', scale:2.5, useCORS:true, logging:false, allowTaint:true,
+      width:page.offsetWidth, height:page.offsetHeight,
+      onclone:(doc) => {
+        const style = doc.createElement('style');
+        style.textContent = `*{letter-spacing:0 !important;font-kerning:normal !important;-webkit-print-color-adjust:exact !important;print-color-adjust:exact !important;color-adjust:exact !important;animation:none !important;-webkit-animation:none !important;transition:none !important;} #page{opacity:1 !important;animation:none !important;-webkit-animation:none !important;transform:none !important;}`;
+        doc.head.appendChild(style);
+      }
+    });
+    const { jsPDF } = window.jspdf;
+    const pdf = new jsPDF({orientation:'portrait', unit:'mm', format:'a4', compress:true});
+    const pdfW = 210, pdfH = 297, mX = 8, mY = 8;
+    const cW = pdfW - mX*2, cH = pdfH - mY*2;
+    const ratio = canvas.height / canvas.width;
+    const iW = cW, iH = iW * ratio;
+    if(iH <= cH + 5){
+      pdf.addImage(canvas.toDataURL('image/jpeg',0.92), 'JPEG', mX, (pdfH-iH)/2, iW, iH, undefined, 'FAST');
+    } else {
+      const pxPer = (cH / iH) * canvas.height;
+      const pages = Math.ceil(canvas.height / pxPer);
+      for(let i=0;i<pages;i++){
+        if(i>0) pdf.addPage();
+        const sY = i*pxPer, sH = Math.min(pxPer, canvas.height - sY);
+        const c2 = document.createElement('canvas');
+        c2.width = canvas.width; c2.height = sH;
+        c2.getContext('2d').drawImage(canvas, 0, sY, canvas.width, sH, 0, 0, canvas.width, sH);
+        pdf.addImage(c2.toDataURL('image/jpeg',0.92), 'JPEG', mX, mY, iW, (sH/canvas.width)*iW, undefined, 'FAST');
+      }
+    }
+    pdf.setProperties({title:'تقرير مدرسي', creator:'ksa2030.one'});
+    pdf.save('تقرير_مدرسي.pdf');
+    showToast('✅ تم حفظ PDF');
+  }catch(e){ console.error(e); showToast('❌ فشل التصدير'); }
+  finally{ restoreFromExport(replacements); }
+}
+
+async function shareReport(){
+  if (typeof window.checkDownloadAccess === 'function'){ const allowed = await window.checkDownloadAccess(); if(!allowed) return; }
+  saveData();
+  showToast('⏳ جاري تحضير المشاركة...');
+  const page = document.getElementById('page');
+  if(!page){ showToast('❌ لم يتم العثور على التقرير'); return; }
+  const replacements = prepareForExport(page);
+  try{
+    await document.fonts.ready;
+    await new Promise(r => setTimeout(r, 500));
+    const canvas = await html2canvas(page, {
+      backgroundColor:'#ffffff', scale:3, useCORS:true, logging:false, allowTaint:true,
+      width:page.offsetWidth, height:page.offsetHeight,
+      onclone:(doc) => {
+        const style = doc.createElement('style');
+        style.textContent = `*{letter-spacing:0 !important;font-kerning:normal !important;-webkit-print-color-adjust:exact !important;print-color-adjust:exact !important;color-adjust:exact !important;animation:none !important;-webkit-animation:none !important;transition:none !important;} #page{opacity:1 !important;animation:none !important;-webkit-animation:none !important;transform:none !important;}`;
+        doc.head.appendChild(style);
+      }
+    });
+    restoreFromExport(replacements);
+    canvas.toBlob(async (blob) => {
+      const file = new File([blob], 'تقرير_مدرسي.png', {type:'image/png'});
+      if(navigator.share && navigator.canShare && navigator.canShare({files:[file]})){
+        try{ await navigator.share({files:[file], title:document.title, text:'🇸🇦 ' + document.title}); showToast('✅ تم المشاركة'); }
+        catch(err){ if(err.name !== 'AbortError'){ console.error(err); showToast('❌ فشل المشاركة'); } }
+      } else {
+        const link = document.createElement('a');
+        link.download = 'تقرير_مدرسي.png';
+        link.href = URL.createObjectURL(blob);
+        document.body.appendChild(link); link.click(); document.body.removeChild(link);
+        showToast('📥 تم التنزيل');
+      }
+    }, 'image/png');
+  }catch(e){ console.error(e); showToast('❌ فشل التصدير'); restoreFromExport(replacements); }
+}
+
+// ═══════════ INIT ═══════════
+document.querySelectorAll('input[id], select[id]').forEach(el => {
+  el.addEventListener(el.tagName === 'SELECT' ? 'change' : 'input', saveData);
+});
+loadData();
+</script>
+
+<!-- 🔥 Firebase Integration -->
+<script type="module" src="report-firebase.js"></script>
+</body>
+</html>
