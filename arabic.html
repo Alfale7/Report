@@ -1516,9 +1516,8 @@ async function saveAsImage(){
     await document.fonts.ready;
     await new Promise(r => setTimeout(r, 600));
 
-    // 🔥 استخدم scrollHeight لضمان التقاط كل المحتوى (signature + footer)
-    const pageWidth = page.scrollWidth;
-    const pageHeight = page.scrollHeight;
+    // 🔥 لا نحدد width/height - ندع html2canvas يحسب تلقائياً
+    // (مثل shareReport اللي يطلع كامل)
 
     const canvas = await html2canvas(page, {
       backgroundColor: '#fff',
@@ -1526,9 +1525,6 @@ async function saveAsImage(){
       useCORS: true,
       logging: false,
       allowTaint: true,
-      width: pageWidth,
-      height: pageHeight,
-      x: 0, y: 0, scrollX: 0, scrollY: 0,
       foreignObjectRendering: false,
       onclone: (doc) => {
         const style = doc.createElement('style');
@@ -1858,8 +1854,6 @@ async function exportAsPDFv2(){
       useCORS: true,
       logging: false,
       allowTaint: true,
-      width: page.scrollWidth,
-      height: page.scrollHeight,
       onclone: (doc) => {
         const style = doc.createElement('style');
         style.textContent = `
