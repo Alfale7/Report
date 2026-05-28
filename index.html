@@ -1457,48 +1457,13 @@ align-items:center;
 gap:8px;
 }
 .cat-count{
-font-size:0.72rem;
-font-weight:800;
-font-variant-numeric:tabular-nums;
-background:rgba(240,184,85,0.1);
-color:#f0b855;
-padding:0;
-border-radius:50%;
-border:1px solid rgba(240,184,85,0.35);
-display:inline-flex;
-align-items:center;
-justify-content:center;
-width:24px;
-height:24px;
-flex-shrink:0;
-letter-spacing:0;
-position:relative;
-overflow:hidden;
-transition:all 0.35s cubic-bezier(0.22,1,0.36,1);
-}
-.cat-count::after{
-content:"";
-position:absolute;
-top:-50%;
-left:-60%;
-width:40%;
-height:200%;
-background:linear-gradient(90deg,transparent,rgba(255,255,255,0.55),transparent);
-transform:rotate(22deg);
-animation:countSweep 4.5s ease-in-out infinite;
-}
-@keyframes countSweep{
-0%,72%{left:-60%;}
-86%,100%{left:140%;}
-}
-.cat-section.open .cat-count{
-background:linear-gradient(135deg,#f0b855,#d99a2b);
-color:#0a1620;
-border-color:transparent;
-box-shadow:0 4px 14px rgba(240,184,85,0.4);
-}
-.cat-section.open .cat-count::after{
-background:linear-gradient(90deg,transparent,rgba(255,255,255,0.75),transparent);
+font-size:0.62rem;
+font-weight:700;
+background:rgba(255,255,255,0.1);
+color:rgba(255,255,255,0.85);
+padding:2px 9px;
+border-radius:99px;
+border:1px solid rgba(255,255,255,0.1);
 }
 .cat-sub{
 font-size:0.7rem;
@@ -1591,6 +1556,122 @@ backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);
   box-shadow:0 12px 32px rgba(30,86,49,0.45), 0 0 0 1px rgba(212,164,91,0.7);
 }
 .gift-banner:active{transform:scale(0.98);}
+
+/* ═══ بانر الأدوات المجانية ═══ */
+.tools-banner{
+  margin:10px 2px 12px;
+  background:linear-gradient(160deg,#0d1925,#0a1620);
+  border:1px solid rgba(42,138,171,0.25);
+  border-radius:14px;
+  padding:12px;
+  position:relative;
+  overflow:hidden;
+}
+.tools-banner::before{
+  content:"";
+  position:absolute;
+  top:-30%;left:-10%;
+  width:160px;height:160px;
+  background:radial-gradient(circle,rgba(240,184,85,0.1),transparent 60%);
+  pointer-events:none;
+}
+.tools-banner-head{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  margin-bottom:10px;
+  position:relative;
+  z-index:1;
+}
+.tb-head-right{display:flex;align-items:center;gap:9px;}
+.tb-icon{
+  font-size:1.3rem;
+  width:34px;height:34px;
+  display:flex;align-items:center;justify-content:center;
+  background:linear-gradient(135deg,#f0b855,#d99a2b);
+  border-radius:9px;
+  box-shadow:0 4px 12px rgba(240,184,85,0.28);
+}
+.tb-head-text{display:flex;flex-direction:column;}
+.tb-title{font-size:0.92rem;font-weight:900;color:#fff;line-height:1.2;}
+.tb-sub{font-size:0.66rem;color:rgba(255,255,255,0.5);font-weight:600;margin-top:1px;}
+.tb-badge{
+  font-size:0.6rem;
+  font-weight:800;
+  background:rgba(22,163,74,0.18);
+  color:#4ade80;
+  padding:3px 9px;
+  border-radius:99px;
+  border:1px solid rgba(22,163,74,0.35);
+  white-space:nowrap;
+}
+.tools-banner-cards{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:9px;
+  position:relative;
+  z-index:1;
+}
+.tb-card{
+  background:linear-gradient(160deg,#12202f,#0d1925);
+  border:1px solid rgba(42,138,171,0.22);
+  border-radius:11px;
+  padding:11px 10px;
+  cursor:pointer;
+  transition:all 0.3s cubic-bezier(0.22,1,0.36,1);
+  position:relative;
+  overflow:hidden;
+  display:flex;
+  align-items:center;
+  gap:10px;
+}
+.tb-card-glow{
+  position:absolute;
+  top:-40%;left:50%;transform:translateX(-50%);
+  width:100px;height:100px;
+  background:radial-gradient(circle,rgba(42,138,171,0.22),transparent 65%);
+  pointer-events:none;
+  opacity:0;
+  transition:opacity 0.3s;
+}
+.tb-card:hover{
+  transform:translateY(-2px);
+  border-color:rgba(240,184,85,0.5);
+  box-shadow:0 10px 22px rgba(0,0,0,0.4);
+}
+.tb-card:hover .tb-card-glow{opacity:1;}
+.tb-card:active{transform:translateY(0);}
+.tb-card-ico{
+  font-size:1.3rem;
+  width:38px;height:38px;
+  flex-shrink:0;
+  display:flex;align-items:center;justify-content:center;
+  background:rgba(42,138,171,0.12);
+  border-radius:9px;
+  position:relative;
+  z-index:1;
+}
+.tb-card-body{flex:1;min-width:0;position:relative;z-index:1;}
+.tb-card-title{
+  font-size:0.8rem;
+  font-weight:800;
+  color:#fff;
+  margin-bottom:3px;
+  white-space:nowrap;
+}
+.tb-card-go{
+  display:inline-flex;
+  align-items:center;
+  gap:4px;
+  font-size:0.66rem;
+  font-weight:800;
+  color:#f0b855;
+}
+.tb-card:hover .tb-card-go{color:#ffd07a;}
+@media (max-width:360px){
+  .tools-banner-cards{grid-template-columns:1fr;}
+  .tb-card-title{font-size:0.82rem;}
+}
 
 /* تأثير اللمعان المتحرك */
 .gift-shine{
@@ -4152,6 +4233,47 @@ font-size:0.78rem;text-align:center;margin-top:12px;display:none;
       </div>
     </a>
 
+    <!-- ═══ بانر الأدوات المجانية (باركود QR) ═══ -->
+    <div class="tools-banner">
+      <div class="tools-banner-head">
+        <div class="tb-head-right">
+          <span class="tb-icon">🎁</span>
+          <div class="tb-head-text">
+            <div class="tb-title" data-i18n="tbTitle">أدوات مجانية</div>
+            <div class="tb-sub" data-i18n="tbSub">مولّد باركود QR · مجاني للجميع</div>
+          </div>
+        </div>
+        <span class="tb-badge" data-i18n="tbBadge">مجاني ✨</span>
+      </div>
+      <div class="tools-banner-cards">
+        <!-- قالب: صورة لباركود -->
+        <div class="tb-card" onclick="window.location.href='qr.html'">
+          <div class="tb-card-glow"></div>
+          <div class="tb-card-ico">📸</div>
+          <div class="tb-card-body">
+            <div class="tb-card-title" data-i18n="tbImgTitle">صورة ← باركود</div>
+            <div class="tb-card-go">
+              <span data-i18n="tbOpen">افتح</span>
+              <span>←</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- قالب: رابط لباركود -->
+        <div class="tb-card" onclick="window.location.href='link-qr.html'">
+          <div class="tb-card-glow"></div>
+          <div class="tb-card-ico">🔗</div>
+          <div class="tb-card-body">
+            <div class="tb-card-title" data-i18n="tbLinkTitle">رابط ← باركود</div>
+            <div class="tb-card-go">
+              <span data-i18n="tbOpen2">افتح</span>
+              <span>←</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
     <!-- ═══ عدّاد التجربة المجانية ═══ -->
     <div class="free-counter" id="freeCounter">
       <div class="free-counter-icon">🎁</div>
@@ -5227,87 +5349,6 @@ font-size:0.78rem;text-align:center;margin-top:12px;display:none;
     </div>
 
 
-    <!-- ═══ تصنيف: أدوات مجانية (باركود QR) ═══ -->
-    <div class="cat-section" data-cat="tools">
-      <div class="cat-header" onclick="toggleCategory(this)">
-        <div class="cat-icon tools">🎁</div>
-        <div class="cat-text">
-          <div class="cat-title">
-            <span data-i18n="catTools">أدوات مجانية</span>
-            <span class="cat-count">2</span>
-          </div>
-          <div class="cat-sub" data-i18n="catToolsSub">مولّد باركود QR للصور والروابط · مجاني للجميع</div>
-        </div>
-        <div class="cat-chevron">▼</div>
-      </div>
-      <div class="cat-body">
-        <div class="cat-cards">
-
-    <!-- أداة: صورة لباركود -->
-    <div class="preview-card tool-card" data-target="qr.html" onclick="openTool(this)">
-      <span class="card-badge badge-free">🎁 <span data-i18n="badgeToolFree">مجاني تماماً</span></span>
-      <div class="thumb thumb-tool tool-qr-img">
-        <div class="tool-snap">
-          <div class="tool-ico-big">📸</div>
-          <div class="tool-arrow">↓</div>
-          <div class="tool-qr-mini">
-            <div class="qr-dots">
-              <span></span><span></span><span></span><span></span><span></span>
-              <span></span><span class="b"></span><span class="b"></span><span></span><span></span>
-              <span></span><span class="b"></span><span></span><span class="b"></span><span></span>
-              <span></span><span></span><span class="b"></span><span></span><span></span>
-              <span></span><span class="b"></span><span></span><span></span><span></span>
-            </div>
-          </div>
-        </div>
-      </div>
-      <div class="card-content">
-        <div class="card-icon-wrap">
-          <div class="card-icon">📸</div>
-        </div>
-        <div class="card-text">
-          <div class="card-title" data-i18n="toolImgTitle">صورة إلى باركود</div>
-          <div class="card-desc" data-i18n="toolImgDesc">حوّل أي صورة إلى QR للمشاركة الفورية</div>
-        </div>
-        <div class="card-action">‹</div>
-      </div>
-    </div>
-
-    <!-- أداة: رابط لباركود -->
-    <div class="preview-card tool-card" data-target="link-qr.html" onclick="openTool(this)">
-      <span class="card-badge badge-free">🎁 <span data-i18n="badgeToolFree2">مجاني تماماً</span></span>
-      <div class="thumb thumb-tool tool-qr-link">
-        <div class="tool-snap">
-          <div class="tool-ico-big">🔗</div>
-          <div class="tool-arrow">↓</div>
-          <div class="tool-qr-mini">
-            <div class="qr-dots">
-              <span class="b"></span><span></span><span class="b"></span><span></span><span class="b"></span>
-              <span></span><span class="b"></span><span></span><span class="b"></span><span></span>
-              <span class="b"></span><span></span><span class="b"></span><span></span><span class="b"></span>
-              <span></span><span class="b"></span><span></span><span class="b"></span><span></span>
-              <span class="b"></span><span></span><span class="b"></span><span></span><span class="b"></span>
-            </div>
-          </div>
-        </div>
-      </div>
-      <div class="card-content">
-        <div class="card-icon-wrap">
-          <div class="card-icon">🔗</div>
-        </div>
-        <div class="card-text">
-          <div class="card-title" data-i18n="toolLinkTitle">رابط إلى باركود</div>
-          <div class="card-desc" data-i18n="toolLinkDesc">حوّل أي رابط إلى QR Code أنيق فوراً</div>
-        </div>
-        <div class="card-action">‹</div>
-      </div>
-    </div>
-
-        </div>
-      </div>
-    </div>
-
-
   </div>
 
   <div class="section-head">
@@ -6083,6 +6124,13 @@ const I18N = {
     giftTitle: "التقويم الدراسي الجديد",
     giftSub: "للعام ١٤٤٨هـ - ١٤٤٩هـ · جاهز للتحميل",
     giftCta: "حمّل",
+    tbTitle: "أدوات مجانية",
+    tbSub: "مولّد باركود QR · مجاني للجميع",
+    tbBadge: "مجاني ✨",
+    tbImgTitle: "صورة ← باركود",
+    tbLinkTitle: "رابط ← باركود",
+    tbOpen: "افتح",
+    tbOpen2: "افتح",
     freeCounterSuffix: "تحميل مجاني متبقي · جرّب تقرير يوم التأسيس الآن",
     freeCounterBtn: "جرّب الآن",
     upgradeTitle: "انتهت تحميلاتك المجانية!",
@@ -6340,6 +6388,13 @@ const I18N = {
     giftTitle: "New Academic Calendar",
     giftSub: "For 1448H - 1449H · Ready to download",
     giftCta: "Get",
+    tbTitle: "Free Tools",
+    tbSub: "QR code generator · Free for everyone",
+    tbBadge: "Free ✨",
+    tbImgTitle: "Image → QR",
+    tbLinkTitle: "Link → QR",
+    tbOpen: "Open",
+    tbOpen2: "Open",
     freeCounterSuffix: "free downloads left · Try Founding Day report now",
     freeCounterBtn: "Try Now",
     upgradeTitle: "Free downloads ended!",
