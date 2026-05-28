@@ -530,7 +530,13 @@ async function renderCurrentCertBlob(){
   renderContainer.appendChild(clonePaper);
   try{
     await new Promise(r => setTimeout(r, 150));
-    const blob = await domtoimage.toBlob(clonePaper, { quality: 1.0, bgcolor: '#fdfcf8', width: 840, height: 594, cacheBust: true });
+    const SCALE = 3;
+    const blob = await domtoimage.toBlob(clonePaper, {
+      quality: 1.0, bgcolor: '#fdfcf8',
+      width: 840 * SCALE, height: 594 * SCALE,
+      style: { transform: 'scale(' + SCALE + ')', transformOrigin: 'top left' },
+      cacheBust: true
+    });
     return { blob, name };
   } finally {
     renderContainer.innerHTML = '';
@@ -656,7 +662,12 @@ async function downloadBulk(){
     if(names.length === 1){
       targetNameEl.textContent = names[0];
       await new Promise(r => setTimeout(r, 150));
-      const blob = await domtoimage.toBlob(clonePaper, { quality: 1.0, bgcolor: '#fdfcf8', width: 840, height: 594, cacheBust: true });
+      const blob = await domtoimage.toBlob(clonePaper, {
+            quality: 1.0, bgcolor: '#fdfcf8',
+            width: 840 * 3, height: 594 * 3,
+            style: { transform: 'scale(3)', transformOrigin: 'top left' },
+            cacheBust: true
+          });
       downloadBlob(blob, `شهادة_${sanitize(names[0])}.png`);
       updateProgress(1, 1);
       showToast('✅ تم استخراج الشهادة بنجاح تام');
@@ -667,7 +678,12 @@ async function downloadBulk(){
         targetNameEl.textContent = names[i];
         await new Promise(r => setTimeout(r, 120));
         try{
-          const blob = await domtoimage.toBlob(clonePaper, { quality: 1.0, bgcolor: '#fdfcf8', width: 840, height: 594, cacheBust: true });
+          const blob = await domtoimage.toBlob(clonePaper, {
+            quality: 1.0, bgcolor: '#fdfcf8',
+            width: 840 * 3, height: 594 * 3,
+            style: { transform: 'scale(3)', transformOrigin: 'top left' },
+            cacheBust: true
+          });
           if(blob){
             zip.file(`شهادة_${(i+1).toString().padStart(2,'0')}_${sanitize(names[i])}.png`, blob);
           }
