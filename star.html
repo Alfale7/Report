@@ -333,6 +333,7 @@ html,body{
 .foot-link{text-align:center; padding:20px; font-size:0.74rem; color:rgba(255,255,255,0.4);}
 .foot-link a{color:var(--teal-bright); text-decoration:none; font-weight:700;}
 </style>
+  <script type="module" src="report-firebase.js?v=4"></script>
 </head>
 <body>
 
@@ -718,46 +719,88 @@ function renderCertificate(d){
 // ═══════════════════════════════════════════════
 function getDecoration(d){
   const a = d.accent, a2 = d.accent2;
-  // زوايا زخرفية + أزهار + أشكال شفافة (SVG)
+  const key = currentDesign;
+  let inner = '';
+
+  if(key === 'royal'){
+    // 🌟 الملكي: زوايا فخمة + أزهار ذهبية + إطار مزدوج
+    inner = `
+      <rect x="28" y="28" width="944" height="651" fill="none" stroke="${a}" stroke-width="2" opacity="0.4" rx="4"/>
+      <rect x="38" y="38" width="924" height="631" fill="none" stroke="${a2}" stroke-width="1" opacity="0.3" rx="4"/>
+      ${corner(50,50,a,0)} ${corner(950,50,a,90)} ${corner(950,657,a,180)} ${corner(50,657,a,270)}
+      <g opacity="0.1">${flower(a)}</g>
+      <g opacity="0.14" transform="translate(880,90) scale(1.1)">${flower(a)}</g>
+      <g opacity="0.14" transform="translate(120,617) scale(1.1)">${flower(a2)}</g>
+      <g opacity="0.1" fill="${a}">${star(150,140,9)}${star(850,567,9)}${star(820,140,6)}${star(180,567,6)}</g>`;
+  } else if(key === 'ocean'){
+    // ⭐ الأزرق: موجات + فقاعات + خطوط عصرية
+    inner = `
+      <rect x="24" y="24" width="952" height="659" fill="none" stroke="${a}" stroke-width="1.5" opacity="0.3" rx="8"/>
+      <path d="M 0 120 Q 250 70 500 120 T 1000 120" fill="none" stroke="${a}" stroke-width="2.5" opacity="0.12"/>
+      <path d="M 0 160 Q 250 110 500 160 T 1000 160" fill="none" stroke="${a2}" stroke-width="2" opacity="0.1"/>
+      <path d="M 0 587 Q 250 637 500 587 T 1000 587" fill="none" stroke="${a}" stroke-width="2.5" opacity="0.12"/>
+      <path d="M 0 547 Q 250 597 500 547 T 1000 547" fill="none" stroke="${a2}" stroke-width="2" opacity="0.1"/>
+      <g opacity="0.1" fill="${a}">
+        <circle cx="120" cy="350" r="35"/><circle cx="180" cy="300" r="18"/><circle cx="90" cy="290" r="12"/>
+        <circle cx="880" cy="360" r="35"/><circle cx="820" cy="310" r="18"/><circle cx="910" cy="300" r="12"/>
+      </g>`;
+  } else if(key === 'joy'){
+    // 🌈 المرح: فقاعات ملوّنة + نجوم + قلوب (ابتدائي)
+    inner = `
+      <rect x="26" y="26" width="948" height="655" fill="none" stroke="${a2}" stroke-width="3" stroke-dasharray="10 7" opacity="0.35" rx="14"/>
+      <g opacity="0.14">
+        <circle cx="90" cy="100" r="28" fill="${a}"/><circle cx="150" cy="70" r="16" fill="${a2}"/>
+        <circle cx="910" cy="100" r="28" fill="${a2}"/><circle cx="850" cy="70" r="16" fill="${a}"/>
+        <circle cx="90" cy="607" r="26" fill="${a2}"/><circle cx="155" cy="637" r="15" fill="${a}"/>
+        <circle cx="910" cy="607" r="26" fill="${a}"/><circle cx="845" cy="637" r="15" fill="${a2}"/>
+      </g>
+      <g opacity="0.16" fill="${a}">${star(160,200,11)}${star(840,200,11)}${star(130,500,9)}${star(870,500,9)}${star(500,75,8)}</g>
+      <g opacity="0.12">${flower(a2)}</g>`;
+  } else if(key === 'nature'){
+    // 🌿 الأخضر: أوراق + فروع + سعف نخيل
+    inner = `
+      <rect x="24" y="24" width="952" height="659" fill="none" stroke="${a}" stroke-width="1.5" opacity="0.35" rx="6"/>
+      <g opacity="0.13">${leaf(70,70,a,0)}${leaf(110,90,a2,40)}${leaf(50,110,a,-40)}</g>
+      <g opacity="0.13">${leaf(930,637,a,180)}${leaf(890,617,a2,220)}${leaf(950,597,a,140)}</g>
+      <g opacity="0.1">${leaf(930,90,a2,90)}${leaf(70,617,a,270)}</g>
+      <g opacity="0.1" fill="${a}">${star(180,350,7)}${star(820,350,7)}</g>
+      <path d="M 350 55 Q 500 38 650 55" fill="none" stroke="${a}" stroke-width="1.5" opacity="0.3"/>
+      <path d="M 350 652 Q 500 669 650 652" fill="none" stroke="${a}" stroke-width="1.5" opacity="0.3"/>`;
+  } else { // midnight
+    // ✨ الليلي: نجوم متلألئة + هلال + بريق
+    inner = `
+      <rect x="30" y="30" width="940" height="647" fill="none" stroke="${a}" stroke-width="1.5" opacity="0.5" rx="4"/>
+      <g opacity="0.5" fill="${a}">
+        ${star(120,110,9)}${star(880,110,9)}${star(150,597,7)}${star(850,597,7)}
+        ${star(80,300,5)}${star(920,300,5)}${star(500,75,6)}${star(500,630,6)}
+        ${star(250,160,4)}${star(750,160,4)}${star(300,560,4)}${star(700,560,4)}
+      </g>
+      <g opacity="0.25" fill="${a2}">
+        ${star(190,250,3)}${star(810,250,3)}${star(140,450,3)}${star(860,450,3)}${star(400,120,3)}${star(600,120,3)}
+      </g>
+      <g opacity="0.3"><circle cx="910" cy="90" r="20" fill="none" stroke="${a}" stroke-width="2"/><circle cx="918" cy="86" r="17" fill="${d.dark?'#0f1a28':'#fff'}"/></g>`;
+  }
+
   return `
   <svg class="cert-deco" viewBox="0 0 1000 707" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
-    <!-- إطار داخلي رفيع -->
-    <rect x="22" y="22" width="956" height="663" fill="none" stroke="${a}" stroke-width="1.5" opacity="0.35" rx="6"/>
-
-    <!-- زهرة أعلى يمين -->
-    <g opacity="0.13" transform="translate(910,70)">
-      ${flower(a)}
-    </g>
-    <!-- زهرة أسفل يسار -->
-    <g opacity="0.13" transform="translate(90,640) scale(1.3)">
-      ${flower(a2)}
-    </g>
-    <!-- أوراق/فروع أعلى يسار -->
-    <g opacity="0.1" transform="translate(60,60)">
-      <circle cx="0" cy="0" r="55" fill="${a}"/>
-      <circle cx="45" cy="30" r="32" fill="${a2}"/>
-      <circle cx="20" cy="55" r="22" fill="${a}"/>
-    </g>
-    <!-- دوائر شفافة أسفل يمين -->
-    <g opacity="0.1" transform="translate(940,640)">
-      <circle cx="0" cy="0" r="50" fill="${a2}"/>
-      <circle cx="-40" cy="25" r="28" fill="${a}"/>
-    </g>
-
-    <!-- نثرات نجوم خفيفة -->
-    <g opacity="0.12" fill="${a}">
-      ${star(160,130,7)}
-      ${star(840,560,8)}
-      ${star(120,470,6)}
-      ${star(880,200,5)}
-      ${star(500,90,5)}
-      ${star(500,625,6)}
-    </g>
-
-    <!-- خط زخرفي علوي -->
-    <path d="M 350 50 Q 500 30 650 50" fill="none" stroke="${a}" stroke-width="1.5" opacity="0.3"/>
-    <path d="M 350 657 Q 500 677 650 657" fill="none" stroke="${a}" stroke-width="1.5" opacity="0.3"/>
+    ${inner}
   </svg>`;
+}
+
+// زاوية زخرفية
+function corner(x, y, color, rot){
+  return `<g transform="translate(${x},${y}) rotate(${rot})" opacity="0.4">
+    <path d="M 0 40 L 0 0 L 40 0" fill="none" stroke="${color}" stroke-width="2.5"/>
+    <circle cx="0" cy="0" r="4" fill="${color}"/>
+  </g>`;
+}
+
+// ورقة شجر SVG
+function leaf(x, y, color, rot){
+  return `<g transform="translate(${x},${y}) rotate(${rot})">
+    <path d="M 0 0 Q 20 -18 45 0 Q 20 18 0 0 Z" fill="${color}"/>
+    <line x1="3" y1="0" x2="40" y2="0" stroke="${color}" stroke-width="1" opacity="0.5"/>
+  </g>`;
 }
 
 // زهرة SVG
@@ -1195,6 +1238,11 @@ function prepareClone(){
   clone.querySelectorAll('*').forEach(el => {
     el.style.letterSpacing = '0';
     el.style.wordSpacing = 'normal';
+  });
+
+  // 🔥 تطبيق الخط المختار على كل النصوص في النسخة
+  clone.querySelectorAll('.cert-name, .cert-reason, .cert-preamble, .cert-school-name, .cert-eyebrow, .cert-week, .cert-sign-label, .cert-sign-line').forEach(el => {
+    el.style.fontFamily = selectedFontFamily;
   });
 
   // تكبير وضبط كل عنصر للتصدير عالي الجودة
