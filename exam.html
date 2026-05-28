@@ -8,6 +8,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@300;400;500;700;800;900&family=IBM+Plex+Sans+Arabic:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 
 <style>
 /* ═══════════════════════════════════════════════
@@ -852,6 +853,11 @@ body::before{
   box-shadow:0 8px 20px rgba(31,58,68,0.35);
 }
 
+.btn-img{background:linear-gradient(135deg,#2a9d8f,#1a7a8a); color:#fff; box-shadow:0 4px 12px rgba(42,157,143,0.25);}
+.btn-pdf{background:linear-gradient(135deg,#d32f2f,#b71c1c); color:#fff; box-shadow:0 4px 12px rgba(211,47,47,0.25);}
+.btn-share{background:linear-gradient(135deg,#16a34a,#15803d); color:#fff; box-shadow:0 4px 12px rgba(22,163,74,0.25);}
+.btn-img:hover,.btn-pdf:hover,.btn-share:hover{transform:translateY(-1px); filter:brightness(1.05);}
+
 .btn-clear{
   background:#fff;
   color:#a85050;
@@ -1188,8 +1194,14 @@ body::before{
   <button class="btn btn-clear" onclick="confirmClear()">
     🗑️ <span class="btn-text">تفريغ</span>
   </button>
-  <button class="btn btn-save" onclick="printPage()">
-    🖨️ <span class="btn-text">تحميل / طباعة PDF</span>
+  <button class="btn btn-img" onclick="saveAsImage()">
+    🖼️ <span class="btn-text">صورة</span>
+  </button>
+  <button class="btn btn-pdf" onclick="exportAsPDFv2()">
+    📄 <span class="btn-text">PDF</span>
+  </button>
+  <button class="btn btn-share" onclick="shareReport()">
+    📤 <span class="btn-text">مشاركة</span>
   </button>
 </div>
 
@@ -1556,27 +1568,238 @@ function doClear(){
 }
 
 /* ═══════════ PRINT ═══════════ */
-function printPage(){
-  // 1. تأكد من حفظ كل البيانات قبل الطباعة
-  saveData();
-  // 2. أخفِ التوست بشكل قطعي
-  const t = document.getElementById('toast');
-  if(t){
-    t.classList.remove('show');
-    t.style.display = 'none';
-    t.textContent = '';
+function loadJsPDF(){
+  return new Promise((resolve, reject) => {
+    if(typeof window.jspdf !== 'undefined'){ resolve(); return; }
+    const script = document.createElement('script');
+    script.src = 'https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js';
+    script.onload = () => resolve();
+    script.onerror = () => reject(new Error('jsPDF load failed'));
+    document.head.appendChild(script);
+  });
+}
+
+// ═══════════════════════════════════════════════
+// 🔥 prepareForExport - إخفاء عناصر التحكم + لف الكلمات
+// ═══════════════════════════════════════════════
+function prepareForExport(page){
+  const replacements = [];
+
+  // 0️⃣ إخفاء العناصر التفاعلية اللي ما تظهر في التصدير
+  const hideSelectors = '.mode-selector, .add-controls, .col-delete, .row-delete, .row-delete-cell, .school-logo-remove, #toast, .modal-overlay';
+  page.querySelectorAll(hideSelectors).forEach(el => {
+    replacements.push({orig:el, prevDisplay:el.style.display, type:'hide'});
+    el.style.display = 'none';
+  });
+
+  // 1️⃣ معالجة inputs و textareas (لف كل كلمة بـ span)
+  const inputs = page.querySelectorAll('input[type="text"], input[type="number"], textarea');
+  inputs.forEach(el => {
+    const computed = window.getComputedStyle(el);
+    const value = el.value || '';
+    const isTextarea = el.tagName === 'TEXTAREA';
+    const span = document.createElement(isTextarea ? 'div' : 'span');
+    if(value.trim()){
+      const lines = isTextarea ? value.split('\n') : [value];
+      span.innerHTML = lines.map(line => {
+        const words = line.split(/(\s+)/);
+        return words.map(p => {
+          if(!p) return '';
+          if(/^\s+$/.test(p)) return p;
+          return `<span style="display:inline-block;white-space:nowrap;letter-spacing:0;direction:rtl;unicode-bidi:embed;">${p.replace(/</g,'&lt;').replace(/>/g,'&gt;')}</span>`;
+        }).join('');
+      }).join('<br>');
+    } else {
+      span.innerHTML = '&nbsp;';
+    }
+    span.style.cssText = `display:${isTextarea?'block':'inline-block'};width:100%;box-sizing:border-box;font-family:${computed.fontFamily};font-size:${computed.fontSize};font-weight:${computed.fontWeight};color:${computed.color};text-align:${computed.textAlign};line-height:${computed.lineHeight};padding:${computed.padding};direction:rtl;unicode-bidi:embed;letter-spacing:0;min-height:${isTextarea?computed.minHeight:'auto'};`;
+    el.style.display = 'none';
+    el.parentNode.insertBefore(span, el);
+    replacements.push({orig:el, span, type:'input'});
+  });
+
+  // 2️⃣ معالجة contenteditable للنصوص الطويلة
+  const editables = page.querySelectorAll('[contenteditable="true"]');
+  editables.forEach(el => {
+    const text = el.textContent || '';
+    if(!text.trim() || text.length < 30) return;
+    const originalHTML = el.innerHTML;
+    const lines = text.split('\n');
+    let newHTML = '';
+    lines.forEach((line, lineIdx) => {
+      if(lineIdx > 0) newHTML += '<br>';
+      const words = line.split(/(\s+)/);
+      words.forEach(p => {
+        if(!p) return;
+        if(/^\s+$/.test(p)){ newHTML += p; }
+        else { newHTML += `<span style="display:inline-block;white-space:nowrap;letter-spacing:0;direction:rtl;unicode-bidi:embed;">${p.replace(/</g,'&lt;').replace(/>/g,'&gt;')}</span>`; }
+      });
+    });
+    el.innerHTML = newHTML;
+    replacements.push({orig:el, originalHTML, type:'editable'});
+  });
+
+  return replacements;
+}
+
+function restoreFromExport(replacements){
+  replacements.forEach(({orig, span, originalHTML, prevDisplay, type}) => {
+    if(type === 'hide'){
+      orig.style.display = prevDisplay || '';
+    } else if(type === 'editable'){
+      if(originalHTML !== undefined) orig.innerHTML = originalHTML;
+    } else {
+      orig.style.display = '';
+      if(span && span.parentNode) span.parentNode.removeChild(span);
+    }
+  });
+}
+
+// ═══════════════════════════════════════════════
+// التصدير كصورة
+// ═══════════════════════════════════════════════
+async function saveAsImage(){
+  if (typeof window.checkDownloadAccess === 'function') {
+    const allowed = await window.checkDownloadAccess();
+    if (!allowed) return;
   }
-  // 3. أخفِ أي مودال مفتوح
-  const m = document.getElementById('modal');
-  if(m){ m.classList.remove('show'); }
-  // 4. أعطِ المتصفح وقت كافي للـ render وتحميل الصور
-  setTimeout(() => {
-    window.print();
-    // 5. أعد إظهار التوست للاستخدام بعد الطباعة
-    setTimeout(() => {
-      if(t){ t.style.display = ''; }
-    }, 500);
-  }, 350);
+  saveData();
+  showToast('⏳ جاري تحضير الصورة...');
+  const page = document.querySelector('.container');
+  const replacements = prepareForExport(page);
+  try{
+    await document.fonts.ready;
+    await new Promise(r => setTimeout(r, 500));
+    const canvas = await html2canvas(page, {
+      backgroundColor:'#ffffff', scale:2.5, useCORS:true, logging:false, allowTaint:true,
+      width:page.offsetWidth, height:page.offsetHeight,
+      onclone:(doc) => {
+        const style = doc.createElement('style');
+        style.textContent = `*{letter-spacing:0 !important;font-feature-settings:"kern" 1,"liga" 1,"calt" 1,"rlig" 1 !important;font-kerning:normal !important;}`;
+        doc.head.appendChild(style);
+      }
+    });
+    const link = document.createElement('a');
+    link.download = 'جدول_الاختبارات.png';
+    link.href = canvas.toDataURL('image/png');
+    link.click();
+    showToast('✅ تم حفظ الصورة');
+  }catch(e){ console.error(e); showToast('❌ فشل التصدير'); }
+  finally{ restoreFromExport(replacements); }
+}
+
+// ═══════════════════════════════════════════════
+// التصدير كـ PDF
+// ═══════════════════════════════════════════════
+async function exportAsPDFv2(){
+  if (typeof window.checkDownloadAccess === 'function') {
+    const allowed = await window.checkDownloadAccess();
+    if (!allowed) return;
+  }
+  saveData();
+  showToast('⏳ جاري تحضير PDF...');
+  if(typeof window.jspdf === 'undefined'){
+    try{ await loadJsPDF(); }catch(e){ showToast('❌ فشل التصدير'); return; }
+  }
+  const page = document.querySelector('.container');
+  const replacements = prepareForExport(page);
+  try{
+    await document.fonts.ready;
+    await new Promise(r => setTimeout(r, 500));
+    const canvas = await html2canvas(page, {
+      backgroundColor:'#ffffff', scale:2.5, useCORS:true, logging:false, allowTaint:true,
+      width:page.offsetWidth, height:page.offsetHeight,
+      onclone:(doc) => {
+        const style = doc.createElement('style');
+        style.textContent = `*{letter-spacing:0 !important; font-kerning:normal !important;}`;
+        doc.head.appendChild(style);
+      }
+    });
+    const { jsPDF } = window.jspdf;
+    const pdf = new jsPDF({orientation:'portrait', unit:'mm', format:'a4', compress:true});
+    const pdfWidth = 210, pdfHeight = 297;
+    const marginX = 8, marginY = 8;
+    const contentWidth = pdfWidth - (marginX*2);
+    const contentHeight = pdfHeight - (marginY*2);
+    const imgRatio = canvas.height / canvas.width;
+    const imgWidthMM = contentWidth;
+    const imgHeightMM = imgWidthMM * imgRatio;
+    if(imgHeightMM <= contentHeight + 5){
+      const imgData = canvas.toDataURL('image/jpeg', 0.92);
+      const yPos = (pdfHeight - imgHeightMM) / 2;
+      pdf.addImage(imgData, 'JPEG', marginX, yPos, imgWidthMM, imgHeightMM, undefined, 'FAST');
+    } else {
+      const pixelsPerPage = (contentHeight / imgHeightMM) * canvas.height;
+      const totalPages = Math.ceil(canvas.height / pixelsPerPage);
+      for(let i = 0; i < totalPages; i++){
+        if(i > 0) pdf.addPage();
+        const sourceY = i * pixelsPerPage;
+        const sourceHeight = Math.min(pixelsPerPage, canvas.height - sourceY);
+        const partCanvas = document.createElement('canvas');
+        partCanvas.width = canvas.width;
+        partCanvas.height = sourceHeight;
+        partCanvas.getContext('2d').drawImage(canvas, 0, sourceY, canvas.width, sourceHeight, 0, 0, canvas.width, sourceHeight);
+        const partData = partCanvas.toDataURL('image/jpeg', 0.92);
+        const partHeightMM = (sourceHeight / canvas.width) * imgWidthMM;
+        pdf.addImage(partData, 'JPEG', marginX, marginY, imgWidthMM, partHeightMM, undefined, 'FAST');
+      }
+    }
+    pdf.setProperties({title:'جدول الاختبارات', creator:'ksa2030.one'});
+    pdf.save('جدول_الاختبارات.pdf');
+    showToast('✅ تم حفظ PDF');
+  }catch(e){ console.error(e); showToast('❌ فشل التصدير'); }
+  finally{ restoreFromExport(replacements); }
+}
+
+// ═══════════════════════════════════════════════
+// 📤 مشاركة التقرير
+// ═══════════════════════════════════════════════
+async function shareReport(){
+  if (typeof window.checkDownloadAccess === 'function') {
+    const allowed = await window.checkDownloadAccess();
+    if (!allowed) return;
+  }
+  saveData();
+  showToast('⏳ جاري تحضير المشاركة...');
+  const page = document.querySelector('.container');
+  if(!page){ showToast('❌ لم يتم العثور على التقرير'); return; }
+  const replacements = prepareForExport(page);
+  try{
+    await document.fonts.ready;
+    await new Promise(r => setTimeout(r, 500));
+    const canvas = await html2canvas(page, {
+      backgroundColor:'#ffffff', scale:3, useCORS:true, logging:false, allowTaint:true,
+      width:page.offsetWidth, height:page.offsetHeight,
+      onclone:(doc) => {
+        const style = doc.createElement('style');
+        style.textContent = `*{letter-spacing:0 !important; font-kerning:normal !important;}`;
+        doc.head.appendChild(style);
+      }
+    });
+    restoreFromExport(replacements);
+    canvas.toBlob(async (blob) => {
+      const file = new File([blob], 'جدول_الاختبارات.png', { type: 'image/png' });
+      if (navigator.share && navigator.canShare && navigator.canShare({ files: [file] })) {
+        try{
+          await navigator.share({ files:[file], title:document.title, text:'🇸🇦 ' + document.title });
+          showToast('✅ تم المشاركة');
+        }catch(err){
+          if(err.name !== 'AbortError'){ console.error(err); showToast('❌ فشل المشاركة'); }
+        }
+      } else {
+        const link = document.createElement('a');
+        link.download = 'جدول_الاختبارات.png';
+        link.href = URL.createObjectURL(blob);
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+        showToast('📥 تم التنزيل');
+      }
+    }, 'image/png');
+  }catch(e){
+    console.error(e); showToast('❌ فشل التصدير');
+    restoreFromExport(replacements);
+  }
 }
 
 /* ═══════════ INIT ═══════════ */
