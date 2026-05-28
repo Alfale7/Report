@@ -510,7 +510,7 @@ body{
       </button>
       <div class="links">
         <a href="#" onclick="switchTab('login');return false;">حساب جديد</a>
-        <a href="https://wa.me/966550522867" target="_blank">دعم فني 💬</a>
+        <a href="https://wa.me/966502517217" target="_blank">دعم فني 💬</a>
       </div>
     </div>
 
@@ -533,13 +533,23 @@ body{
 </div>
 
 <script type="module">
+// 🔍 معالج أخطاء بسيط - يعرض الخطأ إن وجد
+window.addEventListener('error', function(e) {
+  if(e.message && (e.message.includes('firebase') || e.message.includes('module'))) {
+    const box = document.createElement('div');
+    box.style.cssText = 'position:fixed;top:0;left:0;right:0;background:#dc2626;color:#fff;padding:14px;z-index:99999;font:600 0.85rem Tajawal,sans-serif;text-align:right;direction:rtl;';
+    box.textContent = '⚠️ خطأ تحميل: ' + e.message;
+    document.body.appendChild(box);
+  }
+});
+
 import {
   loginWithEmail,
   loginWithGoogle,
   registerWithEmail,
   resetPassword as fbResetPassword,
   onUserChange
-} from './firebase-config.js';
+} from './firebase-config.js?v=3';
 
 // التحقق من حالة الدخول - إذا داخل، حوّل للموقع
 onUserChange((data) => {
