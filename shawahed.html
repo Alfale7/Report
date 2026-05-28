@@ -171,9 +171,32 @@ body{
 /* بلوك الشاهد الواحد */
 .shahed-block{background:var(--navy3); border-radius:13px; padding:13px; border:1px solid rgba(42,138,171,0.18);}
 .shahed-head{display:flex; align-items:center; gap:7px; margin-bottom:10px;}
-.shahed-dot{font-size:0.85rem;}
-.shahed-name{font-size:0.82rem; font-weight:800; color:#fff; flex:1; line-height:1.4;}
-.shahed-count{font-size:0.68rem; font-weight:700; color:var(--teal-bright); background:rgba(42,138,171,0.15); padding:2px 9px; border-radius:99px;}
+.shahed-dot{font-size:0.85rem; flex-shrink:0;}
+.shahed-name-input{
+  flex:1; min-width:0; padding:8px 11px;
+  border:1.5px solid rgba(42,138,171,0.25); border-radius:9px;
+  background:var(--surface); color:#fff;
+  font-family:inherit; font-size:0.82rem; font-weight:700; outline:none; transition:all 0.2s;
+}
+.shahed-name-input:focus{border-color:var(--teal2); background:var(--surface2);}
+.shahed-name-input::placeholder{color:rgba(255,255,255,0.35); font-weight:500;}
+.shahed-del{
+  flex-shrink:0; width:32px; height:32px; border-radius:8px;
+  background:rgba(220,50,50,0.12); border:1px solid rgba(220,50,50,0.3);
+  cursor:pointer; font-size:0.85rem; transition:all 0.2s;
+}
+.shahed-del:hover{background:rgba(220,50,50,0.22);}
+
+/* زر إضافة شاهد جديد */
+.btn-add-shahed{
+  width:100%; margin-top:4px; padding:13px;
+  border:2px dashed rgba(212,166,87,0.5); border-radius:13px;
+  background:rgba(212,166,87,0.08); color:var(--gold-bright);
+  font-family:inherit; font-size:0.9rem; font-weight:800; cursor:pointer;
+  display:flex; align-items:center; justify-content:center; gap:8px; transition:all 0.2s;
+}
+.btn-add-shahed:hover{background:rgba(212,166,87,0.16); border-color:var(--gold-bright);}
+.btn-add-shahed:active{transform:scale(0.98);}
 .shahed-images{display:grid; grid-template-columns:1fr 1fr; gap:9px;}
 @media (max-width:440px){.shahed-images{grid-template-columns:1fr 1fr;}}
 .evidence-slot{
@@ -313,11 +336,11 @@ body{
       </div>
       <div class="logo-row">
         <div class="logo-upload-box" id="logoBox" onclick="document.getElementById('logoInput').click()">
-          اضغط<br>لشعار<br>المدرسة
+          📷<br>اضغط<br>للشعار
         </div>
         <div class="logo-info">
-          <div class="li-title">شعار المدرسة (اختياري)</div>
-          <div class="li-sub">يظهر أعلى كل صفحة فاصل</div>
+          <div class="li-title">🏫 شعار الوزارة أو المدرسة</div>
+          <div class="li-sub">يظهر بدقة عالية أعلى كل الصفحات · PNG/شفاف مفضّل</div>
         </div>
       </div>
     </div>
@@ -351,7 +374,7 @@ body{
     <!-- رفع صور الشواهد (حقل لكل شاهد) -->
     <div class="shawahed-section" id="evidencePanel">
       <div class="ss-label">🖼️ صور الشواهد <span id="evidenceCounter" style="font-size:0.72rem;color:var(--teal-bright);font-weight:700;margin-right:auto;">لا توجد شواهد بعد</span></div>
-      <div class="ss-hint">لكل شاهد مطلوب حقل خاص بالأسفل. اضغط <b style="color:var(--teal-bright);">➕</b> تحت كل شاهد وارفع صورته (تقدر ترفع أكثر من صورة لنفس الشاهد).</div>
+      <div class="ss-hint">الشواهد مرنة بالكامل — <b style="color:var(--teal-bright);">عدّل أسماءها</b>، احذف ما لا يلزمك، أو أضف شواهد جديدة. ارفع صورة (أو أكثر) لكل شاهد.</div>
       <div class="evidence-uploads" id="evidenceUploads"></div>
     </div>
 
@@ -443,8 +466,9 @@ const PALETTE = [
 let currentIdx = 0;
 let uploadedLogo = null;
 let teacherData = { name:'', subject:'', school:'', year:'' };
+// أسماء الشواهد لكل عنصر (قابلة للتعديل من المعلم) — تبدأ من القيم الرسمية
+let shahedNames = ELEMENTS.map(el => [...el.shawahed]);
 // صور الشواهد: evidenceImages[elementIdx][shahedIdx] = [dataUrl, ...]
-// كل عنصر له عدد شواهد = ELEMENTS[i].shawahed.length
 let evidenceImages = ELEMENTS.map(el => el.shawahed.map(() => []));
 
 // ═══════════════════════════════════════════════
@@ -500,15 +524,22 @@ function handleLogoUpload(e){
   reader.onload = function(ev){
     const img = new Image();
     img.onload = function(){
+      // دقة عالية + الحفاظ على نسبة الشعار الأصلية (بلا تشويه)
+      const maxDim = 600;
+      const ratio = Math.min(maxDim/img.width, maxDim/img.height, 1);
+      const w = Math.round(img.width * ratio);
+      const h = Math.round(img.height * ratio);
       const canvas = document.createElement('canvas');
-      const size = 300; canvas.width = size; canvas.height = size;
+      canvas.width = w; canvas.height = h;
       const ctx = canvas.getContext('2d');
-      const ratio = Math.min(size/img.width, size/img.height);
-      const w = img.width*ratio, h = img.height*ratio;
-      ctx.drawImage(img, (size-w)/2, (size-h)/2, w, h);
-      uploadedLogo = canvas.toDataURL('image/png');
+      // تنعيم عالي الجودة
+      ctx.imageSmoothingEnabled = true;
+      ctx.imageSmoothingQuality = 'high';
+      ctx.clearRect(0, 0, w, h);
+      ctx.drawImage(img, 0, 0, w, h);
+      uploadedLogo = canvas.toDataURL('image/png'); // PNG = بلا فقد جودة + يحفظ الشفافية
       document.getElementById('logoBox').innerHTML = '<img src="'+uploadedLogo+'" alt="شعار">';
-      showToast('✅ تم رفع الشعار');
+      showToast('✅ تم رفع الشعار بدقة عالية');
     };
     img.onerror = function(){
       uploadedLogo = ev.target.result;
@@ -552,11 +583,11 @@ function renderCover(){
   saveData();
 
   const logoHtml = uploadedLogo
-    ? `<img src="${uploadedLogo}" style="width:60px;height:60px;object-fit:contain;">`
+    ? `<img src="${uploadedLogo}" style="max-width:78px;max-height:78px;width:auto;height:auto;object-fit:contain;display:block;">`
     : '';
 
   const examplesHtml = el.examples.map(e => `<li>${e}</li>`).join('');
-  const shawahedHtml = el.shawahed.map(s => `<li>${s}</li>`).join('');
+  const shawahedHtml = shahedNames[currentIdx].filter(s => s && s.trim()).map(s => `<li>${s}</li>`).join('');
 
   paper.innerHTML = `
     ${getCoverDeco(p)}
@@ -567,7 +598,7 @@ function renderCover(){
           <div style="font-size:0.72rem;color:#666;font-weight:700;">وزارة التعليم</div>
           <div class="cv-school" style="font-size:0.82rem;color:#1c2820;font-weight:800;margin-top:2px;">${teacherData.school || 'اسم المدرسة'}</div>
         </div>
-        <div style="width:60px;height:60px;display:flex;align-items:center;justify-content:center;">${logoHtml}</div>
+        <div style="width:80px;height:80px;display:flex;align-items:center;justify-content:center;flex-shrink:0;">${logoHtml}</div>
       </div>
 
       <div style="text-align:center;margin:6% 0 4%;">
@@ -624,32 +655,29 @@ function getCoverDeco(p){
 function buildEvidenceUploads(){
   const wrap = document.getElementById('evidenceUploads');
   wrap.innerHTML = '';
-  const el = ELEMENTS[currentIdx];
+  const names = shahedNames[currentIdx];
   const elImgs = evidenceImages[currentIdx];
 
-  // حقل لكل شاهد مطلوب
-  el.shawahed.forEach((shahedName, si) => {
+  // حقل لكل شاهد (الاسم قابل للتعديل)
+  names.forEach((shahedName, si) => {
     const imgs = elImgs[si] || [];
     const block = document.createElement('div');
     block.className = 'shahed-block';
 
-    // عنوان الشاهد
     let inner = `<div class="shahed-head">
         <span class="shahed-dot">📌</span>
-        <span class="shahed-name">${shahedName}</span>
-        <span class="shahed-count">${imgs.length > 0 ? imgs.length+' صورة' : ''}</span>
+        <input type="text" class="shahed-name-input" value="${(shahedName||'').replace(/"/g,'&quot;')}" placeholder="اكتب اسم الشاهد..." oninput="updateShahedName(${si}, this.value)">
+        <button class="shahed-del" onclick="removeShahed(${si})" title="حذف هذا الشاهد">🗑️</button>
       </div>
       <div class="shahed-images">`;
 
-    // الصور المرفوعة لهذا الشاهد
     imgs.forEach((src, ii) => {
       inner += `<div class="evidence-slot filled">
-        <img src="${src}" alt="${shahedName}">
+        <img src="${src}" alt="شاهد">
         <button class="es-remove" onclick="removeEvidence(${si},${ii},event)">✕</button>
       </div>`;
     });
 
-    // خانة إضافة صورة لهذا الشاهد
     inner += `<div class="evidence-slot evidence-add" onclick="addEvidence(${si})">
         <div class="es-icon">➕</div><div class="es-text">${imgs.length > 0 ? 'صورة أخرى' : 'أضف صورة'}</div>
       </div>`;
@@ -659,11 +687,44 @@ function buildEvidenceUploads(){
     wrap.appendChild(block);
   });
 
-  // تحديث العدّاد
+  // زر إضافة شاهد جديد
+  const addShahedBtn = document.createElement('button');
+  addShahedBtn.className = 'btn-add-shahed';
+  addShahedBtn.innerHTML = '<span>➕</span><span>إضافة شاهد جديد</span>';
+  addShahedBtn.onclick = addShahed;
+  wrap.appendChild(addShahedBtn);
+
+  // العدّاد
   const totalImgs = elImgs.reduce((sum, arr) => sum + arr.length, 0);
   const filledShawahed = elImgs.filter(arr => arr.length > 0).length;
   const counter = document.getElementById('evidenceCounter');
-  if(counter) counter.textContent = totalImgs > 0 ? `📎 ${filledShawahed}/${el.shawahed.length} شاهد · ${totalImgs} صورة` : 'لا توجد شواهد بعد';
+  if(counter) counter.textContent = totalImgs > 0 ? `📎 ${filledShawahed}/${names.length} شاهد · ${totalImgs} صورة` : 'لا توجد شواهد بعد';
+}
+
+// تعديل اسم الشاهد
+function updateShahedName(si, val){
+  shahedNames[currentIdx][si] = val;
+}
+
+// إضافة شاهد جديد
+function addShahed(){
+  shahedNames[currentIdx].push('');
+  evidenceImages[currentIdx].push([]);
+  buildEvidenceUploads();
+  // تركيز على آخر حقل اسم
+  setTimeout(() => {
+    const inputs = document.querySelectorAll('.shahed-name-input');
+    if(inputs.length) inputs[inputs.length-1].focus();
+  }, 50);
+}
+
+// حذف شاهد كامل
+function removeShahed(si){
+  if(shahedNames[currentIdx].length <= 1){ showToast('⚠️ يجب إبقاء شاهد واحد على الأقل'); return; }
+  shahedNames[currentIdx].splice(si, 1);
+  evidenceImages[currentIdx].splice(si, 1);
+  buildEvidenceUploads();
+  showToast('🗑️ تم حذف الشاهد');
 }
 
 let _evidenceInput = null;
@@ -779,7 +840,7 @@ async function buildEvidenceClone(idx){
   const page = document.createElement('div');
   page.style.cssText = 'position:absolute;width:794px;height:1123px;background:#fdfcf8;padding:50px 44px;box-sizing:border-box;display:flex;flex-direction:column;font-family:Tajawal,sans-serif;color:#1c2820;';
 
-  const logoHtml = uploadedLogo ? `<img src="${uploadedLogo}" style="width:54px;height:54px;object-fit:contain;">` : '';
+  const logoHtml = uploadedLogo ? `<img src="${uploadedLogo}" style="max-width:64px;max-height:64px;width:auto;height:auto;object-fit:contain;display:block;">` : '';
 
   // ترويسة
   let html = `
@@ -789,7 +850,7 @@ async function buildEvidenceClone(idx){
         <div style="font-size:18px;color:${p.a};font-weight:800;font-family:'Aref Ruqaa',serif;">${el.title}</div>
         <div style="font-size:12px;color:#888;font-weight:600;">${teacherData.name || 'المعلم/ة'} · ${teacherData.school || 'المدرسة'}</div>
       </div>
-      <div style="width:54px;height:54px;">${logoHtml}</div>
+      <div style="width:64px;height:64px;display:flex;align-items:center;justify-content:center;flex-shrink:0;">${logoHtml}</div>
     </div>`;
 
   const totalImgs = elImgs.reduce((sum, arr) => sum + arr.length, 0);
@@ -798,12 +859,14 @@ async function buildEvidenceClone(idx){
     html += `<div style="flex:1;display:flex;align-items:center;justify-content:center;color:#aaa;font-size:16px;font-weight:600;">لم تُرفع صور شواهد بعد</div>`;
   } else {
     html += `<div style="flex:1;display:flex;flex-direction:column;gap:16px;overflow:hidden;">`;
-    // كل شاهد بعنوانه + صوره
-    el.shawahed.forEach((shahedName, si) => {
+    // كل شاهد بعنوانه (المعدّل) + صوره
+    const names = shahedNames[idx];
+    names.forEach((shahedName, si) => {
       const imgs = elImgs[si] || [];
       if(imgs.length === 0) return; // نتخطى الشواهد الفارغة
+      const label = (shahedName && shahedName.trim()) ? shahedName : `شاهد ${si+1}`;
       html += `<div>
-        <div style="background:${p.a};color:#fff;font-size:13px;font-weight:800;padding:7px 14px;border-radius:8px;margin-bottom:8px;">📌 ${shahedName}</div>
+        <div style="background:${p.a};color:#fff;font-size:13px;font-weight:800;padding:7px 14px;border-radius:8px;margin-bottom:8px;">📌 ${label}</div>
         <div style="display:grid;grid-template-columns:repeat(${imgs.length === 1 ? 1 : 2},1fr);gap:10px;">`;
       imgs.forEach(src => {
         html += `<div style="border:1.5px solid ${p.a2};border-radius:8px;overflow:hidden;background:#fff;box-shadow:0 3px 10px rgba(0,0,0,0.07);">
