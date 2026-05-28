@@ -652,6 +652,7 @@ transition:all 0.2s;
 .export-option .ico.png{background:linear-gradient(135deg,#2a9d8f,#1a7a8a);}
 .export-option .ico.pdf{background:linear-gradient(135deg,#d32f2f,#b71c1c);}
 .export-option .ico.print{background:linear-gradient(135deg,#5a3a8e,#7b5cb2);}
+.export-option .ico.share{background:linear-gradient(135deg,#16a34a,#15803d);}
 .export-option .opt-text{flex:1;}
 .export-option .opt-title{
   font-weight:900;
@@ -686,6 +687,9 @@ transition:all 0.2s;
 }
 
 </style>
+
+  <!-- 🔥 Firebase Integration (يجب أن يكون قبل أي محتوى) -->
+  <script type="module" src="report-firebase.js?v=4"></script>
 </head>
 <body>
 
@@ -1194,8 +1198,93 @@ function exportAsImage(){
 }
 
 function printReport(){
-  toggleExportMenu();
-  setTimeout(() => { window.print(); }, 300);
+  // ⚠️ تم استبدالها بـ shareReport - محتفظ بها للتوافق
+  shareReport();
+}
+
+// ═══════════════════════════════════════════════
+// 📤 مشاركة التقرير (Web Share API)
+// ═══════════════════════════════════════════════
+async function shareReport(){
+  closeExportMenu();
+
+  // 🔥 فحص Firebase أولاً
+  if (typeof window.checkDownloadAccess === 'function') {
+    const allowed = await window.checkDownloadAccess();
+    if (!allowed) return;
+  }
+
+  if(typeof showToast === 'function') showToast('⏳ جاري تحضير المشاركة...');
+
+  try {
+    // استخدم نفس آلية saveAsImage لكن للمشاركة بدل التنزيل
+    // نُنشئ صورة مؤقتاً من #page
+    const page = document.getElementById('page');
+    if(!page){
+      if(typeof showToast === 'function') showToast('❌ لم يتم العثور على التقرير');
+      return;
+    }
+
+    // إخفاء أزرار الأكشن أثناء الالتقاط
+    const actionButtons = document.querySelectorAll('.export-menu-wrap, .export-menu, [class*="action-bar"]');
+    const hiddenStates = [];
+    actionButtons.forEach(el => {
+      hiddenStates.push({el, prev: el.style.display});
+      el.style.display = 'none';
+    });
+
+    await document.fonts.ready;
+    await new Promise(r => setTimeout(r, 300));
+
+    const canvas = await html2canvas(page, {
+      backgroundColor: '#ffffff',
+      scale: 3,
+      useCORS: true,
+      logging: false,
+      allowTaint: true,
+      onclone: (doc) => {
+        const style = doc.createElement('style');
+        style.textContent = "* { font-family: 'Tajawal','Arial Unicode MS','Tahoma',Arial,sans-serif !important; letter-spacing: 0 !important; }";
+        doc.head.appendChild(style);
+      }
+    });
+
+    // إرجاع الأزرار
+    hiddenStates.forEach(({el, prev}) => { el.style.display = prev; });
+
+    canvas.toBlob(async (blob) => {
+      const file = new File([blob], 'تقرير_اليوم_الوطني.png', { type: 'image/png' });
+
+      if (navigator.share && navigator.canShare && navigator.canShare({ files: [file] })) {
+        try {
+          await navigator.share({
+            files: [file],
+            title: document.title,
+            text: '🇸🇦 ' + document.title
+          });
+          if(typeof showToast === 'function') showToast('✅ تم المشاركة');
+        } catch(err) {
+          if (err.name !== 'AbortError') {
+            console.error('Share error:', err);
+            if(typeof showToast === 'function') showToast('❌ فشل المشاركة');
+          }
+        }
+      } else {
+        // Fallback: تنزيل
+        const link = document.createElement('a');
+        link.download = 'تقرير_اليوم_الوطني.png';
+        link.href = URL.createObjectURL(blob);
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+        if(typeof showToast === 'function') showToast('📥 تم التنزيل');
+      }
+    }, 'image/png');
+  } catch(e) {
+    console.error('Share error:', e);
+    if(typeof showToast === 'function') showToast('❌ فشل التصدير');
+  }
+}, 300);
 }
 
 function loadJsPDF(){
@@ -1431,19 +1520,14 @@ async function exportAsPDFv2(){
     </span>
     <span class="arrow">‹</span>
   </button>
-  <button class="export-option" onclick="printReport()">
-    <span class="ico print">🖨</span>
+  <button class="export-option" onclick="shareReport()">
+    <span class="ico share">📤</span>
     <span class="opt-text">
-      <div class="opt-title">طباعة مباشرة</div>
-      <div class="opt-desc">يفتح نافذة الطباعة فوراً</div>
+      <div class="opt-title">مشاركة</div>
+      <div class="opt-desc">شارك التقرير عبر تطبيقاتك</div>
     </span>
     <span class="arrow">‹</span>
   </button>
   <button class="export-cancel-btn" onclick="closeExportMenu()">إلغاء</button>
-</div>
-
-
-<!-- 🔥 Firebase Integration -->
-<script type="module" src="report-firebase.js"></script>
-</body>
+</div></body>
 </html>

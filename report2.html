@@ -917,6 +917,7 @@ body{
 .export-option .ico.png{background:linear-gradient(135deg,#2a9d8f,#1a7a8a);}
 .export-option .ico.pdf{background:linear-gradient(135deg,#d32f2f,#b71c1c);}
 .export-option .ico.print{background:linear-gradient(135deg,#5a3a8e,#7b5cb2);}
+.export-option .ico.share{background:linear-gradient(135deg,#16a34a,#15803d);}
 
 .export-option .opt-text{flex:1;}
 .export-option .opt-title{font-weight:900; font-size:0.92rem; margin-bottom:2px;}
@@ -1024,6 +1025,9 @@ body{
 /* ═══ Print Text (للتصدير) ═══ */
 .pt-inline{display:none;}
 </style>
+
+  <!-- 🔥 Firebase Integration (يجب أن يكون قبل أي محتوى) -->
+  <script type="module" src="report-firebase.js?v=4"></script>
 </head>
 <body>
 
@@ -1244,11 +1248,11 @@ body{
     </span>
     <span class="arrow">‹</span>
   </button>
-  <button class="export-option" onclick="printReport()">
-    <span class="ico print">🖨</span>
+  <button class="export-option" onclick="shareReport()">
+    <span class="ico share">📤</span>
     <span class="opt-text">
-      <div class="opt-title" data-i18n="optPrint">طباعة مباشرة</div>
-      <div class="opt-desc" data-i18n="optPrintDesc">يفتح نافذة الطباعة فوراً</div>
+      <div class="opt-title" data-i18n="optShare">مشاركة</div>
+      <div class="opt-desc" data-i18n="optShareDesc">شارك التقرير عبر تطبيقاتك</div>
     </span>
     <span class="arrow">‹</span>
   </button>
@@ -1515,8 +1519,85 @@ function exportAsImage(){
   setTimeout(() => saveAsImage(), 200);
 }
 function printReport(){
+  shareReport();
+}
+
+// ═══════════════════════════════════════════════
+// 📤 مشاركة التقرير (Web Share API)
+// ═══════════════════════════════════════════════
+async function shareReport(){
   closeExportMenu();
-  setTimeout(() => window.print(), 300);
+
+  if (typeof window.checkDownloadAccess === 'function') {
+    const allowed = await window.checkDownloadAccess();
+    if (!allowed) return;
+  }
+
+  if(typeof showToast === 'function') showToast('⏳ جاري تحضير المشاركة...');
+
+  try {
+    const page = document.getElementById('page');
+    if(!page){
+      if(typeof showToast === 'function') showToast('❌ لم يتم العثور على التقرير');
+      return;
+    }
+
+    const actionButtons = document.querySelectorAll('.export-menu-wrap, .export-menu, [class*="action-bar"]');
+    const hiddenStates = [];
+    actionButtons.forEach(el => {
+      hiddenStates.push({el, prev: el.style.display});
+      el.style.display = 'none';
+    });
+
+    await document.fonts.ready;
+    await new Promise(r => setTimeout(r, 300));
+
+    const canvas = await html2canvas(page, {
+      backgroundColor: '#ffffff',
+      scale: 3,
+      useCORS: true,
+      logging: false,
+      allowTaint: true,
+      onclone: (doc) => {
+        const style = doc.createElement('style');
+        style.textContent = "* { font-family: 'Tajawal','Arial Unicode MS','Tahoma',Arial,sans-serif !important; letter-spacing: 0 !important; }";
+        doc.head.appendChild(style);
+      }
+    });
+
+    hiddenStates.forEach(({el, prev}) => { el.style.display = prev; });
+
+    canvas.toBlob(async (blob) => {
+      const file = new File([blob], 'تقرير_الفعاليات.png', { type: 'image/png' });
+
+      if (navigator.share && navigator.canShare && navigator.canShare({ files: [file] })) {
+        try {
+          await navigator.share({
+            files: [file],
+            title: document.title,
+            text: '🇸🇦 ' + document.title
+          });
+          if(typeof showToast === 'function') showToast('✅ تم المشاركة');
+        } catch(err) {
+          if (err.name !== 'AbortError') {
+            console.error('Share error:', err);
+            if(typeof showToast === 'function') showToast('❌ فشل المشاركة');
+          }
+        }
+      } else {
+        const link = document.createElement('a');
+        link.download = 'تقرير_الفعاليات.png';
+        link.href = URL.createObjectURL(blob);
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+        if(typeof showToast === 'function') showToast('📥 تم التنزيل');
+      }
+    }, 'image/png');
+  } catch(e) {
+    console.error('Share error:', e);
+    if(typeof showToast === 'function') showToast('❌ فشل التصدير');
+  }
 }
 
 function loadJsPDF(){
@@ -1534,6 +1615,12 @@ function loadJsPDF(){
 // التصدير كصورة - مع معالجة الـ inputs
 // ═══════════════════════════════════════════════
 async function saveAsImage(){
+  // 🔥 فحص Firebase أولاً - الحماية الفعلية
+  if (typeof window.checkDownloadAccess === 'function') {
+    const allowed = await window.checkDownloadAccess();
+    if (!allowed) return;
+  }
+
   showToast(I18N[currentLang].toastPrep);
   const page = document.getElementById('page');
 
@@ -1742,10 +1829,5 @@ async function exportAsPDFv2(){
 applyLang();
 loadData();
 attachAutoSave();
-</script>
-
-
-<!-- 🔥 Firebase Integration -->
-<script type="module" src="report-firebase.js"></script>
-</body>
+</script></body>
 </html>
