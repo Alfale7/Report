@@ -1045,11 +1045,13 @@ function prepareHeaderForExport(){
 
     const origDisplay = inp.style.display;
     inp.style.display = 'none';
+    inp.dataset.headerProcessed = '1';  // 🆕 علامة لتجنّب المعالجة المكررة في PDF
     inp.parentNode.insertBefore(span, inp);
 
     restoreFns.push(() => {
       span.remove();
       inp.style.display = origDisplay;
+      delete inp.dataset.headerProcessed;
     });
   });
 
@@ -1335,6 +1337,8 @@ async function exportAsPDFv2(){
   // 1) نحوّل الـ inputs لـ spans
   const allInputs = page.querySelectorAll('input, textarea');
   allInputs.forEach(el => {
+    // 🆕 تجاهل inputs الترويسة (تمت معالجتها مسبقاً في prepareHeaderForExport)
+    if(el.dataset.headerProcessed === '1') return;
     const computed = window.getComputedStyle(el);
     const value = el.value || '';
     const isEmpty = !value;
@@ -1439,39 +1443,23 @@ async function exportAsPDFv2(){
     const marginX = 8, marginY = 8;
     const contentWidth = pdfWidth - (marginX * 2);
     const contentHeight = pdfHeight - (marginY * 2);
-    
+
     const imgRatio = canvas.height / canvas.width;
-    const imgWidthMM = contentWidth;
-    const imgHeightMM = imgWidthMM * imgRatio;
-    
-    if(imgHeightMM <= contentHeight + 5){
-      // ═══ صفحة واحدة - نوسطها ═══
-      const imgData = canvas.toDataURL('image/jpeg', 0.92);
-      const yPos = (pdfHeight - imgHeightMM) / 2;
-      pdf.addImage(imgData, 'JPEG', marginX, yPos, imgWidthMM, imgHeightMM, undefined, 'FAST');
-    } else {
-      // ═══ صفحات متعددة - تقسيم ═══
-      const pixelsPerPage = (contentHeight / imgHeightMM) * canvas.height;
-      const totalPages = Math.ceil(canvas.height / pixelsPerPage);
-      
-      for(let i = 0; i < totalPages; i++){
-        if(i > 0) pdf.addPage();
-        
-        const sourceY = i * pixelsPerPage;
-        const sourceHeight = Math.min(pixelsPerPage, canvas.height - sourceY);
-        
-        // نقص جزء من الـ canvas
-        const partCanvas = document.createElement('canvas');
-        partCanvas.width = canvas.width;
-        partCanvas.height = sourceHeight;
-        const ctx = partCanvas.getContext('2d');
-        ctx.drawImage(canvas, 0, sourceY, canvas.width, sourceHeight, 0, 0, canvas.width, sourceHeight);
-        
-        const partData = partCanvas.toDataURL('image/jpeg', 0.92);
-        const partHeightMM = (sourceHeight / canvas.width) * imgWidthMM;
-        pdf.addImage(partData, 'JPEG', marginX, marginY, imgWidthMM, partHeightMM, undefined, 'FAST');
-      }
+
+    // 🆕 احسب الأبعاد لتناسب صفحة A4 واحدة (احتفظ بالنسبة)
+    let imgWidthMM = contentWidth;
+    let imgHeightMM = imgWidthMM * imgRatio;
+    if(imgHeightMM > contentHeight){
+      // إذا الارتفاع تجاوز المتاح، صغّر بالنسبة
+      imgHeightMM = contentHeight;
+      imgWidthMM = imgHeightMM / imgRatio;
     }
+
+    // ═══ صفحة واحدة دائماً - مع توسيط أفقي وعمودي ═══
+    const imgData = canvas.toDataURL('image/jpeg', 0.92);
+    const xPos = (pdfWidth - imgWidthMM) / 2;
+    const yPos = (pdfHeight - imgHeightMM) / 2;
+    pdf.addImage(imgData, 'JPEG', xPos, yPos, imgWidthMM, imgHeightMM, undefined, 'FAST');
     
     // ═══ metadata ═══
     pdf.setProperties({
