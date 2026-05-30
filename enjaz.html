@@ -3547,6 +3547,26 @@ function prepareForExport(){
   const paperEl = document.getElementById('enjaz-paper');
   if(paperEl) walkAndWrap(paperEl);
 
+  // 5) 🆕 إزالة letter-spacing من العناصر التي تحوي نصاً عربياً
+  //    السبب الجذري لتقطيع حروف العربية في html2canvas:
+  //    letter-spacing > 0 يكسر تشبيك الحروف العربية (مثل: "الاسم" → "ا ل اس م")
+  //    نطبّق الإصلاح فقط على العناصر العربية، لنحافظ على letter-spacing للنصوص اللاتينية
+  //    (مثل "TEACHER PORTFOLIO" و"CURRICULUM VITAE")
+  if(paperEl){
+    const allEls = paperEl.querySelectorAll('*');
+    for(const el of allEls){
+      if(SKIP_TAGS.has(el.tagName)) continue;
+      const cs = getComputedStyle(el);
+      const ls = cs.letterSpacing;
+      if(!ls || ls === 'normal' || ls === '0px') continue;
+      // فقط إذا كان نص العنصر يحوي حروفاً عربية
+      if(!ARABIC_RE.test(el.textContent || '')) continue;
+      const origInline = el.style.letterSpacing;
+      el.style.letterSpacing = 'normal';
+      stored.push({type:'letterSpacing', el, origInline});
+    }
+  }
+
   return { stored, inTabsMode, tocWasClosed };
 }
 function restoreFromExport(ctx){
@@ -3573,6 +3593,13 @@ function restoreFromExport(ctx){
       if(item.wrap && item.wrap.parentNode){
         const textNode = document.createTextNode(item.orig);
         item.wrap.parentNode.replaceChild(textNode, item.wrap);
+      }
+    } else if(item.type === 'letterSpacing'){
+      // 🆕 استعادة letter-spacing الأصلي
+      if(item.origInline){
+        item.el.style.letterSpacing = item.origInline;
+      } else {
+        item.el.style.removeProperty('letter-spacing');
       }
     }
   }
