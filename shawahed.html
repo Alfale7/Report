@@ -250,8 +250,14 @@ body{
 .exp-btn:active{transform:scale(0.98);}
 .exp-preview{background:linear-gradient(135deg,var(--teal),#0f3b4d); color:#fff;}
 .exp-grid3{display:grid; grid-template-columns:1fr 1fr 1fr; gap:10px;}
+.exp-grid4{display:grid; grid-template-columns:1fr 1fr 1fr 1fr; gap:8px;}
+@media (max-width:520px){
+  .exp-grid4{grid-template-columns:1fr 1fr; gap:8px;}
+}
+.exp-grid4 .exp-btn{padding:12px 8px; font-size:0.85rem; gap:5px;}
 .exp-img{background:linear-gradient(135deg,#2a9d8f,#1a7a8a); color:#fff;}
 .exp-pdf{background:linear-gradient(135deg,#e63946,#c1121f); color:#fff;}
+.exp-print{background:linear-gradient(135deg,#5b6cff,#3b4dd1); color:#fff;}
 .exp-share{background:linear-gradient(135deg,var(--green),#15803d); color:#fff;}
 
 /* نافذة المعاينة */
@@ -398,9 +404,10 @@ body{
       <button class="exp-btn exp-preview" onclick="previewCurrent()">
         <span>👁️</span><span>معاينة</span>
       </button>
-      <div class="exp-grid3">
+      <div class="exp-grid4">
         <button class="exp-btn exp-img" onclick="exportCurrent('image')"><span>🖼️</span><span>صورة</span></button>
         <button class="exp-btn exp-pdf" onclick="exportCurrent('pdf')"><span>📄</span><span>PDF</span></button>
+        <button class="exp-btn exp-print" onclick="exportCurrent('print')"><span>🖨️</span><span>طباعة</span></button>
         <button class="exp-btn exp-share" onclick="exportCurrent('share')"><span>📤</span><span>مشاركة</span></button>
       </div>
     </div>
@@ -920,7 +927,8 @@ async function buildEvidenceClone(idx){
   saveData();
 
   const page = document.createElement('div');
-  page.style.cssText = 'position:absolute;width:794px;height:1123px;background:#e2e3dd;padding:0;box-sizing:border-box;display:flex;flex-direction:column;font-family:Tajawal,sans-serif;color:#1c2820;overflow:hidden;';
+  // 🔥 ارتفاع ديناميكي: min-height بدل height ثابت + بدون overflow:hidden
+  page.style.cssText = 'position:absolute;width:794px;min-height:1123px;background:#e2e3dd;padding:0;box-sizing:border-box;display:flex;flex-direction:column;font-family:Tajawal,sans-serif;color:#1c2820;';
 
   const logoHtml = uploadedLogo
     ? `<img src="${uploadedLogo}" style="max-width:58px;max-height:58px;width:auto;height:auto;object-fit:contain;display:block;">`
@@ -944,7 +952,7 @@ async function buildEvidenceClone(idx){
       </div>
     </div>
 
-    <div style="flex:1;display:flex;flex-direction:column;padding:24px 44px 16px;overflow:hidden;">
+    <div style="flex:1;display:flex;flex-direction:column;padding:24px 44px 16px;">
       <div style="display:flex;align-items:center;gap:10px;margin-bottom:16px;padding-bottom:12px;border-bottom:2px solid ${p.a};">
         <div style="width:42px;height:42px;border-radius:11px;background:linear-gradient(135deg,${p.a},${p.a2});display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0;">${el.icon}</div>
         <div style="text-align:right;flex:1;">
@@ -958,7 +966,7 @@ async function buildEvidenceClone(idx){
   if(totalImgs === 0){
     html += `<div style="flex:1;display:flex;align-items:center;justify-content:center;color:#aaa;font-size:16px;font-weight:600;">لم تُرفع صور شواهد بعد</div>`;
   } else {
-    html += `<div style="flex:1;display:flex;flex-direction:column;gap:16px;overflow:hidden;">`;
+    html += `<div style="flex:1;display:flex;flex-direction:column;gap:16px;">`;
     const names = shahedNames[idx];
     names.forEach((shahedName, si) => {
       const imgs = elImgs[si] || [];
@@ -1064,13 +1072,70 @@ async function makeBlob(idx, type){
   await waitForImages(clone);
   if(document.fonts && document.fonts.ready) await document.fonts.ready;
   await new Promise(r => setTimeout(r, 400));
+  // 🔥 ارتفاع ديناميكي: الـ cover ثابت 1123، الـ evidence يأخذ ارتفاع المحتوى الفعلي
+  const captureWidth = 794;
+  let captureHeight;
+  if(type === 'cover'){
+    captureHeight = 1123;
+  } else {
+    // قياس scrollHeight بعد ما تحمّل كل الصور
+    captureHeight = Math.max(1123, clone.scrollHeight, clone.offsetHeight);
+  }
   // التقاط أولي (تحضيري - يجبر dom-to-image على تجهيز كل الموارد)
-  try { await domtoimage.toPng(clone, { quality:1.0, width:794, height:1123 }); } catch(e){}
+  try { await domtoimage.toPng(clone, { quality:1.0, width:captureWidth, height:captureHeight }); } catch(e){}
   await new Promise(r => setTimeout(r, 200));
   // التقاط نهائي مضمون
-  const blob = await domtoimage.toBlob(clone, { quality:1.0, width:794, height:1123 });
+  const blob = await domtoimage.toBlob(clone, { quality:1.0, width:captureWidth, height:captureHeight });
   renderC.innerHTML = '';
   return blob;
+}
+
+// 🔥 يحوّل blob إلى Image ويرجع {img, width, height}
+function blobToImage(blob){
+  return new Promise((resolve, reject) => {
+    const url = URL.createObjectURL(blob);
+    const img = new Image();
+    img.onload = () => { URL.revokeObjectURL(url); resolve(img); };
+    img.onerror = (e) => { URL.revokeObjectURL(url); reject(e); };
+    img.src = url;
+  });
+}
+
+// 🔥 يضيف صورة (قد تكون طويلة) إلى PDF، يقسّمها على عدة صفحات A4 إذا لزم الأمر
+async function addLongImageToPdf(pdf, blob, pageW_mm, pageH_mm, isFirstPage){
+  const img = await blobToImage(blob);
+  const ratio_pxPerMM = img.width / pageW_mm; // كم بكسل في المليمتر
+  const pageHeightInPx = pageH_mm * ratio_pxPerMM;
+
+  // إذا الصورة تدخل في صفحة واحدة: أضفها مباشرة بالنسبة الفعلية
+  if(img.height <= pageHeightInPx + 2){
+    if(!isFirstPage) pdf.addPage();
+    const drawHeight_mm = img.height / ratio_pxPerMM;
+    const blobUrl = await blobToDataUrl(blob);
+    pdf.addImage(blobUrl, 'PNG', 0, 0, pageW_mm, drawHeight_mm);
+    return;
+  }
+
+  // قسّم على عدة صفحات A4
+  let yOffset = 0;
+  let firstSlice = true;
+  while(yOffset < img.height){
+    const sliceH = Math.min(pageHeightInPx, img.height - yOffset);
+    const canvas = document.createElement('canvas');
+    canvas.width = img.width;
+    canvas.height = Math.ceil(sliceH);
+    const ctx = canvas.getContext('2d');
+    // خلفية بنفس لون التقرير حتى لو السلايس الأخيرة قصيرة
+    ctx.fillStyle = '#e2e3dd';
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+    ctx.drawImage(img, 0, yOffset, img.width, sliceH, 0, 0, img.width, sliceH);
+    const sliceDataUrl = canvas.toDataURL('image/png', 1.0);
+    if(!isFirstPage || !firstSlice) pdf.addPage();
+    const drawHeight_mm = sliceH / ratio_pxPerMM;
+    pdf.addImage(sliceDataUrl, 'PNG', 0, 0, pageW_mm, drawHeight_mm);
+    firstSlice = false;
+    yOffset += sliceH;
+  }
 }
 
 function mergeBlobsVertical(blob1, blob2){
@@ -1118,14 +1183,32 @@ async function exportCurrent(mode){
         downloadBlob(coverBlob, base+'.png');
       }
       showToast('✅ تم تحميل الصورة');
-    } else if(mode === 'pdf'){
+    } else if(mode === 'pdf' || mode === 'print'){
       const { jsPDF } = window.jspdf;
-      const pdf = new jsPDF({ orientation:'portrait', unit:'mm', format:'a4' });
+      const pdf = new jsPDF({ orientation:'portrait', unit:'mm', format:'a4', compress:true });
       const pw = pdf.internal.pageSize.getWidth(), ph = pdf.internal.pageSize.getHeight();
+      // الصفحة الأولى: الفاصل (cover) - بحجم صفحة كاملة
       pdf.addImage(await blobToDataUrl(coverBlob), 'PNG', 0, 0, pw, ph);
-      if(evBlob){ pdf.addPage(); pdf.addImage(await blobToDataUrl(evBlob), 'PNG', 0, 0, pw, ph); }
-      pdf.save(base+'.pdf');
-      showToast('✅ تم تحميل PDF');
+      // صفحات الشواهد: تُقسّم تلقائياً إذا تجاوزت ارتفاع الصفحة الواحدة
+      if(evBlob){
+        await addLongImageToPdf(pdf, evBlob, pw, ph, false);
+      }
+      if(mode === 'pdf'){
+        pdf.save(base+'.pdf');
+        showToast('✅ تم تحميل PDF');
+      } else {
+        // 🔥 وضع الطباعة: افتح PDF في نافذة وأرسل أمر الطباعة
+        const blobUrl = pdf.output('bloburl');
+        const printWin = window.open(blobUrl, '_blank');
+        if(printWin){
+          printWin.addEventListener('load', () => {
+            setTimeout(() => { try { printWin.print(); } catch(e){} }, 500);
+          });
+          showToast('🖨️ جاري فتح الطباعة');
+        } else {
+          showToast('⚠️ يرجى السماح للنوافذ المنبثقة');
+        }
+      }
     } else if(mode === 'share'){
       const file = new File([coverBlob], base+'_فاصل.png', {type:'image/png'});
       if(navigator.share && navigator.canShare && navigator.canShare({files:[file]})){
