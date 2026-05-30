@@ -786,7 +786,7 @@ async function shareQR(){
       await navigator.share({
         files:[file],
         title:'باركود ملف PDF',
-        text:'📄 امسح الباركود لفتح الملف\n\n🔗 ' + currentUrl + '\n⏱️ صالح: ' + currentExpiry + '\n\n🌐 www.ksa2030.one'
+        text:'📄 امسح الباركود لفتح ملف PDF\n\n🌐 www.ksa2030.one'
       });
       showToast('✅ تم المشاركة');
     } else {
