@@ -136,6 +136,28 @@ html,body{
   display:flex; flex-direction:column; align-items:center;
 }
 
+/* الملكي الذهبي: ادفع المحتوى للداخل عشان يتجنّب الموجات */
+.cert-royal .cert-content-layer{padding:5% 4% 11%;}
+.cert-royal .cert-logo-zone{margin-bottom:3%;}
+.cert-royal .cert-footer{padding-right:9%; padding-left:3%; padding-bottom:1%;}
+
+/* الأزرق العصري: مساحة علوية وسفلية للموجات الأفقية */
+.cert-ocean .cert-content-layer{padding:4% 5% 5%;}
+.cert-ocean .cert-logo-zone{margin-top:2%;}
+
+/* المرح الملوّن: مساحة للزوايا الملوّنة */
+.cert-joy .cert-content-layer{padding:3% 4% 4%;}
+.cert-joy .cert-logo-zone{padding-left:10%; padding-right:3%;}
+.cert-joy .cert-footer{padding-left:13%; padding-right:13%;}
+
+/* الأخضر السعودي: زوايا السعف تحتاج مساحة معتدلة */
+.cert-nature .cert-content-layer{padding:3% 5% 4%;}
+.cert-nature .cert-logo-zone{padding-left:9%;}
+
+/* الليلي الأنيق: الهلال والنجمة تحتاج مساحة جانبية */
+.cert-midnight .cert-content-layer{padding:3% 5% 4%;}
+.cert-midnight .cert-logo-zone{padding-left:8%;}
+
 /* عناصر مشتركة داخل الشهادة */
 .cert-logo-zone{
   width:100%; display:flex; align-items:center; justify-content:space-between;
@@ -736,6 +758,8 @@ function renderCertificate(d){
   paper.style.background = d.bg;
   paper.style.border = d.border;
   paper.style.color = txtColor;
+  // تطبيق class خاص بكل قالب لضبط المسافات
+  paper.className = 'cert-paper cert-' + currentDesign;
 
   const logoContent = uploadedLogo
     ? `<img src="${uploadedLogo}" alt="شعار">`
@@ -781,62 +805,441 @@ function getDecoration(d){
   let inner = '';
 
   if(key === 'royal'){
-    // 🌟 الملكي: زوايا فخمة + أزهار ذهبية + إطار مزدوج
+    // 🌟 الملكي الذهبي — موجات قطرية فاخرة + ميدالية + خطوط ذهبية معدنية
+    // مستوحى من شهادات appreciation الاحترافية
     inner = `
-      <rect x="28" y="28" width="944" height="651" fill="none" stroke="${a}" stroke-width="2" opacity="0.4" rx="4"/>
-      <rect x="38" y="38" width="924" height="631" fill="none" stroke="${a2}" stroke-width="1" opacity="0.3" rx="4"/>
-      ${corner(50,50,a,0)} ${corner(950,50,a,90)} ${corner(950,657,a,180)} ${corner(50,657,a,270)}
-      <g opacity="0.1">${flower(a)}</g>
-      <g opacity="0.14" transform="translate(880,90) scale(1.1)">${flower(a)}</g>
-      <g opacity="0.14" transform="translate(120,617) scale(1.1)">${flower(a2)}</g>
-      <g opacity="0.1" fill="${a}">${star(150,140,9)}${star(850,567,9)}${star(820,140,6)}${star(180,567,6)}</g>`;
+      <defs>
+        <!-- تدرّجات الموجة الذهبية الكبيرة (علوي يمين) -->
+        <linearGradient id="r-deep" x1="0%" y1="0%" x2="100%" y2="100%">
+          <stop offset="0%" stop-color="#1a2c20"/>
+          <stop offset="50%" stop-color="#3d2a18"/>
+          <stop offset="100%" stop-color="#5a4020"/>
+        </linearGradient>
+        <linearGradient id="r-gold-shine" x1="0%" y1="0%" x2="100%" y2="0%">
+          <stop offset="0%" stop-color="#8b6914"/>
+          <stop offset="20%" stop-color="#d4a657"/>
+          <stop offset="40%" stop-color="#f4d27f"/>
+          <stop offset="50%" stop-color="#fff4cc"/>
+          <stop offset="60%" stop-color="#f4d27f"/>
+          <stop offset="80%" stop-color="#d4a657"/>
+          <stop offset="100%" stop-color="#8b6914"/>
+        </linearGradient>
+        <linearGradient id="r-gold-thin" x1="0%" y1="0%" x2="100%" y2="100%">
+          <stop offset="0%" stop-color="#b8923d"/>
+          <stop offset="50%" stop-color="#f4d27f"/>
+          <stop offset="100%" stop-color="#8b6914"/>
+        </linearGradient>
+        <radialGradient id="r-medal" cx="40%" cy="40%" r="60%">
+          <stop offset="0%" stop-color="#3d2a18"/>
+          <stop offset="100%" stop-color="#1a1408"/>
+        </radialGradient>
+        <linearGradient id="r-ribbon" x1="0%" y1="0%" x2="0%" y2="100%">
+          <stop offset="0%" stop-color="#d4a657"/>
+          <stop offset="50%" stop-color="#f4d27f"/>
+          <stop offset="100%" stop-color="#8b6914"/>
+        </linearGradient>
+      </defs>
+
+      <!-- خلفية بيضاء كريمية ناعمة -->
+      <rect x="0" y="0" width="1000" height="707" fill="#fffdf7"/>
+
+      <!-- ═══ الموجة العلوية اليمنى (الكبيرة) ═══ -->
+      <!-- الطبقة العميقة الخلفية -->
+      <path d="M 1000 0 L 1000 175 Q 650 145 350 0 Z" fill="url(#r-deep)"/>
+      <!-- الموجة الذهبية المعدنية اللامعة -->
+      <path d="M 1000 0 L 1000 125 Q 650 100 400 0 Z" fill="url(#r-gold-shine)"/>
+      <!-- موجة داخلية داكنة فوقها -->
+      <path d="M 1000 0 L 1000 90 Q 650 65 470 0 Z" fill="url(#r-deep)"/>
+      <!-- خط ذهبي رفيع لامع -->
+      <path d="M 1000 125 Q 650 100 400 0" fill="none" stroke="url(#r-gold-thin)" stroke-width="2.5"/>
+      <path d="M 1000 90 Q 650 65 470 0" fill="none" stroke="url(#r-gold-thin)" stroke-width="1.5" opacity="0.7"/>
+
+      <!-- ═══ الموجة السفلية اليسرى (الصغيرة) ═══ -->
+      <path d="M 0 707 L 0 555 Q 350 620 620 707 Z" fill="url(#r-deep)"/>
+      <path d="M 0 707 L 0 605 Q 350 645 540 707 Z" fill="url(#r-gold-shine)"/>
+      <path d="M 0 707 L 0 640 Q 350 670 470 707 Z" fill="url(#r-deep)"/>
+      <path d="M 0 605 Q 350 645 540 707" fill="none" stroke="url(#r-gold-thin)" stroke-width="2.5"/>
+      <path d="M 0 640 Q 350 670 470 707" fill="none" stroke="url(#r-gold-thin)" stroke-width="1.5" opacity="0.7"/>
+
+      <!-- ═══ الميدالية الفاخرة (داخل الموجة، أعلى يمين) ═══ -->
+      <g transform="translate(900, 65)">
+        <!-- الشرائط السفلية -->
+        <path d="M -16 22 L -26 56 L -19 52 L -16 60 L -7 48 Z" fill="url(#r-ribbon)" stroke="#8b6914" stroke-width="0.8"/>
+        <path d="M 16 22 L 26 56 L 19 52 L 16 60 L 7 48 Z" fill="url(#r-ribbon)" stroke="#8b6914" stroke-width="0.8"/>
+
+        <!-- الإطار الخارجي مسنّن -->
+        ${medallionOuter(0, 0, 30, '#d4a657', '#8b6914')}
+
+        <!-- الإطار الداخلي ذهبي -->
+        <circle cx="0" cy="0" r="23" fill="url(#r-gold-shine)" stroke="#8b6914" stroke-width="1"/>
+
+        <!-- الدائرة المركزية الداكنة -->
+        <circle cx="0" cy="0" r="19" fill="url(#r-medal)" stroke="#d4a657" stroke-width="1.2"/>
+
+        <!-- نجمة مركزية ذهبية -->
+        <g fill="url(#r-gold-shine)">${star(0, -2, 8)}</g>
+        <text x="0" y="10" text-anchor="middle" fill="#d4a657" font-family="serif" font-size="4" font-weight="bold">TOP STAR</text>
+      </g>
+
+      <!-- نجوم زخرفية صغيرة متفرّقة -->
+      <g fill="#d4a657" opacity="0.25">
+        ${star(120, 350, 4)} ${star(850, 480, 4)}
+        ${star(80, 250, 3)} ${star(920, 580, 3)}
+      </g>`;
   } else if(key === 'ocean'){
-    // ⭐ الأزرق: موجات + فقاعات + خطوط عصرية
+    // ⭐ الأزرق العصري — موجي مائي بشرائط أفقية متدرّجة + بادج دائري
     inner = `
-      <rect x="24" y="24" width="952" height="659" fill="none" stroke="${a}" stroke-width="1.5" opacity="0.3" rx="8"/>
-      <path d="M 0 120 Q 250 70 500 120 T 1000 120" fill="none" stroke="${a}" stroke-width="2.5" opacity="0.12"/>
-      <path d="M 0 160 Q 250 110 500 160 T 1000 160" fill="none" stroke="${a2}" stroke-width="2" opacity="0.1"/>
-      <path d="M 0 587 Q 250 637 500 587 T 1000 587" fill="none" stroke="${a}" stroke-width="2.5" opacity="0.12"/>
-      <path d="M 0 547 Q 250 597 500 547 T 1000 547" fill="none" stroke="${a2}" stroke-width="2" opacity="0.1"/>
-      <g opacity="0.1" fill="${a}">
-        <circle cx="120" cy="350" r="35"/><circle cx="180" cy="300" r="18"/><circle cx="90" cy="290" r="12"/>
-        <circle cx="880" cy="360" r="35"/><circle cx="820" cy="310" r="18"/><circle cx="910" cy="300" r="12"/>
+      <defs>
+        <linearGradient id="o-wave-top" x1="0%" y1="0%" x2="100%" y2="0%">
+          <stop offset="0%" stop-color="#1e6b8a" stop-opacity="0.85"/>
+          <stop offset="50%" stop-color="#2a8aab" stop-opacity="0.9"/>
+          <stop offset="100%" stop-color="#3aa8d0" stop-opacity="0.85"/>
+        </linearGradient>
+        <linearGradient id="o-wave-mid" x1="0%" y1="0%" x2="100%" y2="0%">
+          <stop offset="0%" stop-color="#3aa8d0" stop-opacity="0.5"/>
+          <stop offset="50%" stop-color="#5bc0de" stop-opacity="0.6"/>
+          <stop offset="100%" stop-color="#3aa8d0" stop-opacity="0.5"/>
+        </linearGradient>
+        <radialGradient id="o-badge" cx="50%" cy="35%" r="65%">
+          <stop offset="0%" stop-color="#3aa8d0"/>
+          <stop offset="60%" stop-color="#2a8aab"/>
+          <stop offset="100%" stop-color="#0f3b4d"/>
+        </radialGradient>
+      </defs>
+
+      <!-- خلفية بيضاء -->
+      <rect x="0" y="0" width="1000" height="707" fill="#f8fcff"/>
+
+      <!-- ═══ شرائط موجية علوية (3 طبقات) ═══ -->
+      <path d="M 0 0 L 1000 0 L 1000 90 Q 850 75 700 95 T 400 90 T 100 105 L 0 100 Z" fill="url(#o-wave-top)"/>
+      <path d="M 0 0 L 1000 0 L 1000 60 Q 850 50 700 70 T 400 60 T 100 75 L 0 70 Z" fill="url(#o-wave-mid)"/>
+      <path d="M 0 100 Q 250 120 500 100 T 1000 95" fill="none" stroke="#2a8aab" stroke-width="2" opacity="0.5"/>
+      <path d="M 0 115 Q 250 95 500 115 T 1000 110" fill="none" stroke="#3aa8d0" stroke-width="1.5" opacity="0.4"/>
+
+      <!-- ═══ شرائط موجية سفلية ═══ -->
+      <path d="M 0 707 L 1000 707 L 1000 617 Q 850 632 700 612 T 400 617 T 100 602 L 0 607 Z" fill="url(#o-wave-top)"/>
+      <path d="M 0 707 L 1000 707 L 1000 647 Q 850 657 700 637 T 400 647 T 100 632 L 0 637 Z" fill="url(#o-wave-mid)"/>
+      <path d="M 0 607 Q 250 587 500 607 T 1000 612" fill="none" stroke="#2a8aab" stroke-width="2" opacity="0.5"/>
+      <path d="M 0 592 Q 250 612 500 592 T 1000 597" fill="none" stroke="#3aa8d0" stroke-width="1.5" opacity="0.4"/>
+
+      <!-- ═══ إطار رفيع داخلي أنيق ═══ -->
+      <rect x="60" y="160" width="880" height="395" fill="none" stroke="#2a8aab" stroke-width="1" opacity="0.35" rx="4"/>
+      <rect x="50" y="150" width="900" height="415" fill="none" stroke="#3aa8d0" stroke-width="0.5" opacity="0.25" stroke-dasharray="3 3" rx="6"/>
+
+      <!-- ═══ فقاعات مائية متناثرة (يمين ويسار) ═══ -->
+      <g opacity="0.25" fill="#3aa8d0">
+        <circle cx="90" cy="280" r="22"/>
+        <circle cx="50" cy="240" r="11"/>
+        <circle cx="125" cy="240" r="8"/>
+        <circle cx="60" cy="320" r="6"/>
+      </g>
+      <g opacity="0.18" fill="#2a8aab">
+        <circle cx="90" cy="280" r="14"/>
+        <circle cx="50" cy="240" r="7"/>
+      </g>
+      <g opacity="0.25" fill="#3aa8d0">
+        <circle cx="910" cy="430" r="22"/>
+        <circle cx="950" cy="470" r="11"/>
+        <circle cx="875" cy="470" r="8"/>
+        <circle cx="940" cy="390" r="6"/>
+      </g>
+      <g opacity="0.18" fill="#2a8aab">
+        <circle cx="910" cy="430" r="14"/>
+        <circle cx="950" cy="470" r="7"/>
+      </g>
+
+      <!-- ═══ بادج دائري عصري (يمين علوي) ═══ -->
+      <g transform="translate(900, 105)">
+        <circle cx="0" cy="0" r="42" fill="url(#o-badge)" stroke="#fff" stroke-width="3"/>
+        <circle cx="0" cy="0" r="42" fill="none" stroke="#2a8aab" stroke-width="1" opacity="0.5"/>
+        <circle cx="0" cy="0" r="36" fill="none" stroke="#fff" stroke-width="0.8" opacity="0.7" stroke-dasharray="2 2"/>
+        <g fill="#fff">${star(0, -3, 14)}</g>
+        <text x="0" y="14" text-anchor="middle" fill="#fff" font-family="sans-serif" font-size="5" font-weight="bold" letter-spacing="1.5">STAR</text>
+      </g>
+
+      <!-- نقاط زخرفية على الأطراف -->
+      <g fill="#2a8aab" opacity="0.5">
+        <circle cx="500" cy="155" r="2"/>
+        <circle cx="500" cy="560" r="2"/>
       </g>`;
   } else if(key === 'joy'){
-    // 🌈 المرح: فقاعات ملوّنة + نجوم + قلوب (ابتدائي)
+    // 🌈 المرح الملوّن — قصاصات هندسية ابتدائية ملوّنة
     inner = `
-      <rect x="26" y="26" width="948" height="655" fill="none" stroke="${a2}" stroke-width="3" stroke-dasharray="10 7" opacity="0.35" rx="14"/>
-      <g opacity="0.14">
-        <circle cx="90" cy="100" r="28" fill="${a}"/><circle cx="150" cy="70" r="16" fill="${a2}"/>
-        <circle cx="910" cy="100" r="28" fill="${a2}"/><circle cx="850" cy="70" r="16" fill="${a}"/>
-        <circle cx="90" cy="607" r="26" fill="${a2}"/><circle cx="155" cy="637" r="15" fill="${a}"/>
-        <circle cx="910" cy="607" r="26" fill="${a}"/><circle cx="845" cy="637" r="15" fill="${a2}"/>
+      <defs>
+        <linearGradient id="j-rainbow" x1="0%" y1="0%" x2="100%" y2="0%">
+          <stop offset="0%" stop-color="#e76f51"/>
+          <stop offset="33%" stop-color="#f4a261"/>
+          <stop offset="66%" stop-color="#e9c46a"/>
+          <stop offset="100%" stop-color="#2a9d8f"/>
+        </linearGradient>
+      </defs>
+
+      <!-- خلفية كريمية وردية ناعمة -->
+      <rect x="0" y="0" width="1000" height="707" fill="#fffaf6"/>
+
+      <!-- ═══ قصاصات هندسية في الزاوية العلوية اليمنى ═══ -->
+      <g>
+        <circle cx="950" cy="50" r="60" fill="#f4a261" opacity="0.85"/>
+        <circle cx="900" cy="20" r="35" fill="#e76f51" opacity="0.9"/>
+        <path d="M 870 90 L 950 90 L 910 30 Z" fill="#e9c46a" opacity="0.85"/>
+        <circle cx="860" cy="40" r="14" fill="#2a9d8f" opacity="0.85"/>
+        <circle cx="820" cy="70" r="9" fill="#e76f51" opacity="0.7"/>
       </g>
-      <g opacity="0.16" fill="${a}">${star(160,200,11)}${star(840,200,11)}${star(130,500,9)}${star(870,500,9)}${star(500,75,8)}</g>
-      <g opacity="0.12">${flower(a2)}</g>`;
+
+      <!-- ═══ قصاصات في الزاوية السفلية اليسرى ═══ -->
+      <g>
+        <circle cx="50" cy="657" r="55" fill="#2a9d8f" opacity="0.85"/>
+        <circle cx="100" cy="687" r="32" fill="#e9c46a" opacity="0.9"/>
+        <path d="M 30 617 L 110 617 L 70 677 Z" fill="#e76f51" opacity="0.85"/>
+        <circle cx="140" cy="640" r="14" fill="#f4a261" opacity="0.85"/>
+        <circle cx="180" cy="670" r="9" fill="#2a9d8f" opacity="0.7"/>
+      </g>
+
+      <!-- ═══ زاوية علوية يسرى: مثلثات صغيرة ═══ -->
+      <g opacity="0.6">
+        <path d="M 30 30 L 80 30 L 55 65 Z" fill="#e76f51"/>
+        <path d="M 90 30 L 130 30 L 110 60 Z" fill="#f4a261"/>
+        <circle cx="160" cy="50" r="8" fill="#2a9d8f"/>
+        <circle cx="190" cy="35" r="5" fill="#e9c46a"/>
+      </g>
+
+      <!-- ═══ زاوية سفلية يمنى: نفس الستايل ═══ -->
+      <g opacity="0.6">
+        <path d="M 920 677 L 970 677 L 945 642 Z" fill="#2a9d8f"/>
+        <path d="M 870 677 L 910 677 L 890 647 Z" fill="#e9c46a"/>
+        <circle cx="840" cy="657" r="8" fill="#e76f51"/>
+        <circle cx="810" cy="672" r="5" fill="#f4a261"/>
+      </g>
+
+      <!-- ═══ confetti نقاط ملوّنة متناثرة (خفيفة بالخلفية) ═══ -->
+      <g opacity="0.4">
+        <circle cx="250" cy="120" r="4" fill="#e76f51"/>
+        <circle cx="500" cy="80" r="5" fill="#f4a261"/>
+        <circle cx="750" cy="150" r="4" fill="#2a9d8f"/>
+        <circle cx="300" cy="200" r="3" fill="#e9c46a"/>
+        <circle cx="700" cy="230" r="4" fill="#e76f51"/>
+        <circle cx="200" cy="500" r="4" fill="#f4a261"/>
+        <circle cx="500" cy="600" r="5" fill="#2a9d8f"/>
+        <circle cx="800" cy="540" r="4" fill="#e9c46a"/>
+        <circle cx="350" cy="630" r="3" fill="#e76f51"/>
+        <circle cx="650" cy="550" r="3" fill="#f4a261"/>
+      </g>
+
+      <!-- ═══ نجوم صغيرة ملوّنة ═══ -->
+      <g opacity="0.7">
+        <g fill="#e9c46a">${star(170, 230, 8)}</g>
+        <g fill="#e76f51">${star(830, 530, 8)}</g>
+        <g fill="#2a9d8f">${star(900, 250, 6)}</g>
+        <g fill="#f4a261">${star(150, 480, 6)}</g>
+      </g>
+
+      <!-- ═══ شريط قوس قزح في الأعلى ═══ -->
+      <rect x="200" y="710" width="600" height="0"/>
+      <path d="M 50 700 Q 500 690 950 700" fill="none" stroke="url(#j-rainbow)" stroke-width="3.5" opacity="0.7"/>
+      <path d="M 50 712 Q 500 702 950 712" fill="none" stroke="url(#j-rainbow)" stroke-width="2" opacity="0.5"/>
+
+      <!-- ═══ بادج قوس قزح (وسط-أعلى يمين) ═══ -->
+      <g transform="translate(900, 110)">
+        <circle cx="0" cy="0" r="38" fill="#fff" stroke="url(#j-rainbow)" stroke-width="4"/>
+        <circle cx="0" cy="0" r="32" fill="#fffaf6"/>
+        <text x="0" y="-2" text-anchor="middle" font-size="22">🌈</text>
+        <text x="0" y="15" text-anchor="middle" fill="#e76f51" font-family="sans-serif" font-size="5" font-weight="bold" letter-spacing="1">JOY</text>
+      </g>`;
   } else if(key === 'nature'){
-    // 🌿 الأخضر: أوراق + فروع + سعف نخيل
+    // 🌿 الأخضر السعودي — إطار سعف نخيل + زخرفة عربية تقليدية
     inner = `
-      <rect x="24" y="24" width="952" height="659" fill="none" stroke="${a}" stroke-width="1.5" opacity="0.35" rx="6"/>
-      <g opacity="0.13">${leaf(70,70,a,0)}${leaf(110,90,a2,40)}${leaf(50,110,a,-40)}</g>
-      <g opacity="0.13">${leaf(930,637,a,180)}${leaf(890,617,a2,220)}${leaf(950,597,a,140)}</g>
-      <g opacity="0.1">${leaf(930,90,a2,90)}${leaf(70,617,a,270)}</g>
-      <g opacity="0.1" fill="${a}">${star(180,350,7)}${star(820,350,7)}</g>
-      <path d="M 350 55 Q 500 38 650 55" fill="none" stroke="${a}" stroke-width="1.5" opacity="0.3"/>
-      <path d="M 350 652 Q 500 669 650 652" fill="none" stroke="${a}" stroke-width="1.5" opacity="0.3"/>`;
+      <defs>
+        <linearGradient id="n-palm" x1="0%" y1="0%" x2="100%" y2="0%">
+          <stop offset="0%" stop-color="#1a7a4a"/>
+          <stop offset="50%" stop-color="#2e9d5f"/>
+          <stop offset="100%" stop-color="#0d4429"/>
+        </linearGradient>
+        <radialGradient id="n-medal" cx="50%" cy="50%" r="60%">
+          <stop offset="0%" stop-color="#2e9d5f"/>
+          <stop offset="100%" stop-color="#0d4429"/>
+        </radialGradient>
+      </defs>
+
+      <!-- خلفية بيج خفيفة -->
+      <rect x="0" y="0" width="1000" height="707" fill="#f7faf3"/>
+
+      <!-- ═══ إطار سعف نخيل في الزوايا الأربع ═══ -->
+      <!-- زاوية علوية يمنى -->
+      <g transform="translate(960, 50)">
+        ${palmBranch('#1a7a4a', '#2e9d5f', 0)}
+      </g>
+      <g transform="translate(940, 70)">
+        ${palmBranch('#2e9d5f', '#1a7a4a', 15)}
+      </g>
+      <!-- زاوية علوية يسرى -->
+      <g transform="translate(40, 50) scale(-1, 1)">
+        ${palmBranch('#1a7a4a', '#2e9d5f', 0)}
+      </g>
+      <g transform="translate(60, 70) scale(-1, 1)">
+        ${palmBranch('#2e9d5f', '#1a7a4a', 15)}
+      </g>
+      <!-- زاوية سفلية يمنى -->
+      <g transform="translate(960, 657) scale(1, -1)">
+        ${palmBranch('#1a7a4a', '#2e9d5f', 0)}
+      </g>
+      <g transform="translate(940, 637) scale(1, -1)">
+        ${palmBranch('#2e9d5f', '#1a7a4a', 15)}
+      </g>
+      <!-- زاوية سفلية يسرى -->
+      <g transform="translate(40, 657) scale(-1, -1)">
+        ${palmBranch('#1a7a4a', '#2e9d5f', 0)}
+      </g>
+      <g transform="translate(60, 637) scale(-1, -1)">
+        ${palmBranch('#2e9d5f', '#1a7a4a', 15)}
+      </g>
+
+      <!-- ═══ نجمة ثمانية إسلامية في الزوايا (زخرفة عربية) ═══ -->
+      <g opacity="0.55">
+        ${islamicStar(85, 95, '#1a7a4a', 14)}
+        ${islamicStar(915, 95, '#1a7a4a', 14)}
+        ${islamicStar(85, 612, '#1a7a4a', 14)}
+        ${islamicStar(915, 612, '#1a7a4a', 14)}
+      </g>
+
+      <!-- ═══ إطار تركواز رفيع داخلي مع نقاط ═══ -->
+      <rect x="50" y="50" width="900" height="607" fill="none" stroke="#2e9d5f" stroke-width="2" opacity="0.7" rx="3"/>
+      <rect x="60" y="60" width="880" height="587" fill="none" stroke="#1a7a4a" stroke-width="0.8" opacity="0.5" stroke-dasharray="2 4"/>
+
+      <!-- ═══ زخرفة وسطية علوية وسفلية ═══ -->
+      <g transform="translate(500, 50)" opacity="0.85">
+        ${arabesqueOrnament('#1a7a4a', '#2e9d5f')}
+      </g>
+      <g transform="translate(500, 657) rotate(180)" opacity="0.85">
+        ${arabesqueOrnament('#1a7a4a', '#2e9d5f')}
+      </g>
+
+      <!-- ═══ ميدالية وطنية (سعفتان + نجمة) في الوسط الأعلى - فوق منطقة الشعار ═══ -->
+      <g transform="translate(900, 100)">
+        <!-- سعفتان متقاطعتان -->
+        <g opacity="0.9">
+          <path d="M -25 5 Q -15 -15 0 -20 Q -5 -10 -5 5 Q -15 12 -25 5 Z" fill="#1a7a4a"/>
+          <path d="M -22 8 Q -10 -2 5 -10" fill="none" stroke="#0d4429" stroke-width="0.8"/>
+          <path d="M 25 5 Q 15 -15 0 -20 Q 5 -10 5 5 Q 15 12 25 5 Z" fill="#1a7a4a"/>
+          <path d="M 22 8 Q 10 -2 -5 -10" fill="none" stroke="#0d4429" stroke-width="0.8"/>
+        </g>
+        <!-- الدائرة المركزية -->
+        <circle cx="0" cy="0" r="22" fill="url(#n-medal)" stroke="#2e9d5f" stroke-width="2"/>
+        <circle cx="0" cy="0" r="18" fill="none" stroke="#f7faf3" stroke-width="0.6" stroke-dasharray="2 2"/>
+        <!-- نجمة ذهبية صغيرة -->
+        <g fill="#e9c46a">${star(0, -2, 9)}</g>
+        <text x="0" y="11" text-anchor="middle" fill="#f7faf3" font-family="serif" font-size="4" font-weight="bold">★</text>
+      </g>
+
+      <!-- نقاط زخرفية على الإطار -->
+      <g fill="#1a7a4a" opacity="0.6">
+        <circle cx="50" cy="350" r="3"/>
+        <circle cx="950" cy="350" r="3"/>
+      </g>`;
   } else { // midnight
-    // ✨ الليلي: نجوم متلألئة + هلال + بريق
+    // ✨ الليلي الأنيق — سماء نجوم متلألئة بتدرّج عميق + هلال ذهبي + شهب
     inner = `
-      <rect x="30" y="30" width="940" height="647" fill="none" stroke="${a}" stroke-width="1.5" opacity="0.5" rx="4"/>
-      <g opacity="0.5" fill="${a}">
-        ${star(120,110,9)}${star(880,110,9)}${star(150,597,7)}${star(850,597,7)}
-        ${star(80,300,5)}${star(920,300,5)}${star(500,75,6)}${star(500,630,6)}
-        ${star(250,160,4)}${star(750,160,4)}${star(300,560,4)}${star(700,560,4)}
+      <defs>
+        <radialGradient id="m-sky" cx="50%" cy="50%" r="75%">
+          <stop offset="0%" stop-color="#2a3a52"/>
+          <stop offset="60%" stop-color="#1a2535"/>
+          <stop offset="100%" stop-color="#0a1320"/>
+        </radialGradient>
+        <radialGradient id="m-star-glow" cx="50%" cy="50%" r="50%">
+          <stop offset="0%" stop-color="#fff4cc" stop-opacity="0.9"/>
+          <stop offset="50%" stop-color="#f0b855" stop-opacity="0.4"/>
+          <stop offset="100%" stop-color="#f0b855" stop-opacity="0"/>
+        </radialGradient>
+        <radialGradient id="m-moon" cx="35%" cy="35%" r="65%">
+          <stop offset="0%" stop-color="#fff4cc"/>
+          <stop offset="60%" stop-color="#f0b855"/>
+          <stop offset="100%" stop-color="#d4a657"/>
+        </radialGradient>
+        <linearGradient id="m-streak" x1="0%" y1="0%" x2="100%" y2="100%">
+          <stop offset="0%" stop-color="#f0b855" stop-opacity="0"/>
+          <stop offset="60%" stop-color="#f0b855" stop-opacity="0.6"/>
+          <stop offset="100%" stop-color="#fff4cc" stop-opacity="1"/>
+        </linearGradient>
+      </defs>
+
+      <!-- خلفية السماء الليلية المتدرّجة -->
+      <rect x="0" y="0" width="1000" height="707" fill="url(#m-sky)"/>
+
+      <!-- ═══ نجوم خلفية صغيرة جداً (Milky Way) ═══ -->
+      <g fill="#fff" opacity="0.4">
+        <circle cx="80" cy="50" r="0.8"/><circle cx="150" cy="120" r="0.6"/><circle cx="220" cy="80" r="0.9"/>
+        <circle cx="320" cy="140" r="0.7"/><circle cx="400" cy="60" r="0.8"/><circle cx="450" cy="200" r="0.6"/>
+        <circle cx="550" cy="100" r="0.9"/><circle cx="620" cy="180" r="0.7"/><circle cx="700" cy="50" r="0.8"/>
+        <circle cx="780" cy="220" r="0.6"/><circle cx="860" cy="120" r="0.9"/><circle cx="940" cy="180" r="0.7"/>
+        <circle cx="100" cy="280" r="0.7"/><circle cx="200" cy="350" r="0.8"/><circle cx="280" cy="430" r="0.6"/>
+        <circle cx="350" cy="500" r="0.9"/><circle cx="450" cy="600" r="0.7"/><circle cx="550" cy="450" r="0.8"/>
+        <circle cx="650" cy="550" r="0.6"/><circle cx="750" cy="400" r="0.9"/><circle cx="850" cy="500" r="0.7"/>
+        <circle cx="920" cy="630" r="0.8"/><circle cx="60" cy="450" r="0.6"/><circle cx="120" cy="550" r="0.9"/>
+        <circle cx="170" cy="620" r="0.7"/><circle cx="250" cy="660" r="0.6"/><circle cx="500" cy="660" r="0.8"/>
+        <circle cx="600" cy="680" r="0.7"/><circle cx="900" cy="280" r="0.9"/><circle cx="50" cy="350" r="0.7"/>
       </g>
-      <g opacity="0.25" fill="${a2}">
-        ${star(190,250,3)}${star(810,250,3)}${star(140,450,3)}${star(860,450,3)}${star(400,120,3)}${star(600,120,3)}
+
+      <!-- ═══ هالة حول الهلال الكبير ═══ -->
+      <circle cx="120" cy="120" r="80" fill="url(#m-star-glow)" opacity="0.4"/>
+
+      <!-- ═══ هلال ذهبي كبير (يسار-علوي) ═══ -->
+      <g transform="translate(120, 120)">
+        <circle cx="0" cy="0" r="38" fill="url(#m-moon)"/>
+        <circle cx="11" cy="-5" r="35" fill="url(#m-sky)"/>
+        <!-- بريق على الهلال -->
+        <ellipse cx="-12" cy="-15" rx="6" ry="3" fill="#fff" opacity="0.5" transform="rotate(-30 -12 -15)"/>
       </g>
-      <g opacity="0.3"><circle cx="910" cy="90" r="20" fill="none" stroke="${a}" stroke-width="2"/><circle cx="918" cy="86" r="17" fill="${d.dark?'#0f1a28':'#fff'}"/></g>`;
+
+      <!-- ═══ نجوم متلألئة كبيرة (الأكبر مع توهج) ═══ -->
+      <!-- نجمة رئيسية -->
+      <g transform="translate(870, 580)">
+        <circle r="40" fill="url(#m-star-glow)" opacity="0.6"/>
+        <g fill="#fff4cc">${star(0, 0, 16)}</g>
+        <g fill="#f0b855">${star(0, 0, 8)}</g>
+      </g>
+      <!-- نجمة وسطى -->
+      <g transform="translate(220, 580)">
+        <circle r="22" fill="url(#m-star-glow)" opacity="0.5"/>
+        <g fill="#fff4cc">${star(0, 0, 9)}</g>
+      </g>
+      <!-- نجوم متوسطة الحجم -->
+      <g fill="#f0b855" opacity="0.85">
+        ${star(450, 100, 7)}${star(680, 130, 6)}${star(550, 230, 7)}
+        ${star(800, 280, 6)}${star(380, 660, 6)}${star(750, 660, 7)}
+      </g>
+      <g fill="#fff4cc" opacity="0.7">
+        ${star(450, 100, 3)}${star(680, 130, 3)}${star(550, 230, 3)}
+        ${star(800, 280, 3)}
+      </g>
+
+      <!-- ═══ شهب (خطوط منحنية بدُم لامعة) ═══ -->
+      <g opacity="0.7">
+        <!-- شهاب 1 -->
+        <path d="M 720 60 Q 760 100 800 140" stroke="url(#m-streak)" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+        <g fill="#fff4cc"><circle cx="800" cy="140" r="3"/></g>
+        <!-- شهاب 2 -->
+        <path d="M 300 350 Q 340 390 380 430" stroke="url(#m-streak)" stroke-width="2" fill="none" stroke-linecap="round" opacity="0.6"/>
+        <g fill="#fff4cc"><circle cx="380" cy="430" r="2.5"/></g>
+      </g>
+
+      <!-- ═══ إطار ذهبي رفيع داخلي ═══ -->
+      <rect x="35" y="35" width="930" height="637" fill="none" stroke="#d4a657" stroke-width="1.5" opacity="0.7" rx="4"/>
+      <rect x="45" y="45" width="910" height="617" fill="none" stroke="#f0b855" stroke-width="0.5" opacity="0.5" stroke-dasharray="3 5"/>
+
+      <!-- زخارف ذهبية في الزوايا (مثلثات صغيرة فاخرة) -->
+      <g fill="#f0b855" opacity="0.8">
+        <path d="M 35 35 L 75 35 L 35 75 Z" opacity="0.3"/>
+        <path d="M 965 35 L 925 35 L 965 75 Z" opacity="0.3"/>
+        <path d="M 35 672 L 75 672 L 35 632 Z" opacity="0.3"/>
+        <path d="M 965 672 L 925 672 L 965 632 Z" opacity="0.3"/>
+      </g>
+
+      <!-- نقاط زخرفية ذهبية على الإطار -->
+      <g fill="#f0b855" opacity="0.85">
+        <circle cx="500" cy="35" r="2.5"/>
+        <circle cx="500" cy="672" r="2.5"/>
+        <circle cx="35" cy="350" r="2.5"/>
+        <circle cx="965" cy="350" r="2.5"/>
+      </g>`;
   }
 
   return `
@@ -870,6 +1273,75 @@ function flower(color){
     petals += `<ellipse cx="${cx.toFixed(1)}" cy="${cy.toFixed(1)}" rx="16" ry="9" fill="${color}" transform="rotate(${i*60} ${cx.toFixed(1)} ${cy.toFixed(1)})"/>`;
   }
   return `${petals}<circle cx="0" cy="0" r="11" fill="${color}"/>`;
+}
+
+// 🏅 إطار ميدالية مسنّن (أسنان زهرية حول دائرة)
+function medallionOuter(cx, cy, r, colorLight, colorDark){
+  let teeth = '';
+  const n = 16;
+  for(let i=0; i<n; i++){
+    const ang = (i * 360 / n) * Math.PI / 180;
+    const x1 = cx + Math.cos(ang) * r;
+    const y1 = cy + Math.sin(ang) * r;
+    const x2 = cx + Math.cos(ang) * (r + 7);
+    const y2 = cy + Math.sin(ang) * (r + 7);
+    const angN = ((i + 0.5) * 360 / n) * Math.PI / 180;
+    const angP = ((i - 0.5) * 360 / n) * Math.PI / 180;
+    const xN = cx + Math.cos(angN) * r;
+    const yN = cy + Math.sin(angN) * r;
+    const xP = cx + Math.cos(angP) * r;
+    const yP = cy + Math.sin(angP) * r;
+    teeth += `<path d="M ${xP.toFixed(1)} ${yP.toFixed(1)} L ${x2.toFixed(1)} ${y2.toFixed(1)} L ${xN.toFixed(1)} ${yN.toFixed(1)} Z" fill="${colorLight}" stroke="${colorDark}" stroke-width="0.6"/>`;
+  }
+  return teeth;
+}
+
+// 🌴 سعفة نخيل مفصّلة (للأخضر السعودي)
+function palmBranch(color1, color2, rot){
+  return `<g transform="rotate(${rot})">
+    <!-- جذع السعفة -->
+    <path d="M 0 0 Q -40 -25 -80 -45" stroke="${color1}" stroke-width="2" fill="none" stroke-linecap="round"/>
+    <!-- وريقات السعفة (متعددة) -->
+    <ellipse cx="-15" cy="-12" rx="14" ry="4" fill="${color1}" transform="rotate(-15 -15 -12)" opacity="0.85"/>
+    <ellipse cx="-30" cy="-20" rx="16" ry="4.5" fill="${color2}" transform="rotate(-20 -30 -20)" opacity="0.85"/>
+    <ellipse cx="-45" cy="-28" rx="18" ry="5" fill="${color1}" transform="rotate(-25 -45 -28)" opacity="0.85"/>
+    <ellipse cx="-60" cy="-35" rx="20" ry="5" fill="${color2}" transform="rotate(-28 -60 -35)" opacity="0.85"/>
+    <ellipse cx="-75" cy="-42" rx="18" ry="4.5" fill="${color1}" transform="rotate(-32 -75 -42)" opacity="0.85"/>
+    <!-- وريقات الجانب الآخر -->
+    <ellipse cx="-15" cy="2" rx="14" ry="4" fill="${color2}" transform="rotate(15 -15 2)" opacity="0.7"/>
+    <ellipse cx="-30" cy="-5" rx="16" ry="4.5" fill="${color1}" transform="rotate(10 -30 -5)" opacity="0.7"/>
+    <ellipse cx="-45" cy="-12" rx="18" ry="5" fill="${color2}" transform="rotate(5 -45 -12)" opacity="0.7"/>
+    <ellipse cx="-60" cy="-20" rx="20" ry="5" fill="${color1}" transform="rotate(0 -60 -20)" opacity="0.7"/>
+    <ellipse cx="-75" cy="-28" rx="18" ry="4.5" fill="${color2}" transform="rotate(-5 -75 -28)" opacity="0.7"/>
+  </g>`;
+}
+
+// ✦ نجمة ثمانية إسلامية (للأخضر السعودي)
+function islamicStar(cx, cy, color, size){
+  // نجمة 8 رؤوس = مربع + مربع آخر مدار 45°
+  const half = size;
+  return `<g transform="translate(${cx},${cy})">
+    <rect x="${-half}" y="${-half}" width="${size*2}" height="${size*2}" fill="${color}" opacity="0.7"/>
+    <rect x="${-half}" y="${-half}" width="${size*2}" height="${size*2}" fill="${color}" opacity="0.7" transform="rotate(45)"/>
+    <circle cx="0" cy="0" r="${size*0.4}" fill="${color}"/>
+  </g>`;
+}
+
+// 🕌 زخرفة عربية أفقية (للأخضر السعودي - وسط أعلى/أسفل)
+function arabesqueOrnament(color1, color2){
+  return `<g>
+    <line x1="-130" y1="0" x2="-40" y2="0" stroke="${color1}" stroke-width="1" opacity="0.7"/>
+    <line x1="40" y1="0" x2="130" y2="0" stroke="${color1}" stroke-width="1" opacity="0.7"/>
+    <!-- معيّن مركزي -->
+    <path d="M 0 -12 L 18 0 L 0 12 L -18 0 Z" fill="${color1}" opacity="0.9"/>
+    <path d="M 0 -7 L 10 0 L 0 7 L -10 0 Z" fill="${color2}" opacity="0.95"/>
+    <circle cx="0" cy="0" r="3" fill="${color1}"/>
+    <!-- نقاط جانبية -->
+    <circle cx="-26" cy="0" r="2.5" fill="${color2}"/>
+    <circle cx="26" cy="0" r="2.5" fill="${color2}"/>
+    <circle cx="-35" cy="0" r="1.5" fill="${color1}" opacity="0.7"/>
+    <circle cx="35" cy="0" r="1.5" fill="${color1}" opacity="0.7"/>
+  </g>`;
 }
 
 // نجمة SVG
