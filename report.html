@@ -11,6 +11,96 @@
 <style>
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
 
+/* ═══════════════════════════════════════════════════════
+   🎨 نظام الثيمات (5 ثيمات)
+   ═══════════════════════════════════════════════════════ */
+:root {
+  /* الثيم الافتراضي: كحلي رسمي */
+  --primary: #0b3946;
+  --primary-light: #1a5a6a;
+  --primary-dark: #062530;
+  --secondary: #2c979d;
+  --secondary-light: #3fb6a8;
+  --accent: #c9a45b;
+  --success: #3ba87e;
+  --paper-tint: #e8e9e3;
+  --border-soft: #9ecece;
+  --hero-grad: linear-gradient(135deg, #0b3946 0%, #2c979d 50%, #3ba87e 100%);
+  --tbar-grad: linear-gradient(135deg, #2a9d8f, #2c979d);
+  --tbar-strong: linear-gradient(135deg, #3fb6a8, #2a9d8f, #2c979d);
+  --stripe-grad: linear-gradient(to left, #3ba87e, #2a9d8f, #2c979d);
+  --footer-grad: linear-gradient(to left, #2581c0, #359ca5, #47b97e);
+  --footer-bar: #35989e;
+}
+[data-theme="gold"] {
+  --primary: #5d3e1a;
+  --primary-light: #8b6428;
+  --primary-dark: #3a2810;
+  --secondary: #c9a45b;
+  --secondary-light: #e8c976;
+  --accent: #8b6914;
+  --success: #c9a45b;
+  --paper-tint: #f7ecd5;
+  --border-soft: #d4be8e;
+  --hero-grad: linear-gradient(135deg, #5d3e1a 0%, #8b6428 40%, #c9a45b 100%);
+  --tbar-grad: linear-gradient(135deg, #8b6428, #c9a45b);
+  --tbar-strong: linear-gradient(135deg, #c9a45b, #8b6428, #5d3e1a);
+  --stripe-grad: linear-gradient(to left, #c9a45b, #8b6428, #5d3e1a);
+  --footer-grad: linear-gradient(to left, #5d3e1a, #8b6428, #c9a45b);
+  --footer-bar: #8b6428;
+}
+[data-theme="green"] {
+  --primary: #1a4d2e;
+  --primary-light: #2e7d4f;
+  --primary-dark: #0d2e1a;
+  --secondary: #2e9d5f;
+  --secondary-light: #4ec48a;
+  --accent: #c9a45b;
+  --success: #2e9d5f;
+  --paper-tint: #e8f5e9;
+  --border-soft: #a8d4b5;
+  --hero-grad: linear-gradient(135deg, #1a4d2e 0%, #2e9d5f 50%, #4ec48a 100%);
+  --tbar-grad: linear-gradient(135deg, #2e7d4f, #2e9d5f);
+  --tbar-strong: linear-gradient(135deg, #4ec48a, #2e9d5f, #1a4d2e);
+  --stripe-grad: linear-gradient(to left, #4ec48a, #2e9d5f, #1a4d2e);
+  --footer-grad: linear-gradient(to left, #1a4d2e, #2e7d4f, #4ec48a);
+  --footer-bar: #2e7d4f;
+}
+[data-theme="purple"] {
+  --primary: #4a1a4d;
+  --primary-light: #7a3a8d;
+  --primary-dark: #2e0d30;
+  --secondary: #a55ab8;
+  --secondary-light: #c685d6;
+  --accent: #c9a45b;
+  --success: #a55ab8;
+  --paper-tint: #f4e8f7;
+  --border-soft: #d4b5da;
+  --hero-grad: linear-gradient(135deg, #4a1a4d 0%, #7a3a8d 50%, #a55ab8 100%);
+  --tbar-grad: linear-gradient(135deg, #7a3a8d, #a55ab8);
+  --tbar-strong: linear-gradient(135deg, #c685d6, #a55ab8, #4a1a4d);
+  --stripe-grad: linear-gradient(to left, #c685d6, #a55ab8, #4a1a4d);
+  --footer-grad: linear-gradient(to left, #4a1a4d, #7a3a8d, #c685d6);
+  --footer-bar: #7a3a8d;
+}
+[data-theme="ocean"] {
+  --primary: #0d4d5d;
+  --primary-light: #1a7a8a;
+  --primary-dark: #052e3a;
+  --secondary: #3aa8d0;
+  --secondary-light: #5bc0de;
+  --accent: #f4d27f;
+  --success: #3aa8d0;
+  --paper-tint: #e6f4f7;
+  --border-soft: #a8d4dc;
+  --hero-grad: linear-gradient(135deg, #0d4d5d 0%, #1a7a8a 40%, #3aa8d0 100%);
+  --tbar-grad: linear-gradient(135deg, #1a7a8a, #3aa8d0);
+  --tbar-strong: linear-gradient(135deg, #5bc0de, #3aa8d0, #0d4d5d);
+  --stripe-grad: linear-gradient(to left, #5bc0de, #3aa8d0, #0d4d5d);
+  --footer-grad: linear-gradient(to left, #052e3a, #1a7a8a, #5bc0de);
+  --footer-bar: #1a7a8a;
+}
+
 html,body{
 font-family:'Tajawal','Tahoma','Arial',sans-serif;
 background:#e8e9e3;
@@ -30,7 +120,7 @@ overflow:hidden;
 
 /* ═══ HEADER ═══ */
 .hdr{
-background:linear-gradient(135deg,#0b3946,#0b3946,#0b3946);
+background:var(--primary);
 padding:10px 14px;
 display:flex;
 align-items:center;
@@ -43,7 +133,7 @@ font-weight:900;
 color:#fff;
 line-height:1.5;
 }
-.hdr-text h2 span{color:#3fb6a8;}
+.hdr-text h2 span{color:var(--secondary-light);}
 
 /* شعار وزارة التعليم الرسمي */
 .moe{
@@ -61,11 +151,11 @@ display:block;
 filter:brightness(0) invert(1);
 }
 
-.stripe{height:5px;background:linear-gradient(to left,#3ba87e,#2a9d8f,#2c979d);}
+.stripe{height:5px;background:var(--stripe-grad);}
 
 /* ═══ TITLE BARS ═══ */
 .tbar{
-background:linear-gradient(135deg,#2a9d8f,#2c979d);
+background:var(--tbar-grad);
 margin:8px 10px 3px;
 border-radius:4px;
 padding:7px 12px;
@@ -85,7 +175,7 @@ border-radius:4px;
 padding:5px 12px;
 font-size:0.72rem;
 font-weight:700;
-color:#2c979d;
+color:var(--secondary);
 text-align:center;
 min-height:22px;
 outline:none;
@@ -117,7 +207,7 @@ overflow:hidden;
 
 /* ═══ PHOTOS PANEL ═══ */
 .ppanel{
-border:1.5px solid #9ecece;
+border:1.5px solid var(--border-soft);
 border-radius:8px;
 overflow:hidden;
 background:#e8e9e3;
@@ -127,8 +217,8 @@ background:rgba(255,255,255,.28);
 padding:4px 8px;
 font-size:0.62rem;
 font-weight:700;
-color:#2c979d;
-border-bottom:1px solid #9ecece;
+color:var(--secondary);
+border-bottom:1px solid var(--border-soft);
 display:flex;
 align-items:center;
 gap:5px;
@@ -137,7 +227,7 @@ justify-content:center;
 .phdr-dot{
 width:14px;height:14px;
 border-radius:50%;
-background:linear-gradient(135deg,#2a9d8f,#2c979d);
+background:var(--tbar-grad);
 }
 .pinner{padding:5px;display:flex;flex-direction:column;gap:4px;}
 
@@ -146,7 +236,7 @@ width:100%;
 padding-top:62%;
 position:relative;
 border-radius:6px;
-background:linear-gradient(135deg,#3fb6a8,#2a9d8f,#2c979d);
+background:var(--tbar-strong);
 cursor:pointer;
 overflow:hidden;
 }
@@ -190,16 +280,16 @@ animation:sp .6s linear infinite;
 }
 @keyframes sp{to{transform:translate(-50%,-50%) rotate(360deg);}}
 
-.princ-wrap{padding:5px 6px 6px;border-top:1px solid #9ecece;}
+.princ-wrap{padding:5px 6px 6px;border-top:1px solid var(--border-soft);}
 .princ-lbl{
 text-align:center;
 font-size:0.58rem;
 font-weight:700;
-color:#2c979d;
+color:var(--secondary);
 margin-bottom:3px;
 }
 .princ-box{
-border:1px solid #9ecece;
+border:1px solid var(--border-soft);
 border-radius:4px;
 background:#fff;
 padding:4px 6px;
@@ -209,17 +299,17 @@ min-height:22px;
 border:none;outline:none;
 font-family:'Tajawal','Tahoma','Arial',sans-serif;
 font-size:0.62rem;
-color:#0b3946;
+color:var(--primary);
 background:transparent;
 text-align:center;
 width:100%;
-caret-color:#2a9d8f;
+caret-color:var(--secondary);
 }
 .princ-box input::placeholder{color:rgba(26,62,78,.3);}
 
 /* ═══ FIELD ROWS ═══ */
 .fr{
-border:1px solid #9ecece;
+border:1px solid var(--border-soft);
 border-radius:4px;
 padding:4px 6px;
 display:flex;
@@ -235,7 +325,7 @@ overflow:hidden;
 .fl{
 font-size:0.57rem;
 font-weight:700;
-color:#0b3946;
+color:var(--primary);
 white-space:nowrap;
 flex-shrink:0;
 }
@@ -243,13 +333,13 @@ flex-shrink:0;
 border:none;outline:none;
 font-family:'Tajawal','Tahoma','Arial',sans-serif;
 font-size:0.6rem;
-color:#0b3946;
+color:var(--primary);
 background:transparent;
 text-align:right;
 flex:1;
 width:0;
 min-width:0;
-caret-color:#2a9d8f;
+caret-color:var(--secondary);
 }
 .fi::placeholder{color:rgba(26,62,78,.28);}
 
@@ -257,7 +347,7 @@ caret-color:#2a9d8f;
 display:none;
 font-family:'Tajawal','Tahoma','Arial',sans-serif;
 font-size:0.6rem;
-color:#0b3946;
+color:var(--primary);
 flex:1;
 text-align:right;
 direction:rtl;
@@ -267,7 +357,7 @@ font-feature-settings:"liga","calt","kern";
 }
 
 .fr-tall{
-border:1px solid #9ecece;
+border:1px solid var(--border-soft);
 border-radius:4px;
 padding:4px 6px;
 display:flex;
@@ -282,14 +372,14 @@ width:100%;
 border:none;outline:none;
 font-family:'Tajawal','Tahoma','Arial',sans-serif;
 font-size:0.6rem;
-color:#0b3946;
+color:var(--primary);
 background:transparent;
 text-align:right;
 width:100%;
 resize:none;
 min-height:44px;
 line-height:1.55;
-caret-color:#2a9d8f;
+caret-color:var(--secondary);
 }
 .fr-tall textarea::placeholder{color:rgba(26,62,78,.28);}
 
@@ -297,7 +387,7 @@ caret-color:#2a9d8f;
 display:none;
 font-family:'Tajawal','Tahoma','Arial',sans-serif;
 font-size:0.6rem;
-color:#0b3946;
+color:var(--primary);
 white-space:pre-wrap;
 word-wrap:break-word;
 overflow-wrap:break-word;
@@ -312,7 +402,7 @@ font-feature-settings:"liga","calt","kern";
 font-variant-ligatures:common-ligatures contextual;
 }
 
-.footer-stripe{height:7px;background:linear-gradient(to left,#3ba87e,#2a9d8f,#2c979d,#0b3946);}
+.footer-stripe{height:7px;background:var(--stripe-grad);}
 
 /* ═══ ACTION BAR ═══ */
 .action-bar{
@@ -335,10 +425,10 @@ font-size:0.85rem;
 transition:transform .15s,opacity .15s;
 }
 .btn:active{transform:scale(.97);opacity:.85;}
-.btn-teal{background:linear-gradient(135deg,#2a9d8f,#2c979d);color:#fff;}
+.btn-teal{background:var(--tbar-grad);color:#fff;}
 .btn-gray{
 background:rgba(26,62,78,.1);
-color:#0b3946;
+color:var(--primary);
 border:1px solid rgba(26,62,78,.15);
 }
 
@@ -349,7 +439,7 @@ bottom:75px;
 left:50%;
 transform:translateX(-50%) translateY(16px);
 background:rgba(26,62,78,.95);
-border:1px solid #2a9d8f;
+border:1px solid var(--secondary);
 color:#fff;
 padding:7px 18px;
 border-radius:30px;
@@ -375,7 +465,7 @@ justify-content:center;
 #modal-ov.show{display:flex;}
 .mbox{
 background:#fff;
-border:2px solid #2a9d8f;
+border:2px solid var(--secondary);
 border-radius:12px;
 padding:20px 16px;
 text-align:center;
@@ -383,7 +473,7 @@ max-width:260px;
 width:88%;
 font-family:'Tajawal','Tahoma','Arial',sans-serif;
 }
-.mbox p{margin:0 0 14px;font-size:0.85rem;color:#0b3946;line-height:1.5;}
+.mbox p{margin:0 0 14px;font-size:0.85rem;color:var(--primary);line-height:1.5;}
 .mbox-btns{display:flex;gap:8px;}
 .mbox-btns .btn{padding:10px;font-size:0.78rem;}
 
@@ -399,7 +489,7 @@ display:inline-flex;
 align-items:center;
 justify-content:center;
 gap:3px;
-background:#0b3946;
+background:var(--primary);
 color:#fff;
 border:1.5px solid rgba(255,255,255,0.2);
 border-radius:14px;
@@ -414,6 +504,89 @@ transition:all 0.2s;
 .action-bar .btn-lang:active{transform:scale(0.95);}
 .action-bar .btn-lang .globe{font-size:1rem;line-height:1;}
 .action-bar .btn-lang .lang-code{font-size:0.65rem;line-height:1;letter-spacing:0.5px;}
+
+/* ═══ زر الثيم في شريط الأدوات ═══ */
+.action-bar .btn-theme{
+  background:#fff;
+  color:var(--primary);
+  border:1.5px solid var(--border-soft);
+  padding:7px 12px;
+  border-radius:10px;
+  display:inline-flex;
+  align-items:center;
+  gap:6px;
+  font-weight:800;
+  font-size:0.78rem;
+  cursor:pointer;
+  transition:all 0.15s;
+  flex-shrink:0;
+}
+.action-bar .btn-theme:hover{background:var(--paper-tint);}
+.action-bar .btn-theme .theme-swatch{
+  width:16px; height:16px;
+  border-radius:50%;
+  background:var(--hero-grad);
+  border:2px solid #fff;
+  box-shadow:0 1px 3px rgba(0,0,0,0.25);
+  flex-shrink:0;
+}
+
+/* ═══ قائمة الثيمات المنبثقة ═══ */
+.theme-menu{
+  position:fixed;
+  bottom:78px;
+  left:50%;
+  transform:translateX(-50%);
+  background:#fff;
+  border-radius:14px;
+  box-shadow:0 12px 40px rgba(0,0,0,0.35);
+  padding:10px;
+  display:none;
+  flex-direction:column;
+  gap:4px;
+  min-width:230px;
+  z-index:9999;
+}
+.theme-menu.open{display:flex;}
+.theme-menu-title{
+  font-weight:800;
+  color:var(--primary);
+  font-size:0.88rem;
+  text-align:center;
+  padding:6px 0 8px;
+  border-bottom:1.5px solid #eee;
+  margin-bottom:4px;
+}
+.theme-option{
+  display:flex; align-items:center; gap:10px;
+  padding:8px 10px;
+  border:none;
+  background:transparent;
+  border-radius:10px;
+  cursor:pointer;
+  font:inherit;
+  font-weight:700;
+  font-size:0.85rem;
+  color:#333;
+  text-align:right;
+  transition:all 0.15s;
+}
+.theme-option:hover{background:#f0f0f0;}
+.theme-option.active{background:var(--paper-tint); color:var(--primary);}
+.theme-option .swatch-mini{
+  width:22px; height:22px;
+  border-radius:50%;
+  border:2px solid #fff;
+  box-shadow:0 1px 3px rgba(0,0,0,0.15);
+  flex-shrink:0;
+}
+.theme-option .check{
+  margin-right:auto;
+  color:var(--secondary);
+  font-weight:900;
+  opacity:0;
+}
+.theme-option.active .check{opacity:1;}
 
 
 /* قائمة التصدير - تم استبدالها بـ bottom sheet */
@@ -470,7 +643,7 @@ transition:all 0.2s;
   text-align:center;
   font-size:0.95rem;
   font-weight:900;
-  color:#0b3946;
+  color:var(--primary);
   padding:14px 16px 8px;
   font-family:inherit;
 }
@@ -488,7 +661,7 @@ transition:all 0.2s;
   font-family:inherit;
   font-size:0.95rem;
   font-weight:700;
-  color:#0b3946;
+  color:var(--primary);
   border-bottom:1px solid rgba(0,0,0,0.06);
 }
 .export-option:last-child{border-bottom:none;}
@@ -506,9 +679,9 @@ transition:all 0.2s;
   color:#fff;
   box-shadow:0 4px 10px rgba(0,0,0,0.15);
 }
-.export-option .ico.png{background:linear-gradient(135deg,#2a9d8f,#2c979d);}
+.export-option .ico.png{background:var(--tbar-grad);}
 .export-option .ico.pdf{background:linear-gradient(135deg,#d32f2f,#b71c1c);}
-.export-option .ico.print{background:linear-gradient(135deg,#0b3946,#2c979d);}
+.export-option .ico.print{background:linear-gradient(135deg,var(--primary),var(--secondary));}
 .export-option .ico.share{background:linear-gradient(135deg,#16a34a,#15803d);}
 .export-option .opt-text{flex:1;}
 .export-option .opt-title{
@@ -552,7 +725,7 @@ transition:all 0.2s;
 /* ═══ شريط هوية وزارة التعليم (الموحّد) ═══ */
 .moe-band{
   position:relative;
-  background:linear-gradient(135deg, #062530 0%, #0b3946 55%, #062530 100%);
+  background:linear-gradient(135deg, var(--primary-dark) 0%, var(--primary) 55%, var(--primary-dark) 100%);
   padding:14px 22px;
   margin-bottom:0;
   display:flex; align-items:center; gap:18px;
@@ -615,7 +788,7 @@ transition:all 0.2s;
 /* 🆕 شريط اسم المدرسة تحت الترويسة */
 .moe-school-band{
   position:relative;
-  background:#062530;
+  background:var(--primary-dark);
   padding:9px 24px;
   margin-bottom:10px;
   text-align:center;
@@ -645,7 +818,7 @@ transition:all 0.2s;
 /* ═══ فوتر الهوية ═══ */
 .moe-footer-band{
   position:relative;
-  background:linear-gradient(to left, #2581c0, #359ca5, #47b97e);
+  background:var(--footer-grad);
   border-radius:18px 18px 0 0;
   padding:12px 18px;
   margin-top:14px;
@@ -653,7 +826,7 @@ transition:all 0.2s;
 }
 .moe-footer-band::before{
   content:''; position:absolute; bottom:0; left:0; right:0; height:3px;
-  background:#35989e;
+  background:var(--footer-bar);
 }
 .moe-footer-content{
   display:flex; align-items:center; justify-content:center;
@@ -800,11 +973,45 @@ transition:all 0.2s;
 
 <div class="action-bar">
   <button class="btn btn-gray" onclick="confirmClear()" data-i18n="btnClear">تفريغ</button>
+  <button class="btn btn-theme" onclick="toggleThemeMenu(event)" title="اختر الثيم">
+    <span class="theme-swatch"></span>
+    <span>الثيم</span>
+  </button>
   <button class="btn btn-lang" onclick="toggleLang()" aria-label="Switch language" title="Switch language">
     <span class="globe">🌐</span>
     <span class="lang-code" id="langCode">EN</span>
   </button>
   <div class="export-menu-wrap"><button class="btn btn-teal" onclick="toggleExportMenu(event)">⬇ <span data-i18n="btnDownload">تحميل التقرير</span></button></div>
+</div>
+
+<!-- ═══ قائمة الثيمات ═══ -->
+<div class="theme-menu" id="themeMenu">
+  <div class="theme-menu-title">🎨 اختر الثيم</div>
+  <button class="theme-option active" data-theme="" onclick="setTheme('')">
+    <span class="swatch-mini" style="background:linear-gradient(135deg,#0b3946,#2c979d,#3ba87e)"></span>
+    <span>رسمي كحلي</span>
+    <span class="check">✓</span>
+  </button>
+  <button class="theme-option" data-theme="gold" onclick="setTheme('gold')">
+    <span class="swatch-mini" style="background:linear-gradient(135deg,#5d3e1a,#8b6428,#c9a45b)"></span>
+    <span>ذهبي فاخر</span>
+    <span class="check">✓</span>
+  </button>
+  <button class="theme-option" data-theme="green" onclick="setTheme('green')">
+    <span class="swatch-mini" style="background:linear-gradient(135deg,#1a4d2e,#2e9d5f,#4ec48a)"></span>
+    <span>أخضر سعودي</span>
+    <span class="check">✓</span>
+  </button>
+  <button class="theme-option" data-theme="purple" onclick="setTheme('purple')">
+    <span class="swatch-mini" style="background:linear-gradient(135deg,#4a1a4d,#7a3a8d,#a55ab8)"></span>
+    <span>بنفسجي أنيق</span>
+    <span class="check">✓</span>
+  </button>
+  <button class="theme-option" data-theme="ocean" onclick="setTheme('ocean')">
+    <span class="swatch-mini" style="background:linear-gradient(135deg,#0d4d5d,#1a7a8a,#3aa8d0)"></span>
+    <span>محيطي عصري</span>
+    <span class="check">✓</span>
+  </button>
 </div>
 
 <div id="toast"></div>
@@ -1403,13 +1610,15 @@ async function exportAsPDFv2(){
     }
     await new Promise(r => setTimeout(r, 400));
     
-    // ═══ التقاط الصفحة ═══
+    // ═══ التقاط الصفحة بجودة طباعة احترافية ═══
     const canvas = await html2canvas(page, {
-      backgroundColor: '#fff',
-      scale: 2.5,
+      backgroundColor: '#ffffff',
+      scale: 3,                          // ⬆ رفع من 2.5 إلى 3 → ~300 DPI للنصوص الحادة
       useCORS: true,
       logging: false,
       allowTaint: true,
+      imageTimeout: 0,
+      removeContainer: true,
       width: page.offsetWidth,
       height: page.offsetHeight,
       windowWidth: page.offsetWidth,
@@ -1420,27 +1629,35 @@ async function exportAsPDFv2(){
           * {
             font-family: 'Cairo','Tajawal','Arial Unicode MS','Tahoma',Arial,sans-serif !important;
             letter-spacing: 0 !important;
-            text-rendering: optimizeLegibility !important;
+            text-rendering: geometricPrecision !important;
+            -webkit-font-smoothing: antialiased !important;
+            -moz-osx-font-smoothing: grayscale !important;
             -webkit-font-feature-settings: "kern" 1, "liga" 1, "calt" 1, "rlig" 1 !important;
             font-feature-settings: "kern" 1, "liga" 1, "calt" 1, "rlig" 1 !important;
             font-kerning: normal !important;
+            -webkit-print-color-adjust: exact !important;
+            print-color-adjust: exact !important;
+            color-adjust: exact !important;
           }
+          img { image-rendering: -webkit-optimize-contrast !important; image-rendering: crisp-edges !important; }
         `;
         doc.head.appendChild(style);
       }
     });
     
-    // ═══ إنشاء PDF بحجم A4 ═══
+    // ═══ إنشاء PDF بحجم A4 بجودة عالية بدون ضغط مفقود ═══
     const { jsPDF } = window.jspdf;
     const pdf = new jsPDF({
       orientation: 'portrait',
       unit: 'mm',
       format: 'a4',
-      compress: true
+      compress: true,
+      precision: 16,                     // ⬆ دقة أعلى
+      hotfixes: ['px_scaling']
     });
     
     const pdfWidth = 210, pdfHeight = 297;
-    const marginX = 8, marginY = 8;
+    const marginX = 12, marginY = 12;    // ⬆ هوامش 12mm (معيار الطباعة الاحترافية)
     const contentWidth = pdfWidth - (marginX * 2);
     const contentHeight = pdfHeight - (marginY * 2);
 
@@ -1456,20 +1673,32 @@ async function exportAsPDFv2(){
     }
 
     // ═══ صفحة واحدة دائماً - مع توسيط أفقي وعمودي ═══
-    const imgData = canvas.toDataURL('image/jpeg', 0.92);
+    // PNG للنصوص الحادة (بدل JPEG الذي يضغط الحروف)
+    const imgData = canvas.toDataURL('image/png');
     const xPos = (pdfWidth - imgWidthMM) / 2;
     const yPos = (pdfHeight - imgHeightMM) / 2;
-    pdf.addImage(imgData, 'JPEG', xPos, yPos, imgWidthMM, imgHeightMM, undefined, 'FAST');
+    pdf.addImage(imgData, 'PNG', xPos, yPos, imgWidthMM, imgHeightMM, undefined, 'SLOW');
     
     // ═══ metadata ═══
+    // ═══ metadata ═══
     pdf.setProperties({
-      title: 'التقرير العام',
+      title: 'تقرير الإدارة العامة للتعليم',
+      subject: 'تقرير برنامج / فعالية تعليمية',
       author: 'منصة التقارير - ksa2030.one',
-      creator: 'ksa2030.one'
+      creator: 'ksa2030.one - مولّد التقارير المدرسية',
+      keywords: 'تقرير, إدارة التعليم, مدرسة, ksa2030'
     });
-    
-    // ═══ حفظ ═══
-    pdf.save('التقرير_العام.pdf');
+
+    // ═══ اسم الملف يأخذ عنوان البرنامج إن وُجد ═══
+    let fileName = 'تقرير_الإدارة_العامة_للتعليم.pdf';
+    try {
+      const tbar = document.querySelector('.tbar');
+      if(tbar){
+        const t = (tbar.textContent || '').trim().replace(/[\\/:*?"<>|]/g,'').slice(0, 50);
+        if(t) fileName = `تقرير_${t}.pdf`;
+      }
+    } catch(e){}
+    pdf.save(fileName);
     
     if(typeof showToast === 'function'){
       showToast('✅ تم حفظ PDF بنجاح');
@@ -1489,6 +1718,46 @@ async function exportAsPDFv2(){
     if(headerRestore) headerRestore();
   }
 }
+
+// ═══════════════════════════════════════════════
+// 🎨 نظام الثيمات (5 ثيمات + حفظ في localStorage)
+// ═══════════════════════════════════════════════
+const THEME_KEY = 'report_theme_v1';
+
+function toggleThemeMenu(evt){
+  if(evt) evt.stopPropagation();
+  const menu = document.getElementById('themeMenu');
+  if(menu) menu.classList.toggle('open');
+}
+
+function setTheme(theme){
+  document.body.setAttribute('data-theme', theme || '');
+  document.querySelectorAll('.theme-option').forEach(opt => {
+    opt.classList.toggle('active', (opt.getAttribute('data-theme') || '') === (theme || ''));
+  });
+  const menu = document.getElementById('themeMenu');
+  if(menu) menu.classList.remove('open');
+  try { localStorage.setItem(THEME_KEY, theme || ''); } catch(e) {}
+}
+
+function loadSavedTheme(){
+  try {
+    const saved = localStorage.getItem(THEME_KEY);
+    if(saved !== null) setTheme(saved);
+  } catch(e) {}
+}
+
+// إغلاق القائمة عند الضغط خارجها
+document.addEventListener('click', e => {
+  const menu = document.getElementById('themeMenu');
+  if(!menu) return;
+  if(!e.target.closest('#themeMenu') && !e.target.closest('.btn-theme')){
+    menu.classList.remove('open');
+  }
+});
+
+// تحميل الثيم المحفوظ عند فتح الصفحة
+loadSavedTheme();
 
 </script>
 
