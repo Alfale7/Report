@@ -672,6 +672,33 @@ body{
   outline:none;
   text-align:center;
 }
+/* 🆕 textarea داخل الجدول: نفس مظهر الـ input لكن متعدّد الأسطر مع ارتفاع تلقائي */
+.editable-table td textarea{
+  width:100%;
+  display:block;
+  background:transparent;
+  border:none;
+  padding:9px 10px;
+  font:inherit;
+  font-family:inherit;
+  font-size:0.88rem;
+  color:var(--text);
+  outline:none;
+  text-align:center;
+  resize:none;
+  overflow:hidden;
+  line-height:1.5;
+  min-height:38px;
+  box-sizing:border-box;
+  white-space:pre-wrap;
+  word-break:break-word;
+  overflow-wrap:break-word;
+  -webkit-appearance:none;
+  appearance:none;
+  border-radius:0;
+  margin:0;
+}
+.editable-table td textarea:focus{background:var(--paper-tint);}
 .editable-table td input:focus{background:var(--paper-tint);}
 .editable-table tr:hover td{background:rgba(44,151,157,0.04);}
 .row-action{
@@ -2053,7 +2080,7 @@ body.view-tabs .section.tab-section.tab-active{display:block; animation:fadeInTa
   .field-row{flex-direction:column; align-items:flex-start; gap:5px;}
   .field-label{min-width:auto;}
   .editable-table{font-size:0.75rem;}
-  .editable-table th, .editable-table td input{padding:7px 4px; font-size:0.75rem;}
+  .editable-table th, .editable-table td input, .editable-table td textarea{padding:7px 4px; font-size:0.75rem;}
   .criterion-header{padding:12px 14px; gap:10px;}
   .criterion-icon{width:40px; height:40px; font-size:1.2rem;}
   .criterion-name{font-size:0.92rem;}
@@ -2231,7 +2258,7 @@ body.view-tabs .section.tab-section.tab-active{display:block; animation:fadeInTa
         <tr><th>المؤهل</th><th>التخصص</th><th>الجهة المانحة</th><th>السنة</th><th>التقدير</th><th></th></tr>
       </thead>
       <tbody id="tbl-quals">
-        <tr><td><input data-key="q1-1"></td><td><input data-key="q1-2"></td><td><input data-key="q1-3"></td><td><input data-key="q1-4"></td><td><input data-key="q1-5"></td><td class="row-action"><button class="btn-row-del" onclick="delRow(this)">×</button></td></tr>
+        <tr><td><textarea data-key="q1-1" rows="1"></textarea></td><td><textarea data-key="q1-2" rows="1"></textarea></td><td><textarea data-key="q1-3" rows="1"></textarea></td><td><textarea data-key="q1-4" rows="1"></textarea></td><td><textarea data-key="q1-5" rows="1"></textarea></td><td class="row-action"><button class="btn-row-del" onclick="delRow(this)">×</button></td></tr>
       </tbody>
     </table>
     <button class="btn-add-row" onclick="addRow('tbl-quals',5,'q')">＋ إضافة مؤهل</button>
@@ -2242,7 +2269,7 @@ body.view-tabs .section.tab-section.tab-active{display:block; animation:fadeInTa
         <tr><th>المسمى الوظيفي</th><th>الجهة</th><th>من</th><th>إلى</th><th></th></tr>
       </thead>
       <tbody id="tbl-exp">
-        <tr><td><input data-key="e1-1"></td><td><input data-key="e1-2"></td><td><input data-key="e1-3"></td><td><input data-key="e1-4"></td><td class="row-action"><button class="btn-row-del" onclick="delRow(this)">×</button></td></tr>
+        <tr><td><textarea data-key="e1-1" rows="1"></textarea></td><td><textarea data-key="e1-2" rows="1"></textarea></td><td><textarea data-key="e1-3" rows="1"></textarea></td><td><textarea data-key="e1-4" rows="1"></textarea></td><td class="row-action"><button class="btn-row-del" onclick="delRow(this)">×</button></td></tr>
       </tbody>
     </table>
     <button class="btn-add-row" onclick="addRow('tbl-exp',4,'e')">＋ إضافة خبرة</button>
@@ -2253,7 +2280,7 @@ body.view-tabs .section.tab-section.tab-active{display:block; animation:fadeInTa
         <tr><th>اسم الدورة</th><th>الجهة المنظِّمة</th><th>عدد الساعات</th><th>التاريخ</th><th></th></tr>
       </thead>
       <tbody id="tbl-courses">
-        <tr><td><input data-key="c1-1"></td><td><input data-key="c1-2"></td><td><input data-key="c1-3"></td><td><input data-key="c1-4"></td><td class="row-action"><button class="btn-row-del" onclick="delRow(this)">×</button></td></tr>
+        <tr><td><textarea data-key="c1-1" rows="1"></textarea></td><td><textarea data-key="c1-2" rows="1"></textarea></td><td><textarea data-key="c1-3" rows="1"></textarea></td><td><textarea data-key="c1-4" rows="1"></textarea></td><td class="row-action"><button class="btn-row-del" onclick="delRow(this)">×</button></td></tr>
       </tbody>
     </table>
     <button class="btn-add-row" onclick="addRow('tbl-courses',4,'c')">＋ إضافة دورة</button>
@@ -2903,7 +2930,7 @@ function loadData(){
             const tr = document.createElement('tr');
             let tds = '';
             for(let i=1; i<=cfg.cols; i++){
-              tds += `<td><input data-key="${cfg.prefix}${idx}-${i}"></td>`;
+              tds += `<td><textarea data-key="${cfg.prefix}${idx}-${i}" rows="1"></textarea></td>`;
             }
             tds += `<td class="row-action"><button class="btn-row-del" onclick="delRow(this)">×</button></td>`;
             tr.innerHTML = tds;
@@ -3010,6 +3037,9 @@ function loadData(){
     if(data['__viewMode'] === 'tabs' && currentTab){
       selectTab(currentTab);
     }
+
+    // 🆕 4) ضبط ارتفاع textareas الجداول بعد ملء القيم
+    if(typeof refreshAllTableTAs === 'function') refreshAllTableTAs();
   } catch(e) { console.error('Load error:', e); }
 }
 
@@ -3097,6 +3127,30 @@ document.addEventListener('input', scheduleSave);
 document.addEventListener('change', scheduleSave);
 
 /* ═══════════════════════════════════════════════════════
+   📐 ارتفاع تلقائي لـ textareas الجداول (multi-line cells)
+   ═══════════════════════════════════════════════════════ */
+function autoResizeTableTA(ta){
+  if(!ta) return;
+  ta.style.height = 'auto';
+  ta.style.height = ta.scrollHeight + 'px';
+}
+function refreshAllTableTAs(){
+  document.querySelectorAll('.editable-table textarea').forEach(autoResizeTableTA);
+}
+// listener عام للتغيير عند الكتابة (يشمل الصفوف المضافة لاحقاً عبر event delegation)
+document.addEventListener('input', e => {
+  if(e.target && e.target.matches && e.target.matches('.editable-table textarea')){
+    autoResizeTableTA(e.target);
+  }
+});
+// طبّق عند تحميل الصفحة (بعد الـ DOM)
+if(document.readyState === 'loading'){
+  document.addEventListener('DOMContentLoaded', refreshAllTableTAs);
+} else {
+  refreshAllTableTAs();
+}
+
+/* ═══════════════════════════════════════════════════════
    📷 الصورة الشخصية
    ═══════════════════════════════════════════════════════ */
 document.getElementById('photoInput').addEventListener('change', e => {
@@ -3149,7 +3203,7 @@ function addRow(tableId, cols, prefix){
   const tbody = document.getElementById(tableId);
   // ابحث عن أكبر index موجود حالياً (عشان نتجنّب التعارض)
   let maxIdx = 0;
-  tbody.querySelectorAll('input[data-key]').forEach(inp => {
+  tbody.querySelectorAll('input[data-key], textarea[data-key]').forEach(inp => {
     const key = inp.getAttribute('data-key');
     const m = key.match(new RegExp('^' + prefix + '(\\d+)-'));
     if(m){
@@ -3161,7 +3215,7 @@ function addRow(tableId, cols, prefix){
   const tr = document.createElement('tr');
   let tds = '';
   for(let i=1; i<=cols; i++){
-    tds += `<td><input data-key="${prefix}${idx}-${i}"></td>`;
+    tds += `<td><textarea data-key="${prefix}${idx}-${i}" rows="1"></textarea></td>`;
   }
   tds += `<td class="row-action"><button class="btn-row-del" onclick="delRow(this)">×</button></td>`;
   tr.innerHTML = tds;
@@ -3177,7 +3231,7 @@ function delRow(btn){
   }
   // إذا الصف فيه قيم، اطلب تأكيد
   let hasValues = false;
-  tr.querySelectorAll('input').forEach(inp => { if(inp.value && inp.value.trim()) hasValues = true; });
+  tr.querySelectorAll('input, textarea').forEach(inp => { if(inp.value && inp.value.trim()) hasValues = true; });
   if(hasValues){
     if(!confirm('هذا الصف يحتوي على بيانات. هل تريد حذفه؟')) return;
   }
@@ -3493,24 +3547,48 @@ function prepareForExport(){
     if(!v || !v.trim()) return;
     const cs = getComputedStyle(ta);
     const div = document.createElement('div');
-    div.style.cssText = `
-      width:${ta.offsetWidth}px;
-      min-height:${ta.offsetHeight}px;
-      color:${cs.color};
-      font:${cs.font};
-      font-weight:${cs.fontWeight};
-      text-align:${cs.textAlign};
-      padding:${cs.padding};
-      border:${cs.border};
-      border-radius:${cs.borderRadius};
-      background:${cs.backgroundColor};
-      box-sizing:border-box;
-      white-space:pre-wrap;
-      word-wrap:break-word;
-      overflow:hidden;
-      line-height:${cs.lineHeight};
-      direction:rtl;
-    `;
+    const isInTable = !!ta.closest('.editable-table');
+
+    if(isInTable){
+      // 🆕 داخل جدول: نفس منطق inputs الجداول (display:block بدون width ثابت)
+      // الخلية تأخذ عرضها من تخطيط الجدول، النص يلتفّ داخلها بشكل طبيعي
+      div.style.cssText = `
+        display:block;
+        min-height:${ta.offsetHeight}px;
+        color:${cs.color};
+        font:${cs.font};
+        font-weight:${cs.fontWeight};
+        text-align:${cs.textAlign};
+        padding:${cs.padding};
+        box-sizing:border-box;
+        white-space:pre-wrap;
+        word-break:break-word;
+        overflow-wrap:break-word;
+        line-height:${cs.lineHeight};
+        direction:rtl;
+      `;
+    } else {
+      // textareas الكبيرة (الرؤية/الرسالة/إلخ): السلوك الأصلي
+      div.style.cssText = `
+        width:${ta.offsetWidth}px;
+        min-height:${ta.offsetHeight}px;
+        color:${cs.color};
+        font:${cs.font};
+        font-weight:${cs.fontWeight};
+        text-align:${cs.textAlign};
+        padding:${cs.padding};
+        border:${cs.border};
+        border-radius:${cs.borderRadius};
+        background:${cs.backgroundColor};
+        box-sizing:border-box;
+        white-space:pre-wrap;
+        word-wrap:break-word;
+        overflow:hidden;
+        line-height:${cs.lineHeight};
+        direction:rtl;
+      `;
+    }
+
     const lines = v.split('\n');
     div.innerHTML = lines.map(line => wrapWords(line)).join('<br>');
     stored.push({type:'textarea', el:ta, span:div});
@@ -3913,7 +3991,7 @@ function confirmReset(){
     const tr = document.createElement('tr');
     let tds = '';
     for(let i=1; i<=t.cols; i++){
-      tds += `<td><input data-key="${t.prefix}1-${i}"></td>`;
+      tds += `<td><textarea data-key="${t.prefix}1-${i}" rows="1"></textarea></td>`;
     }
     tds += `<td class="row-action"><button class="btn-row-del" onclick="delRow(this)">×</button></td>`;
     tr.innerHTML = tds;
