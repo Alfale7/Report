@@ -305,8 +305,9 @@ body{
   background:rgba(42,138,171,0.06);
   border:1px solid var(--border);
   border-radius:12px;
-  padding:12px;
+  padding:14px;
   margin-top:14px;
+  text-align:center;
 }
 .link-info-label{
   font-size:0.68rem; font-weight:800; color:var(--text-dim);
@@ -327,11 +328,11 @@ body{
 }
 .link-info-url:hover{border-color:var(--teal); color:var(--gold);}
 .link-info-meta{
-  display:flex; gap:14px; flex-wrap:wrap;
-  margin-top:8px;
-  font-size:0.7rem; color:var(--text-dim); font-weight:600;
+  display:flex; gap:18px; flex-wrap:wrap;
+  justify-content:center;
+  font-size:0.85rem; color:var(--text); font-weight:700;
 }
-.link-info-meta span{display:inline-flex; align-items:center; gap:4px;}
+.link-info-meta span{display:inline-flex; align-items:center; gap:5px;}
 
 /* ACTIONS */
 .actions{
@@ -468,12 +469,11 @@ body{
       </div>
 
       <div class="link-info">
-        <div class="link-info-label">🔗 الرابط (اضغط لنسخه)</div>
-        <div class="link-info-url" id="resultUrl" onclick="copyUrl()">—</div>
         <div class="link-info-meta">
           <span><span id="resultExpiryIcon">♾️</span> <span id="resultExpiry">—</span></span>
           <span>📦 <span id="resultSize">—</span></span>
         </div>
+        <div class="link-info-url" id="resultUrl" style="display:none;">—</div>
       </div>
 
       <div class="actions">
@@ -482,9 +482,6 @@ body{
         </button>
         <button class="act-btn act-share" onclick="shareQR()">
           <span class="ico">📤</span><span>مشاركة</span>
-        </button>
-        <button class="act-btn act-copy full" onclick="copyUrl()">
-          <span class="ico">📋</span><span>نسخ الرابط</span>
         </button>
         <button class="act-btn act-new full" onclick="resetTool()">
           <span class="ico">🔄</span><span>ملف جديد</span>
