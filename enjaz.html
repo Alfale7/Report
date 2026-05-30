@@ -162,50 +162,92 @@ body{
    ═══════════════════════════════════════════════════════ */
 .moe-band{
   position:relative;
-  background:var(--primary);
-  padding:14px 20px 16px;
-  display:flex; align-items:center; gap:14px;
+  background:linear-gradient(135deg, var(--primary-dark) 0%, var(--primary) 55%, var(--primary-dark) 100%);
+  padding:14px 22px;
+  display:flex; align-items:center; gap:18px;
   overflow:hidden;
 }
+/* نقش نقاط خفيف خلفية الترويسة */
 .moe-band::before{
-  content:''; position:absolute; top:-40%; left:-15%;
-  width:55%; height:180%;
-  background:radial-gradient(ellipse, rgba(255,255,255,0.10), transparent 60%);
+  content:''; position:absolute; inset:0;
+  background-image:radial-gradient(circle, rgba(255,255,255,0.06) 1px, transparent 1.4px);
+  background-size:14px 14px;
+  background-position:right center;
+  -webkit-mask-image:linear-gradient(to left, rgba(0,0,0,0.6), transparent 55%);
+  mask-image:linear-gradient(to left, rgba(0,0,0,0.6), transparent 55%);
   pointer-events:none;
 }
+/* خط أبيض علوي رفيع */
 .moe-band::after{
-  content:''; position:absolute; top:0; left:0; right:0; height:3px;
-  background:linear-gradient(to left, var(--secondary), var(--accent), var(--success));
+  content:''; position:absolute; top:0; left:0; right:0; height:2px;
+  background:linear-gradient(to left, transparent 5%, rgba(255,255,255,0.4) 30%, rgba(255,255,255,0.7) 50%, rgba(255,255,255,0.4) 70%, transparent 95%);
 }
 .moe-band > *{position:relative; z-index:1;}
-.moe-band-text{flex:1;}
+.moe-band-text{flex:1; min-width:0;}
 .moe-band-text .l1{
-  color:#fff; font-weight:800; font-size:0.95rem;
-  display:flex; align-items:center; gap:8px;
-  margin-bottom:3px;
+  color:#ffffff;
+  font-family:'Reem Kufi', sans-serif;
+  font-weight:700; font-size:0.98rem;
+  letter-spacing:0.3px;
+  margin-bottom:5px;
+  line-height:1.2;
 }
-.moe-band-text .l1 input{
-  flex:1; background:transparent; border:none;
-  border-bottom:1.5px dashed rgba(255,255,255,0.45);
-  color:#fff; font:inherit; font-weight:700;
-  outline:none; padding:1px 4px; min-width:0;
+.moe-band-text .l2, .moe-band-text .l3{
+  display:block;
 }
-.moe-band-text .l1 input::placeholder{color:rgba(255,255,255,0.55);}
-.moe-band-text .l2 input{
-  width:100%; background:transparent; border:none;
-  border-bottom:1.5px dashed rgba(255,255,255,0.3);
-  color:var(--secondary-light); font:inherit; font-weight:700; font-size:0.78rem;
-  outline:none; padding:1px 4px;
+.moe-band-text .l2 input,
+.moe-band-text .l3 input{
+  width:100%;
+  background:transparent; border:none;
+  color:#ffffff; font:inherit; font-weight:600; font-size:0.86rem;
+  letter-spacing:0.2px;
+  outline:none; padding:2px 0 3px;
+  font-family:'Tajawal', sans-serif;
 }
-.moe-band-text .l2 input::placeholder{color:rgba(255,255,255,0.4);}
+.moe-band-text .l2 input{margin-bottom:3px;}
+.moe-band-text .l2 input::placeholder,
+.moe-band-text .l3 input::placeholder{
+  color:rgba(255,255,255,0.5);
+  font-weight:500;
+}
 .moe-band-sep{
-  width:1.5px; height:46px;
-  background:linear-gradient(180deg, transparent, rgba(255,255,255,0.35), transparent);
+  width:1px; height:64px;
+  background:linear-gradient(180deg, transparent 0%, rgba(255,255,255,0.35) 20%, rgba(255,255,255,0.7) 50%, rgba(255,255,255,0.35) 80%, transparent 100%);
+  flex-shrink:0;
 }
 .moe-band-logo{flex-shrink:0;}
 .moe-band-logo img{
-  height:48px; width:auto;
+  height:56px; width:auto;
   filter:brightness(0) invert(1);
+  opacity:0.96;
+}
+/* 🆕 شريط اسم المدرسة تحت الترويسة */
+.moe-school-band{
+  position:relative;
+  background:var(--primary-dark);
+  padding:9px 24px;
+  text-align:center;
+  border-top:1px solid rgba(255,255,255,0.12);
+  border-bottom:1px solid rgba(255,255,255,0.08);
+}
+.moe-school-band::before{
+  content:''; position:absolute; left:0; right:0; top:0; height:1px;
+  background:linear-gradient(to left, transparent, rgba(255,255,255,0.22), transparent);
+}
+.moe-school-band input{
+  width:100%; max-width:520px;
+  background:transparent; border:none;
+  color:#ffffff;
+  font-family:'Reem Kufi', sans-serif;
+  font-weight:700; font-size:1.05rem;
+  letter-spacing:1.2px;
+  outline:none; text-align:center;
+  padding:2px 0;
+}
+.moe-school-band input::placeholder{
+  color:rgba(255,255,255,0.45);
+  letter-spacing:1.2px;
+  font-weight:500;
 }
 
 /* ═══════════════════════════════════════════════════════
@@ -265,7 +307,19 @@ body{
   line-height:1.15;
   margin-bottom:6px;
   text-shadow:0 2px 8px rgba(0,0,0,0.18);
+  /* 🆕 ستايل الـ input ليبدو مثل div دون أي حدود */
+  background:transparent;
+  border:none;
+  outline:none;
+  color:#fff;
+  text-align:center;
+  width:100%;
+  padding:0;
+  -webkit-appearance:none;
+  appearance:none;
 }
+.cover-title::placeholder{color:rgba(255,255,255,0.4);}
+.cover-title:focus{outline:1.5px dashed rgba(255,255,255,0.4); outline-offset:6px; border-radius:4px;}
 .cover-subtitle{
   font-size:0.85rem;
   font-weight:600;
@@ -1016,6 +1070,14 @@ body{
   padding:16px 18px;
   margin-top:14px;
 }
+/* 🆕 شواهد السيرة الذاتية - تنويع مدمج تحت كل جدول */
+.cv-shawahed{
+  margin-top:10px;
+  padding:12px 14px;
+  background:linear-gradient(180deg, rgba(255,255,255,0.65), var(--paper-tint));
+}
+.cv-shawahed .shawahed-title{ font-size:0.86rem; }
+.cv-shawahed .shawahed-grid{ grid-template-columns:repeat(auto-fill, minmax(95px, 1fr)); gap:7px; }
 .shawahed-header{
   display:flex; align-items:center; justify-content:space-between;
   gap:10px;
@@ -1376,16 +1438,15 @@ body{
   position:sticky;
   top:0;
   z-index:50;
-  background:rgba(255,255,255,0.95);
-  backdrop-filter:blur(12px);
-  -webkit-backdrop-filter:blur(12px);
+  background:linear-gradient(180deg, rgba(255,255,255,0.98), rgba(248,250,252,0.95));
+  backdrop-filter:blur(14px);
+  -webkit-backdrop-filter:blur(14px);
   border-bottom:1.5px solid var(--border);
-  padding:8px 12px;
+  padding:9px 12px 11px;
   display:flex;
   gap:8px;
   align-items:center;
   justify-content:center;
-  flex-wrap:wrap;
   overflow:hidden;
 }
 /* ✨ لمعة برق تجتاح البانر من اليمين لليسار */
@@ -1393,21 +1454,21 @@ body{
   content:'';
   position:absolute;
   top:0; bottom:0;
-  width:35%;
+  width:40%;
   background:linear-gradient(
     90deg,
     transparent 0%,
     rgba(255,255,255,0) 20%,
-    rgba(63,182,168,0.18) 45%,
-    rgba(255,255,255,0.85) 50%,
-    rgba(63,182,168,0.18) 55%,
+    rgba(63,182,168,0.22) 42%,
+    rgba(255,255,255,0.95) 50%,
+    rgba(63,182,168,0.22) 58%,
     rgba(255,255,255,0) 80%,
     transparent 100%
   );
   pointer-events:none;
   z-index:0;
   /* يبدأ من خارج الشاشة لليمين (RTL: right) */
-  right:-40%;
+  right:-45%;
   opacity:0;
   filter:blur(2px);
 }
@@ -1415,17 +1476,17 @@ body{
 
 /* فعّل الـ animation عند تفعيل class .attention-shine */
 .view-mode-bar.attention-shine::before{
-  animation:viewBarShine 2.6s ease-in-out 0.4s 5 forwards;
+  animation:viewBarShine 2.4s ease-in-out 0.4s 6 forwards;
 }
 .view-mode-bar.attention-shine{
-  animation:viewBarGlow 2.6s ease-in-out 0.4s 5 forwards;
+  animation:viewBarGlow 2.4s ease-in-out 0.4s 6 forwards;
 }
 
 @keyframes viewBarShine{
-  0%{right:-40%; opacity:0;}
+  0%{right:-45%; opacity:0;}
   10%{opacity:1;}
   90%{opacity:1;}
-  100%{right:140%; opacity:0;}
+  100%{right:145%; opacity:0;}
 }
 @keyframes viewBarGlow{
   0%,100%{
@@ -1433,33 +1494,38 @@ body{
   }
   50%{
     box-shadow:
-      0 0 0 4px rgba(63,182,168,0.10),
-      0 4px 24px rgba(44,151,157,0.28),
-      0 0 30px rgba(11,57,70,0.10);
+      0 0 0 4px rgba(63,182,168,0.12),
+      0 6px 28px rgba(44,151,157,0.30),
+      0 0 32px rgba(11,57,70,0.12);
   }
 }
 
+/* 🆕 بنر عمودي: زرّان فوق بعض */
 .view-mode-toggle{
   display:flex;
-  background:var(--paper-tint);
+  flex-direction:column;
+  background:linear-gradient(180deg, var(--paper-tint), #fff);
   border:1.5px solid var(--border);
-  border-radius:30px;
-  padding:3px;
-  gap:2px;
+  border-radius:14px;
+  padding:4px;
+  gap:3px;
   position:relative;
   z-index:2;
+  width:100%;
+  max-width:260px;
+  box-shadow:0 2px 6px rgba(11,57,70,0.04);
 }
 /* 💫 توهج حول الـ toggle نفسه */
 .view-mode-bar.attention-shine .view-mode-toggle{
-  animation:togglePulse 1.5s ease-in-out 0.6s 6 alternate;
+  animation:togglePulse 1.4s ease-in-out 0.6s 7 alternate;
 }
 @keyframes togglePulse{
   0%{
-    box-shadow:0 0 0 0 rgba(44,151,157,0);
+    box-shadow:0 2px 8px rgba(11,57,70,0.05);
     border-color:var(--border);
   }
   100%{
-    box-shadow:0 0 0 6px rgba(44,151,157,0.18), 0 6px 20px rgba(44,151,157,0.35);
+    box-shadow:0 0 0 6px rgba(44,151,157,0.20), 0 8px 24px rgba(44,151,157,0.38);
     border-color:var(--secondary);
   }
 }
@@ -1468,42 +1534,52 @@ body{
   border:none;
   background:transparent;
   padding:7px 14px;
-  border-radius:30px;
+  border-radius:10px;
   font:inherit;
   font-weight:700;
-  font-size:0.82rem;
+  font-size:0.84rem;
   cursor:pointer;
-  display:flex; align-items:center; gap:6px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  gap:7px;
   color:var(--text-mute);
   transition:all 0.25s;
   white-space:nowrap;
   position:relative;
+  width:100%;
+}
+.view-mode-btn .ico{
+  font-size:0.98rem;
+  display:inline-flex;
+  align-items:center;
 }
 .view-mode-btn.active{
   background:var(--hero-grad);
   color:#fff;
-  box-shadow:0 3px 10px rgba(11,57,70,0.25);
+  box-shadow:0 3px 10px rgba(11,57,70,0.25), inset 0 1px 0 rgba(255,255,255,0.16);
 }
 .view-mode-btn:not(.active):hover{
   color:var(--primary);
-  background:rgba(255,255,255,0.7);
+  background:rgba(255,255,255,0.85);
 }
 /* 🔵 نقطة وامضة على الزر غير الفعّال (دعوة للتجريب) */
 .view-mode-bar.attention-shine .view-mode-btn:not(.active)::after{
   content:'';
   position:absolute;
-  top:2px;
-  left:8px;
-  width:7px; height:7px;
+  top:50%;
+  left:10px;
+  transform:translateY(-50%);
+  width:6px; height:6px;
   border-radius:50%;
   background:#dc3545;
   box-shadow:0 0 0 0 rgba(220,53,69,0.7);
-  animation:dotPing 1.4s ease-out 0.8s 7;
+  animation:dotPing 1.3s ease-out 0.8s 8;
 }
 @keyframes dotPing{
-  0%{box-shadow:0 0 0 0 rgba(220,53,69,0.6); transform:scale(1);}
-  50%{box-shadow:0 0 0 6px rgba(220,53,69,0); transform:scale(1.15);}
-  100%{box-shadow:0 0 0 0 rgba(220,53,69,0); transform:scale(1);}
+  0%{box-shadow:0 0 0 0 rgba(220,53,69,0.6); transform:translateY(-50%) scale(1);}
+  50%{box-shadow:0 0 0 6px rgba(220,53,69,0); transform:translateY(-50%) scale(1.3);}
+  100%{box-shadow:0 0 0 0 rgba(220,53,69,0); transform:translateY(-50%) scale(1);}
 }
 
 /* احترام تفضيلات الحركة المخفّضة */
@@ -2159,7 +2235,7 @@ body.view-tabs .section.tab-section.tab-active{display:block; animation:fadeInTa
   .cover-photo-wrap, .cover-eyebrow, .cover-title, .cover-subtitle, .cover-pill,
   .mithaq-article-title, .mithaq-pledge, .mithaq-pledge-sig,
   .khatima-paragraph, .khatima-end-frame, .khatima-sig-row,
-  .moe-band, .moe-footer-band, .field-textarea{
+  .moe-band, .moe-school-band, .moe-footer-band, .field-textarea{
     page-break-inside: avoid !important;
     break-inside: avoid !important;
   }
@@ -2193,14 +2269,19 @@ body.view-tabs .section.tab-section.tab-active{display:block; animation:fadeInTa
 
   <!-- ═══ شريط الهوية ═══ -->
   <div class="moe-band">
-    <div class="moe-band-text">
-      <div class="l1">الإدارة العامة للتعليم <input type="text" id="moe-admin" placeholder="بمنطقة ..."></div>
-      <div class="l2"><input type="text" id="moe-office" placeholder="مكتب التعليم بـ ..."></div>
-    </div>
-    <div class="moe-band-sep"></div>
     <div class="moe-band-logo">
       <img id="moe-logo-img" alt="وزارة التعليم">
     </div>
+    <div class="moe-band-sep"></div>
+    <div class="moe-band-text">
+      <div class="l1">الإدارة العامة للتعليم</div>
+      <div class="l2"><input type="text" id="moe-admin" placeholder="اسم المنطقة هنا"></div>
+      <div class="l3"><input type="text" id="moe-office" placeholder="اسم مكتب التعليم هنا"></div>
+    </div>
+  </div>
+  <!-- 🆕 شريط اسم المدرسة (يتزامن مع حقل المدرسة في الغلاف) -->
+  <div class="moe-school-band">
+    <input type="text" id="moe-school-name" placeholder="اسم المدرسة هنا">
   </div>
 
   <!-- ═══ الغلاف ═══ -->
@@ -2209,7 +2290,7 @@ body.view-tabs .section.tab-section.tab-active{display:block; animation:fadeInTa
       <span></span><span></span><span></span><span></span><span></span>
     </div>
     <div class="cover-eyebrow">المملكة العربية السعودية · وزارة التعليم</div>
-    <div class="cover-title">ملف إنجاز المعلم/ة</div>
+    <input type="text" class="cover-title" id="coverTitle" value="ملف إنجاز المعلم/ة" placeholder="اكتب عنوان الملف">
     <div class="cover-subtitle">TEACHER PORTFOLIO</div>
     <div class="cover-divider">
       <span class="line"></span>
@@ -2307,6 +2388,21 @@ body.view-tabs .section.tab-section.tab-active{display:block; animation:fadeInTa
       </tbody>
     </table>
     <button class="btn-add-row" onclick="addRow('tbl-quals',5,'q')">＋ إضافة مؤهل</button>
+    <!-- 🆕 شواهد المؤهلات (شهادات وصور) -->
+    <div class="shawahed-section cv-shawahed">
+      <div class="shawahed-header">
+        <div class="shawahed-title">📎 شواهد المؤهلات (شهادات/صور)</div>
+      </div>
+      <div class="shawahed-grid" data-criterion="quals" id="grid-quals"></div>
+      <div class="shawahed-actions">
+        <button class="btn-add-shahed" onclick="addShahed('quals')">
+          <span>➕</span><span>إضافة شاهد جديد</span>
+        </button>
+        <button class="btn-del-shahed" onclick="delLastShahed('quals')">
+          <span>🗑️</span><span>حذف شاهد</span>
+        </button>
+      </div>
+    </div>
 
     <h4 style="font-family:'Reem Kufi',sans-serif;color:var(--primary);font-size:1rem;margin:20px 0 8px;font-weight:700;">💼 الخبرات العملية السابقة</h4>
     <table class="editable-table">
@@ -2318,6 +2414,21 @@ body.view-tabs .section.tab-section.tab-active{display:block; animation:fadeInTa
       </tbody>
     </table>
     <button class="btn-add-row" onclick="addRow('tbl-exp',4,'e')">＋ إضافة خبرة</button>
+    <!-- 🆕 شواهد الخبرات (شهادات خبرة وصور) -->
+    <div class="shawahed-section cv-shawahed">
+      <div class="shawahed-header">
+        <div class="shawahed-title">📎 شواهد الخبرات (شهادات خبرة/صور)</div>
+      </div>
+      <div class="shawahed-grid" data-criterion="exp" id="grid-exp"></div>
+      <div class="shawahed-actions">
+        <button class="btn-add-shahed" onclick="addShahed('exp')">
+          <span>➕</span><span>إضافة شاهد جديد</span>
+        </button>
+        <button class="btn-del-shahed" onclick="delLastShahed('exp')">
+          <span>🗑️</span><span>حذف شاهد</span>
+        </button>
+      </div>
+    </div>
 
     <h4 style="font-family:'Reem Kufi',sans-serif;color:var(--primary);font-size:1rem;margin:20px 0 8px;font-weight:700;">📚 الدورات التدريبية وورش العمل</h4>
     <table class="editable-table">
@@ -2329,6 +2440,21 @@ body.view-tabs .section.tab-section.tab-active{display:block; animation:fadeInTa
       </tbody>
     </table>
     <button class="btn-add-row" onclick="addRow('tbl-courses',4,'c')">＋ إضافة دورة</button>
+    <!-- 🆕 شواهد الدورات (شهادات الدورات وصور) -->
+    <div class="shawahed-section cv-shawahed">
+      <div class="shawahed-header">
+        <div class="shawahed-title">📎 شواهد الدورات (شهادات/صور)</div>
+      </div>
+      <div class="shawahed-grid" data-criterion="courses" id="grid-courses"></div>
+      <div class="shawahed-actions">
+        <button class="btn-add-shahed" onclick="addShahed('courses')">
+          <span>➕</span><span>إضافة شاهد جديد</span>
+        </button>
+        <button class="btn-del-shahed" onclick="delLastShahed('courses')">
+          <span>🗑️</span><span>حذف شاهد</span>
+        </button>
+      </div>
+    </div>
   </div>
 
   <!-- ═══ القسم 4: الرؤية والرسالة + ميثاق الأخلاقيات ═══ -->
@@ -2947,7 +3073,28 @@ function buildShahedSlotHtml(cid, idx){
       <button class="shahed-slot-del" onclick="event.stopPropagation();removeShahedSlot('${sid}')" title="حذف الخانة">×</button>
     </div>`;
 }
+
+/* 🆕 ابنِ سلوتات شواهد قسم السيرة (المؤهلات/الخبرات/الدورات) */
+function buildCvShawaheds(){
+  ['quals','exp','courses'].forEach(cid => {
+    const grid = document.getElementById('grid-' + cid);
+    if(!grid) return;
+    if(grid.children.length === 0){
+      grid.innerHTML = buildShawahedSlots(cid, 3);
+    }
+    // ربط النقر لفتح اختيار الملف
+    grid.querySelectorAll('.shahed-slot').forEach(slot => {
+      slot.addEventListener('click', e => {
+        if(e.target.classList.contains('shahed-slot-del') || e.target.classList.contains('shahed-slot-rem')) return;
+        const inp = slot.querySelector('input[type=file]');
+        if(inp) inp.click();
+      });
+    });
+  });
+}
+
 buildCriteria();
+buildCvShawaheds();
 </script>
 
 <script>
@@ -3067,12 +3214,12 @@ function loadData(){
         }
       }
       // moe-band fields
-      if(key === 'moe-admin' || key === 'moe-office'){
+      if(key === 'moe-admin' || key === 'moe-office' || key === 'moe-school-name'){
         const el2 = document.getElementById(key);
         if(el2) el2.value = data[key];
       }
       // cover fields
-      if(['teacherName','subject','stage','school','year'].includes(key)){
+      if(['teacherName','coverTitle','subject','stage','school','year'].includes(key)){
         const el3 = document.getElementById(key);
         if(el3) el3.value = data[key];
       }
@@ -3085,6 +3232,14 @@ function loadData(){
 
     // 🆕 4) ضبط ارتفاع textareas الجداول بعد ملء القيم
     if(typeof refreshAllTableTAs === 'function') refreshAllTableTAs();
+    // 🆕 5) مزامنة اسم المدرسة بين الترويسة والغلاف عند التحميل
+    //    لو كان حقل واحد فقط مملوءاً، انسخ قيمته للآخر
+    const _schoolCover = document.getElementById('school');
+    const _schoolHeader = document.getElementById('moe-school-name');
+    if(_schoolCover && _schoolHeader){
+      if(_schoolCover.value && !_schoolHeader.value) _schoolHeader.value = _schoolCover.value;
+      else if(_schoolHeader.value && !_schoolCover.value) _schoolCover.value = _schoolHeader.value;
+    }
   } catch(e) { console.error('Load error:', e); }
 }
 
@@ -3095,7 +3250,7 @@ function saveData(){
     if(el.value) data[el.getAttribute('data-key')] = el.value;
   });
   // moe-band
-  ['moe-admin','moe-office','teacherName','subject','stage','school','year'].forEach(id => {
+  ['moe-admin','moe-office','moe-school-name','teacherName','coverTitle','subject','stage','school','year'].forEach(id => {
     const el = document.getElementById(id);
     if(el && el.value) data[id] = el.value;
   });
@@ -3170,6 +3325,19 @@ function scheduleSave(){
 }
 document.addEventListener('input', scheduleSave);
 document.addEventListener('change', scheduleSave);
+
+/* 🆕 مزامنة اسم المدرسة بين الترويسة والغلاف */
+document.addEventListener('input', e => {
+  const t = e.target;
+  if(!t || !t.id) return;
+  if(t.id === 'moe-school-name'){
+    const cover = document.getElementById('school');
+    if(cover && cover.value !== t.value) cover.value = t.value;
+  } else if(t.id === 'school'){
+    const header = document.getElementById('moe-school-name');
+    if(header && header.value !== t.value) header.value = t.value;
+  }
+});
 
 /* ═══════════════════════════════════════════════════════
    📐 ارتفاع تلقائي لـ textareas الجداول (multi-line cells)
@@ -3872,6 +4040,7 @@ function collectAtomicRectsForPDF(paper, scale){
     '.khatima-signature',
     // الأشرطة
     '.moe-band',
+    '.moe-school-band',
     '.moe-footer-band',
     '.field-textarea'
   ];
@@ -4118,7 +4287,7 @@ function confirmReset(){
   // احفظ ما يجب الاحتفاظ به مؤقتاً
   const keep = {};
   if(keepProfile){
-    ['teacherName','subject','stage','school','year','moe-admin','moe-office'].forEach(id => {
+    ['teacherName','coverTitle','subject','stage','school','year','moe-admin','moe-office','moe-school-name'].forEach(id => {
       const el = document.getElementById(id);
       if(el && el.value) keep[id] = el.value;
     });
@@ -4146,9 +4315,12 @@ function confirmReset(){
   });
   // moe-band + cover (إلا إذا keepProfile)
   if(!keepProfile){
-    ['teacherName','subject','stage','school','year','moe-admin','moe-office'].forEach(id => {
+    ['teacherName','coverTitle','subject','stage','school','year','moe-admin','moe-office','moe-school-name'].forEach(id => {
       const el = document.getElementById(id);
-      if(el) el.value = (id === 'year') ? '١٤٤٧هـ - ٢٠٢٦م' : '';
+      if(!el) return;
+      if(id === 'year') el.value = '١٤٤٧هـ - ٢٠٢٦م';
+      else if(id === 'coverTitle') el.value = 'ملف إنجاز المعلم/ة';
+      else el.value = '';
     });
     // الصورة الشخصية
     const photo = document.getElementById('photoImg');
@@ -4177,6 +4349,20 @@ function confirmReset(){
     const grid = document.getElementById('grid-' + c.id);
     if(grid){
       grid.innerHTML = buildShawahedSlots(c.id, 3);
+      grid.querySelectorAll('.shahed-slot').forEach(slot => {
+        slot.addEventListener('click', e => {
+          if(e.target.classList.contains('shahed-slot-del')) return;
+          const inp = slot.querySelector('input[type=file]');
+          if(inp) inp.click();
+        });
+      });
+    }
+  });
+  // 🆕 أعد بناء شواهد قسم السيرة (المؤهلات/الخبرات/الدورات) للوضع الافتراضي
+  ['quals','exp','courses'].forEach(cid => {
+    const grid = document.getElementById('grid-' + cid);
+    if(grid){
+      grid.innerHTML = buildShawahedSlots(cid, 3);
       grid.querySelectorAll('.shahed-slot').forEach(slot => {
         slot.addEventListener('click', e => {
           if(e.target.classList.contains('shahed-slot-del')) return;
