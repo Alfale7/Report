@@ -424,7 +424,7 @@ body{
   <div class="card">
     <label class="input-label">
       <span>📄</span><span>اختر ملف PDF</span>
-      <span class="badge">سريع · حتى 200MB</span>
+      <span class="badge">دائم · حتى 100MB</span>
     </label>
 
     <label class="dropzone" id="dropzone">
@@ -514,7 +514,7 @@ let currentUrl = '';
 let currentSize = '';
 let currentExpiry = '';
 
-const MAX_FILE_SIZE = 200 * 1024 * 1024; // 200MB
+const MAX_FILE_SIZE = 100 * 1024 * 1024; // 100MB (حد Cloudinary المجاني)
 
 /* ════════════════════════════════════════════════
    اختيار وعرض الملف
@@ -552,7 +552,7 @@ function handleFile(file){
   }
   // تحقق الحجم
   if(file.size > MAX_FILE_SIZE){
-    showToast('❌ حجم الملف يتجاوز 200MB');
+    showToast('❌ حجم الملف يتجاوز 100MB');
     return;
   }
   selectedFile = file;
@@ -582,60 +582,68 @@ function formatSize(bytes){
 }
 
 /* ════════════════════════════════════════════════
-   نظام الرفع: 0x0.st (موثوق + مدة طويلة)
+   نظام الرفع: Cloudinary (دائم + موثوق)
    ════════════════════════════════════════════════ */
 
-// خدمة الرفع: 0x0.st (30 يوم إلى سنة حسب حجم الملف)
-function upload0x0(file, onProgress){
+const CLOUDINARY_CLOUD_NAME = 'ksa2030';
+const CLOUDINARY_UPLOAD_PRESET = 'pdf_upload';
+
+// رفع لـ Cloudinary (دائم مدى الحياة)
+function uploadCloudinary(file, onProgress){
   return new Promise((resolve, reject) => {
     const formData = new FormData();
     formData.append('file', file);
+    formData.append('upload_preset', CLOUDINARY_UPLOAD_PRESET);
+    
     const xhr = new XMLHttpRequest();
-    xhr.timeout = 60000;
-    xhr.open('POST', 'https://0x0.st');
+    xhr.timeout = 120000; // دقيقتين للملفات الكبيرة
+    // resource_type=auto يدعم PDF و Word و Excel وكل الملفات
+    xhr.open('POST', `https://api.cloudinary.com/v1_1/${CLOUDINARY_CLOUD_NAME}/auto/upload`);
+    
     xhr.upload.addEventListener('progress', (e) => {
       if(e.lengthComputable && onProgress){
         onProgress(Math.round((e.loaded / e.total) * 100));
       }
     });
+    
     xhr.addEventListener('load', () => {
       if(xhr.status >= 200 && xhr.status < 300){
-        const r = xhr.responseText.trim();
-        if(r.startsWith('http')){
-          // حساب المدة بناء على حجم الملف
-          // 0x0.st: 30 يوم (للملفات 512MB) إلى 365 يوم (للملفات الصغيرة)
-          const sizeMB = file.size / (1024*1024);
-          let days;
-          if(sizeMB < 1) days = 365;
-          else if(sizeMB < 5) days = 350;
-          else if(sizeMB < 10) days = 310;
-          else if(sizeMB < 50) days = 270;
-          else if(sizeMB < 100) days = 200;
-          else if(sizeMB < 200) days = 120;
-          else if(sizeMB < 300) days = 70;
-          else days = 30;
-          
-          let expiry;
-          if(days >= 350) expiry = 'سنة كاملة';
-          else if(days >= 270) expiry = '9 أشهر';
-          else if(days >= 200) expiry = '7 أشهر';
-          else if(days >= 120) expiry = '4 أشهر';
-          else if(days >= 70) expiry = 'شهرين';
-          else expiry = 'شهر';
-          
-          resolve({ url: r, expiry: expiry, icon: '📅' });
-        } else reject(new Error('0x0: استجابة غير صالحة'));
-      } else reject(new Error('0x0: HTTP ' + xhr.status));
+        try {
+          const data = JSON.parse(xhr.responseText);
+          if(data && data.secure_url){
+            resolve({ 
+              url: data.secure_url, 
+              expiry: 'دائم', 
+              icon: '♾️' 
+            });
+          } else {
+            reject(new Error('Cloudinary: استجابة غير صالحة'));
+          }
+        } catch(e){
+          reject(new Error('Cloudinary: فشل تحليل الرد'));
+        }
+      } else {
+        // قراءة رسالة الخطأ من Cloudinary
+        try {
+          const errData = JSON.parse(xhr.responseText);
+          const msg = errData.error && errData.error.message ? errData.error.message : 'HTTP ' + xhr.status;
+          reject(new Error('Cloudinary: ' + msg));
+        } catch(e){
+          reject(new Error('Cloudinary: HTTP ' + xhr.status));
+        }
+      }
     });
-    xhr.addEventListener('error', () => reject(new Error('0x0: خطأ شبكة')));
-    xhr.addEventListener('timeout', () => reject(new Error('0x0: انتهت المهلة')));
-    xhr.addEventListener('abort', () => reject(new Error('0x0: تم إلغاء')));
+    
+    xhr.addEventListener('error', () => reject(new Error('Cloudinary: خطأ شبكة')));
+    xhr.addEventListener('timeout', () => reject(new Error('Cloudinary: انتهت المهلة')));
+    xhr.addEventListener('abort', () => reject(new Error('Cloudinary: تم الإلغاء')));
+    
     xhr.send(formData);
   });
 }
 
 /* ════════════════════════════════════════════════
-   الدالة الرئيسية: رفع مباشر إلى 0x0.st
+   الدالة الرئيسية: رفع مباشر إلى Cloudinary
    ════════════════════════════════════════════════ */
 async function uploadAndGenerate(){
   if(!selectedFile){ showToast('⚠️ اختر ملفاً أولاً'); return; }
@@ -652,7 +660,7 @@ async function uploadAndGenerate(){
   btnText.textContent = 'جارٍ الرفع...';
 
   try {
-    const result = await upload0x0(selectedFile, (pct) => {
+    const result = await uploadCloudinary(selectedFile, (pct) => {
       fill.style.width = pct + '%';
       btnText.textContent = `جارٍ الرفع... ${pct}%`;
     });
