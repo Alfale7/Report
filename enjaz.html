@@ -3770,6 +3770,68 @@ async function saveAsImage(){
 /* ═══════════════════════════════════════════════════════
    📄 تصدير PDF عالي الجودة (متعدد الصفحات)
    ═══════════════════════════════════════════════════════ */
+
+// 🆕 جامع مستطيلات العناصر "الذرّية" التي لا يجوز قطعها بين الصفحات
+// يُستدعى بعد prepareForExport وقبل html2canvas
+function collectAtomicRectsForPDF(paper, scale){
+  const paperTop = paper.getBoundingClientRect().top;
+  // العناصر التي لا نريد تقسيمها بين الصفحات
+  const SELECTORS = [
+    '.field-card',
+    '.criterion-header',
+    '.criterion-content',
+    '.criterion-section-label',
+    '.shawahed-section',
+    '.shawahed-header',
+    '.shawahed-grid',
+    '.shahed-slot',
+    '.editable-table',
+    '.editable-table tr',
+    '.examples-list li',
+    '.toc-section',
+    '.toc-item',
+    '.section-title',
+    '.section-number-badge',
+    'h1','h2','h3','h4',
+    'img',
+    '.field-textarea',
+    '.cover-eyebrow',
+    '.cover-title',
+    '.cover-subtitle',
+    '.field-grid',
+    '.action-bar'
+  ];
+  const rects = [];
+  const seen = new Set();
+  SELECTORS.forEach(sel => {
+    let nodes;
+    try { nodes = paper.querySelectorAll(sel); } catch(e){ return; }
+    nodes.forEach(el => {
+      if(seen.has(el)) return;
+      seen.add(el);
+      const r = el.getBoundingClientRect();
+      // تجاهل العناصر المخفية أو ذات الارتفاع الصفري
+      if(r.height < 4) return;
+      const top = Math.round((r.top - paperTop) * scale);
+      const bottom = Math.round((r.bottom - paperTop) * scale);
+      if(bottom > top) rects.push({ top, bottom });
+    });
+  });
+  return rects;
+}
+
+// 🆕 ضبط نقطة القطع: إذا كانت تشطر عنصراً ذرّياً، ارفعها إلى رأس ذلك العنصر
+function adjustCutForAtomic(tentativeCut, rects, yOffset){
+  let safest = tentativeCut;
+  for(const r of rects){
+    // عنصر يبدأ على هذه الصفحة (top > yOffset) ويمتدّ بعد القطع المقترح
+    if(r.top > yOffset && r.top < tentativeCut && r.bottom > tentativeCut){
+      if(r.top < safest) safest = r.top;
+    }
+  }
+  return safest;
+}
+
 async function exportAsPDFv2(){
   if (typeof window.checkDownloadAccess === 'function') {
     const allowed = await window.checkDownloadAccess();
@@ -3781,6 +3843,8 @@ async function exportAsPDFv2(){
   try {
     await new Promise(r => setTimeout(r, 250));
     const paper = document.getElementById('enjaz-paper');
+    // 🆕 اجمع مستطيلات العناصر الذرّية قبل html2canvas (الـ scale=2)
+    const atomicRects = collectAtomicRectsForPDF(paper, 2);
     const canvas = await html2canvas(paper, {
       scale: 2,
       useCORS: true,
@@ -3805,12 +3869,24 @@ async function exportAsPDFv2(){
       // صفحة واحدة
       pdf.addImage(canvas.toDataURL('image/jpeg', 0.92), 'JPEG', 0, 0, imgWidth, imgHeight);
     } else {
-      // عدة صفحات
-      let remainingHeight = canvas.height;
-      let yOffset = 0;
+      // 🆕 عدة صفحات بتقسيم ذكي يتجنّب قطع العناصر
       const pageHeightInCanvas = (pdfHeight * canvas.width) / pdfWidth;
-      while(remainingHeight > 0){
-        const sliceHeight = Math.min(pageHeightInCanvas, remainingHeight);
+      let yOffset = 0;
+      let pageCount = 0;
+      const MAX_PAGES = 200; // حماية من الحلقات اللانهائية
+      while(yOffset < canvas.height && pageCount < MAX_PAGES){
+        let cutAt = Math.min(yOffset + pageHeightInCanvas, canvas.height);
+        // إذا لم تكن الصفحة الأخيرة، اضبط القطع ليتجنّب شطر عنصر ذرّي
+        if(cutAt < canvas.height){
+          const adjusted = adjustCutForAtomic(cutAt, atomicRects, yOffset);
+          // اقبل التعديل فقط إذا أبقى قدراً معقولاً من المحتوى (≥ 15% من ارتفاع الصفحة)
+          // لتفادي صفحات شبه فارغة بسبب عناصر مكدّسة قرب بداية الصفحة
+          if(adjusted > yOffset + pageHeightInCanvas * 0.15){
+            cutAt = adjusted;
+          }
+        }
+        const sliceHeight = cutAt - yOffset;
+        if(sliceHeight < 4) break; // أمان
         const slice = document.createElement('canvas');
         slice.width = canvas.width;
         slice.height = sliceHeight;
@@ -3819,10 +3895,10 @@ async function exportAsPDFv2(){
         ctx.fillRect(0, 0, slice.width, slice.height);
         ctx.drawImage(canvas, 0, yOffset, canvas.width, sliceHeight, 0, 0, canvas.width, sliceHeight);
         const sliceImgHeight = (sliceHeight * pdfWidth) / canvas.width;
-        if(yOffset > 0) pdf.addPage();
+        if(pageCount > 0) pdf.addPage();
         pdf.addImage(slice.toDataURL('image/jpeg', 0.92), 'JPEG', 0, 0, imgWidth, sliceImgHeight);
-        yOffset += sliceHeight;
-        remainingHeight -= sliceHeight;
+        yOffset = cutAt;
+        pageCount++;
       }
     }
     // اسم الملف: يشمل اسم القسم لو في وضع tabs
