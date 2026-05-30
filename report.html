@@ -1275,6 +1275,10 @@ function prepareHeaderForExport(){
 }
 
 async function saveImg(){
+  if (typeof window.checkDownloadAccess === 'function') {
+    const allowed = await window.checkDownloadAccess();
+    if (!allowed) return;
+  }
   const page=document.getElementById('page');
 
   // 🆕 إصلاح حروف الترويسة للتصدير (html2canvas يفصل الحروف العربية مع letter-spacing)
@@ -1511,6 +1515,10 @@ function loadJsPDF(){
 // ═══════════════════════════════════════════════
 async function exportAsPDFv2(){
   closeExportMenu();
+  if (typeof window.checkDownloadAccess === 'function') {
+    const allowed = await window.checkDownloadAccess();
+    if (!allowed) return;
+  }
   
   // toast
   if(typeof showToast === 'function'){
