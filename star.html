@@ -1507,6 +1507,10 @@ function buildQuickReasons(){
 // التصدير - شهادة واحدة
 // ═══════════════════════════════════════════════
 async function downloadSingle(){
+  if (typeof window.checkDownloadAccess === 'function') {
+    const allowed = await window.checkDownloadAccess();
+    if (!allowed) return;
+  }
   const inputVal = document.getElementById('singleName').value.trim();
   const nameEl = document.querySelector('#cert-paper .cert-name');
   const name = inputVal || (nameEl ? nameEl.textContent.trim() : '');
@@ -1627,6 +1631,10 @@ function closePreview(e){
 // تصدير PDF
 // ═══════════════════════════════════════════════
 async function downloadPDF(){
+  if (typeof window.checkDownloadAccess === 'function') {
+    const allowed = await window.checkDownloadAccess();
+    if (!allowed) return;
+  }
   if(typeof domtoimage === 'undefined' || !window.jspdf){ showToast('❌ جاري تحميل النظام، انتظر ثانية'); return; }
   showProgress('📄 جاري إنشاء PDF...', 0, 1);
   try {
@@ -1663,6 +1671,10 @@ async function downloadPDF(){
 // مشاركة (واتساب وغيره)
 // ═══════════════════════════════════════════════
 async function shareCert(){
+  if (typeof window.checkDownloadAccess === 'function') {
+    const allowed = await window.checkDownloadAccess();
+    if (!allowed) return;
+  }
   if(typeof domtoimage === 'undefined'){ showToast('❌ جاري تحميل النظام، انتظر ثانية'); return; }
   showProgress('📤 جاري التحضير للمشاركة...', 0, 1);
   try {
@@ -1697,6 +1709,10 @@ async function shareCert(){
 // التصدير - مجموعة (ZIP)
 // ═══════════════════════════════════════════════
 async function downloadBulk(){
+  if (typeof window.checkDownloadAccess === 'function') {
+    const allowed = await window.checkDownloadAccess();
+    if (!allowed) return;
+  }
   const raw = document.getElementById('bulkNames').value.trim();
   let names = raw ? raw.split('\n').map(s => s.trim()).filter(s => s.length > 0) : [];
 
