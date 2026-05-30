@@ -1,0 +1,860 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="color-scheme" content="light only">
+<meta name="theme-color" content="#050a12">
+<title>تحويل PDF إلى باركود · التقارير الذكية</title>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Aref+Ruqaa:wght@400;700&family=Tajawal:wght@400;500;700;800;900&family=Reem+Kufi:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+
+<style>
+:root{
+  --navy:#050a12;
+  --navy-2:#0a1620;
+  --navy-3:#0f1f2e;
+  --surface:#0d1925;
+  --surface-2:#12202f;
+  --teal:#2a8aab;
+  --teal-bright:#3aa8d0;
+  --teal-deep:#1e6b8a;
+  --gold:#f0b855;
+  --gold-soft:#d99a2b;
+  --red:#d44545;
+  --red-soft:#c83838;
+  --text:#eef4f8;
+  --text-dim:#7d94a8;
+  --text-faint:#4a5d70;
+  --border:rgba(42,138,171,0.18);
+  --border-gold:rgba(240,184,85,0.25);
+  --green:#16a34a;
+}
+*{margin:0; padding:0; box-sizing:border-box;}
+body{
+  font-family:'Tajawal','Tahoma',sans-serif;
+  background:var(--navy);
+  color:var(--text);
+  min-height:100vh;
+  display:flex; flex-direction:column; align-items:center;
+  padding:32px 18px 70px;
+  position:relative; overflow-x:hidden;
+}
+.bg-fx{position:fixed; inset:0; z-index:0; pointer-events:none; overflow:hidden;}
+.bg-fx::before{
+  content:""; position:absolute; top:-15%; right:-10%;
+  width:500px; height:500px;
+  background:radial-gradient(circle, rgba(212,69,69,0.18) 0%, transparent 65%);
+  border-radius:50%;
+}
+.bg-fx::after{
+  content:""; position:absolute; bottom:-15%; left:-10%;
+  width:500px; height:500px;
+  background:radial-gradient(circle, rgba(240,184,85,0.12) 0%, transparent 65%);
+  border-radius:50%;
+}
+.bg-grid{
+  position:fixed; inset:0; z-index:0; pointer-events:none;
+  background-image:linear-gradient(rgba(42,138,171,0.04) 1px, transparent 1px),linear-gradient(90deg, rgba(42,138,171,0.04) 1px, transparent 1px);
+  background-size:38px 38px;
+}
+.wrap{position:relative; z-index:1; width:100%; max-width:520px;}
+
+/* HEADER */
+.header{text-align:center; margin-bottom:26px;}
+.brand-top{
+  display:inline-flex; align-items:center; gap:6px;
+  font-size:0.72rem; font-weight:700; color:var(--text-dim);
+  letter-spacing:0.5px;
+  background:rgba(42,138,171,0.08);
+  border:1px solid var(--border);
+  padding:6px 14px; border-radius:99px;
+  margin-bottom:18px;
+}
+.brand-top .dot{width:6px; height:6px; background:var(--gold); border-radius:50%; animation:pulse 2s infinite;}
+@keyframes pulse{0%,100%{opacity:1;}50%{opacity:0.4;}}
+.logo-mark{
+  width:74px; height:74px; margin:0 auto 14px;
+  position:relative; display:flex; align-items:center; justify-content:center;
+}
+.logo-mark .ring{
+  position:absolute; inset:0;
+  border:2px solid var(--red);
+  border-radius:18px;
+  transform:rotate(45deg);
+  box-shadow:0 0 25px rgba(212,69,69,0.5);
+}
+.logo-mark .inner{
+  position:relative; z-index:1;
+  width:54px; height:54px;
+  background:linear-gradient(135deg, var(--red), var(--red-soft));
+  border-radius:14px;
+  display:flex; align-items:center; justify-content:center;
+  font-size:1.8rem;
+  box-shadow:inset 0 0 0 1px rgba(255,255,255,0.15);
+}
+.title{
+  font-family:'Aref Ruqaa', serif;
+  font-size:1.95rem;
+  font-weight:700;
+  color:var(--text);
+  margin-bottom:8px;
+  letter-spacing:-0.5px;
+}
+.subtitle{
+  font-size:0.88rem;
+  color:var(--text-dim);
+  line-height:1.6;
+  max-width:380px;
+  margin:0 auto;
+}
+
+/* CARD */
+.card{
+  background:var(--surface);
+  border:1px solid var(--border);
+  border-radius:20px;
+  padding:22px 18px;
+  box-shadow:0 24px 50px rgba(0,0,0,0.4), 0 0 0 1px rgba(42,138,171,0.05);
+  position:relative;
+}
+.card::before{
+  content:""; position:absolute; top:0; left:0; right:0; height:2px;
+  background:linear-gradient(90deg, transparent, var(--red), transparent);
+  border-radius:20px 20px 0 0;
+}
+.input-label{
+  display:flex; align-items:center; gap:8px;
+  font-size:0.85rem; font-weight:700; color:var(--text);
+  margin-bottom:12px;
+}
+.input-label .badge{
+  margin-right:auto; margin-left:0;
+  font-size:0.62rem; font-weight:800;
+  background:rgba(212,69,69,0.15);
+  color:var(--red);
+  border:1px solid rgba(212,69,69,0.3);
+  padding:3px 9px; border-radius:99px;
+}
+
+/* DROPZONE */
+.dropzone{
+  border:2px dashed var(--border);
+  background:var(--surface-2);
+  border-radius:14px;
+  padding:30px 18px;
+  text-align:center;
+  cursor:pointer;
+  transition:all 0.25s;
+  position:relative;
+  overflow:hidden;
+}
+.dropzone:hover, .dropzone.dragover{
+  border-color:var(--red);
+  background:rgba(212,69,69,0.05);
+  transform:translateY(-1px);
+}
+.dropzone.has-file{
+  border-color:var(--green);
+  border-style:solid;
+  background:rgba(22,163,74,0.04);
+}
+.dropzone-icon{font-size:2.5rem; margin-bottom:10px; display:block;}
+.dropzone-text{
+  font-size:0.95rem; font-weight:700; color:var(--text);
+  margin-bottom:6px;
+}
+.dropzone-hint{
+  font-size:0.75rem; color:var(--text-dim);
+}
+.dropzone input[type="file"]{display:none;}
+
+/* FILE INFO */
+.file-info{
+  display:none;
+  background:rgba(22,163,74,0.08);
+  border:1px solid rgba(22,163,74,0.25);
+  border-radius:12px;
+  padding:12px 14px;
+  margin-top:12px;
+  align-items:center;
+  gap:12px;
+}
+.file-info.show{display:flex;}
+.file-info-icon{
+  width:42px; height:42px; flex-shrink:0;
+  background:linear-gradient(135deg, var(--red), var(--red-soft));
+  border-radius:10px;
+  display:flex; align-items:center; justify-content:center;
+  font-size:1.3rem;
+  box-shadow:0 4px 12px rgba(212,69,69,0.3);
+}
+.file-info-text{flex:1; min-width:0;}
+.file-info-name{
+  font-size:0.85rem; font-weight:700; color:var(--text);
+  white-space:nowrap; overflow:hidden; text-overflow:ellipsis;
+  margin-bottom:2px;
+}
+.file-info-size{font-size:0.72rem; color:var(--text-dim);}
+.file-remove{
+  width:30px; height:30px; flex-shrink:0;
+  background:transparent;
+  border:1px solid var(--border);
+  border-radius:50%;
+  color:var(--text-dim);
+  cursor:pointer;
+  font-size:1rem; font-weight:700;
+  display:flex; align-items:center; justify-content:center;
+  transition:all 0.2s;
+}
+.file-remove:hover{
+  background:rgba(212,69,69,0.15);
+  border-color:var(--red);
+  color:var(--red);
+}
+
+/* DURATION SELECTOR */
+.duration-section{
+  margin-top:16px;
+  display:none;
+}
+.duration-section.show{display:block;}
+.duration-label{
+  font-size:0.78rem; font-weight:700; color:var(--text-dim);
+  margin-bottom:8px;
+  display:flex; align-items:center; gap:6px;
+}
+.duration-options{
+  display:grid;
+  grid-template-columns:repeat(4, 1fr);
+  gap:6px;
+}
+.duration-opt{
+  background:var(--surface-2);
+  border:1px solid var(--border);
+  color:var(--text-dim);
+  padding:9px 6px;
+  border-radius:9px;
+  font-family:inherit;
+  font-size:0.75rem;
+  font-weight:700;
+  cursor:pointer;
+  transition:all 0.2s;
+  text-align:center;
+}
+.duration-opt:hover{border-color:var(--teal); color:var(--text);}
+.duration-opt.active{
+  background:linear-gradient(135deg, var(--teal-deep), var(--teal));
+  border-color:var(--teal-bright);
+  color:#fff;
+  box-shadow:0 3px 10px rgba(42,138,171,0.3);
+}
+
+/* MAIN BTN */
+.btn-main{
+  width:100%; margin-top:18px;
+  background:linear-gradient(135deg, var(--red), var(--red-soft));
+  border:none;
+  color:#fff;
+  font-family:inherit;
+  font-size:0.95rem; font-weight:800;
+  padding:14px;
+  border-radius:12px;
+  cursor:pointer;
+  display:flex; align-items:center; justify-content:center; gap:8px;
+  transition:all 0.2s;
+  box-shadow:0 6px 18px rgba(212,69,69,0.35);
+}
+.btn-main:hover:not(:disabled){transform:translateY(-1px); box-shadow:0 10px 22px rgba(212,69,69,0.45);}
+.btn-main:disabled{opacity:0.4; cursor:not-allowed; box-shadow:none;}
+.btn-main.uploading{background:linear-gradient(135deg, var(--teal-deep), var(--teal)); box-shadow:0 6px 18px rgba(42,138,171,0.35);}
+.btn-main .spinner{
+  width:18px; height:18px;
+  border:2.5px solid rgba(255,255,255,0.3);
+  border-top-color:#fff;
+  border-radius:50%;
+  animation:spin 0.8s linear infinite;
+  display:none;
+}
+.btn-main.uploading .spinner{display:inline-block;}
+.btn-main.uploading .btn-icon{display:none;}
+@keyframes spin{to{transform:rotate(360deg);}}
+
+/* PROGRESS */
+.progress-bar{
+  width:100%; height:6px; background:var(--surface-2);
+  border-radius:99px; overflow:hidden;
+  margin-top:12px;
+  display:none;
+}
+.progress-bar.show{display:block;}
+.progress-fill{
+  height:100%; width:0%;
+  background:linear-gradient(90deg, var(--teal), var(--teal-bright));
+  border-radius:99px;
+  transition:width 0.3s;
+}
+
+/* RESULT */
+.result{display:none; margin-top:22px; animation:slideIn 0.4s ease-out;}
+.result.show{display:block;}
+@keyframes slideIn{from{opacity:0; transform:translateY(10px);}to{opacity:1; transform:translateY(0);}}
+.qr-frame{
+  background:#fff; padding:24px 18px 18px;
+  border-radius:18px; position:relative;
+  box-shadow:0 24px 50px rgba(0,0,0,0.5), 0 0 0 1px rgba(240,184,85,0.2);
+  text-align:center;
+  border-top:5px solid var(--red);
+}
+.qr-frame .corner{
+  position:absolute; width:18px; height:18px;
+  border:3px solid var(--gold);
+}
+.corner.tl{top:14px; right:14px; border-bottom:none; border-left:none;}
+.corner.tr{top:14px; left:14px; border-bottom:none; border-right:none;}
+.corner.bl{bottom:14px; right:14px; border-top:none; border-left:none;}
+.corner.br{bottom:14px; left:14px; border-top:none; border-right:none;}
+.qr-scan-hint{
+  font-family:'Reem Kufi', sans-serif;
+  font-size:0.85rem; font-weight:700; color:#0a1620;
+  margin-bottom:12px;
+  letter-spacing:-0.3px;
+}
+#qrcode{display:flex; justify-content:center; margin:8px auto 12px;}
+#qrcode img, #qrcode canvas{margin:0 auto; border-radius:6px;}
+.qr-brand{
+  border-top:1px dashed rgba(10,22,32,0.15);
+  padding-top:10px; margin-top:6px;
+}
+.qr-brand-name{
+  font-family:'Aref Ruqaa', serif;
+  font-size:0.85rem; font-weight:700; color:#0a1620;
+}
+.qr-brand-url{font-size:0.7rem; color:#1e6b8a; font-weight:700; margin-top:2px;}
+
+/* LINK INFO */
+.link-info{
+  background:rgba(42,138,171,0.06);
+  border:1px solid var(--border);
+  border-radius:12px;
+  padding:12px;
+  margin-top:14px;
+}
+.link-info-label{
+  font-size:0.68rem; font-weight:800; color:var(--text-dim);
+  letter-spacing:0.5px;
+  margin-bottom:6px;
+}
+.link-info-url{
+  background:var(--surface-2);
+  border:1px solid var(--border);
+  border-radius:8px;
+  padding:8px 10px;
+  font-size:0.75rem; color:var(--teal-bright);
+  word-break:break-all;
+  font-family:'Courier New', monospace;
+  direction:ltr; text-align:left;
+  cursor:pointer;
+  transition:all 0.2s;
+}
+.link-info-url:hover{border-color:var(--teal); color:var(--gold);}
+.link-info-meta{
+  display:flex; gap:14px; flex-wrap:wrap;
+  margin-top:8px;
+  font-size:0.7rem; color:var(--text-dim); font-weight:600;
+}
+.link-info-meta span{display:inline-flex; align-items:center; gap:4px;}
+
+/* ACTIONS */
+.actions{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:8px;
+  margin-top:14px;
+}
+.act-btn{
+  background:var(--surface-2);
+  border:1px solid var(--border);
+  color:var(--text);
+  padding:11px 8px;
+  border-radius:11px;
+  font-family:inherit;
+  font-size:0.83rem; font-weight:800;
+  cursor:pointer;
+  display:flex; align-items:center; justify-content:center; gap:5px;
+  transition:all 0.2s;
+}
+.act-btn:hover{transform:translateY(-1px);}
+.act-btn .ico{font-size:1rem;}
+.act-download{border-color:var(--teal); background:linear-gradient(135deg, var(--teal-deep), var(--teal)); color:#fff;}
+.act-share{border-color:var(--green); background:linear-gradient(135deg, #16a34a, #15803d); color:#fff;}
+.act-copy{border-color:var(--gold); background:linear-gradient(135deg, #d99a2b, #b07d1a); color:#fff;}
+.act-new{border-color:var(--text-faint);}
+.act-new:hover{background:var(--navy-3); border-color:var(--text-dim);}
+.actions .full{grid-column:1/-1;}
+
+/* WARNING */
+.warning{
+  background:rgba(240,184,85,0.08);
+  border:1px solid rgba(240,184,85,0.25);
+  border-radius:10px;
+  padding:10px 12px;
+  margin-top:14px;
+  font-size:0.72rem;
+  color:var(--gold);
+  line-height:1.6;
+  display:flex;
+  gap:8px;
+}
+.warning-icon{font-size:1rem; flex-shrink:0;}
+
+/* FOOTER */
+.footer{text-align:center; margin-top:24px; padding:0 8px;}
+.footer .feats{
+  display:flex; justify-content:center; gap:18px; flex-wrap:wrap;
+  margin-bottom:12px;
+}
+.footer .feat{
+  font-size:0.72rem; color:var(--text-dim); font-weight:600;
+  display:inline-flex; align-items:center; gap:4px;
+}
+.footer a{
+  color:var(--teal-bright); text-decoration:none;
+  font-size:0.82rem; font-weight:700;
+  display:inline-flex; align-items:center; gap:4px;
+}
+.footer a:hover{color:var(--gold);}
+
+/* TOAST */
+.toast{
+  position:fixed; bottom:24px; left:50%;
+  transform:translateX(-50%) translateY(80px);
+  background:var(--surface);
+  border:1px solid var(--border-gold);
+  color:var(--text);
+  padding:11px 18px;
+  border-radius:12px;
+  font-size:0.85rem; font-weight:700;
+  z-index:100;
+  opacity:0;
+  transition:all 0.3s cubic-bezier(0.16,1,0.3,1);
+  box-shadow:0 14px 36px rgba(0,0,0,0.6);
+}
+.toast.show{opacity:1; transform:translateX(-50%) translateY(0);}
+
+@media (max-width:400px){
+  .title{font-size:1.55rem;}
+  .actions{grid-template-columns:1fr;}
+  .footer .feats{gap:10px;}
+  .duration-options{grid-template-columns:repeat(2, 1fr);}
+}
+</style>
+</head>
+<body>
+
+<div class="bg-fx"></div>
+<div class="bg-grid"></div>
+
+<div class="wrap">
+  <div class="header">
+    <div class="brand-top">
+      <span class="dot"></span>
+      <span>التقارير الذكية · ksa2030.one</span>
+    </div>
+    <div class="logo-mark">
+      <div class="ring"></div>
+      <div class="inner">📄</div>
+    </div>
+    <h1 class="title">محوّل PDF لباركود</h1>
+    <p class="subtitle">ارفع أي ملف PDF واحصل على QR Code لمشاركته بسهولة</p>
+  </div>
+
+  <div class="card">
+    <label class="input-label">
+      <span>📄</span><span>اختر ملف PDF</span>
+      <span class="badge">حتى 1GB</span>
+    </label>
+
+    <label class="dropzone" id="dropzone">
+      <input type="file" id="fileInput" accept="application/pdf,.pdf">
+      <span class="dropzone-icon">📤</span>
+      <div class="dropzone-text">اضغط لاختيار ملف PDF</div>
+      <div class="dropzone-hint">أو اسحب الملف وأفلته هنا</div>
+    </label>
+
+    <div class="file-info" id="fileInfo">
+      <div class="file-info-icon">📄</div>
+      <div class="file-info-text">
+        <div class="file-info-name" id="fileInfoName">filename.pdf</div>
+        <div class="file-info-size" id="fileInfoSize">— KB</div>
+      </div>
+      <button class="file-remove" onclick="removeFile()" title="إزالة">×</button>
+    </div>
+
+    <div class="duration-section" id="durationSection">
+      <div class="duration-label">
+        <span>⏱️</span><span>مدة بقاء الملف</span>
+      </div>
+      <div class="duration-options">
+        <button class="duration-opt" onclick="selectDuration(this,'1h')">ساعة</button>
+        <button class="duration-opt" onclick="selectDuration(this,'12h')">12 ساعة</button>
+        <button class="duration-opt" onclick="selectDuration(this,'24h')">يوم</button>
+        <button class="duration-opt active" onclick="selectDuration(this,'72h')">3 أيام</button>
+      </div>
+    </div>
+
+    <button class="btn-main" id="uploadBtn" onclick="uploadAndGenerate()" disabled>
+      <span class="btn-icon">✨</span>
+      <span class="spinner"></span>
+      <span id="btnText">رفع وتوليد الباركود</span>
+    </button>
+
+    <div class="progress-bar" id="progressBar">
+      <div class="progress-fill" id="progressFill"></div>
+    </div>
+
+    <div class="warning">
+      <span class="warning-icon">⚠️</span>
+      <span>الملفات تُرفع على خادم آمن لمدة محدودة. لا ترفع ملفات حساسة. الرابط يصبح غير صالح بعد انتهاء المدة.</span>
+    </div>
+
+    <div class="result" id="result">
+      <div class="qr-frame" id="qrFrame">
+        <span class="corner tl"></span>
+        <span class="corner tr"></span>
+        <span class="corner bl"></span>
+        <span class="corner br"></span>
+        <div class="qr-scan-hint">📲 امسح الباركود لفتح ملف PDF</div>
+        <div id="qrcode"></div>
+        <div class="qr-brand">
+          <div class="qr-brand-name">التقارير الذكية</div>
+          <div class="qr-brand-url">🌐 www.ksa2030.one</div>
+        </div>
+      </div>
+
+      <div class="link-info">
+        <div class="link-info-label">🔗 الرابط (اضغط لنسخه)</div>
+        <div class="link-info-url" id="resultUrl" onclick="copyUrl()">—</div>
+        <div class="link-info-meta">
+          <span>⏱️ <span id="resultExpiry">—</span></span>
+          <span>📦 <span id="resultSize">—</span></span>
+        </div>
+      </div>
+
+      <div class="actions">
+        <button class="act-btn act-download" onclick="downloadQR()">
+          <span class="ico">⬇️</span><span>تحميل الباركود</span>
+        </button>
+        <button class="act-btn act-share" onclick="shareQR()">
+          <span class="ico">📤</span><span>مشاركة</span>
+        </button>
+        <button class="act-btn act-copy full" onclick="copyUrl()">
+          <span class="ico">📋</span><span>نسخ الرابط</span>
+        </button>
+        <button class="act-btn act-new full" onclick="resetTool()">
+          <span class="ico">🔄</span><span>ملف جديد</span>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <div class="footer">
+    <div class="feats">
+      <span class="feat">⚡ سريع</span>
+      <span class="feat">🔒 آمن</span>
+      <span class="feat">📤 مشاركة سهلة</span>
+    </div>
+    <a href="index.html">← العودة للرئيسية</a>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+/* ════════════════════════════════════════════════
+   حالة الأداة
+   ════════════════════════════════════════════════ */
+let selectedFile = null;
+let selectedDuration = '72h';
+let currentUrl = '';
+let currentExpiry = '';
+let currentSize = '';
+
+const MAX_FILE_SIZE = 1024 * 1024 * 1024; // 1GB
+
+/* ════════════════════════════════════════════════
+   اختيار وعرض الملف
+   ════════════════════════════════════════════════ */
+const dropzone = document.getElementById('dropzone');
+const fileInput = document.getElementById('fileInput');
+
+fileInput.addEventListener('change', (e) => {
+  if(e.target.files.length){ handleFile(e.target.files[0]); }
+});
+
+// drag & drop
+['dragenter','dragover'].forEach(evt => {
+  dropzone.addEventListener(evt, (e) => {
+    e.preventDefault(); e.stopPropagation();
+    dropzone.classList.add('dragover');
+  });
+});
+['dragleave','drop'].forEach(evt => {
+  dropzone.addEventListener(evt, (e) => {
+    e.preventDefault(); e.stopPropagation();
+    dropzone.classList.remove('dragover');
+  });
+});
+dropzone.addEventListener('drop', (e) => {
+  const f = e.dataTransfer.files[0];
+  if(f) handleFile(f);
+});
+
+function handleFile(file){
+  // تحقق النوع
+  if(file.type !== 'application/pdf' && !file.name.toLowerCase().endsWith('.pdf')){
+    showToast('❌ هذا الملف ليس PDF');
+    return;
+  }
+  // تحقق الحجم
+  if(file.size > MAX_FILE_SIZE){
+    showToast('❌ حجم الملف يتجاوز 1GB');
+    return;
+  }
+  selectedFile = file;
+  document.getElementById('fileInfoName').textContent = file.name;
+  document.getElementById('fileInfoSize').textContent = formatSize(file.size);
+  document.getElementById('fileInfo').classList.add('show');
+  document.getElementById('durationSection').classList.add('show');
+  dropzone.classList.add('has-file');
+  document.getElementById('uploadBtn').disabled = false;
+  document.getElementById('result').classList.remove('show');
+  showToast('✅ تم اختيار الملف');
+}
+
+function removeFile(){
+  selectedFile = null;
+  fileInput.value = '';
+  document.getElementById('fileInfo').classList.remove('show');
+  document.getElementById('durationSection').classList.remove('show');
+  dropzone.classList.remove('has-file');
+  document.getElementById('uploadBtn').disabled = true;
+  document.getElementById('result').classList.remove('show');
+}
+
+function selectDuration(btn, dur){
+  document.querySelectorAll('.duration-opt').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  selectedDuration = dur;
+}
+
+function formatSize(bytes){
+  if(bytes < 1024) return bytes + ' B';
+  if(bytes < 1024*1024) return (bytes/1024).toFixed(1) + ' KB';
+  if(bytes < 1024*1024*1024) return (bytes/(1024*1024)).toFixed(2) + ' MB';
+  return (bytes/(1024*1024*1024)).toFixed(2) + ' GB';
+}
+
+function durationLabel(d){
+  return {'1h':'ساعة واحدة','12h':'12 ساعة','24h':'يوم واحد','72h':'3 أيام'}[d] || d;
+}
+
+/* ════════════════════════════════════════════════
+   الرفع لـ litterbox.catbox.moe
+   ════════════════════════════════════════════════ */
+async function uploadAndGenerate(){
+  if(!selectedFile){ showToast('⚠️ اختر ملفاً أولاً'); return; }
+
+  const btn = document.getElementById('uploadBtn');
+  const btnText = document.getElementById('btnText');
+  const progress = document.getElementById('progressBar');
+  const fill = document.getElementById('progressFill');
+
+  btn.classList.add('uploading');
+  btn.disabled = true;
+  btnText.textContent = 'جارٍ الرفع...';
+  progress.classList.add('show');
+  fill.style.width = '0%';
+
+  try {
+    const formData = new FormData();
+    formData.append('reqtype', 'fileupload');
+    formData.append('time', selectedDuration);
+    formData.append('fileToUpload', selectedFile);
+
+    // استخدم XMLHttpRequest للحصول على progress events
+    const url = await new Promise((resolve, reject) => {
+      const xhr = new XMLHttpRequest();
+      xhr.open('POST', 'https://litterbox.catbox.moe/resources/internals/api.php');
+
+      xhr.upload.addEventListener('progress', (e) => {
+        if(e.lengthComputable){
+          const pct = Math.round((e.loaded / e.total) * 100);
+          fill.style.width = pct + '%';
+          btnText.textContent = `جارٍ الرفع... ${pct}%`;
+        }
+      });
+
+      xhr.addEventListener('load', () => {
+        if(xhr.status >= 200 && xhr.status < 300){
+          const response = xhr.responseText.trim();
+          if(response.startsWith('http')){
+            resolve(response);
+          } else {
+            reject(new Error('استجابة غير صالحة من الخادم'));
+          }
+        } else {
+          reject(new Error('فشل الرفع (HTTP ' + xhr.status + ')'));
+        }
+      });
+
+      xhr.addEventListener('error', () => reject(new Error('خطأ في الشبكة')));
+      xhr.addEventListener('abort', () => reject(new Error('تم إلغاء الرفع')));
+
+      xhr.send(formData);
+    });
+
+    // نجح الرفع
+    currentUrl = url;
+    currentExpiry = durationLabel(selectedDuration);
+    currentSize = formatSize(selectedFile.size);
+
+    generateQRCode(url);
+    document.getElementById('resultUrl').textContent = url;
+    document.getElementById('resultExpiry').textContent = currentExpiry;
+    document.getElementById('resultSize').textContent = currentSize;
+
+    const result = document.getElementById('result');
+    result.classList.add('show');
+    showToast('✅ تم رفع الملف وتوليد الباركود');
+    setTimeout(() => { result.scrollIntoView({behavior:'smooth', block:'center'}); }, 200);
+
+  } catch(err) {
+    console.error(err);
+    showToast('❌ ' + (err.message || 'فشل الرفع'));
+  } finally {
+    btn.classList.remove('uploading');
+    btn.disabled = false;
+    btnText.textContent = 'رفع وتوليد الباركود';
+    setTimeout(() => {
+      progress.classList.remove('show');
+      fill.style.width = '0%';
+    }, 1500);
+  }
+}
+
+/* ════════════════════════════════════════════════
+   QR Code
+   ════════════════════════════════════════════════ */
+function generateQRCode(url){
+  const container = document.getElementById('qrcode');
+  container.innerHTML = '';
+  new QRCode(container, {
+    text: url,
+    width: 230, height: 230,
+    colorDark: '#0a1620',
+    colorLight: '#ffffff',
+    correctLevel: QRCode.CorrectLevel.H
+  });
+}
+
+async function captureFrame(){
+  const frame = document.getElementById('qrFrame');
+  await new Promise(r => setTimeout(r, 100));
+  const canvas = await html2canvas(frame, {
+    backgroundColor: '#ffffff',
+    scale: 3,
+    useCORS: true,
+    logging: false
+  });
+  return canvas.toDataURL('image/png');
+}
+
+async function downloadQR(){
+  try {
+    showToast('⏳ جاري التحضير...');
+    const dataUrl = await captureFrame();
+    const link = document.createElement('a');
+    link.download = 'باركود-PDF-' + Date.now() + '.png';
+    link.href = dataUrl;
+    document.body.appendChild(link); link.click(); document.body.removeChild(link);
+    showToast('✅ تم تحميل الباركود');
+  } catch(err){
+    console.error(err);
+    showToast('❌ فشل التحميل');
+  }
+}
+
+async function shareQR(){
+  try {
+    showToast('⏳ جاري التحضير...');
+    const dataUrl = await captureFrame();
+    const res = await fetch(dataUrl);
+    const blob = await res.blob();
+    const file = new File([blob], 'باركود-PDF.png', {type:'image/png'});
+    if(navigator.share && navigator.canShare && navigator.canShare({files:[file]})){
+      await navigator.share({
+        files:[file],
+        title:'باركود ملف PDF',
+        text:'📄 امسح الباركود لفتح الملف\n\n🔗 ' + currentUrl + '\n\n⏱️ صالح: ' + currentExpiry + '\n\n🌐 www.ksa2030.one'
+      });
+      showToast('✅ تم المشاركة');
+    } else {
+      const link = document.createElement('a');
+      link.download = 'باركود-PDF.png';
+      link.href = dataUrl;
+      document.body.appendChild(link); link.click(); document.body.removeChild(link);
+      showToast('📥 تم التنزيل');
+    }
+  } catch(err){
+    if(err.name !== 'AbortError'){
+      console.error(err);
+      showToast('❌ فشلت المشاركة');
+    }
+  }
+}
+
+async function copyUrl(){
+  if(!currentUrl) return;
+  try {
+    await navigator.clipboard.writeText(currentUrl);
+    showToast('✅ تم نسخ الرابط');
+  } catch(err){
+    // fallback
+    const ta = document.createElement('textarea');
+    ta.value = currentUrl;
+    ta.style.position = 'fixed';
+    ta.style.opacity = '0';
+    document.body.appendChild(ta);
+    ta.select();
+    try { document.execCommand('copy'); showToast('✅ تم نسخ الرابط'); }
+    catch(e){ showToast('❌ فشل النسخ'); }
+    document.body.removeChild(ta);
+  }
+}
+
+function resetTool(){
+  removeFile();
+  currentUrl = '';
+  window.scrollTo({top:0, behavior:'smooth'});
+}
+
+/* ════════════════════════════════════════════════
+   Toast
+   ════════════════════════════════════════════════ */
+let toastTimer = null;
+function showToast(msg){
+  const toast = document.getElementById('toast');
+  toast.textContent = msg;
+  toast.classList.add('show');
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => { toast.classList.remove('show'); }, 3000);
+}
+</script>
+</body>
+</html>

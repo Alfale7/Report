@@ -1829,6 +1829,7 @@ backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);
   position:relative;
   z-index:1;
 }
+.tb-card.full-width{grid-column:1/-1;}
 .tb-card{
   background:linear-gradient(160deg,#12202f,#0d1925);
   border:1px solid rgba(42,138,171,0.22);
@@ -4515,6 +4516,19 @@ font-size:0.78rem;text-align:center;margin-top:12px;display:none;
             </div>
           </div>
         </div>
+
+        <!-- قالب: PDF لباركود -->
+        <div class="tb-card full-width" onclick="window.location.href='pdf-qr.html'">
+          <div class="tb-card-glow"></div>
+          <div class="tb-card-ico">📄</div>
+          <div class="tb-card-body">
+            <div class="tb-card-title" data-i18n="tbPdfTitle">PDF ← باركود</div>
+            <div class="tb-card-go">
+              <span data-i18n="tbOpen3">افتح</span>
+              <span>←</span>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
 
@@ -6572,6 +6586,8 @@ const I18N = {
     tbLinkTitle: "رابط ← باركود",
     tbOpen: "افتح",
     tbOpen2: "افتح",
+    tbPdfTitle: "PDF ← باركود",
+    tbOpen3: "افتح",
     freeCounterSuffix: "تحميل مجاني متبقي · جرّب تقرير يوم التأسيس الآن",
     freeCounterBtn: "جرّب الآن",
     upgradeTitle: "انتهت تحميلاتك المجانية!",
@@ -6855,6 +6871,8 @@ const I18N = {
     tbLinkTitle: "Link → QR",
     tbOpen: "Open",
     tbOpen2: "Open",
+    tbPdfTitle: "PDF → QR",
+    tbOpen3: "Open",
     freeCounterSuffix: "free downloads left · Try Founding Day report now",
     freeCounterBtn: "Try Now",
     upgradeTitle: "Free downloads ended!",
