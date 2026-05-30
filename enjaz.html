@@ -3778,66 +3778,56 @@ async function saveAsImage(){
    ═══════════════════════════════════════════════════════ */
 
 // 🆕 جامع مستطيلات العناصر "الذرّية" التي لا يجوز قطعها بين الصفحات
-// يُستدعى بعد prepareForExport وقبل html2canvas
+// قاعدة: نضع فقط الوحدات الصغيرة/المتوسّطة المستقلّة بصرياً (لا الحاويات الكبيرة)
+// لو وضعنا حاوية كبيرة (كـ .mithaq-article)، فأي قطع داخلها يدفعها بأكملها لصفحة جديدة → فراغات بيضاء
+// الصحيح: السماح بقطع الحاويات بين بنودها الداخلية الذرّية (<li>, tr, .field-card, إلخ)
 function collectAtomicRectsForPDF(paper, scale){
   const paperTop = paper.getBoundingClientRect().top;
-  // العناصر التي لا نريد تقسيمها بين الصفحات
   const SELECTORS = [
-    // بطاقات الحقول والمعايير
+    // وحدات الحقول الصغيرة
     '.field-card',
-    '.field-grid',
     '.field-textarea',
+    // رؤوس ومسمّيات المعايير (وحدات بصرية مجمّعة)
     '.criterion-header',
-    '.criterion-content',
     '.criterion-section-label',
-    // قسم الشواهد
-    '.shawahed-section',
     '.shawahed-header',
-    '.shawahed-grid',
+    '.shawahed-actions',
+    // خانة الشاهد المنفردة
     '.shahed-slot',
-    // الجداول
-    '.editable-table',
+    // صفوف الجدول (الجدول نفسه ليس ذرّياً ليُسمح بكسره بين الصفوف)
     '.editable-table tr',
-    // قوائم النقاط
-    '.examples-list li',
+    // بنود القوائم
     'li',
-    // فهرس الأقسام
-    '.toc-section',
-    '.toc-grid',
+    // عناصر الفهرس المفردة
     '.toc-item',
-    // عناوين الأقسام
+    // عناوين الأقسام (وحدات صغيرة)
     '.section-title',
     '.section-header',
     '.section-number-badge',
     'h1','h2','h3','h4',
     // الصور
     'img',
-    // الغلاف
-    '.cover',
+    // وحدات الغلاف (الغلاف نفسه ليس ذرّياً)
+    '.cover-photo-wrap',
     '.cover-eyebrow',
     '.cover-title',
     '.cover-subtitle',
-    '.cover-photo-wrap',
     '.cover-pill',
-    // 🆕 الميثاق (مواد + مقدّمة + تعهّد)
-    '.mithaq-article',
+    '.cover-divider',
+    // عناوين/توقيعات الميثاق (الـ article نفسه ليس ذرّياً ليُسمح بكسره بين بنوده)
     '.mithaq-article-title',
-    '.mithaq-article-body',
-    '.mithaq-intro',
+    '.mithaq-article-num',
     '.mithaq-intro-title',
-    '.mithaq-intro-text',
-    '.mithaq-pledge',
+    '.mithaq-intro-date',
     '.mithaq-pledge-title',
-    '.mithaq-pledge-text',
     '.mithaq-pledge-sig',
+    '.mithaq-pledge',
     '.mithaq-sig-field',
-    // 🆕 الخاتمة
-    '.khatima-wrapper',
+    // عناصر الخاتمة الصغيرة (الـ wrapper الكامل ليس ذرّياً)
     '.khatima-title',
     '.khatima-subtitle',
-    '.khatima-body',
-    '.khatima-paragraph',
     '.khatima-firstline',
+    '.khatima-paragraph',
     '.khatima-end',
     '.khatima-end-frame',
     '.khatima-sig-row',
@@ -3845,8 +3835,7 @@ function collectAtomicRectsForPDF(paper, scale){
     '.khatima-signature',
     // أشرطة الوزارة
     '.moe-band',
-    '.moe-footer-band',
-    '.action-bar'
+    '.moe-footer-band'
   ];
   const rects = [];
   const seen = new Set();
@@ -3918,6 +3907,10 @@ async function exportAsPDFv2(){
     } else {
       // 🆕 عدة صفحات بتقسيم ذكي يتجنّب قطع العناصر
       const pageHeightInCanvas = (pdfHeight * canvas.width) / pdfWidth;
+      // 🆕 استبعد العناصر الأطول من 70% من ارتفاع الصفحة من قائمة الذرّية
+      //    هذه العناصر ستضطر للانشطار على كل حال (لا يمكن إبقاؤها سليمة)
+      //    إبقاؤها يسبّب فجوات بيضاء كبيرة لأنها تجبر القطع في رأسها
+      const effectiveRects = atomicRects.filter(r => (r.bottom - r.top) < pageHeightInCanvas * 0.7);
       let yOffset = 0;
       let pageCount = 0;
       const MAX_PAGES = 200; // حماية من الحلقات اللانهائية
@@ -3925,7 +3918,7 @@ async function exportAsPDFv2(){
         let cutAt = Math.min(yOffset + pageHeightInCanvas, canvas.height);
         // إذا لم تكن الصفحة الأخيرة، اضبط القطع ليتجنّب شطر عنصر ذرّي
         if(cutAt < canvas.height){
-          const adjusted = adjustCutForAtomic(cutAt, atomicRects, yOffset);
+          const adjusted = adjustCutForAtomic(cutAt, effectiveRects, yOffset);
           // اقبل التعديل إذا أبقى ولو قدراً يسيراً من المحتوى (≥ 5% من ارتفاع الصفحة)
           // الأولوية للحفاظ على العنصر سليماً حتى لو خسرنا بعض المساحة في الصفحة
           if(adjusted > yOffset + pageHeightInCanvas * 0.05){
