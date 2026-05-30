@@ -105,6 +105,22 @@ html,body{font-family:'Tajawal','Tahoma','Arial',sans-serif;background:linear-gr
 .cert-date-value{font-size:0.85rem;font-weight:800;outline:none;cursor:text;padding:1px 6px;border-radius:3px;display:inline-block;}
 .cert-date-value:focus{background:rgba(255,255,255,0.7);}
 .cert-date-label{font-size:0.65rem;opacity:0.7;font-weight:600;margin-top:1px;}
+
+/* ═══════════════════════════════════════════════════════════
+   🎨 ZUKHARAF: زخارف SVG فاخرة لكل ثيم (طبقة خلفية)
+   ═══════════════════════════════════════════════════════════ */
+.cert-deco{position:absolute;top:0;left:0;right:0;bottom:0;width:100%;height:100%;pointer-events:none;z-index:0;}
+.cert-deco svg{width:100%;height:100%;display:block;}
+/* عند تطبيق ثيم فخم، نخفي الإطارات البسيطة القديمة */
+.cp-fancy .cert-border-outer,
+.cp-fancy .cert-border-inner,
+.cp-fancy .cert-corner{display:none;}
+.cp-fancy .cert-head,
+.cp-fancy .cert-body,
+.cp-fancy .cert-footer{position:relative;z-index:2;}
+/* تخفّف ظل الـ paper عشان الزخرفة تبرز */
+.cp-fancy .cert-paper{padding:46px 60px;}
+
 .cp-theme-teal{color:#1a3c4e;}
 .cp-theme-teal .cert-paper{background:linear-gradient(135deg, #fdfcf8 0%, #f0e6c4 100%);}
 .cp-theme-teal .cert-seal-wrap{background:#1a3c4e;}
@@ -425,10 +441,538 @@ function backToGallery(){
 function applyTheme(theme){
   currentTheme = theme;
   const paper = document.getElementById('cert-paper');
-  paper.className = 'cert-paper cp-theme-' + theme;
+  paper.className = 'cert-paper cp-fancy cp-theme-' + theme;
+  // احقن الزخرفة الفاخرة المناسبة
+  let deco = paper.querySelector('.cert-deco');
+  if(!deco){
+    deco = document.createElement('div');
+    deco.className = 'cert-deco';
+    paper.insertBefore(deco, paper.firstChild);
+  }
+  deco.innerHTML = getCertDecoration(theme);
   document.querySelectorAll('#themes-row .theme-pill').forEach(p => {
     p.classList.toggle('active', p.dataset.theme === theme);
   });
+}
+
+// ═══════════════════════════════════════════════
+// 🎨 الزخارف الفاخرة لكل ثيم
+// ═══════════════════════════════════════════════
+function getCertDecoration(theme){
+  const decos = {
+    teal: certDecoTeal,
+    gold: certDecoGold,
+    green: certDecoGreen,
+    purple: certDecoPurple,
+    blue: certDecoBlue,
+    red: certDecoRed,
+    ocean: certDecoOcean
+  };
+  const fn = decos[theme] || certDecoTeal;
+  return `<svg viewBox="0 0 840 594" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">${fn()}</svg>`;
+}
+
+// نجمة 5 رؤوس
+function cStar(x, y, r){
+  let pts = '';
+  for(let i=0; i<5; i++){
+    const ao = (i*72-90)*Math.PI/180, ai = ((i*72)+36-90)*Math.PI/180;
+    pts += `${(x+Math.cos(ao)*r).toFixed(1)},${(y+Math.sin(ao)*r).toFixed(1)} `;
+    pts += `${(x+Math.cos(ai)*r*0.4).toFixed(1)},${(y+Math.sin(ai)*r*0.4).toFixed(1)} `;
+  }
+  return `<polygon points="${pts.trim()}"/>`;
+}
+
+// إطار ميدالية مسنّن
+function cMedallion(cx, cy, r, light, dark){
+  let teeth = '';
+  const n = 18;
+  for(let i=0; i<n; i++){
+    const ang = (i * 360 / n) * Math.PI / 180;
+    const x2 = cx + Math.cos(ang) * (r + 7);
+    const y2 = cy + Math.sin(ang) * (r + 7);
+    const angN = ((i + 0.5) * 360 / n) * Math.PI / 180;
+    const angP = ((i - 0.5) * 360 / n) * Math.PI / 180;
+    const xN = cx + Math.cos(angN) * r;
+    const yN = cy + Math.sin(angN) * r;
+    const xP = cx + Math.cos(angP) * r;
+    const yP = cy + Math.sin(angP) * r;
+    teeth += `<path d="M ${xP.toFixed(1)} ${yP.toFixed(1)} L ${x2.toFixed(1)} ${y2.toFixed(1)} L ${xN.toFixed(1)} ${yN.toFixed(1)} Z" fill="${light}" stroke="${dark}" stroke-width="0.5"/>`;
+  }
+  return teeth;
+}
+
+// ═══════════════════════════════════════════════
+// 1️⃣ teal — كلاسيكي تنفيذي (للمعلم)
+// إطار مزدوج + Guilloché + زوايا أرابيسك + ميدالية ذهبية
+// ═══════════════════════════════════════════════
+function certDecoTeal(){
+  return `
+    <defs>
+      <pattern id="g-teal" x="0" y="0" width="32" height="16" patternUnits="userSpaceOnUse">
+        <path d="M 0 8 Q 8 0 16 8 T 32 8" fill="none" stroke="#1a3c4e" stroke-width="0.35" opacity="0.5"/>
+        <path d="M 0 8 Q 8 16 16 8 T 32 8" fill="none" stroke="#c9a45b" stroke-width="0.35" opacity="0.4"/>
+      </pattern>
+      <linearGradient id="gold-teal" x1="0%" y1="0%" x2="100%" y2="100%">
+        <stop offset="0%" stop-color="#e8c976"/>
+        <stop offset="50%" stop-color="#b8923d"/>
+        <stop offset="100%" stop-color="#8b6914"/>
+      </linearGradient>
+    </defs>
+
+    <!-- Guilloché خلفية شفافة جداً -->
+    <rect x="40" y="40" width="760" height="514" fill="url(#g-teal)" opacity="0.4"/>
+
+    <!-- شعار مائي مركزي -->
+    <g transform="translate(420,297)" opacity="0.04" fill="#1a3c4e">
+      <circle r="130" fill="none" stroke="#1a3c4e" stroke-width="1.5"/>
+      <circle r="115" fill="none" stroke="#1a3c4e" stroke-width="0.6" stroke-dasharray="2 3"/>
+      ${cStar(0, 0, 75)}
+    </g>
+
+    <!-- إطار خارجي ذهبي ثخين -->
+    <rect x="14" y="14" width="812" height="566" fill="none" stroke="url(#gold-teal)" stroke-width="3.5" rx="3"/>
+    <!-- إطار داخلي رفيع -->
+    <rect x="26" y="26" width="788" height="542" fill="none" stroke="#1a3c4e" stroke-width="1.2" opacity="0.85" rx="2"/>
+    <!-- إطار ثالث متقطّع -->
+    <rect x="34" y="34" width="772" height="526" fill="none" stroke="#c9a45b" stroke-width="0.5" stroke-dasharray="1 2" opacity="0.7"/>
+
+    <!-- زوايا أرابيسك مفصّلة -->
+    ${tealCorner(46, 46, 0)}
+    ${tealCorner(794, 46, 90)}
+    ${tealCorner(794, 548, 180)}
+    ${tealCorner(46, 548, 270)}
+
+    <!-- زخرفة وسطية أعلى وأسفل -->
+    <g transform="translate(420, 46)" opacity="0.85">${tealCenterOrnament()}</g>
+    <g transform="translate(420, 548) rotate(180)" opacity="0.85">${tealCenterOrnament()}</g>
+
+    <!-- نقاط زخرفية على الإطار -->
+    <g fill="#c9a45b" opacity="0.85">
+      <circle cx="100" cy="26" r="2.5"/><circle cx="740" cy="26" r="2.5"/>
+      <circle cx="100" cy="568" r="2.5"/><circle cx="740" cy="568" r="2.5"/>
+      <circle cx="26" cy="160" r="2.5"/><circle cx="26" cy="434" r="2.5"/>
+      <circle cx="814" cy="160" r="2.5"/><circle cx="814" cy="434" r="2.5"/>
+    </g>
+
+    <!-- نجوم زخرفية صغيرة -->
+    <g fill="#c9a45b" opacity="0.4">
+      ${cStar(140, 130, 4)} ${cStar(700, 130, 4)}
+      ${cStar(140, 464, 4)} ${cStar(700, 464, 4)}
+    </g>
+  `;
+}
+function tealCorner(x, y, rot){
+  return `<g transform="translate(${x},${y}) rotate(${rot})">
+    <path d="M 0 0 L 0 50 M 0 0 L 50 0" stroke="#c9a45b" stroke-width="2" fill="none" stroke-linecap="round" opacity="0.9"/>
+    <path d="M 10 10 Q 38 10 38 38" fill="none" stroke="#1a3c4e" stroke-width="0.9" opacity="0.7"/>
+    <path d="M 0 0 Q -7 18 6 22 Q 14 14 0 0 Z" fill="#1a3c4e" opacity="0.5"/>
+    <path d="M 0 0 Q 18 -7 22 6 Q 14 14 0 0 Z" fill="#1a3c4e" opacity="0.5"/>
+    <circle cx="0" cy="0" r="4" fill="#c9a45b"/>
+    <circle cx="0" cy="0" r="2" fill="#1a3c4e"/>
+    <circle cx="25" cy="0" r="1.6" fill="#c9a45b" opacity="0.8"/>
+    <circle cx="0" cy="25" r="1.6" fill="#c9a45b" opacity="0.8"/>
+  </g>`;
+}
+function tealCenterOrnament(){
+  return `<g>
+    <line x1="-90" y1="0" x2="-22" y2="0" stroke="#c9a45b" stroke-width="0.7" opacity="0.7"/>
+    <line x1="22" y1="0" x2="90" y2="0" stroke="#c9a45b" stroke-width="0.7" opacity="0.7"/>
+    <path d="M 0 -9 L 12 0 L 0 9 L -12 0 Z" fill="#1a3c4e" opacity="0.9"/>
+    <path d="M 0 -5 L 7 0 L 0 5 L -7 0 Z" fill="#c9a45b"/>
+    <circle cx="-18" cy="0" r="1.6" fill="#c9a45b"/>
+    <circle cx="18" cy="0" r="1.6" fill="#c9a45b"/>
+  </g>`;
+}
+
+// ═══════════════════════════════════════════════
+// 2️⃣ gold — ذهبي ملكي (للتفوّق)
+// موجات قطرية معدنية + ميدالية بإكليل غار
+// ═══════════════════════════════════════════════
+function certDecoGold(){
+  return `
+    <defs>
+      <linearGradient id="g-deep" x1="0%" y1="0%" x2="100%" y2="100%">
+        <stop offset="0%" stop-color="#3d2a18"/>
+        <stop offset="100%" stop-color="#5d2e0e"/>
+      </linearGradient>
+      <linearGradient id="g-shine" x1="0%" y1="0%" x2="100%" y2="0%">
+        <stop offset="0%" stop-color="#8b6914"/>
+        <stop offset="40%" stop-color="#f4d27f"/>
+        <stop offset="50%" stop-color="#fff4cc"/>
+        <stop offset="60%" stop-color="#f4d27f"/>
+        <stop offset="100%" stop-color="#8b6914"/>
+      </linearGradient>
+      <radialGradient id="g-medal" cx="40%" cy="40%" r="65%">
+        <stop offset="0%" stop-color="#3d2a18"/>
+        <stop offset="100%" stop-color="#1a1408"/>
+      </radialGradient>
+    </defs>
+
+    <!-- موجة علوية يمنى كبيرة -->
+    <path d="M 840 0 L 840 150 Q 550 125 290 0 Z" fill="url(#g-deep)"/>
+    <path d="M 840 0 L 840 105 Q 550 85 340 0 Z" fill="url(#g-shine)"/>
+    <path d="M 840 0 L 840 75 Q 550 55 395 0 Z" fill="url(#g-deep)"/>
+    <path d="M 840 105 Q 550 85 340 0" fill="none" stroke="#d4a657" stroke-width="2"/>
+
+    <!-- موجة سفلية يسرى أصغر -->
+    <path d="M 0 594 L 0 470 Q 290 525 520 594 Z" fill="url(#g-deep)"/>
+    <path d="M 0 594 L 0 510 Q 290 545 450 594 Z" fill="url(#g-shine)"/>
+    <path d="M 0 510 Q 290 545 450 594" fill="none" stroke="#d4a657" stroke-width="2"/>
+
+    <!-- ميدالية مع إكليل غار -->
+    <g transform="translate(755, 90)">
+      <!-- إكليل غار (ورقتان جانبية) -->
+      <g opacity="0.95">
+        <path d="M -42 5 Q -36 -10 -25 -15 M -38 8 Q -32 -5 -24 -8 M -34 12 Q -28 0 -22 0 M -30 16 Q -24 5 -20 8" stroke="#d4a657" stroke-width="2" fill="none" stroke-linecap="round"/>
+        <path d="M 42 5 Q 36 -10 25 -15 M 38 8 Q 32 -5 24 -8 M 34 12 Q 28 0 22 0 M 30 16 Q 24 5 20 8" stroke="#d4a657" stroke-width="2" fill="none" stroke-linecap="round"/>
+      </g>
+      ${cMedallion(0, 0, 28, '#d4a657', '#8b6914')}
+      <circle cx="0" cy="0" r="22" fill="url(#g-shine)" stroke="#8b6914" stroke-width="0.8"/>
+      <circle cx="0" cy="0" r="18" fill="url(#g-medal)" stroke="#d4a657" stroke-width="1"/>
+      <g fill="url(#g-shine)">${cStar(0, -2, 8)}</g>
+      <text x="0" y="9" text-anchor="middle" fill="#d4a657" font-family="serif" font-size="4" font-weight="bold">EXCELLENCE</text>
+    </g>
+
+    <!-- نجوم متلألئة صغيرة -->
+    <g fill="#d4a657" opacity="0.3">
+      ${cStar(100, 200, 4)} ${cStar(720, 400, 4)}
+      ${cStar(60, 320, 3)} ${cStar(780, 480, 3)}
+    </g>
+  `;
+}
+
+// ═══════════════════════════════════════════════
+// 3️⃣ green — شارة الفخر السعودية (حسن السلوك)
+// سعف نخيل + نجوم ثمانية + زخرفة عربية
+// ═══════════════════════════════════════════════
+function certDecoGreen(){
+  return `
+    <defs>
+      <radialGradient id="green-medal" cx="50%" cy="50%" r="60%">
+        <stop offset="0%" stop-color="#2e9d5f"/>
+        <stop offset="100%" stop-color="#0d4429"/>
+      </radialGradient>
+    </defs>
+
+    <!-- سعف نخيل في الزوايا -->
+    ${greenPalm(795, 50, 1, 1, 0)}
+    ${greenPalm(45, 50, -1, 1, 0)}
+    ${greenPalm(795, 544, 1, -1, 0)}
+    ${greenPalm(45, 544, -1, -1, 0)}
+
+    <!-- نجوم ثمانية إسلامية -->
+    <g opacity="0.55">
+      ${islamicStar8(72, 80, '#1a4d2e', 11)}
+      ${islamicStar8(768, 80, '#1a4d2e', 11)}
+      ${islamicStar8(72, 514, '#1a4d2e', 11)}
+      ${islamicStar8(768, 514, '#1a4d2e', 11)}
+    </g>
+
+    <!-- إطار تركواز رفيع -->
+    <rect x="40" y="40" width="760" height="514" fill="none" stroke="#1a4d2e" stroke-width="2" opacity="0.75" rx="3"/>
+    <rect x="50" y="50" width="740" height="494" fill="none" stroke="#2e9d5f" stroke-width="0.8" opacity="0.55" stroke-dasharray="2 4"/>
+
+    <!-- زخرفة وسطية -->
+    <g transform="translate(420, 40)" opacity="0.85">${greenOrnament()}</g>
+    <g transform="translate(420, 554) rotate(180)" opacity="0.85">${greenOrnament()}</g>
+
+    <!-- ميدالية وطنية -->
+    <g transform="translate(420, 75)" opacity="0.3">
+      <circle r="35" fill="none" stroke="#1a4d2e" stroke-width="1.5"/>
+      <circle r="28" fill="none" stroke="#2e9d5f" stroke-width="0.8" stroke-dasharray="2 2"/>
+      <g fill="#1a4d2e">${cStar(0, 0, 18)}</g>
+    </g>
+  `;
+}
+function greenPalm(x, y, sx, sy, rot){
+  return `<g transform="translate(${x},${y}) scale(${sx},${sy}) rotate(${rot})">
+    <path d="M 0 0 Q -32 -20 -65 -38" stroke="#1a4d2e" stroke-width="1.8" fill="none" stroke-linecap="round"/>
+    <ellipse cx="-13" cy="-10" rx="12" ry="3.5" fill="#1a4d2e" transform="rotate(-15 -13 -10)" opacity="0.85"/>
+    <ellipse cx="-26" cy="-17" rx="14" ry="4" fill="#2e9d5f" transform="rotate(-20 -26 -17)" opacity="0.85"/>
+    <ellipse cx="-39" cy="-24" rx="15" ry="4.2" fill="#1a4d2e" transform="rotate(-25 -39 -24)" opacity="0.85"/>
+    <ellipse cx="-52" cy="-31" rx="16" ry="4.2" fill="#2e9d5f" transform="rotate(-28 -52 -31)" opacity="0.85"/>
+    <ellipse cx="-63" cy="-37" rx="14" ry="3.8" fill="#1a4d2e" transform="rotate(-32 -63 -37)" opacity="0.85"/>
+    <ellipse cx="-13" cy="2" rx="12" ry="3.5" fill="#2e9d5f" transform="rotate(15 -13 2)" opacity="0.7"/>
+    <ellipse cx="-26" cy="-4" rx="14" ry="4" fill="#1a4d2e" transform="rotate(10 -26 -4)" opacity="0.7"/>
+    <ellipse cx="-39" cy="-10" rx="15" ry="4.2" fill="#2e9d5f" transform="rotate(5 -39 -10)" opacity="0.7"/>
+    <ellipse cx="-52" cy="-17" rx="16" ry="4.2" fill="#1a4d2e" transform="rotate(0 -52 -17)" opacity="0.7"/>
+    <ellipse cx="-63" cy="-24" rx="14" ry="3.8" fill="#2e9d5f" transform="rotate(-5 -63 -24)" opacity="0.7"/>
+  </g>`;
+}
+function islamicStar8(cx, cy, color, sz){
+  return `<g transform="translate(${cx},${cy})">
+    <rect x="${-sz}" y="${-sz}" width="${sz*2}" height="${sz*2}" fill="${color}" opacity="0.7"/>
+    <rect x="${-sz}" y="${-sz}" width="${sz*2}" height="${sz*2}" fill="${color}" opacity="0.7" transform="rotate(45)"/>
+    <circle r="${sz*0.4}" fill="${color}"/>
+  </g>`;
+}
+function greenOrnament(){
+  return `<g>
+    <line x1="-110" y1="0" x2="-32" y2="0" stroke="#1a4d2e" stroke-width="0.9" opacity="0.7"/>
+    <line x1="32" y1="0" x2="110" y2="0" stroke="#1a4d2e" stroke-width="0.9" opacity="0.7"/>
+    <path d="M 0 -10 L 15 0 L 0 10 L -15 0 Z" fill="#1a4d2e" opacity="0.85"/>
+    <path d="M 0 -6 L 8 0 L 0 6 L -8 0 Z" fill="#2e9d5f"/>
+    <circle cx="-22" cy="0" r="2.2" fill="#2e9d5f"/>
+    <circle cx="22" cy="0" r="2.2" fill="#2e9d5f"/>
+  </g>`;
+}
+
+// ═══════════════════════════════════════════════
+// 4️⃣ purple — شراكة بنفسجية أنيقة (لولي الأمر)
+// موجات بنفسجية + ختم رسمي + ريبون
+// ═══════════════════════════════════════════════
+function certDecoPurple(){
+  return `
+    <defs>
+      <linearGradient id="p-wave" x1="0%" y1="0%" x2="100%" y2="0%">
+        <stop offset="0%" stop-color="#4a1a4d" stop-opacity="0.9"/>
+        <stop offset="50%" stop-color="#7a3a8d" stop-opacity="0.95"/>
+        <stop offset="100%" stop-color="#a55ab8" stop-opacity="0.9"/>
+      </linearGradient>
+      <linearGradient id="p-thin" x1="0%" y1="0%" x2="100%" y2="0%">
+        <stop offset="0%" stop-color="#c9a45b"/>
+        <stop offset="50%" stop-color="#fff4cc"/>
+        <stop offset="100%" stop-color="#c9a45b"/>
+      </linearGradient>
+      <radialGradient id="p-stamp" cx="50%" cy="50%" r="60%">
+        <stop offset="0%" stop-color="#7a3a8d"/>
+        <stop offset="100%" stop-color="#3a1240"/>
+      </radialGradient>
+    </defs>
+
+    <!-- شريط علوي بنفسجي مع موج خفيف -->
+    <path d="M 0 0 L 840 0 L 840 75 Q 700 60 560 80 T 280 75 T 80 88 L 0 85 Z" fill="url(#p-wave)"/>
+    <path d="M 0 80 Q 210 100 420 80 T 840 85" fill="none" stroke="url(#p-thin)" stroke-width="2" opacity="0.85"/>
+    <path d="M 0 92 Q 210 75 420 92 T 840 88" fill="none" stroke="url(#p-thin)" stroke-width="1" opacity="0.55"/>
+
+    <!-- شريط سفلي مماثل -->
+    <path d="M 0 594 L 840 594 L 840 519 Q 700 534 560 514 T 280 519 T 80 506 L 0 509 Z" fill="url(#p-wave)"/>
+    <path d="M 0 514 Q 210 494 420 514 T 840 509" fill="none" stroke="url(#p-thin)" stroke-width="2" opacity="0.85"/>
+    <path d="M 0 502 Q 210 519 420 502 T 840 506" fill="none" stroke="url(#p-thin)" stroke-width="1" opacity="0.55"/>
+
+    <!-- إطار داخلي رفيع -->
+    <rect x="50" y="125" width="740" height="345" fill="none" stroke="#7a3a8d" stroke-width="0.8" opacity="0.4" rx="3"/>
+
+    <!-- ختم رسمي مع ريبون -->
+    <g transform="translate(745, 90)">
+      <!-- ريبون شريط -->
+      <path d="M -15 22 L -22 60 L -15 56 L -10 64 L -3 50 Z" fill="#c9a45b" stroke="#8b6914" stroke-width="0.6"/>
+      <path d="M 15 22 L 22 60 L 15 56 L 10 64 L 3 50 Z" fill="#c9a45b" stroke="#8b6914" stroke-width="0.6"/>
+      <!-- الختم الدائري -->
+      <circle r="32" fill="url(#p-stamp)" stroke="#fff" stroke-width="2.5"/>
+      <circle r="32" fill="none" stroke="#c9a45b" stroke-width="0.8"/>
+      <circle r="26" fill="none" stroke="#fff" stroke-width="0.7" opacity="0.7" stroke-dasharray="2 2"/>
+      <g fill="#c9a45b">${cStar(0, -2, 11)}</g>
+      <text x="0" y="11" text-anchor="middle" fill="#fff" font-family="serif" font-size="4" font-weight="bold" letter-spacing="0.5">SCHOOL</text>
+    </g>
+
+    <!-- زخارف ذهبية متفرّقة -->
+    <g fill="#c9a45b" opacity="0.45">
+      ${cStar(120, 180, 4)} ${cStar(720, 420, 4)}
+    </g>
+  `;
+}
+
+// ═══════════════════════════════════════════════
+// 5️⃣ blue — مهني تنفيذي (الموظف الإداري)
+// شرائط أفقية كحلية + شعار مؤسسي
+// ═══════════════════════════════════════════════
+function certDecoBlue(){
+  return `
+    <defs>
+      <linearGradient id="b-strip" x1="0%" y1="0%" x2="100%" y2="0%">
+        <stop offset="0%" stop-color="#1a2a4d"/>
+        <stop offset="50%" stop-color="#2a4a7d"/>
+        <stop offset="100%" stop-color="#1a2a4d"/>
+      </linearGradient>
+      <linearGradient id="b-accent" x1="0%" y1="0%" x2="100%" y2="0%">
+        <stop offset="0%" stop-color="#c9a45b"/>
+        <stop offset="50%" stop-color="#f4d27f"/>
+        <stop offset="100%" stop-color="#c9a45b"/>
+      </linearGradient>
+    </defs>
+
+    <!-- شريط علوي كحلي رفيع -->
+    <rect x="0" y="0" width="840" height="14" fill="url(#b-strip)"/>
+    <rect x="0" y="14" width="840" height="2" fill="url(#b-accent)"/>
+    <!-- شريط ثاني أرفع -->
+    <rect x="0" y="22" width="840" height="6" fill="url(#b-strip)" opacity="0.6"/>
+
+    <!-- شريط سفلي مماثل -->
+    <rect x="0" y="580" width="840" height="14" fill="url(#b-strip)"/>
+    <rect x="0" y="578" width="840" height="2" fill="url(#b-accent)"/>
+    <rect x="0" y="566" width="840" height="6" fill="url(#b-strip)" opacity="0.6"/>
+
+    <!-- إطار رفيع داخلي -->
+    <rect x="40" y="50" width="760" height="494" fill="none" stroke="#1a2a4d" stroke-width="1.2" opacity="0.5" rx="2"/>
+    <rect x="50" y="60" width="740" height="474" fill="none" stroke="#c9a45b" stroke-width="0.5" opacity="0.5" stroke-dasharray="2 3"/>
+
+    <!-- شارة مؤسسية يسار علوي + يمين سفلي -->
+    <g transform="translate(85, 95)">
+      <rect x="-20" y="-20" width="40" height="40" fill="#1a2a4d" rx="2"/>
+      <rect x="-22" y="-22" width="44" height="44" fill="none" stroke="#c9a45b" stroke-width="1"/>
+      <g fill="#c9a45b">${cStar(0, 0, 12)}</g>
+    </g>
+    <g transform="translate(755, 499)">
+      <rect x="-20" y="-20" width="40" height="40" fill="#1a2a4d" rx="2"/>
+      <rect x="-22" y="-22" width="44" height="44" fill="none" stroke="#c9a45b" stroke-width="1"/>
+      <g fill="#c9a45b">${cStar(0, 0, 12)}</g>
+    </g>
+
+    <!-- خطوط جانبية رمزية (مؤسسية) -->
+    <g stroke="#1a2a4d" stroke-width="0.6" opacity="0.3" fill="none">
+      <line x1="50" y1="200" x2="80" y2="200"/>
+      <line x1="50" y1="210" x2="70" y2="210"/>
+      <line x1="50" y1="220" x2="80" y2="220"/>
+      <line x1="760" y1="380" x2="790" y2="380"/>
+      <line x1="770" y1="390" x2="790" y2="390"/>
+      <line x1="760" y1="400" x2="790" y2="400"/>
+    </g>
+
+    <!-- نقاط زخرفية -->
+    <g fill="#c9a45b" opacity="0.7">
+      <circle cx="420" cy="50" r="2"/>
+      <circle cx="420" cy="544" r="2"/>
+    </g>
+  `;
+}
+
+// ═══════════════════════════════════════════════
+// 6️⃣ red — تكريم متميّز (شهادة عامة)
+// إطار ذهبي مع لمسات حمراء + ميدالية فاخرة
+// ═══════════════════════════════════════════════
+function certDecoRed(){
+  return `
+    <defs>
+      <linearGradient id="r-rib" x1="0%" y1="0%" x2="100%" y2="100%">
+        <stop offset="0%" stop-color="#8b1a1a"/>
+        <stop offset="50%" stop-color="#c63030"/>
+        <stop offset="100%" stop-color="#5d1a1a"/>
+      </linearGradient>
+      <linearGradient id="r-gold" x1="0%" y1="0%" x2="100%" y2="0%">
+        <stop offset="0%" stop-color="#8b6914"/>
+        <stop offset="50%" stop-color="#f4d27f"/>
+        <stop offset="100%" stop-color="#8b6914"/>
+      </linearGradient>
+      <radialGradient id="r-cen" cx="40%" cy="40%" r="65%">
+        <stop offset="0%" stop-color="#8b1a1a"/>
+        <stop offset="100%" stop-color="#3d0a0a"/>
+      </radialGradient>
+    </defs>
+
+    <!-- إطار ذهبي خارجي ثخين -->
+    <rect x="14" y="14" width="812" height="566" fill="none" stroke="url(#r-gold)" stroke-width="3.5" rx="3"/>
+    <rect x="26" y="26" width="788" height="542" fill="none" stroke="#5d1a1a" stroke-width="1.2" opacity="0.85" rx="2"/>
+    <rect x="34" y="34" width="772" height="526" fill="none" stroke="#c9a45b" stroke-width="0.5" stroke-dasharray="1 2" opacity="0.7"/>
+
+    <!-- زوايا بشكل مثلث ذهبي -->
+    <g fill="#c9a45b" opacity="0.85">
+      <path d="M 26 26 L 80 26 L 26 80 Z" opacity="0.3"/>
+      <path d="M 814 26 L 760 26 L 814 80 Z" opacity="0.3"/>
+      <path d="M 26 568 L 80 568 L 26 514 Z" opacity="0.3"/>
+      <path d="M 814 568 L 760 568 L 814 514 Z" opacity="0.3"/>
+    </g>
+
+    <!-- زوايا مع نجوم -->
+    <g fill="#8b1a1a" opacity="0.7">
+      ${cStar(60, 60, 6)} ${cStar(780, 60, 6)}
+      ${cStar(60, 534, 6)} ${cStar(780, 534, 6)}
+    </g>
+
+    <!-- شعار مائي مركزي -->
+    <g transform="translate(420,297)" opacity="0.05" fill="#5d1a1a">
+      <circle r="120" fill="none" stroke="#5d1a1a" stroke-width="1.5"/>
+      ${cStar(0, 0, 70)}
+    </g>
+
+    <!-- ميدالية مع شريط أحمر -->
+    <g transform="translate(755, 95)">
+      <!-- شريط أحمر مزدوج -->
+      <path d="M -16 25 L -25 65 L -18 60 L -14 68 L -5 54 Z" fill="url(#r-rib)" stroke="#5d1a1a" stroke-width="0.5"/>
+      <path d="M 16 25 L 25 65 L 18 60 L 14 68 L 5 54 Z" fill="url(#r-rib)" stroke="#5d1a1a" stroke-width="0.5"/>
+      <!-- الميدالية -->
+      ${cMedallion(0, 0, 28, '#c9a45b', '#8b6914')}
+      <circle cx="0" cy="0" r="22" fill="url(#r-gold)" stroke="#8b6914" stroke-width="0.8"/>
+      <circle cx="0" cy="0" r="18" fill="url(#r-cen)" stroke="#c9a45b" stroke-width="1"/>
+      <g fill="#c9a45b">${cStar(0, -2, 8)}</g>
+      <text x="0" y="10" text-anchor="middle" fill="#c9a45b" font-family="serif" font-size="3.5" font-weight="bold">HONOR</text>
+    </g>
+
+    <!-- زخارف وسطية -->
+    <g transform="translate(420, 26)" opacity="0.85">${redOrnament()}</g>
+    <g transform="translate(420, 568) rotate(180)" opacity="0.85">${redOrnament()}</g>
+  `;
+}
+function redOrnament(){
+  return `<g>
+    <line x1="-95" y1="0" x2="-25" y2="0" stroke="#c9a45b" stroke-width="0.7" opacity="0.75"/>
+    <line x1="25" y1="0" x2="95" y2="0" stroke="#c9a45b" stroke-width="0.7" opacity="0.75"/>
+    <path d="M 0 -10 L 13 0 L 0 10 L -13 0 Z" fill="#5d1a1a" opacity="0.9"/>
+    <path d="M 0 -5 L 7 0 L 0 5 L -7 0 Z" fill="#c9a45b"/>
+    <circle cx="-19" cy="0" r="1.8" fill="#c9a45b"/>
+    <circle cx="19" cy="0" r="1.8" fill="#c9a45b"/>
+  </g>`;
+}
+
+// ═══════════════════════════════════════════════
+// 7️⃣ ocean — احتفالية مشاركة (لفعالية)
+// موجات تركوازية + بادج عصري
+// ═══════════════════════════════════════════════
+function certDecoOcean(){
+  return `
+    <defs>
+      <linearGradient id="o-wt" x1="0%" y1="0%" x2="100%" y2="0%">
+        <stop offset="0%" stop-color="#0d4d5d" stop-opacity="0.85"/>
+        <stop offset="50%" stop-color="#1a7a8a" stop-opacity="0.9"/>
+        <stop offset="100%" stop-color="#3aa8d0" stop-opacity="0.85"/>
+      </linearGradient>
+      <linearGradient id="o-wm" x1="0%" y1="0%" x2="100%" y2="0%">
+        <stop offset="0%" stop-color="#3aa8d0" stop-opacity="0.5"/>
+        <stop offset="50%" stop-color="#5bc0de" stop-opacity="0.6"/>
+        <stop offset="100%" stop-color="#3aa8d0" stop-opacity="0.5"/>
+      </linearGradient>
+      <radialGradient id="o-bd" cx="50%" cy="35%" r="65%">
+        <stop offset="0%" stop-color="#3aa8d0"/>
+        <stop offset="60%" stop-color="#1a7a8a"/>
+        <stop offset="100%" stop-color="#0d4d5d"/>
+      </radialGradient>
+    </defs>
+
+    <!-- شرائط موجية علوية -->
+    <path d="M 0 0 L 840 0 L 840 75 Q 720 62 590 80 T 340 75 T 80 88 L 0 84 Z" fill="url(#o-wt)"/>
+    <path d="M 0 0 L 840 0 L 840 50 Q 720 42 590 58 T 340 50 T 80 63 L 0 59 Z" fill="url(#o-wm)"/>
+    <path d="M 0 84 Q 210 100 420 84 T 840 80" fill="none" stroke="#1a7a8a" stroke-width="1.5" opacity="0.5"/>
+    <path d="M 0 96 Q 210 80 420 96 T 840 92" fill="none" stroke="#3aa8d0" stroke-width="1" opacity="0.4"/>
+
+    <!-- شرائط سفلية -->
+    <path d="M 0 594 L 840 594 L 840 519 Q 720 532 590 514 T 340 519 T 80 506 L 0 510 Z" fill="url(#o-wt)"/>
+    <path d="M 0 594 L 840 594 L 840 544 Q 720 552 590 536 T 340 544 T 80 531 L 0 535 Z" fill="url(#o-wm)"/>
+    <path d="M 0 510 Q 210 494 420 510 T 840 514" fill="none" stroke="#1a7a8a" stroke-width="1.5" opacity="0.5"/>
+
+    <!-- إطار رفيع داخلي -->
+    <rect x="50" y="135" width="740" height="324" fill="none" stroke="#1a7a8a" stroke-width="0.9" opacity="0.4" rx="3"/>
+
+    <!-- فقاعات مائية -->
+    <g opacity="0.25" fill="#3aa8d0">
+      <circle cx="75" cy="240" r="18"/><circle cx="40" cy="210" r="9"/><circle cx="105" cy="210" r="7"/>
+      <circle cx="765" cy="360" r="18"/><circle cx="800" cy="390" r="9"/><circle cx="735" cy="390" r="7"/>
+    </g>
+
+    <!-- بادج دائري عصري -->
+    <g transform="translate(755, 88)">
+      <circle r="35" fill="url(#o-bd)" stroke="#fff" stroke-width="2.5"/>
+      <circle r="35" fill="none" stroke="#1a7a8a" stroke-width="0.8" opacity="0.5"/>
+      <circle r="30" fill="none" stroke="#fff" stroke-width="0.6" opacity="0.6" stroke-dasharray="2 2"/>
+      <g fill="#fff">${cStar(0, -2, 12)}</g>
+      <text x="0" y="11" text-anchor="middle" fill="#fff" font-family="sans-serif" font-size="4" font-weight="bold" letter-spacing="1">EVENT</text>
+    </g>
+
+    <!-- نجوم متفرّقة -->
+    <g fill="#1a7a8a" opacity="0.4">
+      ${cStar(120, 200, 4)} ${cStar(720, 400, 4)}
+    </g>
+  `;
 }
 
 document.querySelectorAll('#themes-row .theme-pill').forEach(p => {
