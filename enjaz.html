@@ -3437,8 +3437,10 @@ function prepareForExport(){
     const v = inp.value;
     const cs = getComputedStyle(inp);
     const span = document.createElement('span');
+    // 🆕 الحقول داخل الجداول: دائماً اسمح بالالتفاف وأظهر النص كاملاً (لا overflow:hidden)
+    const isInTable = !!inp.closest('.editable-table');
     // للحقول العريضة (>200px) والنص الطويل (>30 حرف): سامح بالتفاف الكلمات
-    const allowWrap = inp.offsetWidth > 200 && v && v.length > 30;
+    const allowWrap = isInTable || (inp.offsetWidth > 200 && v && v.length > 30);
     span.style.cssText = `
       display:inline-block;
       width:${inp.offsetWidth}px;
@@ -3451,9 +3453,11 @@ function prepareForExport(){
       border-bottom:${cs.borderBottom};
       box-sizing:border-box;
       white-space:${allowWrap ? 'pre-wrap' : 'nowrap'};
-      overflow:hidden;
+      overflow:${isInTable ? 'visible' : 'hidden'};
+      word-break:${isInTable ? 'break-word' : 'normal'};
       line-height:${cs.lineHeight};
       direction:rtl;
+      vertical-align:middle;
     `;
     span.innerHTML = wrapWords(v || '');
     stored.push({type:'input', el:inp, span});
