@@ -1508,6 +1508,57 @@ box-shadow:0 4px 12px rgba(0,0,0,0.2),inset 0 1px 0 rgba(255,255,255,0.2);
 .shawahed-snap-bars span:nth-child(3){width:60%;}
 .shawahed-snap-badge{font-size:0.58rem;font-weight:800;color:#fff;background:#1e6b8a;padding:2px 10px;border-radius:99px;position:relative;z-index:1;}
 
+/* أيقونة إنجاز المعلم + لمعة (تدرّج تيل-ذهبي يعبّر عن النمو والقياس) */
+.cat-icon.achievement{background:linear-gradient(135deg,#16a085,#0d6e5a);position:relative;overflow:hidden;}
+.cat-icon.achievement::after{
+  content:"";position:absolute;top:-50%;left:-70%;
+  width:45%;height:200%;
+  background:linear-gradient(90deg,transparent,rgba(212,166,87,0.6),transparent);
+  transform:rotate(22deg);
+  animation:achievementIconSweep 4.2s ease-in-out infinite;
+}
+@keyframes achievementIconSweep{0%,74%{left:-70%;}88%,100%{left:150%;}}
+
+/* ═══ كرت إنجاز المعلم (3 أعمدة بيانية متدرجة) ═══ */
+.thumb-achievement{
+  background:linear-gradient(160deg,#0a2620,#06181a);
+  display:flex;align-items:center;justify-content:center;
+  position:relative;overflow:hidden;
+}
+.achievement-snap{
+  width:78%;height:82%;
+  background:linear-gradient(160deg,#fdfcf8,#f5fbf8);
+  border:2px solid #16a085;border-radius:8px;
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  gap:6px;padding:6px 8px;position:relative;overflow:hidden;
+  box-shadow:0 8px 20px rgba(0,0,0,0.3);
+}
+.achievement-snap-glow{
+  position:absolute;top:-40%;left:-60%;
+  width:50%;height:200%;
+  background:linear-gradient(90deg,transparent,rgba(212,166,87,0.4),transparent);
+  transform:rotate(22deg);
+  animation:achievementSnapSweep 3.8s ease-in-out infinite;
+}
+@keyframes achievementSnapSweep{0%,70%{left:-60%;}85%,100%{left:160%;}}
+.achievement-snap-head{font-size:1.4rem;line-height:1;position:relative;z-index:1;}
+.achievement-snap-title{font-family:'Reem Kufi',sans-serif;font-size:0.74rem;font-weight:800;color:#0d6e5a;position:relative;z-index:1;}
+.achievement-snap-chart{
+  display:flex;align-items:flex-end;justify-content:center;gap:4px;
+  height:28px;width:60%;position:relative;z-index:1;
+}
+.achievement-snap-chart span{
+  flex:1;border-radius:2px 2px 0 0;
+  background:linear-gradient(180deg,#16a085,#0d6e5a);
+  position:relative;
+}
+.achievement-snap-chart span:nth-child(1){height:50%;}
+.achievement-snap-chart span:nth-child(2){height:80%;background:linear-gradient(180deg,#d4a657,#a87f3f);}
+.achievement-snap-chart span:nth-child(3){height:65%;}
+.achievement-snap-chart span:nth-child(4){height:100%;background:linear-gradient(180deg,#d4a657,#a87f3f);}
+.achievement-snap-chart span:nth-child(5){height:75%;}
+.achievement-snap-badge{font-size:0.58rem;font-weight:800;color:#fff;background:linear-gradient(135deg,#16a085,#0d6e5a);padding:2px 10px;border-radius:99px;position:relative;z-index:1;}
+
 /* ═══ كرت نجم الأسبوع ═══ */
 .thumb-star{
   background:linear-gradient(160deg,#1a2535,#0f1a28);
@@ -4521,6 +4572,57 @@ font-size:0.78rem;text-align:center;margin-top:12px;display:none;
       </div>
     </div>
 
+    <!-- ═══ تصنيف: ملف إنجاز المعلم/ة (مدفوع) ═══ -->
+    <div class="cat-section" data-cat="achievement">
+      <div class="cat-header" onclick="toggleCategory(this)">
+        <div class="cat-icon achievement">📊</div>
+        <div class="cat-text">
+          <div class="cat-title">
+            <span data-i18n="catAchievement">ملف إنجاز المعلم/ة</span>
+            <span class="cat-count">1</span>
+          </div>
+          <div class="cat-sub" data-i18n="catAchievementSub">سجل الأنشطة والإنجازات · رسومات بيانية · 5 ثيمات</div>
+        </div>
+        <div class="cat-chevron">▼</div>
+      </div>
+      <div class="cat-body">
+        <div class="cat-cards">
+
+    <div class="preview-card r-achievement locked" data-target="enjaz.html" onclick="handleCardClick(this)">
+      <span class="card-badge badge-new">✨ <span data-i18n="badgeAchievement">جديد</span></span>
+      <div class="thumb thumb-achievement">
+        <div class="achievement-snap">
+          <div class="achievement-snap-glow"></div>
+          <div class="achievement-snap-head">📊</div>
+          <div class="achievement-snap-title">ملف إنجاز</div>
+          <div class="achievement-snap-chart">
+            <span></span><span></span><span></span><span></span><span></span>
+          </div>
+          <div class="achievement-snap-badge">5 ثيمات احترافية</div>
+        </div>
+        <div class="lock-overlay">
+          <div class="lock-cta">
+            <span>🔑</span>
+            <span data-i18n="lockCta">سجّل الدخول للوصول</span>
+          </div>
+        </div>
+      </div>
+      <div class="card-content">
+        <div class="card-icon-wrap">
+          <div class="card-icon">📊</div>
+        </div>
+        <div class="card-text">
+          <div class="card-title" data-i18n="achievementCardTitle">ملف إنجاز المعلم/ة</div>
+          <div class="card-desc" data-i18n="achievementCardDesc">سجل أنشطتك وإنجازاتك · هوية رسمية · 5 ثيمات</div>
+        </div>
+        <div class="card-action">‹</div>
+      </div>
+    </div>
+
+        </div>
+      </div>
+    </div>
+
     <!-- ═══ تصنيف: المناسبات الوطنية ═══ -->
     <div class="cat-section" data-cat="events">
       <div class="cat-header" onclick="toggleCategory(this)">
@@ -6406,6 +6508,11 @@ const I18N = {
     badgeShawahed: "جديد",
     shawahedCardTitle: "شواهد الأداء الوظيفي",
     shawahedCardDesc: "11 عنصر رسمي · رفع صور الشواهد · تصدير PDF",
+    catAchievement: "ملف إنجاز المعلم/ة",
+    catAchievementSub: "سجل الأنشطة والإنجازات · رسومات بيانية · 5 ثيمات",
+    badgeAchievement: "جديد",
+    achievementCardTitle: "ملف إنجاز المعلم/ة",
+    achievementCardDesc: "سجل أنشطتك وإنجازاتك · هوية رسمية · 5 ثيمات",
     catTools: "أدوات مجانية",
     catToolsSub: "مولّد باركود QR للصور والروابط · مجاني للجميع",
     badgeToolFree: "مجاني تماماً",
@@ -6681,6 +6788,11 @@ const I18N = {
     badgeShawahed: "New",
     shawahedCardTitle: "Job Performance Evidence",
     shawahedCardDesc: "11 official elements · Upload evidence · Export PDF",
+    catAchievement: "Teacher Achievement Portfolio",
+    catAchievementSub: "Track activities & achievements · Charts · 5 themes",
+    badgeAchievement: "New",
+    achievementCardTitle: "Teacher Achievement Portfolio",
+    achievementCardDesc: "Document your activities · Official identity · 5 themes",
     catTools: "Free Tools",
     catToolsSub: "QR code generator for images & links · Free for everyone",
     badgeToolFree: "100% Free",
