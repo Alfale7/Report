@@ -424,7 +424,7 @@ body{
   <div class="card">
     <label class="input-label">
       <span>📄</span><span>اختر ملف PDF</span>
-      <span class="badge">دائم · حتى 200MB</span>
+      <span class="badge">سريع · حتى 200MB</span>
     </label>
 
     <label class="dropzone" id="dropzone">
@@ -471,7 +471,7 @@ body{
         <div class="link-info-label">🔗 الرابط (اضغط لنسخه)</div>
         <div class="link-info-url" id="resultUrl" onclick="copyUrl()">—</div>
         <div class="link-info-meta">
-          <span>♾️ <span>دائم</span></span>
+          <span><span id="resultExpiryIcon">♾️</span> <span id="resultExpiry">—</span></span>
           <span>📦 <span id="resultSize">—</span></span>
         </div>
       </div>
@@ -512,8 +512,9 @@ body{
 let selectedFile = null;
 let currentUrl = '';
 let currentSize = '';
+let currentExpiry = '';
 
-const MAX_FILE_SIZE = 200 * 1024 * 1024; // 200MB (حد catbox.moe الدائم)
+const MAX_FILE_SIZE = 200 * 1024 * 1024; // 200MB
 
 /* ════════════════════════════════════════════════
    اختيار وعرض الملف
@@ -581,7 +582,104 @@ function formatSize(bytes){
 }
 
 /* ════════════════════════════════════════════════
-   الرفع لـ catbox.moe (دائم)
+   نظام الرفع: 3 خدمات بالتسلسل
+   ════════════════════════════════════════════════ */
+
+// خدمة 1: catbox.moe (دائم)
+function uploadCatbox(file, onProgress){
+  return new Promise((resolve, reject) => {
+    const formData = new FormData();
+    formData.append('reqtype', 'fileupload');
+    formData.append('fileToUpload', file);
+    const xhr = new XMLHttpRequest();
+    xhr.timeout = 60000; // 60 ثانية
+    xhr.open('POST', 'https://catbox.moe/user/api.php');
+    xhr.upload.addEventListener('progress', (e) => {
+      if(e.lengthComputable && onProgress){
+        onProgress(Math.round((e.loaded / e.total) * 100));
+      }
+    });
+    xhr.addEventListener('load', () => {
+      if(xhr.status >= 200 && xhr.status < 300){
+        const r = xhr.responseText.trim();
+        if(r.startsWith('http')) resolve({ url: r, expiry: 'دائم', icon: '♾️' });
+        else reject(new Error('catbox: استجابة غير صالحة'));
+      } else reject(new Error('catbox: HTTP ' + xhr.status));
+    });
+    xhr.addEventListener('error', () => reject(new Error('catbox: خطأ شبكة')));
+    xhr.addEventListener('timeout', () => reject(new Error('catbox: انتهت المهلة')));
+    xhr.addEventListener('abort', () => reject(new Error('catbox: تم إلغاء')));
+    xhr.send(formData);
+  });
+}
+
+// خدمة 2: uguu.se (48 ساعة)
+function uploadUguu(file, onProgress){
+  return new Promise((resolve, reject) => {
+    const formData = new FormData();
+    formData.append('files[]', file);
+    const xhr = new XMLHttpRequest();
+    xhr.timeout = 60000;
+    xhr.open('POST', 'https://uguu.se/upload');
+    xhr.upload.addEventListener('progress', (e) => {
+      if(e.lengthComputable && onProgress){
+        onProgress(Math.round((e.loaded / e.total) * 100));
+      }
+    });
+    xhr.addEventListener('load', () => {
+      if(xhr.status >= 200 && xhr.status < 300){
+        try {
+          const data = JSON.parse(xhr.responseText);
+          if(data && data.files && data.files[0] && data.files[0].url){
+            resolve({ url: data.files[0].url, expiry: '48 ساعة', icon: '⏱️' });
+          } else reject(new Error('uguu: استجابة غير صالحة'));
+        } catch(e){ reject(new Error('uguu: فشل التحليل')); }
+      } else reject(new Error('uguu: HTTP ' + xhr.status));
+    });
+    xhr.addEventListener('error', () => reject(new Error('uguu: خطأ شبكة')));
+    xhr.addEventListener('timeout', () => reject(new Error('uguu: انتهت المهلة')));
+    xhr.addEventListener('abort', () => reject(new Error('uguu: تم إلغاء')));
+    xhr.send(formData);
+  });
+}
+
+// خدمة 3: tmpfiles.org (60 دقيقة)
+function uploadTmpfiles(file, onProgress){
+  return new Promise((resolve, reject) => {
+    const formData = new FormData();
+    formData.append('file', file);
+    const xhr = new XMLHttpRequest();
+    xhr.timeout = 60000;
+    xhr.open('POST', 'https://tmpfiles.org/api/v1/upload');
+    xhr.upload.addEventListener('progress', (e) => {
+      if(e.lengthComputable && onProgress){
+        onProgress(Math.round((e.loaded / e.total) * 100));
+      }
+    });
+    xhr.addEventListener('load', () => {
+      if(xhr.status >= 200 && xhr.status < 300){
+        try {
+          const data = JSON.parse(xhr.responseText);
+          if(data && data.data && data.data.url){
+            // tmpfiles يرجع رابط مع /dl/ لتحميل مباشر
+            let url = data.data.url;
+            if(url.includes('tmpfiles.org/') && !url.includes('/dl/')){
+              url = url.replace('tmpfiles.org/', 'tmpfiles.org/dl/');
+            }
+            resolve({ url: url, expiry: '60 دقيقة', icon: '⏱️' });
+          } else reject(new Error('tmpfiles: استجابة غير صالحة'));
+        } catch(e){ reject(new Error('tmpfiles: فشل التحليل')); }
+      } else reject(new Error('tmpfiles: HTTP ' + xhr.status));
+    });
+    xhr.addEventListener('error', () => reject(new Error('tmpfiles: خطأ شبكة')));
+    xhr.addEventListener('timeout', () => reject(new Error('tmpfiles: انتهت المهلة')));
+    xhr.addEventListener('abort', () => reject(new Error('tmpfiles: تم إلغاء')));
+    xhr.send(formData);
+  });
+}
+
+/* ════════════════════════════════════════════════
+   الدالة الرئيسية: تجرب 3 خدمات بالتسلسل
    ════════════════════════════════════════════════ */
 async function uploadAndGenerate(){
   if(!selectedFile){ showToast('⚠️ اختر ملفاً أولاً'); return; }
@@ -593,72 +691,67 @@ async function uploadAndGenerate(){
 
   btn.classList.add('uploading');
   btn.disabled = true;
-  btnText.textContent = 'جارٍ الرفع...';
   progress.classList.add('show');
   fill.style.width = '0%';
 
-  try {
-    const formData = new FormData();
-    formData.append('reqtype', 'fileupload');
-    formData.append('fileToUpload', selectedFile);
+  const services = [
+    { name: 'الخادم الأساسي', fn: uploadCatbox },
+    { name: 'الخادم البديل', fn: uploadUguu },
+    { name: 'خادم احتياطي', fn: uploadTmpfiles }
+  ];
 
-    // استخدم XMLHttpRequest للحصول على progress events
-    const url = await new Promise((resolve, reject) => {
-      const xhr = new XMLHttpRequest();
-      xhr.open('POST', 'https://catbox.moe/user/api.php');
+  let result = null;
+  let lastError = null;
 
-      xhr.upload.addEventListener('progress', (e) => {
-        if(e.lengthComputable){
-          const pct = Math.round((e.loaded / e.total) * 100);
-          fill.style.width = pct + '%';
-          btnText.textContent = `جارٍ الرفع... ${pct}%`;
-        }
+  for(let i = 0; i < services.length; i++){
+    const svc = services[i];
+    btnText.textContent = `جارٍ المحاولة عبر ${svc.name}...`;
+    fill.style.width = '0%';
+    try {
+      result = await svc.fn(selectedFile, (pct) => {
+        fill.style.width = pct + '%';
+        btnText.textContent = `${svc.name} · ${pct}%`;
       });
+      break; // نجح، اخرج
+    } catch(err){
+      console.warn(svc.name + ' فشل:', err.message);
+      lastError = err;
+      // استمر للخدمة التالية
+      if(i < services.length - 1){
+        showToast(`⚠️ المحاولة ${i+1} فشلت، جارٍ المحاولة بطريقة أخرى...`);
+        await new Promise(r => setTimeout(r, 600));
+      }
+    }
+  }
 
-      xhr.addEventListener('load', () => {
-        if(xhr.status >= 200 && xhr.status < 300){
-          const response = xhr.responseText.trim();
-          if(response.startsWith('http')){
-            resolve(response);
-          } else {
-            reject(new Error('استجابة غير صالحة من الخادم'));
-          }
-        } else {
-          reject(new Error('فشل الرفع (HTTP ' + xhr.status + ')'));
-        }
-      });
-
-      xhr.addEventListener('error', () => reject(new Error('خطأ في الشبكة')));
-      xhr.addEventListener('abort', () => reject(new Error('تم إلغاء الرفع')));
-
-      xhr.send(formData);
-    });
-
-    // نجح الرفع
-    currentUrl = url;
+  // النتيجة
+  if(result){
+    currentUrl = result.url;
+    currentExpiry = result.expiry;
     currentSize = formatSize(selectedFile.size);
 
-    generateQRCode(url);
-    document.getElementById('resultUrl').textContent = url;
+    generateQRCode(result.url);
+    document.getElementById('resultUrl').textContent = result.url;
+    document.getElementById('resultExpiry').textContent = result.expiry;
+    document.getElementById('resultExpiryIcon').textContent = result.icon;
     document.getElementById('resultSize').textContent = currentSize;
 
-    const result = document.getElementById('result');
-    result.classList.add('show');
+    const resultDiv = document.getElementById('result');
+    resultDiv.classList.add('show');
     showToast('✅ تم رفع الملف وتوليد الباركود');
-    setTimeout(() => { result.scrollIntoView({behavior:'smooth', block:'center'}); }, 200);
-
-  } catch(err) {
-    console.error(err);
-    showToast('❌ ' + (err.message || 'فشل الرفع'));
-  } finally {
-    btn.classList.remove('uploading');
-    btn.disabled = false;
-    btnText.textContent = 'رفع وتوليد الباركود';
-    setTimeout(() => {
-      progress.classList.remove('show');
-      fill.style.width = '0%';
-    }, 1500);
+    setTimeout(() => { resultDiv.scrollIntoView({behavior:'smooth', block:'center'}); }, 200);
+  } else {
+    showToast('❌ فشلت كل المحاولات. تحقّق من الإنترنت أو جرّب لاحقاً');
+    console.error('كل الخدمات فشلت:', lastError);
   }
+
+  btn.classList.remove('uploading');
+  btn.disabled = false;
+  btnText.textContent = 'رفع وتوليد الباركود';
+  setTimeout(() => {
+    progress.classList.remove('show');
+    fill.style.width = '0%';
+  }, 1500);
 }
 
 /* ════════════════════════════════════════════════
@@ -714,7 +807,7 @@ async function shareQR(){
       await navigator.share({
         files:[file],
         title:'باركود ملف PDF',
-        text:'📄 امسح الباركود لفتح الملف\n\n🔗 ' + currentUrl + '\n\n🌐 www.ksa2030.one'
+        text:'📄 امسح الباركود لفتح الملف\n\n🔗 ' + currentUrl + '\n⏱️ صالح: ' + currentExpiry + '\n\n🌐 www.ksa2030.one'
       });
       showToast('✅ تم المشاركة');
     } else {
