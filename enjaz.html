@@ -2089,6 +2089,9 @@ body.view-tabs .section.tab-section.tab-active{display:block; animation:fadeInTa
 .exporting input::placeholder,
 .exporting textarea::placeholder{color:transparent !important;}
 
+/* 🆕 في تصدير وضع التبويبات: أخفِ الغلاف عشان يُصدَّر فقط القسم الحالي مع الترويسة والفوتر */
+.exporting-tabs .cover{display:none !important;}
+
 @media print{
   body{background:#fff; padding:0;}
   .enjaz-paper{box-shadow:none; margin:0; max-width:100%;}
@@ -3399,51 +3402,129 @@ function loadJsPDF(){
    ═══════════════════════════════════════════════════════ */
 function prepareForExport(){
   document.body.classList.add('exporting');
-  // إذا الوضع tabs، حوّل مؤقتاً لـ continuous عشان كل الأقسام تظهر في التصدير
-  const wasTabsMode = document.body.classList.contains('view-tabs');
-  if(wasTabsMode){
-    document.body.classList.remove('view-tabs');
-    document.querySelectorAll('.tab-section').forEach(s => s.classList.remove('tab-active'));
-  }
-  // أفتح الفهرس للتصدير
-  const tocBody = document.getElementById('tocCollapsible');
-  const tocWasClosed = tocBody && !tocBody.classList.contains('open');
-  if(tocWasClosed) tocBody.classList.add('open');
+  // 🆕 لو الوضع tabs: نبقى في tabs، نُصدّر القسم الفعّال فقط (لا نحوّل لـ continuous)
+  // لو الوضع continuous: نُصدّر الملف بالكامل (مع فتح الفهرس)
+  const inTabsMode = document.body.classList.contains('view-tabs');
 
-  // تحويل inputs النصية للملف للنصوص (للحفاظ على المحتوى بدون cursor)
+  let tocWasClosed = false;
+  if(inTabsMode){
+    // في وضع التبويبات: تأكّد أن قسم واحد فقط (الفعّال) ظاهر
+    // كل tab-section مخفية افتراضياً عبر CSS، فقط .tab-active تظهر
+    // لذا لا نحتاج إجراءات إضافية للأقسام
+    document.body.classList.add('exporting-tabs'); // علامة لإخفاء عناصر إضافية
+  } else {
+    // في الوضع المستمر: افتح الفهرس عشان يدخل في التصدير
+    const tocBody = document.getElementById('tocCollapsible');
+    tocWasClosed = tocBody && !tocBody.classList.contains('open');
+    if(tocWasClosed) tocBody.classList.add('open');
+  }
+
+  // helper: لف كل كلمة في span عشان الكلمة العربية ما تتقطع عند الـ rendering
+  const wrapWords = (text) => {
+    if(!text) return '';
+    return text.split(/(\s+)/).map(part => {
+      if(/^\s+$/.test(part)) return part;
+      const safe = part.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+      return `<span style="display:inline-block;white-space:nowrap">${safe}</span>`;
+    }).join('');
+  };
+
   const stored = [];
+
+  // 1) الـ inputs النصية → span مع نفس الشكل
   document.querySelectorAll('.enjaz-paper input[type="text"], .enjaz-paper input[type="email"], .enjaz-paper input[type="tel"]').forEach(inp => {
     if(inp.type === 'file') return;
     const v = inp.value;
-    const span = document.createElement('span');
     const cs = getComputedStyle(inp);
-    span.style.cssText = `display:inline-block;width:${inp.offsetWidth}px;color:${cs.color};font:${cs.font};font-weight:${cs.fontWeight};text-align:${cs.textAlign};padding:${cs.padding};border-bottom:${cs.borderBottom};white-space:nowrap;overflow:hidden;`;
-    span.textContent = v || '';
-    inp._origParent = inp.parentNode;
-    inp._origNext = inp.nextSibling;
-    stored.push({inp, span});
+    const span = document.createElement('span');
+    // للحقول العريضة (>200px) والنص الطويل (>30 حرف): سامح بالتفاف الكلمات
+    const allowWrap = inp.offsetWidth > 200 && v && v.length > 30;
+    span.style.cssText = `
+      display:inline-block;
+      width:${inp.offsetWidth}px;
+      min-height:${inp.offsetHeight}px;
+      color:${cs.color};
+      font:${cs.font};
+      font-weight:${cs.fontWeight};
+      text-align:${cs.textAlign};
+      padding:${cs.padding};
+      border-bottom:${cs.borderBottom};
+      box-sizing:border-box;
+      white-space:${allowWrap ? 'pre-wrap' : 'nowrap'};
+      overflow:hidden;
+      line-height:${cs.lineHeight};
+      direction:rtl;
+    `;
+    span.innerHTML = wrapWords(v || '');
+    stored.push({type:'input', el:inp, span});
     inp.parentNode.insertBefore(span, inp);
     inp.style.display = 'none';
   });
-  return { stored, wasTabsMode, tocWasClosed };
+
+  // 2) الـ textareas → div مع نفس الشكل والـ word wrapping
+  document.querySelectorAll('.enjaz-paper textarea').forEach(ta => {
+    const v = ta.value;
+    if(!v || !v.trim()) return;
+    const cs = getComputedStyle(ta);
+    const div = document.createElement('div');
+    div.style.cssText = `
+      width:${ta.offsetWidth}px;
+      min-height:${ta.offsetHeight}px;
+      color:${cs.color};
+      font:${cs.font};
+      font-weight:${cs.fontWeight};
+      text-align:${cs.textAlign};
+      padding:${cs.padding};
+      border:${cs.border};
+      border-radius:${cs.borderRadius};
+      background:${cs.backgroundColor};
+      box-sizing:border-box;
+      white-space:pre-wrap;
+      word-wrap:break-word;
+      overflow:hidden;
+      line-height:${cs.lineHeight};
+      direction:rtl;
+    `;
+    const lines = v.split('\n');
+    div.innerHTML = lines.map(line => wrapWords(line)).join('<br>');
+    stored.push({type:'textarea', el:ta, span:div});
+    ta.parentNode.insertBefore(div, ta);
+    ta.style.display = 'none';
+  });
+
+  // 3) contenteditable (إن وجد)
+  document.querySelectorAll('.enjaz-paper [contenteditable="true"]').forEach(ce => {
+    const text = ce.innerText || ce.textContent;
+    if(!text || !text.trim()) return;
+    ce._origHTML = ce.innerHTML;
+    ce.innerHTML = wrapWords(text);
+    stored.push({type:'contenteditable', el:ce});
+  });
+
+  return { stored, inTabsMode, tocWasClosed };
 }
 function restoreFromExport(ctx){
-  const stored = ctx.stored || ctx; // backward-compatibility
-  stored.forEach(({inp, span}) => {
-    span.remove();
-    inp.style.display = '';
+  const stored = ctx.stored || ctx;
+  stored.forEach(item => {
+    // backward-compat: old { inp, span } shape
+    if(item.inp && item.span){
+      item.span.remove();
+      item.inp.style.display = '';
+      return;
+    }
+    if(item.type === 'input' || item.type === 'textarea'){
+      item.span.remove();
+      item.el.style.display = '';
+    } else if(item.type === 'contenteditable'){
+      if(item.el._origHTML !== undefined){
+        item.el.innerHTML = item.el._origHTML;
+        delete item.el._origHTML;
+      }
+    }
   });
   document.body.classList.remove('exporting');
-  // أعد وضع التبويبات إذا كان مفعّل قبل التصدير
-  if(ctx.wasTabsMode){
-    document.body.classList.add('view-tabs');
-    if(currentTab){
-      document.querySelectorAll('.tab-section').forEach(s => {
-        s.classList.toggle('tab-active', s.id === currentTab);
-      });
-    }
-  }
-  // أعد إخفاء الفهرس إذا كان مغلقاً قبل التصدير
+  document.body.classList.remove('exporting-tabs');
+  // الوضع لم يُغيَّر (نحن لم نخرج من tabs)، فقط أعد إخفاء الفهرس إذا كان مغلقاً
   if(ctx.tocWasClosed){
     const tocBody = document.getElementById('tocCollapsible');
     if(tocBody) tocBody.classList.remove('open');
@@ -3479,8 +3560,16 @@ async function saveAsImage(){
     canvas.toBlob(blob => {
       const url = URL.createObjectURL(blob);
       const a = document.createElement('a');
+      // اسم الملف: يشمل اسم القسم لو في وضع tabs
+      const teacherPart = (document.getElementById('teacherName').value || 'معلم').replace(/\s+/g, '-');
+      let suffix = '';
+      if(stored.inTabsMode && currentTab){
+        const sec = document.getElementById(currentTab);
+        const label = sec ? (sec.getAttribute('data-tab-label') || '') : '';
+        if(label) suffix = '-' + label.replace(/\s+/g, '-').replace(/\//g, '-');
+      }
       a.href = url;
-      a.download = `ملف-انجاز-${(document.getElementById('teacherName').value||'معلم').replace(/\s+/g,'-')}.png`;
+      a.download = `ملف-انجاز-${teacherPart}${suffix}.png`;
       a.click();
       URL.revokeObjectURL(url);
       showToast('✅ تم حفظ الصورة');
@@ -3551,7 +3640,15 @@ async function exportAsPDFv2(){
         remainingHeight -= sliceHeight;
       }
     }
-    pdf.save(`ملف-انجاز-${(document.getElementById('teacherName').value||'معلم').replace(/\s+/g,'-')}.pdf`);
+    // اسم الملف: يشمل اسم القسم لو في وضع tabs
+    const teacherPart = (document.getElementById('teacherName').value || 'معلم').replace(/\s+/g, '-');
+    let suffix = '';
+    if(stored.inTabsMode && currentTab){
+      const sec = document.getElementById(currentTab);
+      const label = sec ? (sec.getAttribute('data-tab-label') || '') : '';
+      if(label) suffix = '-' + label.replace(/\s+/g, '-').replace(/\//g, '-');
+    }
+    pdf.save(`ملف-انجاز-${teacherPart}${suffix}.pdf`);
     showToast('✅ تم حفظ PDF');
   } catch(e){
     console.error(e);
