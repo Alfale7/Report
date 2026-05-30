@@ -780,11 +780,7 @@ async function shareQR(){
     const blob = await res.blob();
     const file = new File([blob], 'باركود-PDF.png', {type:'image/png'});
     if(navigator.share && navigator.canShare && navigator.canShare({files:[file]})){
-      await navigator.share({
-        files:[file],
-        title:'باركود ملف PDF',
-        text:'📄 امسح الباركود لفتح ملف PDF\n\n🌐 www.ksa2030.one'
-      });
+      await navigator.share({ files:[file], title:'التقارير الذكية · ksa2030.one', text:'📲 امسح الباركود من الصورة\n\n🌐 www.ksa2030.one\nالتقارير الذكية — منصة تقارير المدرسة' });
       showToast('✅ تم المشاركة');
     } else {
       const link = document.createElement('a');
