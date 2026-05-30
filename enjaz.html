@@ -1756,6 +1756,12 @@ body.view-tabs .section.tab-section.tab-active{display:block; animation:fadeInTa
   color:#fff;
   box-shadow:0 4px 14px rgba(22,163,74,0.35);
 }
+.action-btn-print{
+  background:linear-gradient(135deg, #2563eb, #1d4ed8);
+  color:#fff;
+  box-shadow:0 4px 14px rgba(37,99,235,0.35);
+}
+.action-btn-print:hover{transform:translateY(-1px); background:linear-gradient(135deg, #1d4ed8, #1e3a8a);}
 .action-btn-reset{
   background:linear-gradient(135deg, #6c757d, #495057);
   color:#fff;
@@ -2120,9 +2126,48 @@ body.view-tabs .section.tab-section.tab-active{display:block; animation:fadeInTa
 .exporting-tabs .cover{display:none !important;}
 
 @media print{
-  body{background:#fff; padding:0;}
-  .enjaz-paper{box-shadow:none; margin:0; max-width:100%;}
-  .action-bar, #toast{display:none !important;}
+  /* صفحة بطباعة قياسية مع هوامش معقولة */
+  @page{ size: A4; margin: 10mm; }
+  body{background:#fff !important; padding:0; margin:0;}
+  .enjaz-paper{box-shadow:none !important; margin:0 !important; max-width:100% !important; border-radius:0 !important;}
+
+  /* أخفِ كل عناصر الواجهة التي لا تنتمي للوثيقة */
+  .action-bar, #toast,
+  .view-mode-bar, .section-tabs-wrap,
+  .scroll-top-btn, .toc-acc-chevron,
+  .shahed-slot-del, .btn-row-del, .btn-add-row,
+  .btn-add-shahed, .btn-del-shahed, .shawahed-actions,
+  .reset-modal, .reset-modal-backdrop,
+  .theme-menu, .export-menu, .export-sheet-backdrop,
+  #shareBackdrop, #shareMenu{display:none !important;}
+
+  /* في وضع تبويبات: نطبع التبويب الفعّال + الغلاف فقط */
+  body.view-tabs .section.tab-section{display:none !important;}
+  body.view-tabs .section.tab-section.tab-active{display:block !important;}
+  body.view-tabs #sec-toc{display:none !important;}
+
+  /* لا تخفِ الـ placeholder text لأن النص الأصلي يطبع */
+  /* لون داكن للنصوص لضمان الطباعة الصحيحة */
+  *{ -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; color-adjust: exact !important; }
+
+  /* قواعد فاصل الصفحات: لا تشطر الوحدات الصغيرة */
+  .field-card, .shahed-slot, .editable-table tr, li, .toc-item,
+  .criterion-header, .criterion-section-label,
+  .shawahed-header, .section-title, .section-header,
+  .section-number-badge,
+  h1, h2, h3, h4, img,
+  .cover-photo-wrap, .cover-eyebrow, .cover-title, .cover-subtitle, .cover-pill,
+  .mithaq-article-title, .mithaq-pledge, .mithaq-pledge-sig,
+  .khatima-paragraph, .khatima-end-frame, .khatima-sig-row,
+  .moe-band, .moe-footer-band, .field-textarea{
+    page-break-inside: avoid !important;
+    break-inside: avoid !important;
+  }
+  /* العناوين تبقى مع المحتوى الذي يليها */
+  h1, h2, h3, h4, .section-title, .mithaq-article-title{
+    page-break-after: avoid !important;
+    break-after: avoid !important;
+  }
 }
 </style>
 </head>
@@ -2588,8 +2633,8 @@ body.view-tabs .section.tab-section.tab-active{display:block; animation:fadeInTa
   <button class="action-btn action-btn-pdf" onclick="exportAsPDFv2()">
     <span>📄</span><span>PDF</span>
   </button>
-  <button class="action-btn action-btn-share" onclick="shareReport()">
-    <span>📤</span><span>مشاركة</span>
+  <button class="action-btn action-btn-print" onclick="printReport()">
+    <span>🖨️</span><span>طباعة</span>
   </button>
   <div class="action-divider"></div>
   <button class="action-btn action-btn-reset" onclick="resetAllData()" title="مسح كل البيانات وتفريغ الملف">
@@ -3778,52 +3823,44 @@ async function saveAsImage(){
    ═══════════════════════════════════════════════════════ */
 
 // 🆕 جامع مستطيلات العناصر "الذرّية" التي لا يجوز قطعها بين الصفحات
-// قاعدة: نضع فقط الوحدات الصغيرة/المتوسّطة المستقلّة بصرياً (لا الحاويات الكبيرة)
-// لو وضعنا حاوية كبيرة (كـ .mithaq-article)، فأي قطع داخلها يدفعها بأكملها لصفحة جديدة → فراغات بيضاء
-// الصحيح: السماح بقطع الحاويات بين بنودها الداخلية الذرّية (<li>, tr, .field-card, إلخ)
+// نظام طبقتين:
+//  - hard (صلب): وحدات صغيرة لا تنشطر أبداً (li, tr, .field-card, .shahed-slot, ...)
+//  - soft (لين): حاويات نُفضّل عدم شطرها لكن نقبل شطرها إن كان منعها يخسر مساحة كبيرة
+//                (.mithaq-article, .shawahed-section, .cover, ...)
 function collectAtomicRectsForPDF(paper, scale){
   const paperTop = paper.getBoundingClientRect().top;
-  const SELECTORS = [
-    // وحدات الحقول الصغيرة
+  const HARD_SELECTORS = [
+    // وحدات صغيرة لا تنشطر أبداً
     '.field-card',
-    '.field-textarea',
-    // رؤوس ومسمّيات المعايير (وحدات بصرية مجمّعة)
+    '.shahed-slot',
+    '.editable-table tr',
+    'li',
+    '.toc-item',
     '.criterion-header',
     '.criterion-section-label',
     '.shawahed-header',
     '.shawahed-actions',
-    // خانة الشاهد المنفردة
-    '.shahed-slot',
-    // صفوف الجدول (الجدول نفسه ليس ذرّياً ليُسمح بكسره بين الصفوف)
-    '.editable-table tr',
-    // بنود القوائم
-    'li',
-    // عناصر الفهرس المفردة
-    '.toc-item',
-    // عناوين الأقسام (وحدات صغيرة)
     '.section-title',
     '.section-header',
     '.section-number-badge',
     'h1','h2','h3','h4',
-    // الصور
     'img',
-    // وحدات الغلاف (الغلاف نفسه ليس ذرّياً)
+    // وحدات الغلاف الصغيرة
     '.cover-photo-wrap',
     '.cover-eyebrow',
     '.cover-title',
     '.cover-subtitle',
     '.cover-pill',
     '.cover-divider',
-    // عناوين/توقيعات الميثاق (الـ article نفسه ليس ذرّياً ليُسمح بكسره بين بنوده)
+    // عناوين/توقيعات الميثاق الصغيرة
     '.mithaq-article-title',
     '.mithaq-article-num',
     '.mithaq-intro-title',
     '.mithaq-intro-date',
     '.mithaq-pledge-title',
     '.mithaq-pledge-sig',
-    '.mithaq-pledge',
     '.mithaq-sig-field',
-    // عناصر الخاتمة الصغيرة (الـ wrapper الكامل ليس ذرّياً)
+    // وحدات الخاتمة الصغيرة
     '.khatima-title',
     '.khatima-subtitle',
     '.khatima-firstline',
@@ -3833,39 +3870,68 @@ function collectAtomicRectsForPDF(paper, scale){
     '.khatima-sig-row',
     '.khatima-sig-field',
     '.khatima-signature',
-    // أشرطة الوزارة
+    // الأشرطة
     '.moe-band',
-    '.moe-footer-band'
+    '.moe-footer-band',
+    '.field-textarea'
   ];
-  const rects = [];
-  const seen = new Set();
-  SELECTORS.forEach(sel => {
-    let nodes;
-    try { nodes = paper.querySelectorAll(sel); } catch(e){ return; }
-    nodes.forEach(el => {
-      if(seen.has(el)) return;
-      seen.add(el);
-      const r = el.getBoundingClientRect();
-      // تجاهل العناصر المخفية أو ذات الارتفاع الصفري
-      if(r.height < 4) return;
-      const top = Math.round((r.top - paperTop) * scale);
-      const bottom = Math.round((r.bottom - paperTop) * scale);
-      if(bottom > top) rects.push({ top, bottom });
+  const SOFT_SELECTORS = [
+    // حاويات نُفضّل عدم شطرها لكن نسمح بشطرها إذا أدّى الإبقاء عليها لخسارة كبيرة
+    '.mithaq-article',
+    '.mithaq-intro',
+    '.mithaq-pledge',
+    '.shawahed-section',
+    '.shawahed-grid',
+    '.criterion-content',
+    '.field-grid',
+    '.editable-table',
+    '.toc-grid',
+    '.cover',
+    '.khatima-wrapper',
+    '.khatima-body'
+  ];
+  function collectFor(selectors){
+    const list = [];
+    const seen = new Set();
+    selectors.forEach(sel => {
+      let nodes;
+      try { nodes = paper.querySelectorAll(sel); } catch(e){ return; }
+      nodes.forEach(el => {
+        if(seen.has(el)) return;
+        seen.add(el);
+        const r = el.getBoundingClientRect();
+        if(r.height < 4) return;
+        const top = Math.round((r.top - paperTop) * scale);
+        const bottom = Math.round((r.bottom - paperTop) * scale);
+        if(bottom > top) list.push({ top, bottom });
+      });
     });
-  });
-  return rects;
+    return list;
+  }
+  return { hard: collectFor(HARD_SELECTORS), soft: collectFor(SOFT_SELECTORS) };
 }
 
-// 🆕 ضبط نقطة القطع: إذا كانت تشطر عنصراً ذرّياً، ارفعها إلى رأس ذلك العنصر
-function adjustCutForAtomic(tentativeCut, rects, yOffset){
-  let safest = tentativeCut;
-  for(const r of rects){
-    // عنصر يبدأ على هذه الصفحة (top > yOffset) ويمتدّ بعد القطع المقترح
-    if(r.top > yOffset && r.top < tentativeCut && r.bottom > tentativeCut){
-      if(r.top < safest) safest = r.top;
+// 🆕 ضبط نقطة القطع (نظام طبقتين)
+function adjustCutForAtomic(tentativeCut, atomic, yOffset, pageHeight){
+  let cut = tentativeCut;
+  // 1) الـ hard: محترمة دائماً — اسحب القطع لرأس أصغر عنصر منشطر
+  for(const r of atomic.hard){
+    if(r.top > yOffset && r.top < cut && r.bottom > tentativeCut){
+      if(r.top < cut) cut = r.top;
     }
   }
-  return safest;
+  // 2) الـ soft: محترمة فقط إن بقيت الصفحة ممتلئة ≥75%
+  //    وإلا نسمح بانكسارها بين بنودها الـ hard الداخلية
+  const minPageFill = pageHeight * 0.75;
+  for(const r of atomic.soft){
+    if(r.top > yOffset && r.top < cut && r.bottom > tentativeCut){
+      const pageContent = r.top - yOffset;
+      if(pageContent >= minPageFill && r.top < cut){
+        cut = r.top;
+      }
+    }
+  }
+  return cut;
 }
 
 async function exportAsPDFv2(){
@@ -3879,7 +3945,7 @@ async function exportAsPDFv2(){
   try {
     await new Promise(r => setTimeout(r, 250));
     const paper = document.getElementById('enjaz-paper');
-    // 🆕 اجمع مستطيلات العناصر الذرّية قبل html2canvas (الـ scale=2)
+    // 🆕 اجمع مستطيلات العناصر الذرّية (نظام طبقتين) قبل html2canvas
     const atomicRects = collectAtomicRectsForPDF(paper, 2);
     const canvas = await html2canvas(paper, {
       scale: 2,
@@ -3907,20 +3973,18 @@ async function exportAsPDFv2(){
     } else {
       // 🆕 عدة صفحات بتقسيم ذكي يتجنّب قطع العناصر
       const pageHeightInCanvas = (pdfHeight * canvas.width) / pdfWidth;
-      // 🆕 استبعد العناصر الأطول من 70% من ارتفاع الصفحة من قائمة الذرّية
-      //    هذه العناصر ستضطر للانشطار على كل حال (لا يمكن إبقاؤها سليمة)
-      //    إبقاؤها يسبّب فجوات بيضاء كبيرة لأنها تجبر القطع في رأسها
-      const effectiveRects = atomicRects.filter(r => (r.bottom - r.top) < pageHeightInCanvas * 0.7);
+      // استبعد العناصر الأطول من 70% من ارتفاع الصفحة من الـ hard (ستضطر للانكسار)
+      const effectiveHard = atomicRects.hard.filter(r => (r.bottom - r.top) < pageHeightInCanvas * 0.7);
+      const effectiveSoft = atomicRects.soft.filter(r => (r.bottom - r.top) < pageHeightInCanvas * 0.85);
+      const effectiveAtomic = { hard: effectiveHard, soft: effectiveSoft };
       let yOffset = 0;
       let pageCount = 0;
       const MAX_PAGES = 200; // حماية من الحلقات اللانهائية
       while(yOffset < canvas.height && pageCount < MAX_PAGES){
         let cutAt = Math.min(yOffset + pageHeightInCanvas, canvas.height);
-        // إذا لم تكن الصفحة الأخيرة، اضبط القطع ليتجنّب شطر عنصر ذرّي
         if(cutAt < canvas.height){
-          const adjusted = adjustCutForAtomic(cutAt, effectiveRects, yOffset);
+          const adjusted = adjustCutForAtomic(cutAt, effectiveAtomic, yOffset, pageHeightInCanvas);
           // اقبل التعديل إذا أبقى ولو قدراً يسيراً من المحتوى (≥ 5% من ارتفاع الصفحة)
-          // الأولوية للحفاظ على العنصر سليماً حتى لو خسرنا بعض المساحة في الصفحة
           if(adjusted > yOffset + pageHeightInCanvas * 0.05){
             cutAt = adjusted;
           }
@@ -3957,6 +4021,33 @@ async function exportAsPDFv2(){
   } finally {
     restoreFromExport(stored);
   }
+}
+
+/* ═══════════════════════════════════════════════════════
+   🖨️ الطباعة (يستخدم محرك المتصفح الأصلي → نصوص حادّة)
+   ═══════════════════════════════════════════════════════ */
+function printReport(){
+  // 1) جهّز الملف بنفس منطق التصدير (يستبدل inputs بـ spans، يصلح letter-spacing، يلفّ الكلمات)
+  const stored = prepareForExport();
+  // 2) أعطِ المتصفح فرصة لإعادة تخطيط الصفحة قبل فتح حوار الطباعة
+  setTimeout(() => {
+    try {
+      window.print();
+    } catch(e){
+      console.error('Print failed:', e);
+      showToast('❌ تعذّر فتح حوار الطباعة');
+    } finally {
+      // 3) استعد الحالة الأصلية (بعد إغلاق حوار الطباعة)
+      //    onafterprint قد لا يُطلق في كل المتصفحات، فنستخدم timeout كاحتياط
+      const restore = () => {
+        try { restoreFromExport(stored); } catch(e){}
+        window.removeEventListener('afterprint', restore);
+      };
+      window.addEventListener('afterprint', restore);
+      // كاحتياط: استعد بعد فترة طويلة حتى لو لم يُطلق afterprint
+      setTimeout(restore, 60000);
+    }
+  }, 200);
 }
 
 /* ═══════════════════════════════════════════════════════
