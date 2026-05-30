@@ -1559,6 +1559,17 @@ box-shadow:0 4px 12px rgba(0,0,0,0.2),inset 0 1px 0 rgba(255,255,255,0.2);
 .achievement-snap-chart span:nth-child(5){height:75%;}
 .achievement-snap-badge{font-size:0.58rem;font-weight:800;color:#fff;background:linear-gradient(135deg,#16a085,#0d6e5a);padding:2px 10px;border-radius:99px;position:relative;z-index:1;}
 
+/* أيقونة التقرير العام + لمعة (تدرّج رمادي-بنفسجي ملكي يعكس الجدية الإدارية) */
+.cat-icon.report{background:linear-gradient(135deg,#4a4e69,#22223b);position:relative;overflow:hidden;}
+.cat-icon.report::after{
+  content:"";position:absolute;top:-50%;left:-70%;
+  width:45%;height:200%;
+  background:linear-gradient(90deg,transparent,rgba(212,166,87,0.6),transparent);
+  transform:rotate(22deg);
+  animation:reportIconSweep 4.4s ease-in-out infinite;
+}
+@keyframes reportIconSweep{0%,76%{left:-70%;}90%,100%{left:150%;}}
+
 /* ═══ كرت نجم الأسبوع ═══ */
 .thumb-star{
   background:linear-gradient(160deg,#1a2535,#0f1a28);
@@ -4613,7 +4624,60 @@ font-size:0.78rem;text-align:center;margin-top:12px;display:none;
         </div>
         <div class="card-text">
           <div class="card-title" data-i18n="achievementCardTitle">ملف إنجاز المعلم/ة</div>
-          <div class="card-desc" data-i18n="achievementCardDesc">سجل أنشطتك وإنجازاتك · هوية رسمية · 5 ثيمات</div>
+          <div class="card-desc" data-i18n="achievementCardDesc">سجل أنشطتك وإنجازاتك · هوية رسمية · 5 ثيمات · 3 صور · 8 حقول</div>
+        </div>
+        <div class="card-action">‹</div>
+      </div>
+    </div>
+
+        </div>
+      </div>
+    </div>
+
+    <!-- ═══ تصنيف: التقرير العام للإدارة (مدفوع) ═══ -->
+    <div class="cat-section" data-cat="report">
+      <div class="cat-header" onclick="toggleCategory(this)">
+        <div class="cat-icon report">📝</div>
+        <div class="cat-text">
+          <div class="cat-title">
+            <span data-i18n="catReport">تقرير الإدارة العامة للتعليم</span>
+            <span class="cat-count">1</span>
+          </div>
+          <div class="cat-sub" data-i18n="catReportSub">للأنشطة والفعاليات · يُستخدم على مدار العام</div>
+        </div>
+        <div class="cat-chevron">▼</div>
+      </div>
+      <div class="cat-body">
+        <div class="cat-cards">
+
+    <div class="preview-card r-general locked" data-target="report.html" onclick="handleCardClick(this)">
+      <span class="card-badge badge-premium">💎 <span data-i18n="badgePremium">احترافي</span></span>
+      <div class="thumb thumb-general">
+        <div class="iframe-snap-wrap" id="iframe-report">
+          <div class="iframe-loading" data-i18n="loadingPreview">جاري تحميل المعاينة</div>
+          <iframe src="report.html" loading="lazy" scrolling="no" sandbox="allow-same-origin allow-scripts" title="معاينة التقرير العام" onload="this.parentElement.classList.add('loaded')"></iframe>
+        </div>
+        <div class="lock-overlay">
+          <div class="lock-cta">
+            <span>🔑</span>
+            <span data-i18n="lockCta">سجّل الدخول للوصول</span>
+          </div>
+        </div>
+      </div>
+      <div class="card-content">
+        <div class="card-icon-wrap">
+          <div class="card-icon">📝</div>
+        </div>
+        <div class="card-text">
+          <div class="title" data-i18n="card3Title">التقرير العام</div>
+          <div class="desc" data-i18n="card3Desc">للأنشطة والفعاليات المدرسية المتنوعة</div>
+          <div class="meta">
+            <span class="meta-pill">🎨 <span data-i18n="metaThemesReport">5 ثيمات</span></span>
+            <span class="meta-sep"></span>
+            <span class="meta-pill">📷 <span data-i18n="metaPhotos">3 صور</span></span>
+            <span class="meta-sep"></span>
+            <span class="meta-pill">📝 8 حقول</span>
+          </div>
         </div>
         <div class="card-action">‹</div>
       </div>
@@ -5367,7 +5431,7 @@ font-size:0.78rem;text-align:center;margin-top:12px;display:none;
         <div class="cat-text">
           <div class="cat-title">
             <span data-i18n="catSchool">التقارير المدرسية</span>
-            <span class="cat-count">4</span>
+            <span class="cat-count">3</span>
           </div>
           <div class="cat-sub" data-i18n="catSchoolSub">تقارير الأنشطة والفعاليات</div>
         </div>
@@ -5375,37 +5439,6 @@ font-size:0.78rem;text-align:center;margin-top:12px;display:none;
       </div>
       <div class="cat-body">
         <div class="cat-cards">
-
-    <div class="preview-card r-general locked" data-target="report.html" onclick="handleCardClick(this)">
-      <span class="card-badge badge-premium">💎 <span data-i18n="badgePremium">احترافي</span></span>
-      <div class="thumb thumb-general">
-        <div class="iframe-snap-wrap" id="iframe-report">
-          <div class="iframe-loading" data-i18n="loadingPreview">جاري تحميل المعاينة</div>
-          <iframe src="report.html" loading="lazy" scrolling="no" sandbox="allow-same-origin allow-scripts" title="معاينة التقرير العام" onload="this.parentElement.classList.add('loaded')"></iframe>
-        </div>
-        <div class="lock-overlay">
-          <div class="lock-cta">
-            <span>🔑</span>
-            <span data-i18n="lockCta">سجّل الدخول للوصول</span>
-          </div>
-        </div>
-      </div>
-      <div class="card-content">
-        <div class="card-icon-wrap">
-          <div class="card-icon">📊</div>
-        </div>
-        <div class="card-text">
-          <div class="title" data-i18n="card3Title">التقرير العام</div>
-          <div class="desc" data-i18n="card3Desc">للأنشطة والفعاليات المدرسية المتنوعة</div>
-          <div class="meta">
-            <span class="meta-pill">📷 <span data-i18n="metaPhotos">3 صور</span></span>
-            <span class="meta-sep"></span>
-            <span class="meta-pill">📝 8 حقول</span>
-          </div>
-        </div>
-        <div class="card-action">‹</div>
-      </div>
-    </div>
 
     <div class="preview-card r-newspaper locked" data-target="report2.html" onclick="handleCardClick(this)">
       <span class="card-badge badge-new">✨ <span data-i18n="badgeNew">جديد</span></span>
@@ -6512,7 +6545,9 @@ const I18N = {
     catAchievementSub: "سجل الأنشطة والإنجازات · رسومات بيانية · 5 ثيمات",
     badgeAchievement: "جديد",
     achievementCardTitle: "ملف إنجاز المعلم/ة",
-    achievementCardDesc: "سجل أنشطتك وإنجازاتك · هوية رسمية · 5 ثيمات",
+    achievementCardDesc: "سجل أنشطتك وإنجازاتك · هوية رسمية · 5 ثيمات · 3 صور · 8 حقول",
+    catReport: "تقرير الإدارة العامة للتعليم",
+    catReportSub: "للأنشطة والفعاليات · يُستخدم على مدار العام",
     catTools: "أدوات مجانية",
     catToolsSub: "مولّد باركود QR للصور والروابط · مجاني للجميع",
     badgeToolFree: "مجاني تماماً",
@@ -6621,6 +6656,7 @@ const I18N = {
     cardTripDesc: "وجهة · مرافقين · أنشطة · صور",
     lockCta: "سجّل الدخول للوصول",
     metaPhotos: "3 صور",
+    metaThemesReport: "5 ثيمات",
     metaFields: "7 حقول",
     exclusiveOffer: "عرض حصري — اقرأ التفاصيل",
     modalTitle: "تسجيل الدخول",
@@ -6792,7 +6828,9 @@ const I18N = {
     catAchievementSub: "Track activities & achievements · Charts · 5 themes",
     badgeAchievement: "New",
     achievementCardTitle: "Teacher Achievement Portfolio",
-    achievementCardDesc: "Document your activities · Official identity · 5 themes",
+    achievementCardDesc: "Document your activities · Official identity · 5 themes · 3 photos · 8 fields",
+    catReport: "General Education Report",
+    catReportSub: "For activities & events · Year-round use",
     catTools: "Free Tools",
     catToolsSub: "QR code generator for images & links · Free for everyone",
     badgeToolFree: "100% Free",
@@ -6901,6 +6939,7 @@ const I18N = {
     cardTripDesc: "Destination · Escorts · Activities · Photos",
     lockCta: "Login to access",
     metaPhotos: "3 photos",
+    metaThemesReport: "5 themes",
     metaFields: "7 fields",
     exclusiveOffer: "Exclusive Offer — Read Details",
     modalTitle: "Login",
