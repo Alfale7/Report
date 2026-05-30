@@ -218,43 +218,6 @@ body{
   color:var(--red);
 }
 
-/* DURATION SELECTOR */
-.duration-section{
-  margin-top:16px;
-  display:none;
-}
-.duration-section.show{display:block;}
-.duration-label{
-  font-size:0.78rem; font-weight:700; color:var(--text-dim);
-  margin-bottom:8px;
-  display:flex; align-items:center; gap:6px;
-}
-.duration-options{
-  display:grid;
-  grid-template-columns:repeat(4, 1fr);
-  gap:6px;
-}
-.duration-opt{
-  background:var(--surface-2);
-  border:1px solid var(--border);
-  color:var(--text-dim);
-  padding:9px 6px;
-  border-radius:9px;
-  font-family:inherit;
-  font-size:0.75rem;
-  font-weight:700;
-  cursor:pointer;
-  transition:all 0.2s;
-  text-align:center;
-}
-.duration-opt:hover{border-color:var(--teal); color:var(--text);}
-.duration-opt.active{
-  background:linear-gradient(135deg, var(--teal-deep), var(--teal));
-  border-color:var(--teal-bright);
-  color:#fff;
-  box-shadow:0 3px 10px rgba(42,138,171,0.3);
-}
-
 /* MAIN BTN */
 .btn-main{
   width:100%; margin-top:18px;
@@ -398,21 +361,6 @@ body{
 .act-new:hover{background:var(--navy-3); border-color:var(--text-dim);}
 .actions .full{grid-column:1/-1;}
 
-/* WARNING */
-.warning{
-  background:rgba(240,184,85,0.08);
-  border:1px solid rgba(240,184,85,0.25);
-  border-radius:10px;
-  padding:10px 12px;
-  margin-top:14px;
-  font-size:0.72rem;
-  color:var(--gold);
-  line-height:1.6;
-  display:flex;
-  gap:8px;
-}
-.warning-icon{font-size:1rem; flex-shrink:0;}
-
 /* FOOTER */
 .footer{text-align:center; margin-top:24px; padding:0 8px;}
 .footer .feats{
@@ -451,7 +399,6 @@ body{
   .title{font-size:1.55rem;}
   .actions{grid-template-columns:1fr;}
   .footer .feats{gap:10px;}
-  .duration-options{grid-template-columns:repeat(2, 1fr);}
 }
 </style>
 </head>
@@ -477,7 +424,7 @@ body{
   <div class="card">
     <label class="input-label">
       <span>📄</span><span>اختر ملف PDF</span>
-      <span class="badge">حتى 1GB</span>
+      <span class="badge">دائم · حتى 200MB</span>
     </label>
 
     <label class="dropzone" id="dropzone">
@@ -496,18 +443,6 @@ body{
       <button class="file-remove" onclick="removeFile()" title="إزالة">×</button>
     </div>
 
-    <div class="duration-section" id="durationSection">
-      <div class="duration-label">
-        <span>⏱️</span><span>مدة بقاء الملف</span>
-      </div>
-      <div class="duration-options">
-        <button class="duration-opt" onclick="selectDuration(this,'1h')">ساعة</button>
-        <button class="duration-opt" onclick="selectDuration(this,'12h')">12 ساعة</button>
-        <button class="duration-opt" onclick="selectDuration(this,'24h')">يوم</button>
-        <button class="duration-opt active" onclick="selectDuration(this,'72h')">3 أيام</button>
-      </div>
-    </div>
-
     <button class="btn-main" id="uploadBtn" onclick="uploadAndGenerate()" disabled>
       <span class="btn-icon">✨</span>
       <span class="spinner"></span>
@@ -516,11 +451,6 @@ body{
 
     <div class="progress-bar" id="progressBar">
       <div class="progress-fill" id="progressFill"></div>
-    </div>
-
-    <div class="warning">
-      <span class="warning-icon">⚠️</span>
-      <span>الملفات تُرفع على خادم آمن لمدة محدودة. لا ترفع ملفات حساسة. الرابط يصبح غير صالح بعد انتهاء المدة.</span>
     </div>
 
     <div class="result" id="result">
@@ -541,7 +471,7 @@ body{
         <div class="link-info-label">🔗 الرابط (اضغط لنسخه)</div>
         <div class="link-info-url" id="resultUrl" onclick="copyUrl()">—</div>
         <div class="link-info-meta">
-          <span>⏱️ <span id="resultExpiry">—</span></span>
+          <span>♾️ <span>دائم</span></span>
           <span>📦 <span id="resultSize">—</span></span>
         </div>
       </div>
@@ -580,12 +510,10 @@ body{
    حالة الأداة
    ════════════════════════════════════════════════ */
 let selectedFile = null;
-let selectedDuration = '72h';
 let currentUrl = '';
-let currentExpiry = '';
 let currentSize = '';
 
-const MAX_FILE_SIZE = 1024 * 1024 * 1024; // 1GB
+const MAX_FILE_SIZE = 200 * 1024 * 1024; // 200MB (حد catbox.moe الدائم)
 
 /* ════════════════════════════════════════════════
    اختيار وعرض الملف
@@ -623,14 +551,13 @@ function handleFile(file){
   }
   // تحقق الحجم
   if(file.size > MAX_FILE_SIZE){
-    showToast('❌ حجم الملف يتجاوز 1GB');
+    showToast('❌ حجم الملف يتجاوز 200MB');
     return;
   }
   selectedFile = file;
   document.getElementById('fileInfoName').textContent = file.name;
   document.getElementById('fileInfoSize').textContent = formatSize(file.size);
   document.getElementById('fileInfo').classList.add('show');
-  document.getElementById('durationSection').classList.add('show');
   dropzone.classList.add('has-file');
   document.getElementById('uploadBtn').disabled = false;
   document.getElementById('result').classList.remove('show');
@@ -641,16 +568,9 @@ function removeFile(){
   selectedFile = null;
   fileInput.value = '';
   document.getElementById('fileInfo').classList.remove('show');
-  document.getElementById('durationSection').classList.remove('show');
   dropzone.classList.remove('has-file');
   document.getElementById('uploadBtn').disabled = true;
   document.getElementById('result').classList.remove('show');
-}
-
-function selectDuration(btn, dur){
-  document.querySelectorAll('.duration-opt').forEach(b => b.classList.remove('active'));
-  btn.classList.add('active');
-  selectedDuration = dur;
 }
 
 function formatSize(bytes){
@@ -660,12 +580,8 @@ function formatSize(bytes){
   return (bytes/(1024*1024*1024)).toFixed(2) + ' GB';
 }
 
-function durationLabel(d){
-  return {'1h':'ساعة واحدة','12h':'12 ساعة','24h':'يوم واحد','72h':'3 أيام'}[d] || d;
-}
-
 /* ════════════════════════════════════════════════
-   الرفع لـ litterbox.catbox.moe
+   الرفع لـ catbox.moe (دائم)
    ════════════════════════════════════════════════ */
 async function uploadAndGenerate(){
   if(!selectedFile){ showToast('⚠️ اختر ملفاً أولاً'); return; }
@@ -684,13 +600,12 @@ async function uploadAndGenerate(){
   try {
     const formData = new FormData();
     formData.append('reqtype', 'fileupload');
-    formData.append('time', selectedDuration);
     formData.append('fileToUpload', selectedFile);
 
     // استخدم XMLHttpRequest للحصول على progress events
     const url = await new Promise((resolve, reject) => {
       const xhr = new XMLHttpRequest();
-      xhr.open('POST', 'https://litterbox.catbox.moe/resources/internals/api.php');
+      xhr.open('POST', 'https://catbox.moe/user/api.php');
 
       xhr.upload.addEventListener('progress', (e) => {
         if(e.lengthComputable){
@@ -721,12 +636,10 @@ async function uploadAndGenerate(){
 
     // نجح الرفع
     currentUrl = url;
-    currentExpiry = durationLabel(selectedDuration);
     currentSize = formatSize(selectedFile.size);
 
     generateQRCode(url);
     document.getElementById('resultUrl').textContent = url;
-    document.getElementById('resultExpiry').textContent = currentExpiry;
     document.getElementById('resultSize').textContent = currentSize;
 
     const result = document.getElementById('result');
@@ -801,7 +714,7 @@ async function shareQR(){
       await navigator.share({
         files:[file],
         title:'باركود ملف PDF',
-        text:'📄 امسح الباركود لفتح الملف\n\n🔗 ' + currentUrl + '\n\n⏱️ صالح: ' + currentExpiry + '\n\n🌐 www.ksa2030.one'
+        text:'📄 امسح الباركود لفتح الملف\n\n🔗 ' + currentUrl + '\n\n🌐 www.ksa2030.one'
       });
       showToast('✅ تم المشاركة');
     } else {
