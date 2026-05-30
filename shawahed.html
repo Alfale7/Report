@@ -919,26 +919,29 @@ async function buildCoverClone(idx){
   return clone;
 }
 
-// بناء صفحة صور الشواهد للتصدير
-async function buildEvidenceClone(idx){
+// ═══════════════════════════════════════════════
+// 🔥 بناء صفحات الشواهد - توزيع ذكي على A4
+//    كل بطاقة شاهد كاملة في صفحة واحدة (لا قطع منتصف)
+// ═══════════════════════════════════════════════
+async function buildEvidencePages(idx){
   const el = ELEMENTS[idx];
   const p = PALETTE[idx];
   const elImgs = evidenceImages[idx];
+  const names = shahedNames[idx];
   saveData();
 
-  const page = document.createElement('div');
-  // 🔥 ارتفاع ديناميكي: min-height بدل height ثابت + بدون overflow:hidden
-  page.style.cssText = 'position:absolute;width:794px;min-height:1123px;background:#e2e3dd;padding:0;box-sizing:border-box;display:flex;flex-direction:column;font-family:Tajawal,sans-serif;color:#1c2820;';
+  const A4_W = 794;
+  const A4_H = 1123;
 
+  // ── ترويسة موحدة لكل صفحة ──
   const logoHtml = uploadedLogo
     ? `<img src="${uploadedLogo}" style="max-width:58px;max-height:58px;width:auto;height:auto;object-fit:contain;display:block;">`
     : `<div style="font-size:10px;color:rgba(255,255,255,0.55);font-weight:700;text-align:center;line-height:1.5;">شعار<br>الوزارة</div>`;
-
   const adminTxt = teacherData.admin ? 'الإدارة العامة للتعليم ' + teacherData.admin : 'الإدارة العامة للتعليم';
   const officeTxt = teacherData.office || 'مكتب التعليم';
   const siteTxt = teacherData.site || 'SITES.MOE.GOV.SA';
 
-  let html = `
+  const headerHtml = `
     <div style="flex-shrink:0;">
       <div style="height:6px;background:linear-gradient(90deg,#2782b1 0%,#2c979d 50%,#3ba87e 100%);"></div>
       <div style="background:radial-gradient(circle at 88% 15%,rgba(52,174,125,0.5),transparent 40%),radial-gradient(circle at 12% 15%,rgba(43,126,176,0.45),transparent 40%),#0b3946;border-radius:0 0 24px 24px;padding:18px 40px;display:flex;align-items:center;justify-content:space-between;gap:16px;">
@@ -950,44 +953,18 @@ async function buildEvidenceClone(idx){
         <div style="width:1.5px;height:54px;background:rgba(255,255,255,0.3);flex-shrink:0;"></div>
         <div style="width:64px;height:64px;display:flex;align-items:center;justify-content:center;flex-shrink:0;">${logoHtml}</div>
       </div>
-    </div>
+    </div>`;
 
-    <div style="flex:1;display:flex;flex-direction:column;padding:24px 44px 16px;">
-      <div style="display:flex;align-items:center;gap:10px;margin-bottom:16px;padding-bottom:12px;border-bottom:2px solid ${p.a};">
-        <div style="width:42px;height:42px;border-radius:11px;background:linear-gradient(135deg,${p.a},${p.a2});display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0;">${el.icon}</div>
-        <div style="text-align:right;flex:1;">
-          <div style="font-size:12px;color:#777;font-weight:700;">شواهد الأداء الوظيفي · العنصر ${idx+1} · الوزن ${el.weight}</div>
-          <div style="font-size:18px;color:${p.a};font-weight:800;font-family:'Aref Ruqaa',serif;">${el.title}</div>
-        </div>
-      </div>`;
+  const sectionHeaderHtml = `
+    <div style="display:flex;align-items:center;gap:10px;margin-bottom:16px;padding-bottom:12px;border-bottom:2px solid ${p.a};">
+      <div style="width:42px;height:42px;border-radius:11px;background:linear-gradient(135deg,${p.a},${p.a2});display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0;">${el.icon}</div>
+      <div style="text-align:right;flex:1;">
+        <div style="font-size:12px;color:#777;font-weight:700;">شواهد الأداء الوظيفي · العنصر ${idx+1} · الوزن ${el.weight}</div>
+        <div style="font-size:18px;color:${p.a};font-weight:800;font-family:'Aref Ruqaa',serif;">${el.title}</div>
+      </div>
+    </div>`;
 
-  const totalImgs = elImgs.reduce((sum, arr) => sum + arr.length, 0);
-
-  if(totalImgs === 0){
-    html += `<div style="flex:1;display:flex;align-items:center;justify-content:center;color:#aaa;font-size:16px;font-weight:600;">لم تُرفع صور شواهد بعد</div>`;
-  } else {
-    html += `<div style="flex:1;display:flex;flex-direction:column;gap:16px;">`;
-    const names = shahedNames[idx];
-    names.forEach((shahedName, si) => {
-      const imgs = elImgs[si] || [];
-      if(imgs.length === 0) return;
-      const label = (shahedName && shahedName.trim()) ? shahedName : `شاهد ${si+1}`;
-      html += `<div>
-        <div style="background:linear-gradient(135deg,${p.a},${p.a2});color:#fff;font-size:13px;font-weight:800;padding:7px 14px;border-radius:8px;margin-bottom:8px;">📌 ${label}</div>
-        <div style="display:grid;grid-template-columns:repeat(${imgs.length === 1 ? 1 : 2},1fr);gap:10px;">`;
-      imgs.forEach(src => {
-        html += `<div style="border:1.5px solid ${p.a2};border-radius:8px;overflow:hidden;background:#fff;box-shadow:0 3px 10px rgba(0,0,0,0.07);">
-          <img src="${src}" style="width:100%;display:block;max-height:280px;object-fit:contain;background:#fff;">
-        </div>`;
-      });
-      html += `</div></div>`;
-    });
-    html += `</div>`;
-  }
-
-  html += `<div style="margin-top:12px;text-align:center;font-size:11px;color:#888;font-weight:600;">${teacherData.name ? 'إعداد: '+teacherData.name+' · ' : ''}${teacherData.year || '1447 هـ'}</div>
-    </div>
-
+  const footerOnly = `
     <div style="flex-shrink:0;">
       <div style="background:linear-gradient(90deg,#2581c0 0%,#359ca5 50%,#47b97e 100%);border-radius:24px 24px 0 0;padding:11px 40px;display:flex;align-items:center;justify-content:center;gap:8px;">
         <span style="font-size:13px;">🌐</span>
@@ -996,11 +973,165 @@ async function buildEvidenceClone(idx){
       <div style="height:5px;background:#35989e;"></div>
     </div>`;
 
-  page.innerHTML = html;
-  page.querySelectorAll('*').forEach(el => { el.style.letterSpacing = '0'; });
+  const footerWithText = `
+    <div style="margin-top:12px;text-align:center;font-size:11px;color:#888;font-weight:600;">${teacherData.name ? 'إعداد: '+teacherData.name+' · ' : ''}${teacherData.year || '1447 هـ'}</div>
+    </div>
+    ${footerOnly}`;
+  const footerNoText = `
+    </div>
+    ${footerOnly}`;
+
+  // ── حالة: لا شواهد ──
+  const totalImgs = elImgs.reduce((sum, arr) => sum + arr.length, 0);
   const css = await getEmbeddedFontCSS();
-  if(css){ const s = document.createElement('style'); s.textContent = css; page.insertBefore(s, page.firstChild); }
-  return page;
+
+  if(totalImgs === 0){
+    const page = document.createElement('div');
+    page.style.cssText = `position:absolute;width:${A4_W}px;height:${A4_H}px;background:#e2e3dd;padding:0;box-sizing:border-box;display:flex;flex-direction:column;font-family:Tajawal,sans-serif;color:#1c2820;overflow:hidden;`;
+    page.innerHTML = headerHtml +
+      `<div style="flex:1;display:flex;flex-direction:column;padding:24px 44px 16px;">` +
+      sectionHeaderHtml +
+      `<div style="flex:1;display:flex;align-items:center;justify-content:center;color:#aaa;font-size:16px;font-weight:600;">لم تُرفع صور شواهد بعد</div>` +
+      footerWithText;
+    if(css){ const s = document.createElement('style'); s.textContent = css; page.insertBefore(s, page.firstChild); }
+    page.querySelectorAll('*').forEach(el2 => { el2.style.letterSpacing = '0'; });
+    return [page];
+  }
+
+  // ── ابنِ HTML لكل بطاقة شاهد ──
+  const cards = [];
+  names.forEach((shahedName, si) => {
+    const imgs = elImgs[si] || [];
+    if(imgs.length === 0) return;
+    const label = (shahedName && shahedName.trim()) ? shahedName : `شاهد ${si+1}`;
+    const cardHtml = `
+      <div>
+        <div style="background:linear-gradient(135deg,${p.a},${p.a2});color:#fff;font-size:13px;font-weight:800;padding:7px 14px;border-radius:8px;margin-bottom:8px;">📌 ${label}</div>
+        <div style="display:grid;grid-template-columns:repeat(${imgs.length === 1 ? 1 : 2},1fr);gap:10px;">
+          ${imgs.map(src => `<div style="border:1.5px solid ${p.a2};border-radius:8px;overflow:hidden;background:#fff;box-shadow:0 3px 10px rgba(0,0,0,0.07);">
+            <img src="${src}" style="width:100%;display:block;max-height:280px;object-fit:contain;background:#fff;">
+          </div>`).join('')}
+        </div>
+      </div>`;
+    cards.push({ html: cardHtml, imgs: imgs.length });
+  });
+
+  // ── قياس ارتفاع كل بطاقة في DOM مخفي ──
+  const measureBox = document.createElement('div');
+  measureBox.style.cssText = `position:absolute;left:-99999px;top:0;width:${A4_W - 88}px;visibility:hidden;font-family:Tajawal,sans-serif;`;
+  document.body.appendChild(measureBox);
+
+  const cardHeights = [];
+  for(const card of cards){
+    const tmp = document.createElement('div');
+    tmp.innerHTML = card.html;
+    measureBox.appendChild(tmp);
+    await waitForImages(tmp);
+    cardHeights.push(tmp.firstElementChild.offsetHeight);
+    measureBox.removeChild(tmp);
+  }
+  document.body.removeChild(measureBox);
+
+  // ── حساب الارتفاع المتاح للبطاقات في الصفحة ──
+  // headerH ≈ 6(line) + 18(padding-top) + ~58(محتوى) + 18(padding-bot) = ~110
+  // footerH ≈ 11(padding-top) + ~17(محتوى) + 11(padding-bot) + 5(line) = ~44
+  // sectionHeaderH ≈ 42(أيقونة) + 12(margin-bot) + 12(padding-bot) + 2(border) = ~68
+  // padding وراحة بصرية + footer text (آخر صفحة): ~70
+  const HEADER_H = 112;
+  const FOOTER_H = 46;
+  const SECTION_H = 70;
+  const TOP_PAD = 24;
+  const BOTTOM_PAD = 16;
+  const FOOTER_TEXT_H = 28;
+  const GAP = 16;
+  const SAFETY = 20;
+
+  const availH_inner = A4_H - HEADER_H - FOOTER_H - SECTION_H - TOP_PAD - BOTTOM_PAD - SAFETY;
+  const availH_lastPage = availH_inner - FOOTER_TEXT_H;
+
+  // ── وزّع البطاقات على صفحات ──
+  const pageGroups = [];
+  let currentGroup = [];
+  let currentH = 0;
+
+  for(let i = 0; i < cards.length; i++){
+    const addH = cardHeights[i] + (currentGroup.length > 0 ? GAP : 0);
+    if(currentH + addH > availH_inner && currentGroup.length > 0){
+      pageGroups.push(currentGroup);
+      currentGroup = [];
+      currentH = 0;
+    }
+    currentGroup.push(cards[i]);
+    currentH += cardHeights[i] + (currentGroup.length > 1 ? GAP : 0);
+  }
+  if(currentGroup.length > 0) pageGroups.push(currentGroup);
+
+  // إذا الصفحة الأخيرة + نص الإعداد ما تدخل: انقل آخر بطاقة لصفحة جديدة
+  if(pageGroups.length > 0){
+    const last = pageGroups[pageGroups.length - 1];
+    let lastH = 0;
+    last.forEach((c, i) => {
+      const ci = cards.indexOf(c);
+      lastH += cardHeights[ci] + (i > 0 ? GAP : 0);
+    });
+    if(lastH > availH_lastPage && last.length > 1){
+      const moved = last.pop();
+      pageGroups.push([moved]);
+    }
+  }
+
+  // ── ابنِ HTMLElement لكل صفحة ──
+  const pageElements = [];
+  const total = pageGroups.length;
+
+  for(let pi = 0; pi < total; pi++){
+    const isLast = pi === total - 1;
+    const group = pageGroups[pi];
+
+    const page = document.createElement('div');
+    page.style.cssText = `position:absolute;width:${A4_W}px;height:${A4_H}px;background:#e2e3dd;padding:0;box-sizing:border-box;display:flex;flex-direction:column;font-family:Tajawal,sans-serif;color:#1c2820;overflow:hidden;`;
+
+    let pageHtml = headerHtml;
+    pageHtml += `<div style="flex:1;display:flex;flex-direction:column;padding:${TOP_PAD}px 44px ${BOTTOM_PAD}px;">`;
+    pageHtml += sectionHeaderHtml;
+    pageHtml += `<div style="display:flex;flex-direction:column;gap:${GAP}px;">`;
+    group.forEach(c => pageHtml += c.html);
+    pageHtml += `</div>`;
+    // مؤشر صفحة (صغير، عند تعدد الصفحات)
+    if(total > 1){
+      pageHtml += `<div style="margin-top:auto;padding-top:12px;text-align:center;font-size:10px;color:#999;font-weight:600;">صفحة ${pi+1} من ${total}</div>`;
+    }
+    pageHtml += isLast ? footerWithText : footerNoText;
+
+    page.innerHTML = pageHtml;
+    if(css){ const s = document.createElement('style'); s.textContent = css; page.insertBefore(s, page.firstChild); }
+    page.querySelectorAll('*').forEach(el2 => { el2.style.letterSpacing = '0'; });
+
+    pageElements.push(page);
+  }
+
+  return pageElements;
+}
+
+// ═══════════════════════════════════════════════
+// 📸 التقاط جميع صفحات الشواهد كـ blobs
+// ═══════════════════════════════════════════════
+async function captureEvidencePages(idx){
+  const pages = await buildEvidencePages(idx);
+  const renderC = document.getElementById('hidden-render-container');
+  const blobs = [];
+  for(const page of pages){
+    renderC.innerHTML = ''; renderC.appendChild(page);
+    await waitForImages(page);
+    if(document.fonts && document.fonts.ready) await document.fonts.ready;
+    await new Promise(r => setTimeout(r, 350));
+    try { await domtoimage.toPng(page, { quality:1.0, width:794, height:1123 }); } catch(e){}
+    await new Promise(r => setTimeout(r, 150));
+    const blob = await domtoimage.toBlob(page, { quality:1.0, width:794, height:1123 });
+    blobs.push(blob);
+  }
+  renderC.innerHTML = '';
+  return blobs;
 }
 
 // ═══════════════════════════════════════════════
@@ -1014,6 +1145,7 @@ async function previewCurrent(){
   overlay.classList.add('show');
   try {
     const renderC = document.getElementById('hidden-render-container');
+    // ── الفاصل ──
     const coverClone = await buildCoverClone(currentIdx);
     renderC.innerHTML = ''; renderC.appendChild(coverClone);
     await waitForImages(coverClone);
@@ -1027,18 +1159,23 @@ async function previewCurrent(){
     let html = '<div style="margin-bottom:6px;color:#fff;font-size:0.78rem;font-weight:700;">📄 صفحة الفاصل</div>';
     html += '<img src="'+coverUrl+'" alt="فاصل" style="margin-bottom:16px;">';
 
+    // ── صفحات الشواهد (متعددة إذا لزم) ──
     if(elementImageCount(currentIdx) > 0){
-      const evClone = await buildEvidenceClone(currentIdx);
-      renderC.innerHTML = ''; renderC.appendChild(evClone);
-      await waitForImages(evClone);
-      if(document.fonts && document.fonts.ready) await document.fonts.ready;
-      await new Promise(r => setTimeout(r, 400));
-      try { await domtoimage.toPng(evClone, { quality:1.0, width:794, height:1123 }); } catch(e){}
-      await new Promise(r => setTimeout(r, 200));
-      const evUrl = await domtoimage.toPng(evClone, { quality:1.0, width:794, height:1123 });
-      renderC.innerHTML = '';
-      html += '<div style="margin-bottom:6px;color:#fff;font-size:0.78rem;font-weight:700;">🖼️ صفحة الشواهد</div>';
-      html += '<img src="'+evUrl+'" alt="شواهد">';
+      const pages = await buildEvidencePages(currentIdx);
+      for(let i = 0; i < pages.length; i++){
+        const page = pages[i];
+        renderC.innerHTML = ''; renderC.appendChild(page);
+        await waitForImages(page);
+        if(document.fonts && document.fonts.ready) await document.fonts.ready;
+        await new Promise(r => setTimeout(r, 350));
+        try { await domtoimage.toPng(page, { quality:1.0, width:794, height:1123 }); } catch(e){}
+        await new Promise(r => setTimeout(r, 150));
+        const url = await domtoimage.toPng(page, { quality:1.0, width:794, height:1123 });
+        renderC.innerHTML = '';
+        const label = pages.length === 1 ? '🖼️ صفحة الشواهد' : `🖼️ صفحة الشواهد ${i+1} من ${pages.length}`;
+        html += `<div style="margin-bottom:6px;color:#fff;font-size:0.78rem;font-weight:700;">${label}</div>`;
+        html += `<img src="${url}" alt="شواهد" style="margin-bottom:16px;">`;
+      }
     }
     wrap.innerHTML = html;
   } catch(err){ console.error(err); wrap.innerHTML = '<div class="preview-loading">❌ تعذّرت المعاينة</div>'; }
@@ -1065,77 +1202,47 @@ function waitForImages(container){
 }
 
 async function makeBlob(idx, type){
-  const clone = type === 'cover' ? await buildCoverClone(idx) : await buildEvidenceClone(idx);
+  // type === 'cover' فقط الآن (الشواهد تُلتقط عبر captureEvidencePages)
+  const clone = await buildCoverClone(idx);
   const renderC = document.getElementById('hidden-render-container');
   renderC.innerHTML = ''; renderC.appendChild(clone);
-  // انتظار تحميل الصور فعلياً
   await waitForImages(clone);
   if(document.fonts && document.fonts.ready) await document.fonts.ready;
   await new Promise(r => setTimeout(r, 400));
-  // 🔥 ارتفاع ديناميكي: الـ cover ثابت 1123، الـ evidence يأخذ ارتفاع المحتوى الفعلي
-  const captureWidth = 794;
-  let captureHeight;
-  if(type === 'cover'){
-    captureHeight = 1123;
-  } else {
-    // قياس scrollHeight بعد ما تحمّل كل الصور
-    captureHeight = Math.max(1123, clone.scrollHeight, clone.offsetHeight);
-  }
-  // التقاط أولي (تحضيري - يجبر dom-to-image على تجهيز كل الموارد)
-  try { await domtoimage.toPng(clone, { quality:1.0, width:captureWidth, height:captureHeight }); } catch(e){}
+  try { await domtoimage.toPng(clone, { quality:1.0, width:794, height:1123 }); } catch(e){}
   await new Promise(r => setTimeout(r, 200));
-  // التقاط نهائي مضمون
-  const blob = await domtoimage.toBlob(clone, { quality:1.0, width:captureWidth, height:captureHeight });
+  const blob = await domtoimage.toBlob(clone, { quality:1.0, width:794, height:1123 });
   renderC.innerHTML = '';
   return blob;
 }
 
-// 🔥 يحوّل blob إلى Image ويرجع {img, width, height}
-function blobToImage(blob){
-  return new Promise((resolve, reject) => {
-    const url = URL.createObjectURL(blob);
-    const img = new Image();
-    img.onload = () => { URL.revokeObjectURL(url); resolve(img); };
-    img.onerror = (e) => { URL.revokeObjectURL(url); reject(e); };
-    img.src = url;
+// 🆕 دمج عدة blobs رأسياً في صورة PNG واحدة
+function mergeBlobsVerticalMulti(blobs){
+  return new Promise(async (resolve, reject) => {
+    try {
+      const loaded = await Promise.all(blobs.map(b => new Promise((res, rej) => {
+        const url = URL.createObjectURL(b);
+        const img = new Image();
+        img.onload = () => res({ img, url });
+        img.onerror = rej;
+        img.src = url;
+      })));
+      const maxW = Math.max(...loaded.map(o => o.img.width));
+      const totalH = loaded.reduce((s, o) => s + o.img.height, 0);
+      const canvas = document.createElement('canvas');
+      canvas.width = maxW; canvas.height = totalH;
+      const ctx = canvas.getContext('2d');
+      ctx.fillStyle = '#e2e3dd';
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+      let y = 0;
+      for(const o of loaded){
+        ctx.drawImage(o.img, 0, y);
+        y += o.img.height;
+        URL.revokeObjectURL(o.url);
+      }
+      canvas.toBlob(b => resolve(b), 'image/png', 1.0);
+    } catch(e){ reject(e); }
   });
-}
-
-// 🔥 يضيف صورة (قد تكون طويلة) إلى PDF، يقسّمها على عدة صفحات A4 إذا لزم الأمر
-async function addLongImageToPdf(pdf, blob, pageW_mm, pageH_mm, isFirstPage){
-  const img = await blobToImage(blob);
-  const ratio_pxPerMM = img.width / pageW_mm; // كم بكسل في المليمتر
-  const pageHeightInPx = pageH_mm * ratio_pxPerMM;
-
-  // إذا الصورة تدخل في صفحة واحدة: أضفها مباشرة بالنسبة الفعلية
-  if(img.height <= pageHeightInPx + 2){
-    if(!isFirstPage) pdf.addPage();
-    const drawHeight_mm = img.height / ratio_pxPerMM;
-    const blobUrl = await blobToDataUrl(blob);
-    pdf.addImage(blobUrl, 'PNG', 0, 0, pageW_mm, drawHeight_mm);
-    return;
-  }
-
-  // قسّم على عدة صفحات A4
-  let yOffset = 0;
-  let firstSlice = true;
-  while(yOffset < img.height){
-    const sliceH = Math.min(pageHeightInPx, img.height - yOffset);
-    const canvas = document.createElement('canvas');
-    canvas.width = img.width;
-    canvas.height = Math.ceil(sliceH);
-    const ctx = canvas.getContext('2d');
-    // خلفية بنفس لون التقرير حتى لو السلايس الأخيرة قصيرة
-    ctx.fillStyle = '#e2e3dd';
-    ctx.fillRect(0, 0, canvas.width, canvas.height);
-    ctx.drawImage(img, 0, yOffset, img.width, sliceH, 0, 0, img.width, sliceH);
-    const sliceDataUrl = canvas.toDataURL('image/png', 1.0);
-    if(!isFirstPage || !firstSlice) pdf.addPage();
-    const drawHeight_mm = sliceH / ratio_pxPerMM;
-    pdf.addImage(sliceDataUrl, 'PNG', 0, 0, pageW_mm, drawHeight_mm);
-    firstSlice = false;
-    yOffset += sliceH;
-  }
 }
 
 function mergeBlobsVertical(blob1, blob2){
@@ -1172,12 +1279,13 @@ async function exportCurrent(mode){
   showProgress('⏳ جاري إنشاء الصفحات...', 0, 1);
   try {
     const coverBlob = await makeBlob(currentIdx, 'cover');
-    const evBlob = hasEvidence ? await makeBlob(currentIdx, 'evidence') : null;
+    const evBlobs = hasEvidence ? await captureEvidencePages(currentIdx) : [];
     const base = `${currentIdx+1}_${sanitize(el.title)}`;
 
     if(mode === 'image'){
-      if(evBlob){
-        const merged = await mergeBlobsVertical(coverBlob, evBlob);
+      if(evBlobs.length > 0){
+        // ادمج الفاصل + كل صفحات الشواهد رأسياً
+        const merged = await mergeBlobsVerticalMulti([coverBlob, ...evBlobs]);
         downloadBlob(merged, base+'.png');
       } else {
         downloadBlob(coverBlob, base+'.png');
@@ -1187,26 +1295,51 @@ async function exportCurrent(mode){
       const { jsPDF } = window.jspdf;
       const pdf = new jsPDF({ orientation:'portrait', unit:'mm', format:'a4', compress:true });
       const pw = pdf.internal.pageSize.getWidth(), ph = pdf.internal.pageSize.getHeight();
-      // الصفحة الأولى: الفاصل (cover) - بحجم صفحة كاملة
+      // الصفحة الأولى: الفاصل
       pdf.addImage(await blobToDataUrl(coverBlob), 'PNG', 0, 0, pw, ph);
-      // صفحات الشواهد: تُقسّم تلقائياً إذا تجاوزت ارتفاع الصفحة الواحدة
-      if(evBlob){
-        await addLongImageToPdf(pdf, evBlob, pw, ph, false);
+      // كل صفحة شواهد = صفحة A4 مستقلة
+      for(const evBlob of evBlobs){
+        pdf.addPage();
+        pdf.addImage(await blobToDataUrl(evBlob), 'PNG', 0, 0, pw, ph);
       }
       if(mode === 'pdf'){
         pdf.save(base+'.pdf');
         showToast('✅ تم تحميل PDF');
       } else {
-        // 🔥 وضع الطباعة: افتح PDF في نافذة وأرسل أمر الطباعة
+        // 🖨️ الطباعة بدون نوافذ منبثقة
         const blobUrl = pdf.output('bloburl');
-        const printWin = window.open(blobUrl, '_blank');
-        if(printWin){
-          printWin.addEventListener('load', () => {
-            setTimeout(() => { try { printWin.print(); } catch(e){} }, 500);
-          });
-          showToast('🖨️ جاري فتح الطباعة');
+        const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) ||
+                      (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+        if(isIOS){
+          const a = document.createElement('a');
+          a.href = blobUrl; a.target = '_blank'; a.rel = 'noopener';
+          document.body.appendChild(a); a.click(); document.body.removeChild(a);
+          showToast('🖨️ افتح زر المشاركة في Safari ثم "طباعة"');
         } else {
-          showToast('⚠️ يرجى السماح للنوافذ المنبثقة');
+          const oldFrame = document.getElementById('__print-frame__');
+          if(oldFrame) oldFrame.remove();
+          const printFrame = document.createElement('iframe');
+          printFrame.id = '__print-frame__';
+          printFrame.style.cssText = 'position:fixed;width:0;height:0;border:0;left:-9999px;top:-9999px;opacity:0;';
+          document.body.appendChild(printFrame);
+          let printed = false;
+          printFrame.onload = () => {
+            setTimeout(() => {
+              try {
+                printFrame.contentWindow.focus();
+                printFrame.contentWindow.print();
+                printed = true;
+                showToast('🖨️ جاري فتح حوار الطباعة');
+              } catch(e){ console.error('iframe print failed', e); }
+            }, 500);
+          };
+          printFrame.src = blobUrl;
+          setTimeout(() => {
+            if(!printed){
+              pdf.save(base+'.pdf');
+              showToast('📥 تم تحميل الملف للطباعة');
+            }
+          }, 3000);
         }
       }
     } else if(mode === 'share'){
@@ -1214,7 +1347,10 @@ async function exportCurrent(mode){
       if(navigator.share && navigator.canShare && navigator.canShare({files:[file]})){
         hideProgress();
         const files = [file];
-        if(evBlob) files.push(new File([evBlob], base+'_شواهد.png', {type:'image/png'}));
+        evBlobs.forEach((b, i) => {
+          const suffix = evBlobs.length > 1 ? `_${i+1}` : '';
+          files.push(new File([b], `${base}_شواهد${suffix}.png`, {type:'image/png'}));
+        });
         await navigator.share({ files, title:'شواهد الأداء الوظيفي', text:'🗂️ شواهد الأداء الوظيفي\n\n🌐 www.ksa2030.one\nالتقارير الذكية' });
         showToast('✅ تم المشاركة'); return;
       } else { downloadBlob(coverBlob, base+'_فاصل.png'); showToast('📥 تم التنزيل'); }
@@ -1241,8 +1377,11 @@ async function exportAll(){
       step++; updateProgress(step, total*2);
       if(elementImageCount(i) > 0){
         showProgress(`🖼️ شواهد العنصر ${i+1}...`, step, total*2);
-        const evBlob = await makeBlob(i, 'evidence');
-        zip.file(`${String(i+1).padStart(2,'0')}_ب_شواهد_${sanitize(el.title)}.png`, evBlob);
+        const evBlobs = await captureEvidencePages(i);
+        evBlobs.forEach((evBlob, j) => {
+          const suffix = evBlobs.length > 1 ? `_${j+1}_من_${evBlobs.length}` : '';
+          zip.file(`${String(i+1).padStart(2,'0')}_ب_شواهد${suffix}_${sanitize(el.title)}.png`, evBlob);
+        });
       }
       step++; updateProgress(step, total*2);
     }
