@@ -976,8 +976,100 @@ function doClear(){
   toast(I18N[getCurrentLang()].toastCleared);
 }
 
+// ═══════════════════════════════════════════════
+// 🆕 إصلاح حروف الترويسة عند التصدير (html2canvas)
+// html2canvas مع letter-spacing يفصل الحروف العربية ويعكس الكلمات
+// الحل: لف كل كلمة في span عرضه inline-block + إزالة letter-spacing
+// ═══════════════════════════════════════════════
+function prepareHeaderForExport(){
+  const restoreFns = [];
+
+  // 1) لف النص الثابت في .l1 ("الإدارة العامة للتعليم") بـ spans لكل كلمة
+  const l1 = document.querySelector('.moe-band-text .l1');
+  if(l1){
+    const origHTML = l1.innerHTML;
+    const text = l1.textContent.trim();
+    if(text){
+      const words = text.split(/(\s+)/);
+      l1.innerHTML = words.map(part => {
+        if(!part) return '';
+        if(/^\s+$/.test(part)) return part;
+        return `<span style="display:inline-block;white-space:nowrap;letter-spacing:0">${part}</span>`;
+      }).join('');
+      restoreFns.push(() => { l1.innerHTML = origHTML; });
+    }
+  }
+
+  // 2) استبدال inputs الترويسة (admin, office, school) بـ spans مع كلمات مغلّفة
+  const headerInputs = document.querySelectorAll('.moe-band input, .moe-school-band input');
+  headerInputs.forEach(inp => {
+    const value = inp.value || '';
+    const placeholder = inp.placeholder || '';
+    const text = value || placeholder;
+    if(!text.trim()){
+      // فاضي تماماً — خفّ الـ display ليختفي أنيقاً
+      const origDisplay = inp.style.display;
+      inp.style.visibility = 'hidden';
+      restoreFns.push(() => { inp.style.visibility = ''; inp.style.display = origDisplay; });
+      return;
+    }
+    const isEmpty = !value;
+    const computed = window.getComputedStyle(inp);
+    const span = document.createElement('span');
+    const words = text.split(/(\s+)/);
+    span.innerHTML = words.map(part => {
+      if(!part) return '';
+      if(/^\s+$/.test(part)) return part;
+      return `<span style="display:inline-block;white-space:nowrap;letter-spacing:0">${part}</span>`;
+    }).join('') || '&nbsp;';
+
+    span.style.cssText = `
+      display: inline-block;
+      width: 100%;
+      box-sizing: border-box;
+      font-family: ${computed.fontFamily};
+      font-size: ${computed.fontSize};
+      font-weight: ${computed.fontWeight};
+      color: ${isEmpty ? 'rgba(255,255,255,0.5)' : computed.color};
+      text-align: ${computed.textAlign};
+      line-height: ${computed.lineHeight};
+      letter-spacing: 0;
+      direction: rtl;
+      unicode-bidi: embed;
+      padding: 0;
+      vertical-align: middle;
+      background: transparent;
+      border: none;
+      outline: none;
+    `;
+
+    const origDisplay = inp.style.display;
+    inp.style.display = 'none';
+    inp.parentNode.insertBefore(span, inp);
+
+    restoreFns.push(() => {
+      span.remove();
+      inp.style.display = origDisplay;
+    });
+  });
+
+  // 3) إزالة letter-spacing بشكل عام من عناصر الترويسة (احتياط)
+  const lsElements = document.querySelectorAll('.moe-band, .moe-band *, .moe-school-band, .moe-school-band *');
+  lsElements.forEach(el => {
+    if(!el.style) return;
+    const orig = el.style.letterSpacing;
+    el.style.letterSpacing = '0';
+    restoreFns.push(() => { el.style.letterSpacing = orig; });
+  });
+
+  return () => restoreFns.reverse().forEach(fn => { try{ fn(); }catch(e){} });
+}
+
 async function saveImg(){
   const page=document.getElementById('page');
+
+  // 🆕 إصلاح حروف الترويسة للتصدير (html2canvas يفصل الحروف العربية مع letter-spacing)
+  const headerRestore = prepareHeaderForExport();
 
   // الحقول السطرية (سطر واحد)
   const inlineFields=['f-exec','f-place','f-bene','f-count','f-date','f-princ'];
@@ -1042,7 +1134,16 @@ async function saveImg(){
       allowTaint:true,
       onclone:(doc)=>{
         const style=doc.createElement('style');
-        style.textContent="* { font-family: 'Tajawal','Arial Unicode MS','Tahoma',Arial,sans-serif !important; }";
+        style.textContent=`
+          * {
+            font-family: 'Tajawal','Arial Unicode MS','Tahoma',Arial,sans-serif !important;
+            letter-spacing: 0 !important;
+            text-rendering: optimizeLegibility !important;
+            -webkit-font-feature-settings: "kern" 1, "liga" 1, "calt" 1, "rlig" 1 !important;
+            font-feature-settings: "kern" 1, "liga" 1, "calt" 1, "rlig" 1 !important;
+            font-kerning: normal !important;
+          }
+        `;
         doc.head.appendChild(style);
       }
     });
@@ -1064,6 +1165,8 @@ async function saveImg(){
     document.getElementById(id).style.display='';
     document.getElementById(blockPts[idx]).style.display='none';
   });
+  // 🆕 استرجاع شكل الترويسة الأصلي
+  if(headerRestore) headerRestore();
 }
 
 
@@ -1225,7 +1328,10 @@ async function exportAsPDFv2(){
   // ═══ نطبق نفس معالجة الأحرف العربية ═══
   const replacements = [];
   const textWraps = [];
-  
+
+  // 🆕 أولاً: إصلاح حروف الترويسة (النص الثابت + الـ inputs)
+  const headerRestore = prepareHeaderForExport();
+
   // 1) نحوّل الـ inputs لـ spans
   const allInputs = page.querySelectorAll('input, textarea');
   allInputs.forEach(el => {
@@ -1391,6 +1497,8 @@ async function exportAsPDFv2(){
       original.style.display = '';
       if(replacement.parentNode) replacement.parentNode.removeChild(replacement);
     });
+    // 🆕 استرجاع شكل الترويسة الأصلي
+    if(headerRestore) headerRestore();
   }
 }
 
