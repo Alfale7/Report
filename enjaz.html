@@ -3131,6 +3131,8 @@ document.addEventListener('change', scheduleSave);
    ═══════════════════════════════════════════════════════ */
 function autoResizeTableTA(ta){
   if(!ta) return;
+  // تجاهل المخفية (في تبويبات غير فعّالة): scrollHeight=0 سيُصفّر الارتفاع خطأً
+  if(ta.offsetParent === null && getComputedStyle(ta).position !== 'fixed') return;
   ta.style.height = 'auto';
   ta.style.height = ta.scrollHeight + 'px';
 }
@@ -3313,6 +3315,8 @@ function setViewMode(mode){
   } else {
     // أزل tab-active من كل الأقسام (تعود مرئية)
     document.querySelectorAll('.tab-section.tab-active').forEach(s => s.classList.remove('tab-active'));
+    // 🆕 كل الجداول صارت مرئية الآن، اضبط ارتفاع textareas
+    if(typeof refreshAllTableTAs === 'function') refreshAllTableTAs();
   }
   scheduleSave();
 }
@@ -3344,6 +3348,8 @@ function selectTab(targetId){
   document.querySelectorAll('.tab-section').forEach(s => {
     s.classList.toggle('tab-active', s.id === targetId);
   });
+  // 🆕 الآن القسم الفعّال صار مرئياً، اضبط ارتفاع textareas الجداول داخله
+  if(typeof refreshAllTableTAs === 'function') refreshAllTableTAs();
   // مرّر للأعلى داخل الـ paper
   window.scrollTo({ top:0, behavior:'smooth' });
   // مرّر الـ tab الفعّال داخل شريط التبويبات ليبقى مرئياً
@@ -3777,28 +3783,69 @@ function collectAtomicRectsForPDF(paper, scale){
   const paperTop = paper.getBoundingClientRect().top;
   // العناصر التي لا نريد تقسيمها بين الصفحات
   const SELECTORS = [
+    // بطاقات الحقول والمعايير
     '.field-card',
+    '.field-grid',
+    '.field-textarea',
     '.criterion-header',
     '.criterion-content',
     '.criterion-section-label',
+    // قسم الشواهد
     '.shawahed-section',
     '.shawahed-header',
     '.shawahed-grid',
     '.shahed-slot',
+    // الجداول
     '.editable-table',
     '.editable-table tr',
+    // قوائم النقاط
     '.examples-list li',
+    'li',
+    // فهرس الأقسام
     '.toc-section',
+    '.toc-grid',
     '.toc-item',
+    // عناوين الأقسام
     '.section-title',
+    '.section-header',
     '.section-number-badge',
     'h1','h2','h3','h4',
+    // الصور
     'img',
-    '.field-textarea',
+    // الغلاف
+    '.cover',
     '.cover-eyebrow',
     '.cover-title',
     '.cover-subtitle',
-    '.field-grid',
+    '.cover-photo-wrap',
+    '.cover-pill',
+    // 🆕 الميثاق (مواد + مقدّمة + تعهّد)
+    '.mithaq-article',
+    '.mithaq-article-title',
+    '.mithaq-article-body',
+    '.mithaq-intro',
+    '.mithaq-intro-title',
+    '.mithaq-intro-text',
+    '.mithaq-pledge',
+    '.mithaq-pledge-title',
+    '.mithaq-pledge-text',
+    '.mithaq-pledge-sig',
+    '.mithaq-sig-field',
+    // 🆕 الخاتمة
+    '.khatima-wrapper',
+    '.khatima-title',
+    '.khatima-subtitle',
+    '.khatima-body',
+    '.khatima-paragraph',
+    '.khatima-firstline',
+    '.khatima-end',
+    '.khatima-end-frame',
+    '.khatima-sig-row',
+    '.khatima-sig-field',
+    '.khatima-signature',
+    // أشرطة الوزارة
+    '.moe-band',
+    '.moe-footer-band',
     '.action-bar'
   ];
   const rects = [];
@@ -3879,9 +3926,9 @@ async function exportAsPDFv2(){
         // إذا لم تكن الصفحة الأخيرة، اضبط القطع ليتجنّب شطر عنصر ذرّي
         if(cutAt < canvas.height){
           const adjusted = adjustCutForAtomic(cutAt, atomicRects, yOffset);
-          // اقبل التعديل فقط إذا أبقى قدراً معقولاً من المحتوى (≥ 15% من ارتفاع الصفحة)
-          // لتفادي صفحات شبه فارغة بسبب عناصر مكدّسة قرب بداية الصفحة
-          if(adjusted > yOffset + pageHeightInCanvas * 0.15){
+          // اقبل التعديل إذا أبقى ولو قدراً يسيراً من المحتوى (≥ 5% من ارتفاع الصفحة)
+          // الأولوية للحفاظ على العنصر سليماً حتى لو خسرنا بعض المساحة في الصفحة
+          if(adjusted > yOffset + pageHeightInCanvas * 0.05){
             cutAt = adjusted;
           }
         }
