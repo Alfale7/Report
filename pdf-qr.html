@@ -582,18 +582,17 @@ function formatSize(bytes){
 }
 
 /* ════════════════════════════════════════════════
-   نظام الرفع: 3 خدمات بالتسلسل
+   نظام الرفع: 0x0.st (موثوق + مدة طويلة)
    ════════════════════════════════════════════════ */
 
-// خدمة 1: catbox.moe (دائم)
-function uploadCatbox(file, onProgress){
+// خدمة الرفع: 0x0.st (30 يوم إلى سنة حسب حجم الملف)
+function upload0x0(file, onProgress){
   return new Promise((resolve, reject) => {
     const formData = new FormData();
-    formData.append('reqtype', 'fileupload');
-    formData.append('fileToUpload', file);
+    formData.append('file', file);
     const xhr = new XMLHttpRequest();
-    xhr.timeout = 60000; // 60 ثانية
-    xhr.open('POST', 'https://catbox.moe/user/api.php');
+    xhr.timeout = 60000;
+    xhr.open('POST', 'https://0x0.st');
     xhr.upload.addEventListener('progress', (e) => {
       if(e.lengthComputable && onProgress){
         onProgress(Math.round((e.loaded / e.total) * 100));
@@ -602,84 +601,41 @@ function uploadCatbox(file, onProgress){
     xhr.addEventListener('load', () => {
       if(xhr.status >= 200 && xhr.status < 300){
         const r = xhr.responseText.trim();
-        if(r.startsWith('http')) resolve({ url: r, expiry: 'دائم', icon: '♾️' });
-        else reject(new Error('catbox: استجابة غير صالحة'));
-      } else reject(new Error('catbox: HTTP ' + xhr.status));
+        if(r.startsWith('http')){
+          // حساب المدة بناء على حجم الملف
+          // 0x0.st: 30 يوم (للملفات 512MB) إلى 365 يوم (للملفات الصغيرة)
+          const sizeMB = file.size / (1024*1024);
+          let days;
+          if(sizeMB < 1) days = 365;
+          else if(sizeMB < 5) days = 350;
+          else if(sizeMB < 10) days = 310;
+          else if(sizeMB < 50) days = 270;
+          else if(sizeMB < 100) days = 200;
+          else if(sizeMB < 200) days = 120;
+          else if(sizeMB < 300) days = 70;
+          else days = 30;
+          
+          let expiry;
+          if(days >= 350) expiry = 'سنة كاملة';
+          else if(days >= 270) expiry = '9 أشهر';
+          else if(days >= 200) expiry = '7 أشهر';
+          else if(days >= 120) expiry = '4 أشهر';
+          else if(days >= 70) expiry = 'شهرين';
+          else expiry = 'شهر';
+          
+          resolve({ url: r, expiry: expiry, icon: '📅' });
+        } else reject(new Error('0x0: استجابة غير صالحة'));
+      } else reject(new Error('0x0: HTTP ' + xhr.status));
     });
-    xhr.addEventListener('error', () => reject(new Error('catbox: خطأ شبكة')));
-    xhr.addEventListener('timeout', () => reject(new Error('catbox: انتهت المهلة')));
-    xhr.addEventListener('abort', () => reject(new Error('catbox: تم إلغاء')));
-    xhr.send(formData);
-  });
-}
-
-// خدمة 2: uguu.se (48 ساعة)
-function uploadUguu(file, onProgress){
-  return new Promise((resolve, reject) => {
-    const formData = new FormData();
-    formData.append('files[]', file);
-    const xhr = new XMLHttpRequest();
-    xhr.timeout = 60000;
-    xhr.open('POST', 'https://uguu.se/upload');
-    xhr.upload.addEventListener('progress', (e) => {
-      if(e.lengthComputable && onProgress){
-        onProgress(Math.round((e.loaded / e.total) * 100));
-      }
-    });
-    xhr.addEventListener('load', () => {
-      if(xhr.status >= 200 && xhr.status < 300){
-        try {
-          const data = JSON.parse(xhr.responseText);
-          if(data && data.files && data.files[0] && data.files[0].url){
-            resolve({ url: data.files[0].url, expiry: '48 ساعة', icon: '⏱️' });
-          } else reject(new Error('uguu: استجابة غير صالحة'));
-        } catch(e){ reject(new Error('uguu: فشل التحليل')); }
-      } else reject(new Error('uguu: HTTP ' + xhr.status));
-    });
-    xhr.addEventListener('error', () => reject(new Error('uguu: خطأ شبكة')));
-    xhr.addEventListener('timeout', () => reject(new Error('uguu: انتهت المهلة')));
-    xhr.addEventListener('abort', () => reject(new Error('uguu: تم إلغاء')));
-    xhr.send(formData);
-  });
-}
-
-// خدمة 3: tmpfiles.org (60 دقيقة)
-function uploadTmpfiles(file, onProgress){
-  return new Promise((resolve, reject) => {
-    const formData = new FormData();
-    formData.append('file', file);
-    const xhr = new XMLHttpRequest();
-    xhr.timeout = 60000;
-    xhr.open('POST', 'https://tmpfiles.org/api/v1/upload');
-    xhr.upload.addEventListener('progress', (e) => {
-      if(e.lengthComputable && onProgress){
-        onProgress(Math.round((e.loaded / e.total) * 100));
-      }
-    });
-    xhr.addEventListener('load', () => {
-      if(xhr.status >= 200 && xhr.status < 300){
-        try {
-          const data = JSON.parse(xhr.responseText);
-          if(data && data.data && data.data.url){
-            // tmpfiles يرجع رابط مع /dl/ لتحميل مباشر
-            let url = data.data.url;
-            if(url.includes('tmpfiles.org/') && !url.includes('/dl/')){
-              url = url.replace('tmpfiles.org/', 'tmpfiles.org/dl/');
-            }
-            resolve({ url: url, expiry: '60 دقيقة', icon: '⏱️' });
-          } else reject(new Error('tmpfiles: استجابة غير صالحة'));
-        } catch(e){ reject(new Error('tmpfiles: فشل التحليل')); }
-      } else reject(new Error('tmpfiles: HTTP ' + xhr.status));
-    });
-    xhr.addEventListener('error', () => reject(new Error('tmpfiles: خطأ شبكة')));
-    xhr.addEventListener('timeout', () => reject(new Error('tmpfiles: انتهت المهلة')));
-    xhr.addEventListener('abort', () => reject(new Error('tmpfiles: تم إلغاء')));
+    xhr.addEventListener('error', () => reject(new Error('0x0: خطأ شبكة')));
+    xhr.addEventListener('timeout', () => reject(new Error('0x0: انتهت المهلة')));
+    xhr.addEventListener('abort', () => reject(new Error('0x0: تم إلغاء')));
     xhr.send(formData);
   });
 }
 
 /* ════════════════════════════════════════════════
-   الدالة الرئيسية: تجرب 3 خدمات بالتسلسل
+   الدالة الرئيسية: رفع مباشر إلى 0x0.st
    ════════════════════════════════════════════════ */
 async function uploadAndGenerate(){
   if(!selectedFile){ showToast('⚠️ اختر ملفاً أولاً'); return; }
@@ -693,39 +649,14 @@ async function uploadAndGenerate(){
   btn.disabled = true;
   progress.classList.add('show');
   fill.style.width = '0%';
+  btnText.textContent = 'جارٍ الرفع...';
 
-  const services = [
-    { name: 'الخادم الأساسي', fn: uploadCatbox },
-    { name: 'الخادم البديل', fn: uploadUguu },
-    { name: 'خادم احتياطي', fn: uploadTmpfiles }
-  ];
+  try {
+    const result = await upload0x0(selectedFile, (pct) => {
+      fill.style.width = pct + '%';
+      btnText.textContent = `جارٍ الرفع... ${pct}%`;
+    });
 
-  let result = null;
-  let lastError = null;
-
-  for(let i = 0; i < services.length; i++){
-    const svc = services[i];
-    btnText.textContent = `جارٍ المحاولة عبر ${svc.name}...`;
-    fill.style.width = '0%';
-    try {
-      result = await svc.fn(selectedFile, (pct) => {
-        fill.style.width = pct + '%';
-        btnText.textContent = `${svc.name} · ${pct}%`;
-      });
-      break; // نجح، اخرج
-    } catch(err){
-      console.warn(svc.name + ' فشل:', err.message);
-      lastError = err;
-      // استمر للخدمة التالية
-      if(i < services.length - 1){
-        showToast(`⚠️ المحاولة ${i+1} فشلت، جارٍ المحاولة بطريقة أخرى...`);
-        await new Promise(r => setTimeout(r, 600));
-      }
-    }
-  }
-
-  // النتيجة
-  if(result){
     currentUrl = result.url;
     currentExpiry = result.expiry;
     currentSize = formatSize(selectedFile.size);
@@ -740,9 +671,9 @@ async function uploadAndGenerate(){
     resultDiv.classList.add('show');
     showToast('✅ تم رفع الملف وتوليد الباركود');
     setTimeout(() => { resultDiv.scrollIntoView({behavior:'smooth', block:'center'}); }, 200);
-  } else {
-    showToast('❌ فشلت كل المحاولات. تحقّق من الإنترنت أو جرّب لاحقاً');
-    console.error('كل الخدمات فشلت:', lastError);
+  } catch(err){
+    console.error('فشل الرفع:', err);
+    showToast('❌ فشل الرفع. تحقّق من الإنترنت أو جرّب لاحقاً');
   }
 
   btn.classList.remove('uploading');
@@ -771,14 +702,54 @@ function generateQRCode(url){
 
 async function captureFrame(){
   const frame = document.getElementById('qrFrame');
-  await new Promise(r => setTimeout(r, 100));
-  const canvas = await html2canvas(frame, {
-    backgroundColor: '#ffffff',
-    scale: 3,
-    useCORS: true,
-    logging: false
+
+  // 🔥 إصلاح الحروف العربية المتشابكة في التصدير
+  // html2canvas يقطع الحروف العربية عند letter-spacing — نلف كل كلمة بـ span
+  const replacements = [];
+  const arabicTextNodes = frame.querySelectorAll('.qr-scan-hint, .qr-brand-name, .qr-brand-url');
+  arabicTextNodes.forEach(el => {
+    const original = el.innerHTML;
+    const text = el.textContent || '';
+    if(!text.trim()) return;
+    const words = text.split(/(\s+)/);
+    const newHTML = words.map(w => {
+      if(!w) return '';
+      if(/^\s+$/.test(w)) return w;
+      // أحرف غير عربية (إيموجي/أرقام/إنجليزي) → خلّيها كما هي
+      return `<span style="display:inline-block;white-space:nowrap;letter-spacing:0;direction:rtl;unicode-bidi:embed;">${w.replace(/</g,'&lt;').replace(/>/g,'&gt;')}</span>`;
+    }).join('');
+    el.innerHTML = newHTML;
+    replacements.push({ el, original });
   });
-  return canvas.toDataURL('image/png');
+
+  await document.fonts.ready;
+  await new Promise(r => setTimeout(r, 200));
+
+  try {
+    const canvas = await html2canvas(frame, {
+      backgroundColor: '#ffffff',
+      scale: 3,
+      useCORS: true,
+      logging: false,
+      onclone: (doc) => {
+        const style = doc.createElement('style');
+        style.textContent = `
+          * {
+            letter-spacing: 0 !important;
+            font-feature-settings: "kern" 1, "liga" 1, "calt" 1, "rlig" 1 !important;
+            font-kerning: normal !important;
+            -webkit-print-color-adjust: exact !important;
+            print-color-adjust: exact !important;
+          }
+        `;
+        doc.head.appendChild(style);
+      }
+    });
+    return canvas.toDataURL('image/png');
+  } finally {
+    // أعد النص الأصلي
+    replacements.forEach(({ el, original }) => { el.innerHTML = original; });
+  }
 }
 
 async function downloadQR(){
