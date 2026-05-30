@@ -3501,16 +3501,64 @@ function prepareForExport(){
     stored.push({type:'contenteditable', el:ce});
   });
 
+  // 4) 🆕 لف كل النصوص الثابتة (labels, titles, headings...) لمنع تقطيع الكلمات
+  // نمر على كل text nodes داخل الـ paper ونحوّلها لـ word-wrapped HTML
+  // نتجاهل: scripts/styles, الـ inputs (تم بالفعل), placeholders, أيقونات emoji
+  const SKIP_TAGS = new Set(['SCRIPT','STYLE','INPUT','TEXTAREA','SELECT','OPTION','BUTTON']);
+  const ARABIC_RE = /[\u0600-\u06FF\u0750-\u077F\u08A0-\u08FF\uFB50-\uFDFF\uFE70-\uFEFF]/;
+
+  function walkAndWrap(node){
+    if(!node) return;
+    if(node.nodeType === Node.TEXT_NODE){
+      const txt = node.nodeValue;
+      // تجاهل الفارغ أو الذي لا يحتوي عربي
+      if(!txt || !txt.trim() || !ARABIC_RE.test(txt)) return;
+      // تأكّد أن الكلمة المنفصلة تستحق اللف (أكثر من حرف)
+      const words = txt.split(/(\s+)/);
+      let hasWrappable = false;
+      for(const w of words){
+        if(w.trim() && ARABIC_RE.test(w)){ hasWrappable = true; break; }
+      }
+      if(!hasWrappable) return;
+      // أنشئ wrapper span يحتوي على كلمات داخلية
+      const frag = document.createDocumentFragment();
+      const wrap = document.createElement('span');
+      wrap.setAttribute('data-export-wrap','1');
+      wrap.innerHTML = wrapWords(txt);
+      frag.appendChild(wrap);
+      // احفظ المرجع للاستعادة
+      const orig = node.nodeValue;
+      const parent = node.parentNode;
+      const next = node.nextSibling;
+      stored.push({ type:'textnode', orig, parent, next, wrap });
+      parent.replaceChild(frag, node);
+      return;
+    }
+    if(node.nodeType !== Node.ELEMENT_NODE) return;
+    if(SKIP_TAGS.has(node.tagName)) return;
+    // تجاهل العناصر المخفية (لا تظهر في التصدير) لتسريع الأداء
+    // ملاحظة: لا نستخدم getComputedStyle لكل عنصر لأنه بطيء؛ نعتمد على inline style بسيط
+    // نمر على الأبناء (نسخ array لأن DOM يتغير)
+    const children = Array.from(node.childNodes);
+    for(const child of children) walkAndWrap(child);
+  }
+
+  // طبّق على الـ paper كاملاً
+  const paperEl = document.getElementById('enjaz-paper');
+  if(paperEl) walkAndWrap(paperEl);
+
   return { stored, inTabsMode, tocWasClosed };
 }
 function restoreFromExport(ctx){
   const stored = ctx.stored || ctx;
-  stored.forEach(item => {
+  // نعكس الترتيب عشان نُرجع text nodes أولاً (آخر ما تم تعديله)
+  for(let i = stored.length - 1; i >= 0; i--){
+    const item = stored[i];
     // backward-compat: old { inp, span } shape
     if(item.inp && item.span){
       item.span.remove();
       item.inp.style.display = '';
-      return;
+      continue;
     }
     if(item.type === 'input' || item.type === 'textarea'){
       item.span.remove();
@@ -3520,8 +3568,14 @@ function restoreFromExport(ctx){
         item.el.innerHTML = item.el._origHTML;
         delete item.el._origHTML;
       }
+    } else if(item.type === 'textnode'){
+      // أرجع النص الأصلي مكان الـ wrap
+      if(item.wrap && item.wrap.parentNode){
+        const textNode = document.createTextNode(item.orig);
+        item.wrap.parentNode.replaceChild(textNode, item.wrap);
+      }
     }
-  });
+  }
   document.body.classList.remove('exporting');
   document.body.classList.remove('exporting-tabs');
   // الوضع لم يُغيَّر (نحن لم نخرج من tabs)، فقط أعد إخفاء الفهرس إذا كان مغلقاً
