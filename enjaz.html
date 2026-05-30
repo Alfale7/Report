@@ -2198,6 +2198,10 @@ body.view-tabs .section.tab-section.tab-active{display:block; animation:fadeInTa
 .exporting input::placeholder,
 .exporting textarea::placeholder{color:transparent !important;}
 
+/* 🆕 إخفاء دوائر الزينة الإشعاعية على الغلاف وقت التصدير (تظهر دوائر بيضاء صلبة في PDF/طباعة بدل التدرّج الشفاف) */
+.exporting .cover::before,
+.exporting .cover::after{ display:none !important; content:none !important; }
+
 /* 🆕 في تصدير وضع التبويبات: أخفِ الغلاف عشان يُصدَّر فقط القسم الحالي مع الترويسة والفوتر */
 .exporting-tabs .cover{display:none !important;}
 
@@ -2221,6 +2225,9 @@ body.view-tabs .section.tab-section.tab-active{display:block; animation:fadeInTa
   body.view-tabs .section.tab-section{display:none !important;}
   body.view-tabs .section.tab-section.tab-active{display:block !important;}
   body.view-tabs #sec-toc{display:none !important;}
+
+  /* 🆕 إخفاء دوائر الزينة الإشعاعية على الغلاف (المتصفح يطبعها كدوائر بيضاء صلبة) */
+  .cover::before, .cover::after{ display:none !important; content:none !important; }
 
   /* لا تخفِ الـ placeholder text لأن النص الأصلي يطبع */
   /* لون داكن للنصوص لضمان الطباعة الصحيحة */
