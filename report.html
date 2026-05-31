@@ -841,7 +841,7 @@ transition:all 0.2s;
 </style>
 
   <!-- 🔥 Firebase Integration (يجب أن يكون قبل أي محتوى) -->
-  <script type="module" src="report-firebase.js?v=8"></script>
+  <script type="module" src="report-firebase.js?v=9"></script>
   <!-- 🐛 Eruda - Console للجوال (مؤقت للتشخيص) -->
   <script src="https://cdn.jsdelivr.net/npm/eruda"></script>
   <script>eruda.init();</script>
@@ -1139,11 +1139,15 @@ document.addEventListener('DOMContentLoaded', function(){
   document.getElementById('f-date').value=n.getFullYear()+'/'+String(n.getMonth()+1).padStart(2,'0')+'/'+String(n.getDate()).padStart(2,'0');
 })();
 
-document.getElementById('muhafaza').addEventListener('click',function(){
-  const cur=this.textContent.replace('بمحافظة ','').trim();
-  const v=prompt('اسم المحافظة:',cur==='...'?'':cur);
-  if(v!==null) this.textContent='بمحافظة '+(v||'...');
-});
+// إصلاح: تحقق من وجود العنصر قبل إضافة listener
+const _muhafazaEl = document.getElementById('muhafaza');
+if (_muhafazaEl) {
+  _muhafazaEl.addEventListener('click',function(){
+    const cur=this.textContent.replace('بمحافظة ','').trim();
+    const v=prompt('اسم المحافظة:',cur==='...'?'':cur);
+    if(v!==null) this.textContent='بمحافظة '+(v||'...');
+  });
+}
 
 function openF(id){
   // 🔒 فحص الميزة المدفوعة (رفع الصور)
@@ -1188,7 +1192,8 @@ function doClear(){
     img.closest('.pf').querySelector('.padd').style.display='';
   });
   document.querySelectorAll('[contenteditable]').forEach(el=>el.textContent='');
-  document.getElementById('muhafaza').textContent='بمحافظة ...';
+  const _mhEl = document.getElementById('muhafaza');
+  if (_mhEl) _mhEl.textContent='بمحافظة ...';
   toast(I18N[getCurrentLang()].toastCleared);
 }
 
