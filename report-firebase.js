@@ -393,6 +393,13 @@ window.trackDownload = async function() {
 
 // ✋ فحص قبل التحميل (يمنع التحميل لو تجاوز الحد)
 window.canDownload = function() {
+  // 👁️ تقارير المعاينة → اعرض المودال الفخم
+  if (VIEW_ONLY_REPORTS.includes(_currentPage)) {
+    if (isLifetime(_profile) || isAdmin(_user)) return true;
+    window.showPremiumFeatureModal('تصدير التقرير');
+    return false;
+  }
+
   if (!_user) return false;
   if (isLifetime(_profile) || isAdmin(_user)) return true;
 
