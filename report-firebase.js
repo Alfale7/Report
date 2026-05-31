@@ -332,8 +332,16 @@ window._fbLogout = async function() {
   window.location.href = 'index.html';
 };
 
-// قديمة - للتوافق
+// قديمة - للتوافق - مُحدّثة لاستخدام المودال الجديد
 window.checkDownloadAccess = async function() {
+  // 👁️ تقارير المعاينة → اعرض المودال الفخم (بدون redirect)
+  if (VIEW_ONLY_REPORTS.includes(_currentPage)) {
+    if (isLifetime(_profile) || isAdmin(_user)) return true;
+    window.showPremiumFeatureModal('تصدير التقرير');
+    return false;
+  }
+
+  // تقارير عادية → المنطق القديم
   if (!_user) {
     sessionStorage.setItem('returnAfterLogin', _currentPage);
     window.location.href = 'login.html';

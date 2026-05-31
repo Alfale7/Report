@@ -841,7 +841,7 @@ transition:all 0.2s;
 </style>
 
   <!-- 🔥 Firebase Integration (يجب أن يكون قبل أي محتوى) -->
-  <script type="module" src="report-firebase.js?v=4"></script>
+  <script type="module" src="report-firebase.js?v=6"></script>
 </head>
 <body>
 
@@ -1774,112 +1774,177 @@ document.addEventListener('click', e => {
 loadSavedTheme();
 
 // ═══════════════════════════════════════════════════════
-// 🔒 حماية الميزات التفاعلية (الكتابة + التفريغ) للزائر/Free
+// 🔒 حماية الميزات التفاعلية (3 طبقات حماية)
 // ═══════════════════════════════════════════════════════
-// المنطق: نقفل كل شي من البداية (default = locked)
-//         بعد ما نتأكد إن المستخدم premium، نفتح
-// ميزة: الزائر/Free يشوف التقرير بدون قدرة على التعديل
+// الطبقة 1: HTML readonly/contenteditable=false (الأقوى)
+// الطبقة 2: CSS class يمنع التفاعل بصرياً
+// الطبقة 3: JS event listeners + المودال
 (function setupPremiumGate(){
-  let _isLocked = true; // مقفل افتراضياً
-  let _setupDone = false;
+  let _isLocked = true; // مقفل افتراضياً ✅
 
-  // اعتراض موحّد
-  const intercept = (e) => {
-    if (_isLocked) {
-      e.preventDefault();
-      e.stopPropagation();
-      if (typeof window.showPremiumFeatureModal === 'function') {
-        window.showPremiumFeatureModal('الكتابة في التقرير');
-      }
-      if (e.target && typeof e.target.blur === 'function') {
-        setTimeout(() => e.target.blur(), 0);
-      }
-      return false;
+  // ═══ CSS للحالة المقفلة ═══
+  const style = document.createElement('style');
+  style.id = 'premiumGateStyle';
+  style.textContent = `
+    /* الحقول والـ contenteditable في حالة القفل */
+    body.preview-locked input[type="text"],
+    body.preview-locked input[type="number"],
+    body.preview-locked input[type="date"],
+    body.preview-locked textarea,
+    body.preview-locked [contenteditable="true"] {
+      cursor: pointer !important;
+      caret-color: transparent !important;
+      user-select: none !important;
+      -webkit-user-select: none !important;
     }
-  };
-
-  const focusBlock = (e) => {
-    if (_isLocked) {
-      setTimeout(() => e.target.blur(), 0);
-      if (typeof window.showPremiumFeatureModal === 'function') {
-        window.showPremiumFeatureModal('الكتابة في التقرير');
-      }
+    body.preview-locked .pf {
+      cursor: pointer !important;
     }
-  };
+  `;
+  document.head.appendChild(style);
 
-  // تثبيت المستمعين (يعمل مرة واحدة)
-  const setupListeners = () => {
-    if (_setupDone) return;
-    _setupDone = true;
-
-    // 1️⃣ كل الحقول النصية
+  // ═══ تطبيق القفل (الطبقة 1) ═══
+  const applyLock = () => {
+    document.body.classList.add('preview-locked');
+    // قفل HTML للحقول
     document.querySelectorAll('input[type="text"], input[type="number"], input[type="date"], textarea').forEach(el => {
-      el.addEventListener('keydown', intercept, true);
-      el.addEventListener('paste', intercept, true);
-      el.addEventListener('focus', focusBlock, true);
-      el.addEventListener('mousedown', (e) => { if (_isLocked) focusBlock(e); }, true);
-      el.addEventListener('touchstart', (e) => { if (_isLocked) focusBlock(e); }, true);
+      el.setAttribute('readonly', '');
+      el.setAttribute('data-preview-locked', '1');
     });
-
-    // 2️⃣ contenteditable
+    // قفل contenteditable
     document.querySelectorAll('[contenteditable="true"]').forEach(el => {
-      el.addEventListener('keydown', intercept, true);
-      el.addEventListener('paste', intercept, true);
-      el.addEventListener('beforeinput', intercept, true);
-      el.addEventListener('focus', focusBlock, true);
-      el.addEventListener('mousedown', (e) => { if (_isLocked) focusBlock(e); }, true);
+      el.setAttribute('contenteditable', 'false');
+      el.setAttribute('data-was-editable', '1');
+    });
+  };
+
+  // ═══ فك القفل (للمشترك) ═══
+  const removeLock = () => {
+    _isLocked = false;
+    document.body.classList.remove('preview-locked');
+    // أعد الحقول للحالة الطبيعية
+    document.querySelectorAll('[data-preview-locked="1"]').forEach(el => {
+      el.removeAttribute('readonly');
+      el.removeAttribute('data-preview-locked');
+    });
+    document.querySelectorAll('[data-was-editable="1"]').forEach(el => {
+      el.setAttribute('contenteditable', 'true');
+      el.removeAttribute('data-was-editable');
+    });
+    console.log('✅ تم فك القفل - مشترك Lifetime/Admin');
+  };
+
+  // ═══ المودال على أي تفاعل ═══
+  const showModal = () => {
+    if (typeof window.showPremiumFeatureModal === 'function') {
+      window.showPremiumFeatureModal('الكتابة في التقرير');
+    }
+  };
+
+  // ═══ تثبيت الـ listeners (الطبقة 3) ═══
+  const setupListeners = () => {
+    const handleClick = (e) => {
+      if (!_isLocked) return;
+      const target = e.target;
+      if (target.matches('input[type="text"], input[type="number"], input[type="date"], textarea, [contenteditable], .pf, .pf *')) {
+        e.preventDefault();
+        e.stopPropagation();
+        target.blur && target.blur();
+        showModal();
+        return false;
+      }
+    };
+
+    // التقاط كل الأحداث ذات الصلة (capture: true عشان نلتقط قبل أي listener آخر)
+    ['click', 'mousedown', 'touchstart', 'focus', 'focusin'].forEach(evt => {
+      document.addEventListener(evt, handleClick, true);
     });
 
-    // 3️⃣ زر التفريغ
-    if (typeof window.confirmClear === 'function') {
-      const _origConfirmClear = window.confirmClear;
-      window.confirmClear = function() {
-        if (_isLocked) {
-          if (typeof window.showPremiumFeatureModal === 'function') {
-            window.showPremiumFeatureModal('تفريغ البيانات');
-          }
-          return;
+    // منع الكتابة بالكيبورد (لو فلت focus بشكل ما)
+    document.addEventListener('keydown', (e) => {
+      if (!_isLocked) return;
+      const t = e.target;
+      if (t.matches('input, textarea, [contenteditable]')) {
+        // اسمح بأزرار التنقل فقط
+        const allowed = ['Tab', 'Escape', 'F5', 'F12'];
+        if (!allowed.includes(e.key) && !e.ctrlKey && !e.metaKey) {
+          e.preventDefault();
+          e.stopPropagation();
+          t.blur && t.blur();
+          showModal();
+          return false;
         }
-        return _origConfirmClear();
+      }
+    }, true);
+
+    // منع اللصق
+    document.addEventListener('paste', (e) => {
+      if (!_isLocked) return;
+      const t = e.target;
+      if (t.matches('input, textarea, [contenteditable]')) {
+        e.preventDefault();
+        e.stopPropagation();
+        showModal();
+        return false;
+      }
+    }, true);
+
+    // منع beforeinput (للـ contenteditable)
+    document.addEventListener('beforeinput', (e) => {
+      if (!_isLocked) return;
+      const t = e.target;
+      if (t.matches('input, textarea, [contenteditable]')) {
+        e.preventDefault();
+        e.stopPropagation();
+        return false;
+      }
+    }, true);
+  };
+
+  // ═══ حماية confirmClear ═══
+  const wrapConfirmClear = () => {
+    if (typeof window.confirmClear === 'function' && !window.confirmClear._wrapped) {
+      const orig = window.confirmClear;
+      window.confirmClear = function() {
+        if (_isLocked) { showModal(); return; }
+        return orig.apply(this, arguments);
       };
+      window.confirmClear._wrapped = true;
     }
   };
 
-  // فتح القفل (للمشترك فقط)
-  const unlock = () => {
-    _isLocked = false;
-    console.log('✅ مشترك Lifetime/Admin - كل الميزات مفتوحة');
-  };
-
-  // فحص حالة المستخدم باستمرار
-  const checkUser = () => {
-    if (typeof window.isPremiumUser === 'function' && window.isPremiumUser()) {
-      unlock();
-      return true;
-    }
-    return false;
-  };
-
-  // 🚀 شغل الحماية فوراً (قبل أي تفاعل)
+  // 🚀 تشغيل فوري
+  applyLock();
   setupListeners();
-  console.log('🔒 وضع المعاينة مفعّل افتراضياً');
+  wrapConfirmClear();
+  console.log('🔒 وضع المعاينة مفعّل (Free/زائر)');
 
-  // راقب حالة المستخدم وافتح لو premium
+  // ═══ راقب حالة المستخدم وافتح إذا premium ═══
   let attempts = 0;
   const watcher = setInterval(() => {
     attempts++;
-    if (checkUser()) {
+    if (typeof window.isPremiumUser === 'function' && window.isPremiumUser()) {
       clearInterval(watcher);
+      removeLock();
       return;
     }
-    // بعد 15 ثانية، إيقاف الفحص (المستخدم Free بالتأكيد)
-    if (attempts >= 75) {
+    if (attempts >= 75) { // 15 ثانية
       clearInterval(watcher);
     }
   }, 200);
 
-  // فحص واحد بعد 8 ثواني (للأمان)
-  setTimeout(checkUser, 8000);
+  // فحص أخير بعد 8 ثواني
+  setTimeout(() => {
+    if (typeof window.isPremiumUser === 'function' && window.isPremiumUser()) {
+      removeLock();
+    }
+  }, 8000);
+
+  // ═══ راقب العناصر المضافة ديناميكياً (مثل إعادة الـ contenteditable) ═══
+  const observer = new MutationObserver(() => {
+    if (_isLocked) applyLock(); // أعد القفل لو ضافت عناصر جديدة
+  });
+  observer.observe(document.body, { childList: true, subtree: true, attributes: true, attributeFilter: ['contenteditable', 'readonly'] });
 })();
 
 </script>
