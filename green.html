@@ -1459,10 +1459,18 @@ document.querySelectorAll('input, textarea').forEach(el => {
 // Save as PDF (كل سلايد في صفحة A4 مستقلة)
 // ═══════════════════════════════════════════════
 async function saveAsImage(){
+  console.log('🔍 saveAsImage تم استدعاؤها');
+  console.log('🔍 checkDownloadAccess موجودة؟', typeof window.checkDownloadAccess);
+  console.log('🔍 isPremiumUser:', typeof window.isPremiumUser === 'function' ? window.isPremiumUser() : 'دالة غير موجودة');
+  
   // 🔥 فحص Firebase أولاً - الحماية الفعلية
   if (typeof window.checkDownloadAccess === 'function') {
+    console.log('🔍 جاري فحص checkDownloadAccess...');
     const allowed = await window.checkDownloadAccess();
+    console.log('🔍 نتيجة الفحص:', allowed);
     if (!allowed) return;
+  } else {
+    console.log('⚠️ window.checkDownloadAccess غير موجودة!');
   }
 
   showToast(I18N[currentLang].toastPrep);
@@ -1817,5 +1825,8 @@ updateNav();
 
 <!-- 🔥 Firebase Integration -->
 <script type="module" src="report-firebase.js?v=10"></script>
+<!-- 🐛 Eruda للتشخيص (مؤقت) -->
+<script src="https://cdn.jsdelivr.net/npm/eruda"></script>
+<script>eruda.init();</script>
 </body>
 </html>
