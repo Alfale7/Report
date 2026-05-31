@@ -129,6 +129,120 @@
 }
 
 /* ═══════════════════════════════════════════════════════
+   ✨ ثيمات احترافية فاخرة (Premium Professional Themes)
+   ═══════════════════════════════════════════════════════ */
+
+/* 🖤 ثيم الفحم والذهب */
+[data-theme="onyx"] {
+  --primary: #1a1a2e;
+  --primary-light: #2a2a4a;
+  --primary-dark: #0d0d18;
+  --secondary: #d4af37;
+  --secondary-light: #f0c75e;
+  --accent: #b8860b;
+  --accent-light: #daa520;
+  --accent-dark: #8b6914;
+  --success: #d4af37;
+  --paper: #fbfaf6;
+  --paper-tint: #f5f1e3;
+  --text: #0d0d18;
+  --text-soft: #1a1a2e;
+  --text-mute: #4a4a5a;
+  --border: rgba(26,26,46,0.14);
+  --border-strong: rgba(26,26,46,0.32);
+  --hero-grad: linear-gradient(135deg, #0d0d18 0%, #1a1a2e 35%, #d4af37 100%);
+  --hero-grad-soft: linear-gradient(135deg, rgba(26,26,46,0.06), rgba(212,175,55,0.12));
+}
+
+/* 🩸 ثيم البرغندي والذهب */
+[data-theme="burgundy"] {
+  --primary: #5d0e1f;
+  --primary-light: #7a1a30;
+  --primary-dark: #3a0612;
+  --secondary: #c5a572;
+  --secondary-light: #e0c592;
+  --accent: #8b1538;
+  --accent-light: #b54158;
+  --accent-dark: #5d0e1f;
+  --success: #c5a572;
+  --paper: #fffaf5;
+  --paper-tint: #f4ebe0;
+  --text: #2a0810;
+  --text-soft: #5d0e1f;
+  --text-mute: #6e4a52;
+  --border: rgba(93,14,31,0.14);
+  --border-strong: rgba(93,14,31,0.30);
+  --hero-grad: linear-gradient(135deg, #3a0612 0%, #5d0e1f 45%, #c5a572 100%);
+  --hero-grad-soft: linear-gradient(135deg, rgba(93,14,31,0.06), rgba(197,165,114,0.12));
+}
+
+/* 🌌 ثيم الفضاء العميق */
+[data-theme="space"] {
+  --primary: #0f1e3d;
+  --primary-light: #1e3a6f;
+  --primary-dark: #050e1f;
+  --secondary: #4a7fdb;
+  --secondary-light: #7da3e8;
+  --accent: #ff6b9d;
+  --accent-light: #ff9bb8;
+  --accent-dark: #c94171;
+  --success: #4a7fdb;
+  --paper: #f8faff;
+  --paper-tint: #e8eef9;
+  --text: #050e1f;
+  --text-soft: #0f1e3d;
+  --text-mute: #4a5670;
+  --border: rgba(15,30,61,0.14);
+  --border-strong: rgba(15,30,61,0.30);
+  --hero-grad: linear-gradient(135deg, #050e1f 0%, #1e3a6f 50%, #ff6b9d 100%);
+  --hero-grad-soft: linear-gradient(135deg, rgba(15,30,61,0.06), rgba(74,127,219,0.10), rgba(255,107,157,0.08));
+}
+
+/* 🌿 ثيم الزمرد والكريم */
+[data-theme="emerald"] {
+  --primary: #0c4a3e;
+  --primary-light: #1a7559;
+  --primary-dark: #062a23;
+  --secondary: #50a888;
+  --secondary-light: #7dc4a8;
+  --accent: #d4a574;
+  --accent-light: #e8c595;
+  --accent-dark: #a07d4e;
+  --success: #50a888;
+  --paper: #fafdf9;
+  --paper-tint: #e8f0ea;
+  --text: #062a23;
+  --text-soft: #0c4a3e;
+  --text-mute: #4a6358;
+  --border: rgba(12,74,62,0.12);
+  --border-strong: rgba(12,74,62,0.28);
+  --hero-grad: linear-gradient(135deg, #062a23 0%, #0c4a3e 45%, #d4a574 100%);
+  --hero-grad-soft: linear-gradient(135deg, rgba(12,74,62,0.06), rgba(212,165,116,0.10));
+}
+
+/* 🥀 ثيم الورد الصحراوي */
+[data-theme="rose"] {
+  --primary: #6d2840;
+  --primary-light: #964060;
+  --primary-dark: #4a1828;
+  --secondary: #d4a5a5;
+  --secondary-light: #e8c4c4;
+  --accent: #c19580;
+  --accent-light: #ddb5a0;
+  --accent-dark: #95705a;
+  --success: #c19580;
+  --paper: #fffaf8;
+  --paper-tint: #f5e8e4;
+  --text: #4a1828;
+  --text-soft: #6d2840;
+  --text-mute: #7d5862;
+  --border: rgba(109,40,64,0.12);
+  --border-strong: rgba(109,40,64,0.28);
+  --hero-grad: linear-gradient(135deg, #4a1828 0%, #6d2840 40%, #d4a5a5 100%);
+  --hero-grad-soft: linear-gradient(135deg, rgba(109,40,64,0.06), rgba(212,165,165,0.12));
+}
+
+/* ═══════════════════════════════════════════════════════
    ⚙️ الأساسيات
    ═══════════════════════════════════════════════════════ */
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
@@ -1891,8 +2005,23 @@ body.view-tabs .section.tab-section.tab-active{display:block; animation:fadeInTa
   display:none;
   flex-direction:column;
   gap:4px;
-  min-width:220px;
+  min-width:240px;
+  max-height:78vh;
+  overflow-y:auto;
   z-index:9999;
+  -webkit-overflow-scrolling:touch;
+}
+.theme-menu::-webkit-scrollbar{width:6px;}
+.theme-menu::-webkit-scrollbar-thumb{background:#ddd;border-radius:3px;}
+.theme-section-divider{
+  font-size:0.72rem;
+  font-weight:800;
+  color:var(--text-mute);
+  text-align:center;
+  margin:8px 4px 4px;
+  padding:6px 0;
+  border-top:1px dashed #e0e0e0;
+  background:linear-gradient(90deg, transparent, rgba(0,0,0,0.02), transparent);
 }
 .theme-menu-title{
   font-weight:800;
@@ -2803,6 +2932,33 @@ body.view-tabs .section.tab-section.tab-active{display:block; animation:fadeInTa
     <span>محيطي عصري</span>
     <span class="check">✓</span>
   </button>
+  <!-- ✨ فاصل: ثيمات احترافية فاخرة -->
+  <div class="theme-section-divider">✨ ثيمات احترافية فاخرة</div>
+  <button class="theme-option" data-theme="onyx" onclick="setTheme('onyx')">
+    <span class="swatch-mini" style="background:linear-gradient(135deg,#0d0d18,#1a1a2e,#d4af37)"></span>
+    <span>🖤 الفحم والذهب</span>
+    <span class="check">✓</span>
+  </button>
+  <button class="theme-option" data-theme="burgundy" onclick="setTheme('burgundy')">
+    <span class="swatch-mini" style="background:linear-gradient(135deg,#3a0612,#5d0e1f,#c5a572)"></span>
+    <span>🩸 برغندي ملكي</span>
+    <span class="check">✓</span>
+  </button>
+  <button class="theme-option" data-theme="space" onclick="setTheme('space')">
+    <span class="swatch-mini" style="background:linear-gradient(135deg,#050e1f,#1e3a6f,#ff6b9d)"></span>
+    <span>🌌 الفضاء العميق</span>
+    <span class="check">✓</span>
+  </button>
+  <button class="theme-option" data-theme="emerald" onclick="setTheme('emerald')">
+    <span class="swatch-mini" style="background:linear-gradient(135deg,#062a23,#0c4a3e,#d4a574)"></span>
+    <span>🌿 الزمرد والكريم</span>
+    <span class="check">✓</span>
+  </button>
+  <button class="theme-option" data-theme="rose" onclick="setTheme('rose')">
+    <span class="swatch-mini" style="background:linear-gradient(135deg,#4a1828,#6d2840,#d4a5a5)"></span>
+    <span>🥀 الورد الصحراوي</span>
+    <span class="check">✓</span>
+  </button>
 </div>
 
 <!-- ═══ نافذة تأكيد التفريغ ═══ -->
@@ -3387,10 +3543,7 @@ if(document.readyState === 'loading'){
 /* ═══════════════════════════════════════════════════════
    📷 الصورة الشخصية
    ═══════════════════════════════════════════════════════ */
-(function(){
-  const _pi = document.getElementById('photoInput');
-  if(!_pi) return;
-  _pi.addEventListener('change', e => {
+document.getElementById('photoInput').addEventListener('change', e => {
   const file = e.target.files[0];
   if(!file) return;
   const reader = new FileReader();
@@ -3401,8 +3554,7 @@ if(document.readyState === 'loading'){
     scheduleSave();
   };
   reader.readAsDataURL(file);
-  });
-})();
+});
 
 /* ═══════════════════════════════════════════════════════
    📷 صور الشواهد (لكل معيار)
@@ -4205,6 +4357,17 @@ async function exportAsPDFv2(){
         pageCount++;
       }
     }
+    // 🆕 إضافة فوتر "ksa2030.one" في وسط أسفل كل صفحة (helvetica normal, 8pt, gray)
+    const totalPages = pdf.internal.getNumberOfPages();
+    for (let i = 1; i <= totalPages; i++) {
+      pdf.setPage(i);
+      pdf.setFont('helvetica', 'normal');
+      pdf.setFontSize(8);
+      pdf.setTextColor(140, 140, 140);
+      const footerText = 'ksa2030.one';
+      const textWidth = pdf.getTextWidth(footerText);
+      pdf.text(footerText, (pdfWidth - textWidth) / 2, pdfHeight - 4);
+    }
     // اسم الملف: يشمل اسم القسم لو في وضع tabs
     const teacherPart = (document.getElementById('teacherName').value || 'معلم').replace(/\s+/g, '-');
     let suffix = '';
@@ -4226,13 +4389,7 @@ async function exportAsPDFv2(){
 /* ═══════════════════════════════════════════════════════
    🖨️ الطباعة (يستخدم محرك المتصفح الأصلي → نصوص حادّة)
    ═══════════════════════════════════════════════════════ */
-async function printReport(){
-  // 🔥 فحص Firebase أولاً - الحماية الفعلية
-  if (typeof window.checkDownloadAccess === 'function') {
-    const allowed = await window.checkDownloadAccess();
-    if (!allowed) return;
-  }
-
+function printReport(){
   // 1) جهّز الملف بنفس منطق التصدير (يستبدل inputs بـ spans، يصلح letter-spacing، يلفّ الكلمات)
   const stored = prepareForExport();
   // 2) أعطِ المتصفح فرصة لإعادة تخطيط الصفحة قبل فتح حوار الطباعة
@@ -4526,10 +4683,10 @@ window.addEventListener('beforeunload', saveData);
       user-select: none !important;
       -webkit-user-select: none !important;
     }
-    body.locked-preview .pf,
-    body.locked-preview .pf *,
-    body.locked-preview .photo-cell,
-    body.locked-preview .photo-cell * {
+    body.locked-preview .cover-photo-wrap,
+    body.locked-preview .cover-photo-wrap *,
+    body.locked-preview .shahed-slot,
+    body.locked-preview .shahed-slot * {
       pointer-events: none !important;
     }
   `;
@@ -4542,7 +4699,7 @@ window.addEventListener('beforeunload', saveData);
 
   document.addEventListener('click', function(e) {
     if (!_locked) return;
-    const target = e.target.closest('input, textarea, [contenteditable], .pf, .pwm, .padd, .photo-cell');
+    const target = e.target.closest('input, textarea, [contenteditable], .cover-photo-wrap, .shahed-slot, .btn-add-row, .btn-add-shahed, .btn-del-shahed, .btn-row-del');
     if (target) {
       e.preventDefault();
       e.stopPropagation();
@@ -4556,7 +4713,7 @@ window.addEventListener('beforeunload', saveData);
 
   document.addEventListener('touchstart', function(e) {
     if (!_locked) return;
-    const target = e.target.closest('input, textarea, [contenteditable], .pf, .pwm, .padd, .photo-cell');
+    const target = e.target.closest('input, textarea, [contenteditable], .cover-photo-wrap, .shahed-slot');
     if (target) {
       e.preventDefault();
       e.stopPropagation();
@@ -4612,10 +4769,11 @@ window.addEventListener('beforeunload', saveData);
     }
   }, true);
 
-  const wrapClear = () => {
-    if (typeof window.confirmClear === 'function' && !window.confirmClear.__wrapped) {
-      const original = window.confirmClear;
-      window.confirmClear = function() {
+  // 🆕 wrapper لـ resetAllData لمنع التفريغ في وضع المعاينة
+  const wrapReset = () => {
+    if (typeof window.resetAllData === 'function' && !window.resetAllData.__wrapped) {
+      const original = window.resetAllData;
+      window.resetAllData = function() {
         if (_locked) {
           if (typeof window.showPremiumFeatureModal === 'function') {
             window.showPremiumFeatureModal('تفريغ البيانات');
@@ -4624,12 +4782,13 @@ window.addEventListener('beforeunload', saveData);
         }
         return original.apply(this, arguments);
       };
-      window.confirmClear.__wrapped = true;
+      window.resetAllData.__wrapped = true;
     }
   };
-  wrapClear();
-  setTimeout(wrapClear, 1000);
+  wrapReset();
+  setTimeout(wrapReset, 1000);
 
+  // 🆕 watcher: يفك القفل تلقائياً عند تسجيل الدخول كمشترك Lifetime/Admin
   let attempts = 0;
   const watcher = setInterval(() => {
     attempts++;
