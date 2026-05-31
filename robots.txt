@@ -1,0 +1,16 @@
+# robots.txt - ksa2030.one
+# https://ksa2030.one
+
+User-agent: *
+Allow: /
+
+# Sitemap
+Sitemap: https://ksa2030.one/sitemap.xml
+
+# منع زحف الصفحات الخاصة
+Disallow: /admin.html
+Disallow: /profile.html
+Disallow: /firebase-config.js
+
+# تأخير الزحف (ثانية واحدة) للحفاظ على السيرفر
+Crawl-delay: 1
