@@ -424,67 +424,191 @@ window.showPremiumFeatureModal = function(featureName = 'هذه الميزة') {
   const m = document.createElement('div');
   m.id = 'premiumFeatureModal';
   m.innerHTML = `<style>
-    #premiumFeatureModal{position:fixed;inset:0;z-index:999997;background:rgba(11,57,70,0.85);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);display:flex;align-items:center;justify-content:center;padding:18px;font-family:'Tajawal','Cairo',sans-serif;animation:pfmFade 0.3s ease-out;}
-    @keyframes pfmFade{from{opacity:0;}to{opacity:1;}}
-    #premiumFeatureModal .pfm-box{max-width:400px;width:100%;background:linear-gradient(160deg,#1a1f2e 0%,#2a3a4e 100%);border:2px solid rgba(212,166,87,0.5);border-radius:24px;padding:28px 22px;text-align:center;box-shadow:0 30px 80px rgba(0,0,0,0.6),0 0 0 1px rgba(212,166,87,0.1) inset;color:#fff;position:relative;overflow:hidden;animation:pfmSlide 0.4s cubic-bezier(0.16,1,0.3,1);}
-    @keyframes pfmSlide{from{transform:translateY(20px) scale(0.95);opacity:0;}to{transform:translateY(0) scale(1);opacity:1;}}
-    #premiumFeatureModal .pfm-box::before{content:"";position:absolute;top:0;left:0;right:0;height:3px;background:linear-gradient(90deg,transparent,#f0b855,transparent);}
-    #premiumFeatureModal .pfm-close{position:absolute;top:12px;left:12px;width:32px;height:32px;border:none;background:rgba(255,255,255,0.1);color:#fff;border-radius:50%;cursor:pointer;font-size:1.1rem;font-weight:900;display:flex;align-items:center;justify-content:center;transition:all 0.2s;}
-    #premiumFeatureModal .pfm-close:hover{background:rgba(255,255,255,0.2);transform:scale(1.1);}
-    #premiumFeatureModal .pfm-tag{display:inline-flex;align-items:center;gap:6px;background:linear-gradient(135deg,#dc2626,#f59e0b);padding:5px 14px;border-radius:99px;font-size:0.74rem;font-weight:900;margin-bottom:12px;letter-spacing:0.3px;animation:pfmPulse 2s ease-in-out infinite;}
-    @keyframes pfmPulse{0%,100%{transform:scale(1);box-shadow:0 4px 12px rgba(220,38,38,0.4);}50%{transform:scale(1.05);box-shadow:0 6px 18px rgba(245,158,11,0.5);}}
-    #premiumFeatureModal .pfm-ic{font-size:3rem;margin-bottom:8px;display:inline-block;filter:drop-shadow(0 4px 14px rgba(240,184,85,0.6));animation:pfmFloat 3s ease-in-out infinite;}
-    @keyframes pfmFloat{0%,100%{transform:translateY(0);}50%{transform:translateY(-5px);}}
-    #premiumFeatureModal h2{font-family:'Reem Kufi','Tajawal',sans-serif;font-size:1.3rem;font-weight:900;margin-bottom:6px;color:#fff;}
-    #premiumFeatureModal .pfm-sub{font-size:0.86rem;color:rgba(255,255,255,0.75);font-weight:600;margin-bottom:16px;line-height:1.6;}
-    #premiumFeatureModal .pfm-sub strong{color:#f4d690;font-weight:800;}
-    #premiumFeatureModal .pfm-features{background:rgba(255,255,255,0.04);border:1px solid rgba(212,166,87,0.2);border-radius:14px;padding:14px;margin-bottom:16px;text-align:right;}
-    #premiumFeatureModal .pfm-feat{display:flex;align-items:center;gap:8px;padding:4px 0;font-size:0.84rem;font-weight:700;color:#fff;}
-    #premiumFeatureModal .pfm-feat .chk{color:#22c55e;font-weight:900;font-size:0.95rem;}
-    #premiumFeatureModal .pfm-price-box{background:linear-gradient(135deg,rgba(212,166,87,0.18),rgba(245,158,11,0.08));border:2px solid rgba(212,166,87,0.5);border-radius:16px;padding:14px;margin-bottom:14px;position:relative;}
-    #premiumFeatureModal .pfm-price-tag{position:absolute;top:-10px;right:50%;transform:translateX(50%);background:#dc2626;color:#fff;padding:3px 12px;border-radius:99px;font-size:0.68rem;font-weight:900;white-space:nowrap;box-shadow:0 4px 12px rgba(220,38,38,0.4);}
-    #premiumFeatureModal .pfm-amount{font-family:'Reem Kufi','Tajawal',sans-serif;font-size:3rem;font-weight:900;color:#ffc107;line-height:1;}
-    #premiumFeatureModal .pfm-currency{font-size:1.05rem;font-weight:800;color:#ffc107;}
-    #premiumFeatureModal .pfm-once{display:inline-block;background:linear-gradient(135deg,#16a34a,#15803d);color:#fff;padding:4px 14px;border-radius:99px;font-size:0.72rem;font-weight:900;margin-top:6px;}
-    #premiumFeatureModal .pfm-cta{display:flex;align-items:center;justify-content:center;gap:8px;width:100%;padding:14px;background:linear-gradient(135deg,#25d366,#128c7e);color:#fff;border:none;border-radius:14px;font-family:inherit;font-size:0.95rem;font-weight:900;text-decoration:none;box-shadow:0 8px 22px rgba(37,211,102,0.4);margin-bottom:10px;box-sizing:border-box;transition:all 0.2s;}
-    #premiumFeatureModal .pfm-cta:hover{transform:translateY(-1px);box-shadow:0 12px 28px rgba(37,211,102,0.55);}
-    #premiumFeatureModal .pfm-cta-login{background:linear-gradient(135deg,#2a8aab,#1e6b8a);box-shadow:0 8px 22px rgba(42,138,171,0.4);}
-    #premiumFeatureModal .pfm-cta-login:hover{box-shadow:0 12px 28px rgba(42,138,171,0.55);}
-    #premiumFeatureModal .pfm-guarantee{font-size:0.74rem;color:rgba(255,255,255,0.65);font-weight:700;margin-bottom:12px;}
-    #premiumFeatureModal .pfm-secondary{display:block;padding:10px;background:rgba(255,255,255,0.06);color:rgba(255,255,255,0.85);border:1px solid rgba(255,255,255,0.12);border-radius:11px;font-size:0.8rem;font-weight:700;text-decoration:none;text-align:center;}
-    #premiumFeatureModal .pfm-secondary:hover{background:rgba(255,255,255,0.12);}
-  </style>
-  <div class="pfm-box">
-    <button class="pfm-close" onclick="document.getElementById('premiumFeatureModal').remove()" aria-label="إغلاق">×</button>
-    <div class="pfm-tag">🔒 ميزة مدفوعة</div>
-    <div class="pfm-ic">💎</div>
-    <h2>${isGuest ? 'سجّل دخولك أولاً' : 'اشترك للاستخدام الكامل'}</h2>
-    <div class="pfm-sub">${isGuest ? 'أنت تشاهد التقرير في وضع المعاينة 👁️<br>للكتابة ورفع الصور <strong>سجّل دخولك واشترك</strong>' : `مرحباً ${name} 👋<br>أنت تشاهد التقرير في وضع المعاينة<br>للاستخدام الكامل <strong>اشترك مرة واحدة</strong>`}</div>
+    #premiumFeatureModal{position:fixed;inset:0;z-index:999997;background:rgba(5,10,18,0.72);backdrop-filter:blur(12px) saturate(140%);-webkit-backdrop-filter:blur(12px) saturate(140%);display:flex;align-items:center;justify-content:center;padding:16px;font-family:'Tajawal','Cairo',sans-serif;animation:pfmFadeIn 0.25s ease-out;}
+    @keyframes pfmFadeIn{from{opacity:0;}to{opacity:1;}}
+    #premiumFeatureModal *{box-sizing:border-box;}
 
-    <div class="pfm-features">
-      <div class="pfm-feat"><span class="chk">✓</span><span>الكتابة في كل الحقول</span></div>
-      <div class="pfm-feat"><span class="chk">✓</span><span>رفع الصور والشعارات</span></div>
-      <div class="pfm-feat"><span class="chk">✓</span><span>التصدير كصورة + PDF</span></div>
-      <div class="pfm-feat"><span class="chk">✓</span><span>المشاركة عبر التطبيقات</span></div>
-      <div class="pfm-feat"><span class="chk">✓</span><span><strong>+15 قالب احترافي</strong> آخر</span></div>
+    #premiumFeatureModal .pfm-card{
+      width:100%;max-width:340px;
+      background:linear-gradient(165deg,#0d1925 0%,#12202f 100%);
+      border:1px solid rgba(212,166,87,0.25);
+      border-radius:18px;
+      padding:22px 20px 18px;
+      color:#eef4f8;position:relative;overflow:hidden;
+      box-shadow:0 20px 60px rgba(0,0,0,0.55), 0 0 0 1px rgba(255,255,255,0.03) inset;
+      animation:pfmSlideUp 0.35s cubic-bezier(0.16,1,0.3,1);
+    }
+    @keyframes pfmSlideUp{from{transform:translateY(16px) scale(0.96);opacity:0;}to{transform:translateY(0) scale(1);opacity:1;}}
+
+    /* خط ذهبي رفيع علوي */
+    #premiumFeatureModal .pfm-card::before{
+      content:"";position:absolute;top:0;left:0;right:0;height:1px;
+      background:linear-gradient(90deg,transparent 10%,#f0b855 50%,transparent 90%);
+      opacity:0.7;
+    }
+
+    /* زر الإغلاق */
+    #premiumFeatureModal .pfm-x{
+      position:absolute;top:10px;left:10px;
+      width:28px;height:28px;
+      background:transparent;border:1px solid rgba(255,255,255,0.12);
+      color:rgba(255,255,255,0.6);
+      border-radius:50%;cursor:pointer;
+      font-size:0.95rem;font-weight:500;
+      display:flex;align-items:center;justify-content:center;
+      transition:all 0.18s;line-height:1;
+    }
+    #premiumFeatureModal .pfm-x:hover{
+      background:rgba(255,255,255,0.08);
+      color:#fff;border-color:rgba(255,255,255,0.25);
+    }
+
+    /* رأس المودال - أيقونة + شارة */
+    #premiumFeatureModal .pfm-head{text-align:center;margin-bottom:16px;}
+    #premiumFeatureModal .pfm-badge{
+      display:inline-flex;align-items:center;gap:5px;
+      background:rgba(212,166,87,0.12);
+      border:1px solid rgba(212,166,87,0.3);
+      color:#f0b855;
+      padding:4px 11px;border-radius:99px;
+      font-size:0.68rem;font-weight:800;letter-spacing:0.3px;
+      margin-bottom:12px;
+    }
+    #premiumFeatureModal .pfm-emoji{
+      font-size:2.2rem;line-height:1;
+      filter:drop-shadow(0 3px 10px rgba(240,184,85,0.4));
+      margin-bottom:8px;display:block;
+    }
+
+    /* العنوان والوصف */
+    #premiumFeatureModal h2{
+      font-family:'Reem Kufi','Tajawal',sans-serif;
+      font-size:1.15rem;font-weight:800;
+      color:#fff;margin-bottom:6px;letter-spacing:-0.2px;
+    }
+    #premiumFeatureModal .pfm-sub{
+      font-size:0.82rem;color:rgba(238,244,248,0.65);
+      font-weight:500;line-height:1.55;margin-bottom:0;
+    }
+    #premiumFeatureModal .pfm-sub strong{color:#f0b855;font-weight:700;}
+
+    /* قائمة المزايا - مدمجة جداً */
+    #premiumFeatureModal .pfm-list{
+      display:grid;grid-template-columns:1fr 1fr;gap:6px 12px;
+      background:rgba(255,255,255,0.02);
+      border:1px solid rgba(255,255,255,0.05);
+      border-radius:11px;
+      padding:10px 12px;margin-bottom:14px;
+    }
+    #premiumFeatureModal .pfm-li{
+      display:flex;align-items:center;gap:5px;
+      font-size:0.76rem;font-weight:600;
+      color:rgba(238,244,248,0.85);
+    }
+    #premiumFeatureModal .pfm-li .ck{
+      color:#16a34a;font-weight:900;font-size:0.85rem;line-height:1;
+    }
+
+    /* السعر - بنر أنيق صغير */
+    #premiumFeatureModal .pfm-price{
+      display:flex;align-items:center;justify-content:space-between;
+      background:linear-gradient(135deg,rgba(212,166,87,0.1),rgba(245,158,11,0.04));
+      border:1px solid rgba(212,166,87,0.3);
+      border-radius:12px;padding:11px 14px;margin-bottom:12px;
+    }
+    #premiumFeatureModal .pfm-price-left{display:flex;flex-direction:column;gap:2px;}
+    #premiumFeatureModal .pfm-price-label{
+      font-size:0.65rem;font-weight:700;
+      color:rgba(238,244,248,0.55);letter-spacing:0.4px;
+    }
+    #premiumFeatureModal .pfm-price-value{
+      font-family:'Reem Kufi','Tajawal',sans-serif;
+      font-size:1.4rem;font-weight:900;color:#f0b855;
+      line-height:1;display:flex;align-items:baseline;gap:3px;
+    }
+    #premiumFeatureModal .pfm-price-value .cur{font-size:0.85rem;font-weight:700;}
+    #premiumFeatureModal .pfm-price-right{
+      background:rgba(22,163,74,0.15);
+      border:1px solid rgba(22,163,74,0.35);
+      color:#22c55e;
+      padding:4px 10px;border-radius:99px;
+      font-size:0.62rem;font-weight:800;text-align:center;line-height:1.3;
+    }
+
+    /* زر CTA رئيسي */
+    #premiumFeatureModal .pfm-btn{
+      display:flex;align-items:center;justify-content:center;gap:7px;
+      width:100%;padding:12px;
+      border:none;border-radius:11px;
+      font-family:inherit;font-size:0.88rem;font-weight:800;
+      cursor:pointer;text-decoration:none;
+      transition:all 0.2s;margin-bottom:8px;
+    }
+    #premiumFeatureModal .pfm-btn-pay{
+      background:linear-gradient(135deg,#25d366,#128c7e);
+      color:#fff;
+      box-shadow:0 6px 16px rgba(37,211,102,0.3);
+    }
+    #premiumFeatureModal .pfm-btn-pay:hover{transform:translateY(-1px);box-shadow:0 10px 22px rgba(37,211,102,0.4);}
+    #premiumFeatureModal .pfm-btn-login{
+      background:linear-gradient(135deg,#2a8aab,#1e6b8a);
+      color:#fff;
+      box-shadow:0 6px 16px rgba(42,138,171,0.3);
+    }
+    #premiumFeatureModal .pfm-btn-login:hover{transform:translateY(-1px);box-shadow:0 10px 22px rgba(42,138,171,0.4);}
+
+    /* رابط ثانوي */
+    #premiumFeatureModal .pfm-secondary{
+      display:block;text-align:center;padding:8px;
+      color:rgba(238,244,248,0.55);
+      font-size:0.76rem;font-weight:600;
+      text-decoration:none;
+      transition:color 0.15s;
+    }
+    #premiumFeatureModal .pfm-secondary:hover{color:rgba(238,244,248,0.85);}
+
+    /* ضمان (نص صغير) */
+    #premiumFeatureModal .pfm-guarantee{
+      text-align:center;
+      font-size:0.66rem;font-weight:600;
+      color:rgba(238,244,248,0.5);
+      margin-bottom:4px;
+    }
+  </style>
+  <div class="pfm-card">
+    <button class="pfm-x" onclick="document.getElementById('premiumFeatureModal').remove()" aria-label="إغلاق">×</button>
+
+    <div class="pfm-head">
+      <div class="pfm-badge">🔒 ميزة مدفوعة</div>
+      <span class="pfm-emoji">💎</span>
+      <h2>${isGuest ? 'سجّل دخولك للاستخدام' : 'اشترك للاستخدام الكامل'}</h2>
+      <p class="pfm-sub">${isGuest ? 'أنت في <strong>وضع المعاينة</strong> — للكتابة ورفع الصور سجّل دخولك أولاً' : `مرحباً ${name} — أنت في <strong>وضع المعاينة</strong>، فعّل اشتراكك لاستخدام كل المزايا`}</p>
     </div>
 
-    <div class="pfm-price-box">
-      <div class="pfm-price-tag">🔥 عرض إطلاق</div>
-      <div style="display:flex;align-items:baseline;justify-content:center;gap:5px;margin-top:6px;">
-        <span class="pfm-amount">30</span>
-        <span class="pfm-currency">ريال</span>
+    <div class="pfm-list">
+      <div class="pfm-li"><span class="ck">✓</span><span>كل الحقول</span></div>
+      <div class="pfm-li"><span class="ck">✓</span><span>رفع الصور</span></div>
+      <div class="pfm-li"><span class="ck">✓</span><span>تصدير PDF</span></div>
+      <div class="pfm-li"><span class="ck">✓</span><span>مشاركة</span></div>
+      <div class="pfm-li"><span class="ck">✓</span><span>+15 قالب</span></div>
+      <div class="pfm-li"><span class="ck">✓</span><span>دعم فني</span></div>
+    </div>
+
+    <div class="pfm-price">
+      <div class="pfm-price-left">
+        <span class="pfm-price-label">اشتراك مدى الحياة</span>
+        <span class="pfm-price-value">30 <span class="cur">ريال</span></span>
       </div>
-      <div class="pfm-once">💎 دفعة واحدة · مدى الحياة</div>
+      <div class="pfm-price-right">دفعة<br>واحدة</div>
     </div>
 
     ${isGuest 
-      ? `<a href="login.html" class="pfm-cta pfm-cta-login" onclick="sessionStorage.setItem('returnAfterLogin','${_currentPage}');">
-          <span style="font-size:1.2rem">🔑</span>
+      ? `<a href="login.html" class="pfm-btn pfm-btn-login" onclick="sessionStorage.setItem('returnAfterLogin','${_currentPage}');">
+          <span style="font-size:1.05rem">🔑</span>
           <span>تسجيل الدخول</span>
         </a>`
-      : `<a href="${link}" target="_blank" rel="noopener" class="pfm-cta">
-          <span style="font-size:1.2rem">📱</span>
+      : `<a href="${link}" target="_blank" rel="noopener" class="pfm-btn pfm-btn-pay">
+          <span style="font-size:1.05rem">📱</span>
           <span>اشترك عبر الواتساب</span>
         </a>
         <div class="pfm-guarantee">🛡️ ضمان استرداد كامل خلال 7 أيام</div>`

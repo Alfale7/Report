@@ -1776,107 +1776,110 @@ loadSavedTheme();
 // ═══════════════════════════════════════════════════════
 // 🔒 حماية الميزات التفاعلية (الكتابة + التفريغ) للزائر/Free
 // ═══════════════════════════════════════════════════════
-// يحمي: input[type=text], input[type=number], textarea, contenteditable
-// المسموح: زر الثيم، زر اللغة، التنقل، المشاهدة
+// المنطق: نقفل كل شي من البداية (default = locked)
+//         بعد ما نتأكد إن المستخدم premium، نفتح
+// ميزة: الزائر/Free يشوف التقرير بدون قدرة على التعديل
 (function setupPremiumGate(){
-  // نستنى report-firebase ينتهي من تحديد حالة المستخدم
-  const checkAndSetup = () => {
-    // ✅ مشترك → ما نتدخل
-    if (typeof window.isPremiumUser === 'function' && window.isPremiumUser()) return;
+  let _isLocked = true; // مقفل افتراضياً
+  let _setupDone = false;
 
-    // ⛔ Free/زائر → اعترض كل ميزة تفاعلية
-    const intercept = (e) => {
-      if (typeof window.checkPremiumFeature === 'function') {
-        if (!window.isPremiumUser()) {
-          e.preventDefault();
-          e.stopPropagation();
-          window.showPremiumFeatureModal('الكتابة في التقرير');
-          // ابعد التركيز عن الحقل
-          if (e.target && typeof e.target.blur === 'function') e.target.blur();
-          return false;
-        }
+  // اعتراض موحّد
+  const intercept = (e) => {
+    if (_isLocked) {
+      e.preventDefault();
+      e.stopPropagation();
+      if (typeof window.showPremiumFeatureModal === 'function') {
+        window.showPremiumFeatureModal('الكتابة في التقرير');
       }
-    };
+      if (e.target && typeof e.target.blur === 'function') {
+        setTimeout(() => e.target.blur(), 0);
+      }
+      return false;
+    }
+  };
 
-    // 1️⃣ كل الحقول النصية (input, textarea)
-    const textFields = document.querySelectorAll('input[type="text"], input[type="number"], input[type="date"], textarea');
-    textFields.forEach(el => {
-      // امنع الكتابة بالكيبورد
+  const focusBlock = (e) => {
+    if (_isLocked) {
+      setTimeout(() => e.target.blur(), 0);
+      if (typeof window.showPremiumFeatureModal === 'function') {
+        window.showPremiumFeatureModal('الكتابة في التقرير');
+      }
+    }
+  };
+
+  // تثبيت المستمعين (يعمل مرة واحدة)
+  const setupListeners = () => {
+    if (_setupDone) return;
+    _setupDone = true;
+
+    // 1️⃣ كل الحقول النصية
+    document.querySelectorAll('input[type="text"], input[type="number"], input[type="date"], textarea').forEach(el => {
       el.addEventListener('keydown', intercept, true);
-      // امنع اللصق
       el.addEventListener('paste', intercept, true);
-      // عند النقر، اعرض المودال (تجربة سلسة)
-      el.addEventListener('focus', (e) => {
-        if (!window.isPremiumUser()) {
-          e.target.blur();
-          window.showPremiumFeatureModal('الكتابة في التقرير');
-        }
-      }, true);
-      // مظهر "للقراءة فقط"
-      el.setAttribute('readonly', '');
-      el.style.cursor = 'pointer';
+      el.addEventListener('focus', focusBlock, true);
+      el.addEventListener('mousedown', (e) => { if (_isLocked) focusBlock(e); }, true);
+      el.addEventListener('touchstart', (e) => { if (_isLocked) focusBlock(e); }, true);
     });
 
-    // 2️⃣ contenteditable عناصر (العناوين)
-    const editables = document.querySelectorAll('[contenteditable="true"]');
-    editables.forEach(el => {
+    // 2️⃣ contenteditable
+    document.querySelectorAll('[contenteditable="true"]').forEach(el => {
       el.addEventListener('keydown', intercept, true);
       el.addEventListener('paste', intercept, true);
-      el.addEventListener('focus', (e) => {
-        if (!window.isPremiumUser()) {
-          e.target.blur();
-          window.showPremiumFeatureModal('الكتابة في التقرير');
-        }
-      }, true);
       el.addEventListener('beforeinput', intercept, true);
-      el.style.cursor = 'pointer';
+      el.addEventListener('focus', focusBlock, true);
+      el.addEventListener('mousedown', (e) => { if (_isLocked) focusBlock(e); }, true);
     });
 
-    // 3️⃣ زر التفريغ (يمسح كل البيانات)
+    // 3️⃣ زر التفريغ
     if (typeof window.confirmClear === 'function') {
       const _origConfirmClear = window.confirmClear;
       window.confirmClear = function() {
-        if (!window.isPremiumUser()) {
-          window.showPremiumFeatureModal('تفريغ البيانات');
+        if (_isLocked) {
+          if (typeof window.showPremiumFeatureModal === 'function') {
+            window.showPremiumFeatureModal('تفريغ البيانات');
+          }
           return;
         }
         return _origConfirmClear();
       };
     }
-
-    console.log('🔒 وضع المعاينة مفعّل (Free/زائر)');
   };
 
-  // ننتظر شوي حتى يتحدد _user في firebase
-  // نراقب التغيير في حالة المستخدم
-  let attempts = 0;
-  const maxAttempts = 30; // 6 ثواني
-  const waitForFirebase = setInterval(() => {
-    attempts++;
-    // لو المستخدم premium، ألغِ الحماية
+  // فتح القفل (للمشترك فقط)
+  const unlock = () => {
+    _isLocked = false;
+    console.log('✅ مشترك Lifetime/Admin - كل الميزات مفتوحة');
+  };
+
+  // فحص حالة المستخدم باستمرار
+  const checkUser = () => {
     if (typeof window.isPremiumUser === 'function' && window.isPremiumUser()) {
-      clearInterval(waitForFirebase);
-      // أزل readonly من الحقول لو كانت ضافة
-      document.querySelectorAll('input[readonly], textarea[readonly]').forEach(el => {
-        el.removeAttribute('readonly');
-        el.style.cursor = '';
-      });
-      console.log('✅ مشترك Lifetime/Admin - كل الميزات مفتوحة');
+      unlock();
+      return true;
+    }
+    return false;
+  };
+
+  // 🚀 شغل الحماية فوراً (قبل أي تفاعل)
+  setupListeners();
+  console.log('🔒 وضع المعاينة مفعّل افتراضياً');
+
+  // راقب حالة المستخدم وافتح لو premium
+  let attempts = 0;
+  const watcher = setInterval(() => {
+    attempts++;
+    if (checkUser()) {
+      clearInterval(watcher);
       return;
     }
-    // بعد ثانيتين، نقفل
-    if (attempts >= 10) {
-      clearInterval(waitForFirebase);
-      checkAndSetup();
+    // بعد 15 ثانية، إيقاف الفحص (المستخدم Free بالتأكيد)
+    if (attempts >= 75) {
+      clearInterval(watcher);
     }
   }, 200);
 
-  // فحص نهائي بعد 6 ثواني
-  setTimeout(() => {
-    if (typeof window.isPremiumUser === 'function' && !window.isPremiumUser()) {
-      checkAndSetup();
-    }
-  }, 6000);
+  // فحص واحد بعد 8 ثواني (للأمان)
+  setTimeout(checkUser, 8000);
 })();
 
 </script>
