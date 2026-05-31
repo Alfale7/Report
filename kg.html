@@ -5090,12 +5090,12 @@ function adjustCutForAtomic(tentativeCut, atomic, yOffset, pageHeight){
   return cut;
 }
 
-async function exportAsPDFv2(){
+async function exportAsPDFv2(forShare = false){
   if (typeof window.checkDownloadAccess === 'function') {
     const allowed = await window.checkDownloadAccess();
     if (!allowed) return;
   }
-  showToast('⏳ جارٍ إنشاء PDF...', 60000);
+  showToast(forShare ? '⏳ جارٍ تحضير المشاركة...' : '⏳ جارٍ إنشاء PDF...', 60000);
   try { await loadJsPDF(); } catch(e){ showToast('❌ تعذّر تحميل jsPDF'); return; }
   const stored = prepareForExport();
   try {
@@ -5189,8 +5189,34 @@ async function exportAsPDFv2(){
       const label = sec ? (sec.getAttribute('data-tab-label') || '') : '';
       if(label) suffix = '-' + label.replace(/\s+/g, '-').replace(/\//g, '-');
     }
-    pdf.save(`ملف-انجاز-${teacherPart}${suffix}.pdf`);
-    showToast('✅ تم حفظ PDF');
+    const filename = `ملف-انجاز-${teacherPart}${suffix}.pdf`;
+
+    if (forShare) {
+      // 🆕 وضع المشاركة: نولّد Blob ونشاركه عبر navigator.share
+      const pdfBlob = pdf.output('blob');
+      const pdfFile = new File([pdfBlob], filename, { type: 'application/pdf' });
+      
+      if (navigator.share && navigator.canShare && navigator.canShare({ files: [pdfFile] })) {
+        try {
+          await navigator.share({
+            files: [pdfFile],
+            title: 'التقارير الذكية',
+            text: '📊 ملف إنجاز معلمة رياض الأطفال\n🌐 ksa2030.one',
+            url: 'https://ksa2030.one'
+          });
+          showToast('✅ تمت المشاركة');
+        } catch (e) {
+          if (e.name !== 'AbortError') showToast('❌ تعذّرت المشاركة');
+        }
+      } else {
+        // fallback: تحميل عادي
+        pdf.save(filename);
+        showToast('✅ تم حفظ PDF');
+      }
+    } else {
+      pdf.save(filename);
+      showToast('✅ تم حفظ PDF');
+    }
   } catch(e){
     console.error(e);
     showToast('❌ تعذّر إنشاء PDF');
@@ -5280,7 +5306,15 @@ async function shareAsImage(){
     canvas.toBlob(async blob => {
       const file = new File([blob], 'enjaz.png', {type:'image/png'});
       if(navigator.share && navigator.canShare && navigator.canShare({files:[file]})){
-        try { await navigator.share({files:[file], title:'ملف إنجاز المعلم/ة'}); showToast('✅ تمت المشاركة'); }
+        try { 
+          await navigator.share({
+            files:[file], 
+            title:'التقارير الذكية',
+            text:'📊 ملف إنجاز معلمة رياض الأطفال\n🌐 ksa2030.one',
+            url:'https://ksa2030.one'
+          }); 
+          showToast('✅ تمت المشاركة'); 
+        }
         catch(e){ if(e.name !== 'AbortError') showToast('❌ تعذّرت المشاركة'); }
       } else {
         // fallback تحميل
@@ -5296,7 +5330,7 @@ async function shareAsImage(){
 }
 async function shareAsPDF(){
   closeShare();
-  await exportAsPDFv2();
+  await exportAsPDFv2(true);
 }
 function copyLink(){
   closeShare();
