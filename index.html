@@ -5242,6 +5242,56 @@ font-size:0.78rem;text-align:center;margin-top:12px;display:none;
       </div>
     </div>
 
+    <!-- ═══ تصنيف: ملف إنجاز معلمة رياض الأطفال (مدفوع) 🆕 ═══ -->
+    <div class="cat-section" data-cat="kg">
+      <div class="cat-header" onclick="toggleCategory(this)">
+        <div class="cat-icon achievement" style="background:linear-gradient(135deg,#ffe4ec 0%,#f3e8ff 50%,#e0f4ff 100%);color:#9d2966;">🧸</div>
+        <div class="cat-text">
+          <div class="cat-title">
+            <span data-i18n="catKg">ملف إنجاز معلمة رياض الأطفال</span>
+            <span class="cat-count">1</span>
+          </div>
+          <div class="cat-sub" data-i18n="catKgSub">7 مجالات نمائية · 20 وحدة · ألوان pastel مرحة</div>
+        </div>
+        <div class="cat-chevron">▼</div>
+      </div>
+      <div class="cat-body">
+        <div class="cat-cards">
+
+    <!-- 🆕 ملف إنجاز معلمة رياض الأطفال -->
+    <div class="preview-card r-achievement locked" data-target="kg.html" onclick="handleCardClick(this)">
+      <span class="card-badge badge-new">🆕 <span data-i18n="badgeKg">جديد</span></span>
+      <div class="thumb thumb-achievement">
+        <div class="achievement-snap" style="background:linear-gradient(135deg,#ffe4ec 0%,#e0f4ff 50%,#fff3e0 100%);">
+          <div class="achievement-snap-glow" style="background:radial-gradient(circle, rgba(244,182,204,0.4) 0%, transparent 70%);"></div>
+          <div class="achievement-snap-head" style="color:#9d2966;">🧸</div>
+          <div class="achievement-snap-title" style="color:#3a3a4e;">معلمة رياض</div>
+          <div class="achievement-snap-chart">
+            <span style="background:#f4b6cc;"></span>
+            <span style="background:#a8d8f0;"></span>
+            <span style="background:#a8d8a8;"></span>
+            <span style="background:#ffd093;"></span>
+            <span style="background:#d6b3f5;"></span>
+          </div>
+          <div class="achievement-snap-badge" style="background:rgba(255,255,255,0.6);color:#5a3a5e;border:1px solid #f4b6cc;">7 مجالات نمائية</div>
+        </div>
+      </div>
+      <div class="card-content">
+        <div class="card-icon-wrap">
+          <div class="card-icon">🧸</div>
+        </div>
+        <div class="card-text">
+          <div class="card-title" data-i18n="kgCardTitle">ملف إنجاز معلمة رياض الأطفال</div>
+          <div class="card-desc" data-i18n="kgCardDesc">7 مجالات نمائية · 20 وحدة تعليمية · ألوان pastel مرحة · هوية رسمية</div>
+        </div>
+        <div class="card-action">‹</div>
+      </div>
+    </div>
+
+        </div>
+      </div>
+    </div>
+
     <!-- ═══ تصنيف: التقرير العام للإدارة (مدفوع) ═══ -->
     <div class="cat-section" data-cat="report">
       <div class="cat-header" onclick="toggleCategory(this)">
@@ -7772,7 +7822,7 @@ function handleCardClick(card){
   const target = card.getAttribute('data-target');
 
   // 👁️ تقارير المعاينة / التجربة - يفتحها أي زائر بدون تسجيل دخول
-  const VIEW_ONLY_AND_FREE_TRIAL = ['report.html', 'tasis.html', 'watny.html', 'alm.html', 'alm2.html', 'green.html', 'shawahed.html', 'enjaz.html'];
+  const VIEW_ONLY_AND_FREE_TRIAL = ['report.html', 'tasis.html', 'watny.html', 'alm.html', 'alm2.html', 'green.html', 'shawahed.html', 'enjaz.html', 'kg.html'];
   if (target && VIEW_ONLY_AND_FREE_TRIAL.includes(target)) {
     window.location.href = target;
     return;
