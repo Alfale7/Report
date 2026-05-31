@@ -1070,7 +1070,9 @@ function showResultModal(blob, filename, sizeStr, count) {
       try {
         await navigator.share({
           files: [pdfFile],
-          title: 'مستند PDF'
+          title: 'التقارير الذكية',
+          text: '📄 تم إنشاؤه عبر التقارير الذكية\n🌐 ksa2030.one',
+          url: 'https://ksa2030.one'
         });
         showToast('✅ تم المشاركة');
         closeResultModal();
