@@ -841,7 +841,7 @@ transition:all 0.2s;
 </style>
 
   <!-- 🔥 Firebase Integration (يجب أن يكون قبل أي محتوى) -->
-  <script type="module" src="report-firebase.js?v=6"></script>
+  <script type="module" src="report-firebase.js?v=7"></script>
 </head>
 <body>
 
@@ -1774,177 +1774,156 @@ document.addEventListener('click', e => {
 loadSavedTheme();
 
 // ═══════════════════════════════════════════════════════
-// 🔒 حماية الميزات التفاعلية (3 طبقات حماية)
+// 🔒 حماية بسيطة وقوية - وضع المعاينة (الزائر / Free)
 // ═══════════════════════════════════════════════════════
-// الطبقة 1: HTML readonly/contenteditable=false (الأقوى)
-// الطبقة 2: CSS class يمنع التفاعل بصرياً
-// الطبقة 3: JS event listeners + المودال
-(function setupPremiumGate(){
-  let _isLocked = true; // مقفل افتراضياً ✅
-
-  // ═══ CSS للحالة المقفلة ═══
-  const style = document.createElement('style');
-  style.id = 'premiumGateStyle';
-  style.textContent = `
-    /* الحقول والـ contenteditable في حالة القفل */
-    body.preview-locked input[type="text"],
-    body.preview-locked input[type="number"],
-    body.preview-locked input[type="date"],
-    body.preview-locked textarea,
-    body.preview-locked [contenteditable="true"] {
-      cursor: pointer !important;
+(function() {
+  // ═══ CSS قوي لقفل كل الحقول ═══
+  const styleEl = document.createElement('style');
+  styleEl.textContent = `
+    body.locked-preview input,
+    body.locked-preview textarea,
+    body.locked-preview [contenteditable] {
+      pointer-events: none !important;
       caret-color: transparent !important;
       user-select: none !important;
       -webkit-user-select: none !important;
     }
-    body.preview-locked .pf {
-      cursor: pointer !important;
+    body.locked-preview .pf,
+    body.locked-preview .pf * {
+      pointer-events: none !important;
+    }
+    /* طبقة شفافة تلتقط النقر على كل العناصر التفاعلية */
+    body.locked-preview::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
     }
   `;
-  document.head.appendChild(style);
+  document.head.appendChild(styleEl);
 
-  // ═══ تطبيق القفل (الطبقة 1) ═══
-  const applyLock = () => {
-    document.body.classList.add('preview-locked');
-    // قفل HTML للحقول
-    document.querySelectorAll('input[type="text"], input[type="number"], input[type="date"], textarea').forEach(el => {
-      el.setAttribute('readonly', '');
-      el.setAttribute('data-preview-locked', '1');
-    });
-    // قفل contenteditable
-    document.querySelectorAll('[contenteditable="true"]').forEach(el => {
-      el.setAttribute('contenteditable', 'false');
-      el.setAttribute('data-was-editable', '1');
-    });
-  };
+  // ابدأ مقفل
+  document.body.classList.add('locked-preview');
+  let _locked = true;
 
-  // ═══ فك القفل (للمشترك) ═══
-  const removeLock = () => {
-    _isLocked = false;
-    document.body.classList.remove('preview-locked');
-    // أعد الحقول للحالة الطبيعية
-    document.querySelectorAll('[data-preview-locked="1"]').forEach(el => {
-      el.removeAttribute('readonly');
-      el.removeAttribute('data-preview-locked');
-    });
-    document.querySelectorAll('[data-was-editable="1"]').forEach(el => {
-      el.setAttribute('contenteditable', 'true');
-      el.removeAttribute('data-was-editable');
-    });
-    console.log('✅ تم فك القفل - مشترك Lifetime/Admin');
-  };
+  console.log('🔒 وضع المعاينة مفعّل');
 
-  // ═══ المودال على أي تفاعل ═══
-  const showModal = () => {
-    if (typeof window.showPremiumFeatureModal === 'function') {
-      window.showPremiumFeatureModal('الكتابة في التقرير');
+  // ═══ التقاط النقر على أي حقل (الطبقة الرئيسية) ═══
+  // نستخدم capture phase + delegated handler على document
+  document.addEventListener('click', function(e) {
+    if (!_locked) return;
+    // أي نقر على حقل، textarea، contenteditable، أو منطقة رفع صورة
+    const target = e.target.closest('input, textarea, [contenteditable], .pf, .pwm, .padd');
+    if (target) {
+      e.preventDefault();
+      e.stopPropagation();
+      e.stopImmediatePropagation();
+      if (typeof window.showPremiumFeatureModal === 'function') {
+        window.showPremiumFeatureModal('استخدام التقرير');
+      }
+      return false;
     }
-  };
+  }, true);
 
-  // ═══ تثبيت الـ listeners (الطبقة 3) ═══
-  const setupListeners = () => {
-    const handleClick = (e) => {
-      if (!_isLocked) return;
-      const target = e.target;
-      if (target.matches('input[type="text"], input[type="number"], input[type="date"], textarea, [contenteditable], .pf, .pf *')) {
-        e.preventDefault();
-        e.stopPropagation();
-        target.blur && target.blur();
-        showModal();
-        return false;
+  // ═══ التقاط اللمس (موبايل) ═══
+  document.addEventListener('touchstart', function(e) {
+    if (!_locked) return;
+    const target = e.target.closest('input, textarea, [contenteditable], .pf, .pwm, .padd');
+    if (target) {
+      e.preventDefault();
+      e.stopPropagation();
+      if (typeof window.showPremiumFeatureModal === 'function') {
+        window.showPremiumFeatureModal('استخدام التقرير');
       }
-    };
+      return false;
+    }
+  }, { capture: true, passive: false });
 
-    // التقاط كل الأحداث ذات الصلة (capture: true عشان نلتقط قبل أي listener آخر)
-    ['click', 'mousedown', 'touchstart', 'focus', 'focusin'].forEach(evt => {
-      document.addEventListener(evt, handleClick, true);
-    });
-
-    // منع الكتابة بالكيبورد (لو فلت focus بشكل ما)
-    document.addEventListener('keydown', (e) => {
-      if (!_isLocked) return;
-      const t = e.target;
-      if (t.matches('input, textarea, [contenteditable]')) {
-        // اسمح بأزرار التنقل فقط
-        const allowed = ['Tab', 'Escape', 'F5', 'F12'];
-        if (!allowed.includes(e.key) && !e.ctrlKey && !e.metaKey) {
-          e.preventDefault();
-          e.stopPropagation();
-          t.blur && t.blur();
-          showModal();
-          return false;
-        }
+  // ═══ منع التركيز على الحقول ═══
+  document.addEventListener('focusin', function(e) {
+    if (!_locked) return;
+    const target = e.target;
+    if (target.matches && target.matches('input, textarea, [contenteditable]')) {
+      target.blur();
+      if (typeof window.showPremiumFeatureModal === 'function') {
+        window.showPremiumFeatureModal('الكتابة في التقرير');
       }
-    }, true);
+    }
+  }, true);
 
-    // منع اللصق
-    document.addEventListener('paste', (e) => {
-      if (!_isLocked) return;
-      const t = e.target;
-      if (t.matches('input, textarea, [contenteditable]')) {
-        e.preventDefault();
-        e.stopPropagation();
-        showModal();
-        return false;
+  // ═══ منع الكتابة كحماية إضافية ═══
+  document.addEventListener('keydown', function(e) {
+    if (!_locked) return;
+    const target = e.target;
+    if (target.matches && target.matches('input, textarea, [contenteditable]')) {
+      e.preventDefault();
+      e.stopPropagation();
+      if (target.blur) target.blur();
+      return false;
+    }
+  }, true);
+
+  // ═══ منع اللصق ═══
+  document.addEventListener('paste', function(e) {
+    if (!_locked) return;
+    const target = e.target;
+    if (target.matches && target.matches('input, textarea, [contenteditable]')) {
+      e.preventDefault();
+      e.stopPropagation();
+      if (typeof window.showPremiumFeatureModal === 'function') {
+        window.showPremiumFeatureModal('استخدام التقرير');
       }
-    }, true);
+      return false;
+    }
+  }, true);
 
-    // منع beforeinput (للـ contenteditable)
-    document.addEventListener('beforeinput', (e) => {
-      if (!_isLocked) return;
-      const t = e.target;
-      if (t.matches('input, textarea, [contenteditable]')) {
-        e.preventDefault();
-        e.stopPropagation();
-        return false;
-      }
-    }, true);
-  };
+  // ═══ منع الإدخال (للـ contenteditable) ═══
+  document.addEventListener('beforeinput', function(e) {
+    if (!_locked) return;
+    const target = e.target;
+    if (target.matches && target.matches('input, textarea, [contenteditable]')) {
+      e.preventDefault();
+      e.stopPropagation();
+      return false;
+    }
+  }, true);
 
-  // ═══ حماية confirmClear ═══
-  const wrapConfirmClear = () => {
-    if (typeof window.confirmClear === 'function' && !window.confirmClear._wrapped) {
-      const orig = window.confirmClear;
+  // ═══ حماية زر التفريغ ═══
+  const wrapClear = () => {
+    if (typeof window.confirmClear === 'function' && !window.confirmClear.__wrapped) {
+      const original = window.confirmClear;
       window.confirmClear = function() {
-        if (_isLocked) { showModal(); return; }
-        return orig.apply(this, arguments);
+        if (_locked) {
+          if (typeof window.showPremiumFeatureModal === 'function') {
+            window.showPremiumFeatureModal('تفريغ البيانات');
+          }
+          return;
+        }
+        return original.apply(this, arguments);
       };
-      window.confirmClear._wrapped = true;
+      window.confirmClear.__wrapped = true;
     }
   };
+  wrapClear();
+  // تأكد ثاني بعد ثانية (لو الدالة تعرّفت متأخرة)
+  setTimeout(wrapClear, 1000);
 
-  // 🚀 تشغيل فوري
-  applyLock();
-  setupListeners();
-  wrapConfirmClear();
-  console.log('🔒 وضع المعاينة مفعّل (Free/زائر)');
-
-  // ═══ راقب حالة المستخدم وافتح إذا premium ═══
+  // ═══ راقب حالة المستخدم - افتح إذا premium ═══
   let attempts = 0;
   const watcher = setInterval(() => {
     attempts++;
     if (typeof window.isPremiumUser === 'function' && window.isPremiumUser()) {
+      _locked = false;
+      document.body.classList.remove('locked-preview');
       clearInterval(watcher);
-      removeLock();
+      console.log('✅ فُك القفل - مشترك Lifetime/Admin');
       return;
     }
     if (attempts >= 75) { // 15 ثانية
       clearInterval(watcher);
+      console.log('⏱️ انتهت المراقبة - المستخدم Free/زائر');
     }
   }, 200);
-
-  // فحص أخير بعد 8 ثواني
-  setTimeout(() => {
-    if (typeof window.isPremiumUser === 'function' && window.isPremiumUser()) {
-      removeLock();
-    }
-  }, 8000);
-
-  // ═══ راقب العناصر المضافة ديناميكياً (مثل إعادة الـ contenteditable) ═══
-  const observer = new MutationObserver(() => {
-    if (_isLocked) applyLock(); // أعد القفل لو ضافت عناصر جديدة
-  });
-  observer.observe(document.body, { childList: true, subtree: true, attributes: true, attributeFilter: ['contenteditable', 'readonly'] });
 })();
 
 </script>
