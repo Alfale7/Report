@@ -546,7 +546,7 @@ transition:all 0.2s;
 </style>
 
   <!-- 🔥 Firebase Integration (يجب أن يكون قبل أي محتوى) -->
-  <script type="module" src="report-firebase.js?v=4"></script>
+  <script type="module" src="report-firebase.js?v=10"></script>
 </head>
 <body>
 
@@ -805,7 +805,13 @@ document.addEventListener('DOMContentLoaded', function(){
 });
 /* ═══════════════════ نهاية نظام الترجمة ═══════════════════ */
 
-function openF(id){ document.getElementById('i'+id).click(); }
+function openF(id){
+  // 🔒 فحص الميزة المدفوعة (رفع الصور)
+  if (typeof window.checkPremiumFeature === 'function') {
+    if (!window.checkPremiumFeature('رفع الصور')) return;
+  }
+  document.getElementById('i'+id).click();
+}
 
 function preview(input,id){
   if(!input.files||!input.files[0]) return;
@@ -852,23 +858,6 @@ async function saveAsImage(){
   if (typeof window.checkDownloadAccess === 'function') {
     const allowed = await window.checkDownloadAccess();
     if (!allowed) return;
-  }
-
-  // ═══ نظام التجربة المجانية ═══
-  // المشتركون: تخطي كل القيود
-  const loggedUser = localStorage.getItem('loggedUser');
-  const isSubscribed = localStorage.getItem('isSubscribed') === '1' || !!loggedUser;
-
-  if(!isSubscribed){
-    const FREE_DOWNLOADS_LIMIT = 2;
-    const used = parseInt(localStorage.getItem('free_downloads_used') || '0');
-    const left = Math.max(0, FREE_DOWNLOADS_LIMIT - used);
-
-    if(left === 0){
-      // انتهت التحميلات - افتح modal الترقية
-      showUpgradeModalInTasis();
-      return;
-    }
   }
 
   const page=document.getElementById('page');
@@ -945,24 +934,6 @@ async function saveAsImage(){
     link.href=canvas.toDataURL('image/png');
     link.click();
     showToast(I18N[getCurrentLang()].toastDone);
-
-    // ═══ زيادة عدّاد التحميلات المجانية (للزوار فقط) ═══
-    const loggedUserAfter = localStorage.getItem('loggedUser');
-    const isSubscribedAfter = localStorage.getItem('isSubscribed') === '1' || !!loggedUserAfter;
-
-    if(!isSubscribedAfter){
-      const usedNow = parseInt(localStorage.getItem('free_downloads_used') || '0') + 1;
-      localStorage.setItem('free_downloads_used', usedNow);
-      const remaining = Math.max(0, 2 - usedNow);
-      setTimeout(() => {
-        if(remaining === 0){
-          // انتهت التحميلات - افتح Modal
-          showUpgradeModalInTasis();
-        } else {
-          showToast(`🎁 تبقّى لك ${remaining} ${remaining === 1 ? 'تحميل' : 'تحميلات'} مجانية`);
-        }
-      }, 2000);
-    }
   }catch(e){
     showToast(I18N[getCurrentLang()].toastError);
   }
@@ -974,32 +945,9 @@ async function saveAsImage(){
 }
 
 // ═══════════════════════════════════════════════
-// Upgrade Modal داخل tasis.html
-// ═══════════════════════════════════════════════
-// ═══════════════════════════════════════════════
-// 🔥 تم استبدال Modal القديم (49 ريال) بنظام Firebase
-// عند انتهاء التحميلات المجانية → يستدعي شاشة الاشتراك من report-firebase.js
-// ═══════════════════════════════════════════════
-function showUpgradeModalInTasis(){
-  // إذا report-firebase.js محمّل، استدعِ شاشته
-  if (typeof window._fbShowUpgrade === 'function') {
-    window._fbShowUpgrade();
-    return;
-  }
-  // Fallback: التحويل لـ index.html
-  alert('🎁 لقد استخدمت جميع تحميلاتك المجانية\n\nاشترك مرة واحدة فقط بـ 30 ريال 💎');
-  window.location.href = 'index.html';
-}
-
-function closeTasisUpgrade(){
-  // متروكة فاضية - النظام الجديد لا يحتاجها
-}
-
-// ═══════════════════════════════════════════════
-// ℹ️ ملاحظة: نظام التحقق من الدخول القديم تم حذفه
-// Firebase + report-firebase.js يتولى الحماية الآن
+// ℹ️ Firebase + report-firebase.js يتولى الحماية
 // المشترك Lifetime: يفتح بحرية
-// المستخدم Free: يطلع له شاشة الاشتراك من report-firebase.js
+// المستخدم Free/زائر: Preview Mode (يشاهد بدون كتابة)
 // ═══════════════════════════════════════════════
 
 
@@ -1044,21 +992,6 @@ async function shareReport(){
   if (typeof window.checkDownloadAccess === 'function') {
     const allowed = await window.checkDownloadAccess();
     if (!allowed) return;
-  }
-
-  // ═══ نظام التجربة المجانية ═══
-  const loggedUser = localStorage.getItem('loggedUser');
-  const isSubscribed = localStorage.getItem('isSubscribed') === '1' || !!loggedUser;
-
-  if(!isSubscribed){
-    const FREE_DOWNLOADS_LIMIT = 2;
-    const used = parseInt(localStorage.getItem('free_downloads_used') || '0');
-    const left = Math.max(0, FREE_DOWNLOADS_LIMIT - used);
-
-    if(left === 0){
-      showUpgradeModalInTasis();
-      return;
-    }
   }
 
   const page = document.getElementById('page');
@@ -1371,6 +1304,149 @@ async function exportAsPDFv2(){
     });
   }
 }
+
+// ═══════════════════════════════════════════════════════
+// 🔒 حماية بسيطة وقوية - وضع المعاينة (الزائر / Free)
+// ═══════════════════════════════════════════════════════
+(function() {
+  // ═══ CSS قوي لقفل كل الحقول ═══
+  const styleEl = document.createElement('style');
+  styleEl.textContent = `
+    body.locked-preview input,
+    body.locked-preview textarea,
+    body.locked-preview [contenteditable] {
+      pointer-events: none !important;
+      caret-color: transparent !important;
+      user-select: none !important;
+      -webkit-user-select: none !important;
+    }
+    body.locked-preview .pf,
+    body.locked-preview .pf * {
+      pointer-events: none !important;
+    }
+  `;
+  document.head.appendChild(styleEl);
+
+  // ابدأ مقفل
+  document.body.classList.add('locked-preview');
+  let _locked = true;
+
+  console.log('🔒 وضع المعاينة مفعّل');
+
+  // ═══ التقاط النقر على أي حقل ═══
+  document.addEventListener('click', function(e) {
+    if (!_locked) return;
+    const target = e.target.closest('input, textarea, [contenteditable], .pf, .pwm, .padd');
+    if (target) {
+      e.preventDefault();
+      e.stopPropagation();
+      e.stopImmediatePropagation();
+      if (typeof window.showPremiumFeatureModal === 'function') {
+        window.showPremiumFeatureModal('استخدام التقرير');
+      }
+      return false;
+    }
+  }, true);
+
+  // ═══ التقاط اللمس (موبايل) ═══
+  document.addEventListener('touchstart', function(e) {
+    if (!_locked) return;
+    const target = e.target.closest('input, textarea, [contenteditable], .pf, .pwm, .padd');
+    if (target) {
+      e.preventDefault();
+      e.stopPropagation();
+      if (typeof window.showPremiumFeatureModal === 'function') {
+        window.showPremiumFeatureModal('استخدام التقرير');
+      }
+      return false;
+    }
+  }, { capture: true, passive: false });
+
+  // ═══ منع التركيز على الحقول ═══
+  document.addEventListener('focusin', function(e) {
+    if (!_locked) return;
+    const target = e.target;
+    if (target.matches && target.matches('input, textarea, [contenteditable]')) {
+      target.blur();
+      if (typeof window.showPremiumFeatureModal === 'function') {
+        window.showPremiumFeatureModal('الكتابة في التقرير');
+      }
+    }
+  }, true);
+
+  // ═══ منع الكتابة بالكيبورد ═══
+  document.addEventListener('keydown', function(e) {
+    if (!_locked) return;
+    const target = e.target;
+    if (target.matches && target.matches('input, textarea, [contenteditable]')) {
+      e.preventDefault();
+      e.stopPropagation();
+      if (target.blur) target.blur();
+      return false;
+    }
+  }, true);
+
+  // ═══ منع اللصق ═══
+  document.addEventListener('paste', function(e) {
+    if (!_locked) return;
+    const target = e.target;
+    if (target.matches && target.matches('input, textarea, [contenteditable]')) {
+      e.preventDefault();
+      e.stopPropagation();
+      if (typeof window.showPremiumFeatureModal === 'function') {
+        window.showPremiumFeatureModal('استخدام التقرير');
+      }
+      return false;
+    }
+  }, true);
+
+  // ═══ منع الإدخال (للـ contenteditable) ═══
+  document.addEventListener('beforeinput', function(e) {
+    if (!_locked) return;
+    const target = e.target;
+    if (target.matches && target.matches('input, textarea, [contenteditable]')) {
+      e.preventDefault();
+      e.stopPropagation();
+      return false;
+    }
+  }, true);
+
+  // ═══ حماية زر التفريغ ═══
+  const wrapClear = () => {
+    if (typeof window.confirmClear === 'function' && !window.confirmClear.__wrapped) {
+      const original = window.confirmClear;
+      window.confirmClear = function() {
+        if (_locked) {
+          if (typeof window.showPremiumFeatureModal === 'function') {
+            window.showPremiumFeatureModal('تفريغ البيانات');
+          }
+          return;
+        }
+        return original.apply(this, arguments);
+      };
+      window.confirmClear.__wrapped = true;
+    }
+  };
+  wrapClear();
+  setTimeout(wrapClear, 1000);
+
+  // ═══ راقب حالة المستخدم - افتح إذا premium ═══
+  let attempts = 0;
+  const watcher = setInterval(() => {
+    attempts++;
+    if (typeof window.isPremiumUser === 'function' && window.isPremiumUser()) {
+      _locked = false;
+      document.body.classList.remove('locked-preview');
+      clearInterval(watcher);
+      console.log('✅ فُك القفل - مشترك Lifetime/Admin');
+      return;
+    }
+    if (attempts >= 75) {
+      clearInterval(watcher);
+      console.log('⏱️ انتهت المراقبة - المستخدم Free/زائر');
+    }
+  }, 200);
+})();
 
 </script>
 

@@ -2203,65 +2203,6 @@ backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);
   .hc-label{font-size:0.74rem;}
 }
 
-/* عدّاد التحميلات المجانية */
-.free-counter{
-  background:linear-gradient(135deg, rgba(255,107,107,0.15), rgba(255,159,67,0.15));
-  border:1.5px solid rgba(255,107,107,0.4);
-  border-radius:12px;
-  padding:10px 14px;
-  margin:14px 4px 0;
-  display:flex;
-  align-items:center;
-  gap:10px;
-  backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);
-}
-.free-counter.exhausted{
-  background:linear-gradient(135deg, rgba(220,53,69,0.15), rgba(220,53,69,0.08));
-  border-color:rgba(220,53,69,0.5);
-}
-.free-counter-icon{
-  font-size:1.4rem;
-  flex-shrink:0;
-}
-.free-counter-text{
-  flex:1;
-  color:#fff;
-  font-size:0.8rem;
-  font-weight:700;
-  line-height:1.4;
-}
-.free-counter-text strong{
-  color:#ffb86b;
-  font-size:0.9rem;
-}
-.free-counter.exhausted .free-counter-text strong{
-  color:#ff6b6b;
-}
-.free-counter-btn{
-  background:linear-gradient(135deg,#ff6b6b,#ee5a52);
-  color:#fff;
-  border:none;
-  padding:7px 14px;
-  border-radius:99px;
-  font-family:inherit;
-  font-size:0.75rem;
-  font-weight:800;
-  cursor:pointer;
-  flex-shrink:0;
-  white-space:nowrap;
-  box-shadow:0 3px 10px rgba(238,90,82,0.4);
-}
-.free-counter-btn:hover{transform:translateY(-1px);}
-.free-counter-btn:active{transform:scale(0.95);}
-
-@media (max-width:480px){
-  .free-counter{padding:9px 11px; gap:8px;}
-  .free-counter-text{font-size:0.72rem;}
-  .free-counter-text strong{font-size:0.82rem;}
-  .free-counter-btn{font-size:0.68rem; padding:6px 11px;}
-  .free-counter-icon{font-size:1.2rem;}
-}
-
 /* ═══════════════════════════════════════════════
    Upgrade Modal (الترقية)
    ═══════════════════════════════════════════════ */
@@ -4532,19 +4473,6 @@ font-size:0.78rem;text-align:center;margin-top:12px;display:none;
       </div>
     </div>
 
-    <!-- ═══ عدّاد التجربة المجانية ═══ -->
-    <div class="free-counter" id="freeCounter">
-      <div class="free-counter-icon">🎁</div>
-      <div class="free-counter-text">
-        <span data-i18n="freeCounterPrefix">لديك</span>
-        <strong id="freeCounterValue">2</strong>
-        <span data-i18n="freeCounterSuffix">تحميل مجاني متبقي · جرّب تقرير يوم التأسيس الآن</span>
-      </div>
-      <button class="free-counter-btn" onclick="document.querySelector('.r-tasis').scrollIntoView({behavior:'smooth',block:'center'})">
-        <span data-i18n="freeCounterBtn">جرّب الآن</span>
-      </button>
-    </div>
-
 
     <!-- ═══ تصنيف: شواهد الأداء الوظيفي (مدفوع) ═══ -->
     <div class="cat-section" data-cat="shawahed">
@@ -6568,7 +6496,6 @@ const I18N = {
     loadingPreview: "جاري تحميل المعاينة",
     badgeFree: "جرّبني مجاناً",
     freeCta: "اضغط للتجربة المجانية",
-    freeCounterPrefix: "لديك",
     giftTag: "هدية مجانية",
     giftTitle: "التقويم الدراسي الجديد",
     giftSub: "للعام ١٤٤٨هـ - ١٤٤٩هـ · جاهز للتحميل",
@@ -6582,8 +6509,6 @@ const I18N = {
     tbOpen2: "افتح",
     tbPdfTitle: "PDF ← باركود",
     tbOpen3: "افتح",
-    freeCounterSuffix: "تحميل مجاني متبقي · جرّب تقرير يوم التأسيس الآن",
-    freeCounterBtn: "جرّب الآن",
     upgradeTitle: "انتهت تحميلاتك المجانية!",
     upgradeSubtitle: "احصل على الباقة الكاملة واستفد من جميع القوالب",
     upFeat1: "13 قالب احترافي معتمد",
@@ -6853,7 +6778,6 @@ const I18N = {
     loadingPreview: "Loading preview",
     badgeFree: "Try Free",
     freeCta: "Tap for free trial",
-    freeCounterPrefix: "You have",
     giftTag: "FREE GIFT",
     giftTitle: "New Academic Calendar",
     giftSub: "For 1448H - 1449H · Ready to download",
@@ -6867,8 +6791,6 @@ const I18N = {
     tbOpen2: "Open",
     tbPdfTitle: "PDF → QR",
     tbOpen3: "Open",
-    freeCounterSuffix: "free downloads left · Try Founding Day report now",
-    freeCounterBtn: "Try Now",
     upgradeTitle: "Free downloads ended!",
     upgradeSubtitle: "Get the full package and access all templates",
     upFeat1: "13 professional templates",
@@ -7018,8 +6940,6 @@ function toggleLang(){
   const current = getCurrentLang();
   const next = (current === 'ar') ? 'en' : 'ar';
   applyLang(next);
-  // تحديث العدّاد بعد تغيير اللغة
-  if(typeof updateFreeCounter === 'function') updateFreeCounter();
 }
 
 // ═══ مشاركة الموقع (Web Share API + نسخ احتياطي) ═══
@@ -7183,10 +7103,6 @@ function _OLD_enterLoggedInMode(phone){
         : '🔥 <span data-i18n="badgePop">Most Popular</span>';
     }
   });
-
-  // ═══ إخفاء عدّاد التجربة المجانية تماماً للمشتركين ═══
-  const freeCounter = document.getElementById('freeCounter');
-  if(freeCounter) freeCounter.style.display = 'none';
 }
 
 async function logout(){
@@ -7253,89 +7169,8 @@ function handleCardClick(card){
 }
 
 // ═══════════════════════════════════════════════
-// نظام التجربة المجانية - عدّ التحميلات
+// (أُزيل نظام التجربة المجانية — Preview Mode بديل أقوى)
 // ═══════════════════════════════════════════════
-const FREE_DOWNLOADS_LIMIT = 2;
-
-function isUserSubscribed(){
-  // المستخدم مشترك إذا:
-  // 1. عنده isSubscribed = '1' في localStorage
-  // 2. أو عنده loggedUser في localStorage وموجود في users
-  const loggedUser = localStorage.getItem('loggedUser');
-  const isSubFlag = localStorage.getItem('isSubscribed');
-  if(isSubFlag === '1') return true;
-  if(loggedUser && typeof users !== 'undefined' && users[loggedUser]) return true;
-  return false;
-}
-
-function getFreeDownloadsLeft(){
-  // المشتركون: تحميلات بلا حدود
-  if(isUserSubscribed()) return 999999;
-  // غير المشتركين: العداد الطبيعي
-  const used = parseInt(localStorage.getItem('free_downloads_used') || '0');
-  return Math.max(0, FREE_DOWNLOADS_LIMIT - used);
-}
-
-function updateFreeCounter(){
-  const counter = document.getElementById('freeCounter');
-  if(!counter) return;
-
-  // ═══ للمشتركين: إخفاء العداد كلياً ═══
-  if(isUserSubscribed()){
-    counter.style.display = 'none';
-    return;
-  }
-
-  const left = getFreeDownloadsLeft();
-  const valueEl = document.getElementById('freeCounterValue');
-  if(valueEl) valueEl.textContent = left;
-
-  // البحث عن كرت يوم التأسيس
-  const freeCard = document.querySelector('.preview-card.free-trial');
-
-  if(left === 0){
-    // ═══ انتهت التحميلات ═══
-    counter.classList.add('exhausted');
-    const lang = localStorage.getItem('site_lang') || 'ar';
-    const textEl = counter.querySelector('.free-counter-text');
-    const btnEl = counter.querySelector('.free-counter-btn');
-    if(lang === 'ar'){
-      textEl.innerHTML = '<span>انتهت تحميلاتك المجانية!</span> <strong>اشترك للوصول الكامل</strong>';
-      btnEl.innerHTML = '<span>اشترك الآن</span>';
-    } else {
-      textEl.innerHTML = '<span>Free downloads ended!</span> <strong>Subscribe for full access</strong>';
-      btnEl.innerHTML = '<span>Subscribe</span>';
-    }
-    btnEl.onclick = openUpgradeModal;
-
-    // تحديث مظهر الكرت
-    if(freeCard){
-      freeCard.classList.add('trial-exhausted');
-      // تحديث الشارة من "جرّبني مجاناً" إلى "🔒 اشترك للوصول"
-      const badge = freeCard.querySelector('.card-badge');
-      if(badge){
-        badge.classList.remove('badge-free');
-        badge.classList.add('badge-locked-trial');
-        badge.innerHTML = lang === 'ar'
-          ? '🔒 <span>اشترك للوصول</span>'
-          : '🔒 <span>Subscribe</span>';
-      }
-      // تحديث الـ overlay CTA
-      const cta = freeCard.querySelector('.free-cta');
-      if(cta){
-        cta.innerHTML = lang === 'ar'
-          ? '<span>💎</span><span>اشترك للحصول على كل القوالب</span>'
-          : '<span>💎</span><span>Subscribe for full access</span>';
-      }
-    }
-  } else {
-    // ═══ التحميلات لم تنته ═══
-    counter.classList.remove('exhausted');
-    if(freeCard){
-      freeCard.classList.remove('trial-exhausted');
-    }
-  }
-}
 
 function openUpgradeModal(){
   document.getElementById('upgradeModal').classList.add('show');
@@ -7354,14 +7189,6 @@ document.addEventListener('DOMContentLoaded', function(){
     upModal.addEventListener('click', function(e){
       if(e.target === upModal) closeUpgradeModal();
     });
-  }
-  // تحديث العدّاد عند تحميل الصفحة
-  updateFreeCounter();
-
-  // لو رجع المستخدم من report.html وكان انتهى من الـ 3 تحميلات → افتح المودال
-  if(getFreeDownloadsLeft() === 0 && localStorage.getItem('show_upgrade_now') === '1'){
-    localStorage.removeItem('show_upgrade_now');
-    setTimeout(openUpgradeModal, 600);
   }
 });
 
@@ -7454,9 +7281,6 @@ function applyUserState(user, profile) {
     localStorage.removeItem('isSubscribed');
   }
 
-  // 🎁 تحديث عدّاد التحميلات المجانية ديناميكياً
-  updateFreeCounter(profile, lifetime);
-
   // إخفاء/إظهار بطاقة السعر
   if (priceCard) {
     priceCard.style.display = lifetime ? 'none' : '';
@@ -7475,8 +7299,6 @@ function applyUserState(user, profile) {
       const overlay = card.querySelector('.free-overlay');
       if(overlay) overlay.remove();
     });
-    const freeCounter = document.getElementById('freeCounter');
-    if(freeCounter) freeCounter.style.display = 'none';
   }
 
   // تحديث زر الـ CTA
@@ -7503,72 +7325,6 @@ function applyUserState(user, profile) {
         <span>🚪</span><span>خروج</span>
       </button>
     `;
-  }
-}
-
-// 🎁 تحديث عدّاد التحميلات المجانية ديناميكياً
-function updateFreeCounter(profile, isLifetimeUser) {
-  const counter = document.getElementById('freeCounter');
-  if (!counter) return;
-
-  // مشترك Lifetime → إخفاء العدّاد
-  if (isLifetimeUser) {
-    counter.style.display = 'none';
-    return;
-  }
-
-  const used = profile?.downloadsUsed || 0;
-  const limit = profile?.downloadsLimit || 2;
-  const remaining = Math.max(0, limit - used);
-
-  // 🐛 Debug log
-  console.log('🎁 Free Counter:', { used, limit, remaining, profile });
-
-  const valueEl = document.getElementById('freeCounterValue');
-  const textEl = counter.querySelector('.free-counter-text');
-  const iconEl = counter.querySelector('.free-counter-icon');
-  const btnEl = counter.querySelector('.free-counter-btn');
-
-  counter.style.display = ''; // إظهار
-
-  if (remaining > 0) {
-    // 🎁 لسه عنده تحميلات
-    if (valueEl) valueEl.textContent = remaining;
-    if (iconEl) iconEl.textContent = '🎁';
-    counter.style.background = '';
-    counter.style.borderColor = '';
-
-    // النص العادي
-    const suffix = textEl?.querySelector('[data-i18n="freeCounterSuffix"]');
-    if (suffix) {
-      suffix.textContent = remaining === 1
-        ? 'تحميل مجاني متبقي فقط · جرّب تقرير التأسيس'
-        : 'تحميل مجاني متبقي · جرّب تقرير يوم التأسيس الآن';
-    }
-    if (btnEl) btnEl.querySelector('span').textContent = 'جرّب الآن';
-
-  } else {
-    // ⚠️ خلصت التحميلات → اشتركوا
-    if (iconEl) iconEl.textContent = '🔒';
-    counter.style.background = 'linear-gradient(135deg,rgba(220,38,38,0.15),rgba(245,158,11,0.08))';
-    counter.style.borderColor = 'rgba(220,38,38,0.4)';
-
-    // نغيّر كل النص
-    if (textEl) {
-      textEl.innerHTML = `
-        <strong style="color:#fff;font-size:1rem;display:block;margin-bottom:2px;">
-          ⚠️ انتهت تجربتك المجانية
-        </strong>
-        <span style="color:rgba(255,255,255,0.85);font-size:0.84rem;">
-          اشترك بـ 30 ريال للحصول على تحميلات بلا حدود 💎
-        </span>
-      `;
-    }
-    if (btnEl) {
-      btnEl.querySelector('span').textContent = '💎 اشترك الآن';
-      btnEl.onclick = () => window.location.href = 'pay.html';
-      btnEl.style.background = 'linear-gradient(135deg,#16a34a,#15803d)';
-    }
   }
 }
 
