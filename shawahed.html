@@ -303,7 +303,7 @@ body{
 
 #hidden-render-container{position:fixed; left:-99999px; top:0; z-index:-1;}
 </style>
-  <script type="module" src="report-firebase.js?v=4"></script>
+  <script type="module" src="report-firebase.js?v=11"></script>
 </head>
 <body>
 
@@ -353,7 +353,7 @@ body{
         </div>
       </div>
       <div class="logo-row">
-        <div class="logo-upload-box" id="logoBox" onclick="document.getElementById('logoInput').click()">
+        <div class="logo-upload-box" id="logoBox" onclick="if(typeof window.checkPremiumFeature === 'function' && !window.checkPremiumFeature('رفع الشعار')) return; document.getElementById('logoInput').click()">
           📷<br>اضغط<br>للشعار
         </div>
         <div class="logo-info">
@@ -508,7 +508,8 @@ const STORAGE_KEY = 'shawahed_data_v1';
 document.addEventListener('DOMContentLoaded', function(){
   loadSaved();
   buildElementsGrid();
-  document.getElementById('logoInput').addEventListener('change', handleLogoUpload);
+  const _li = document.getElementById('logoInput');
+  if(_li) _li.addEventListener('change', handleLogoUpload);
 });
 
 // حفظ كل البيانات
@@ -817,6 +818,11 @@ function removeShahed(si){
 let _evidenceInput = null;
 let _currentShahedIdx = 0;
 function addEvidence(shahedIdx){
+  // 🔒 فحص الميزة المدفوعة (رفع الصور)
+  if (typeof window.checkPremiumFeature === 'function') {
+    if (!window.checkPremiumFeature('رفع الصور')) return;
+  }
+
   _currentShahedIdx = shahedIdx;
   if(!_evidenceInput){
     _evidenceInput = document.createElement('input');
@@ -1273,6 +1279,12 @@ function mergeBlobsVertical(blob1, blob2){
 }
 
 async function exportCurrent(mode){
+  // 🔥 فحص Firebase أولاً - الحماية الفعلية
+  if (typeof window.checkDownloadAccess === 'function') {
+    const allowed = await window.checkDownloadAccess();
+    if (!allowed) return;
+  }
+
   if(typeof domtoimage === 'undefined'){ showToast('❌ جاري التحميل، انتظر'); return; }
   const el = ELEMENTS[currentIdx];
   const hasEvidence = elementImageCount(currentIdx) > 0;
@@ -1361,6 +1373,12 @@ async function exportCurrent(mode){
 }
 
 async function exportAll(){
+  // 🔥 فحص Firebase أولاً - الحماية الفعلية
+  if (typeof window.checkDownloadAccess === 'function') {
+    const allowed = await window.checkDownloadAccess();
+    if (!allowed) return;
+  }
+
   if(typeof domtoimage === 'undefined' || typeof JSZip === 'undefined'){ showToast('❌ جاري التحميل، انتظر'); return; }
   saveData();
   const realIdx = currentIdx;
@@ -1421,6 +1439,142 @@ function showToast(msg){
   t.textContent = msg; t.classList.add('show');
   clearTimeout(_toastT); _toastT = setTimeout(() => t.classList.remove('show'), 2600);
 }
+
+// ═══════════════════════════════════════════════════════
+// 🔒 حماية بسيطة وقوية - وضع المعاينة (الزائر / Free)
+// ═══════════════════════════════════════════════════════
+(function() {
+  const styleEl = document.createElement('style');
+  styleEl.textContent = `
+    body.locked-preview input,
+    body.locked-preview textarea,
+    body.locked-preview [contenteditable] {
+      pointer-events: none !important;
+      caret-color: transparent !important;
+      user-select: none !important;
+      -webkit-user-select: none !important;
+    }
+    body.locked-preview .pf,
+    body.locked-preview .pf *,
+    body.locked-preview .photo-cell,
+    body.locked-preview .photo-cell * {
+      pointer-events: none !important;
+    }
+  `;
+  document.head.appendChild(styleEl);
+
+  document.body.classList.add('locked-preview');
+  let _locked = true;
+
+  console.log('🔒 وضع المعاينة مفعّل');
+
+  document.addEventListener('click', function(e) {
+    if (!_locked) return;
+    const target = e.target.closest('input, textarea, [contenteditable], .pf, .pwm, .padd, .photo-cell');
+    if (target) {
+      e.preventDefault();
+      e.stopPropagation();
+      e.stopImmediatePropagation();
+      if (typeof window.showPremiumFeatureModal === 'function') {
+        window.showPremiumFeatureModal('استخدام التقرير');
+      }
+      return false;
+    }
+  }, true);
+
+  document.addEventListener('touchstart', function(e) {
+    if (!_locked) return;
+    const target = e.target.closest('input, textarea, [contenteditable], .pf, .pwm, .padd, .photo-cell');
+    if (target) {
+      e.preventDefault();
+      e.stopPropagation();
+      if (typeof window.showPremiumFeatureModal === 'function') {
+        window.showPremiumFeatureModal('استخدام التقرير');
+      }
+      return false;
+    }
+  }, { capture: true, passive: false });
+
+  document.addEventListener('focusin', function(e) {
+    if (!_locked) return;
+    const target = e.target;
+    if (target.matches && target.matches('input, textarea, [contenteditable]')) {
+      target.blur();
+      if (typeof window.showPremiumFeatureModal === 'function') {
+        window.showPremiumFeatureModal('الكتابة في التقرير');
+      }
+    }
+  }, true);
+
+  document.addEventListener('keydown', function(e) {
+    if (!_locked) return;
+    const target = e.target;
+    if (target.matches && target.matches('input, textarea, [contenteditable]')) {
+      e.preventDefault();
+      e.stopPropagation();
+      if (target.blur) target.blur();
+      return false;
+    }
+  }, true);
+
+  document.addEventListener('paste', function(e) {
+    if (!_locked) return;
+    const target = e.target;
+    if (target.matches && target.matches('input, textarea, [contenteditable]')) {
+      e.preventDefault();
+      e.stopPropagation();
+      if (typeof window.showPremiumFeatureModal === 'function') {
+        window.showPremiumFeatureModal('استخدام التقرير');
+      }
+      return false;
+    }
+  }, true);
+
+  document.addEventListener('beforeinput', function(e) {
+    if (!_locked) return;
+    const target = e.target;
+    if (target.matches && target.matches('input, textarea, [contenteditable]')) {
+      e.preventDefault();
+      e.stopPropagation();
+      return false;
+    }
+  }, true);
+
+  const wrapClear = () => {
+    if (typeof window.confirmClear === 'function' && !window.confirmClear.__wrapped) {
+      const original = window.confirmClear;
+      window.confirmClear = function() {
+        if (_locked) {
+          if (typeof window.showPremiumFeatureModal === 'function') {
+            window.showPremiumFeatureModal('تفريغ البيانات');
+          }
+          return;
+        }
+        return original.apply(this, arguments);
+      };
+      window.confirmClear.__wrapped = true;
+    }
+  };
+  wrapClear();
+  setTimeout(wrapClear, 1000);
+
+  let attempts = 0;
+  const watcher = setInterval(() => {
+    attempts++;
+    if (typeof window.isPremiumUser === 'function' && window.isPremiumUser()) {
+      _locked = false;
+      document.body.classList.remove('locked-preview');
+      clearInterval(watcher);
+      console.log('✅ فُك القفل - مشترك Lifetime/Admin');
+      return;
+    }
+    if (attempts >= 75) {
+      clearInterval(watcher);
+      console.log('⏱️ انتهت المراقبة - المستخدم Free/زائر');
+    }
+  }, 200);
+})();
+
 </script>
 </body>
 </html>
