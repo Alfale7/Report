@@ -1,0 +1,830 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#050a12">
+<title>تحويل الصور إلى PDF · التقارير الذكية</title>
+
+<!-- Favicon -->
+<link rel="icon" type="image/svg+xml" href="favicon.svg">
+<link rel="icon" type="image/png" sizes="48x48" href="favicon-48x48.png">
+<link rel="icon" type="image/png" sizes="32x32" href="favicon-32x32.png">
+<link rel="apple-touch-icon" sizes="180x180" href="apple-touch-icon.png">
+<link rel="shortcut icon" href="favicon.ico">
+
+<link href="https://fonts.googleapis.com/css2?family=Aref+Ruqaa:wght@400;700&family=Reem+Kufi:wght@500;700;900&family=Tajawal:wght@400;500;700;900&display=swap" rel="stylesheet">
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+
+<style>
+:root{
+  --navy:#050a12;
+  --navy-2:#0a1620;
+  --navy-3:#0f1f2e;
+  --surface:#0d1925;
+  --surface-2:#12202f;
+  --teal:#2a8aab;
+  --teal-bright:#3aa8d0;
+  --teal-deep:#1e6b8a;
+  --gold:#f0b855;
+  --gold-soft:#d99a2b;
+  --red:#d44545;
+  --red-soft:#c83838;
+  --text:#eef4f8;
+  --text-dim:#7d94a8;
+  --text-faint:#4a5d70;
+  --border:rgba(42,138,171,0.18);
+  --border-gold:rgba(240,184,85,0.25);
+  --green:#16a34a;
+}
+
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+body{
+  font-family:'Tajawal','Tahoma',sans-serif;
+  background:var(--navy);
+  color:var(--text);
+  min-height:100vh;
+  display:flex;flex-direction:column;align-items:center;
+  padding:32px 18px 70px;
+  position:relative;overflow-x:hidden;
+}
+
+/* ═══ الخلفية المميزة (مطابقة pdf-qr / link-qr) ═══ */
+.bg-fx{position:fixed;inset:0;z-index:0;pointer-events:none;overflow:hidden;}
+.bg-fx::before{
+  content:"";position:absolute;top:-15%;right:-10%;
+  width:500px;height:500px;
+  background:radial-gradient(circle, rgba(240,184,85,0.18) 0%, transparent 65%);
+  border-radius:50%;
+}
+.bg-fx::after{
+  content:"";position:absolute;bottom:-15%;left:-10%;
+  width:500px;height:500px;
+  background:radial-gradient(circle, rgba(42,138,171,0.15) 0%, transparent 65%);
+  border-radius:50%;
+}
+.bg-grid{
+  position:fixed;inset:0;z-index:0;pointer-events:none;
+  background-image:
+    linear-gradient(rgba(42,138,171,0.04) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(42,138,171,0.04) 1px, transparent 1px);
+  background-size:38px 38px;
+}
+.wrap{position:relative;z-index:1;width:100%;max-width:520px;}
+
+/* ═══ Back Link ═══ */
+.back-link{
+  display:inline-flex;align-items:center;gap:7px;
+  padding:8px 14px;
+  background:rgba(42,138,171,0.08);
+  border:1px solid var(--border);
+  color:var(--text-dim);
+  border-radius:99px;
+  font-family:inherit;
+  font-size:0.78rem;font-weight:700;
+  text-decoration:none;
+  transition:background 0.2s, border-color 0.2s, color 0.2s;
+  margin-bottom:24px;
+}
+.back-link:hover{
+  background:rgba(42,138,171,0.15);
+  border-color:rgba(42,138,171,0.4);
+  color:var(--text);
+}
+.back-link svg{transition:transform 0.25s cubic-bezier(0.4,0,0.2,1);}
+.back-link:hover svg{transform:translateX(3px);}
+
+/* ═══ Header ═══ */
+.header{text-align:center;margin-bottom:26px;}
+.brand-top{
+  display:inline-flex;align-items:center;gap:6px;
+  font-size:0.72rem;font-weight:700;color:var(--text-dim);
+  letter-spacing:0.5px;
+  background:rgba(42,138,171,0.08);
+  border:1px solid var(--border);
+  padding:6px 14px;border-radius:99px;
+  margin-bottom:18px;
+}
+.logo-mark{
+  width:74px;height:74px;margin:0 auto 14px;
+  position:relative;display:flex;align-items:center;justify-content:center;
+}
+.logo-mark .ring{
+  position:absolute;inset:0;
+  border:2px solid var(--gold);
+  border-radius:18px;
+  transform:rotate(45deg);
+  box-shadow:0 0 25px rgba(240,184,85,0.4);
+}
+.logo-mark .inner{
+  position:relative;z-index:1;
+  width:54px;height:54px;
+  background:linear-gradient(135deg, var(--gold), var(--gold-soft));
+  border-radius:14px;
+  display:flex;align-items:center;justify-content:center;
+  color:#fff;
+  box-shadow:inset 0 0 0 1px rgba(255,255,255,0.18);
+}
+.title{
+  font-family:'Aref Ruqaa', serif;
+  font-size:1.95rem;
+  font-weight:700;
+  color:var(--text);
+  margin-bottom:8px;
+  letter-spacing:-0.5px;
+}
+.subtitle{
+  font-size:0.88rem;
+  color:var(--text-dim);
+  font-weight:500;
+  line-height:1.6;
+  max-width:380px;
+  margin:0 auto;
+}
+
+/* ═══ Card ═══ */
+.card{
+  background:var(--surface);
+  border:1px solid var(--border);
+  border-radius:20px;
+  padding:22px 18px;
+  margin-bottom:14px;
+  box-shadow:0 24px 50px rgba(0,0,0,0.4), 0 0 0 1px rgba(42,138,171,0.05);
+  position:relative;
+}
+.card-title{
+  font-family:'Reem Kufi','Tajawal',sans-serif;
+  font-size:0.95rem;
+  font-weight:800;
+  color:var(--gold);
+  margin-bottom:14px;
+  display:flex;align-items:center;gap:8px;
+}
+
+/* ═══ Upload Zone ═══ */
+.upload-zone{
+  border:2px dashed rgba(42,138,171,0.35);
+  border-radius:16px;
+  padding:32px 20px;
+  text-align:center;
+  cursor:pointer;
+  transition:background 0.2s, border-color 0.2s;
+  background:rgba(42,138,171,0.04);
+}
+.upload-zone:hover,.upload-zone.dragover{
+  background:rgba(42,138,171,0.08);
+  border-color:rgba(58,168,208,0.55);
+}
+.upload-zone.dragover{border-style:solid;}
+.upload-icon{
+  width:64px;height:64px;
+  margin:0 auto 12px;
+  border-radius:50%;
+  background:linear-gradient(135deg, rgba(58,168,208,0.22), rgba(42,138,171,0.12));
+  border:1px solid rgba(58,168,208,0.35);
+  display:flex;align-items:center;justify-content:center;
+  color:var(--teal-bright);
+}
+.upload-title{
+  font-family:'Reem Kufi','Tajawal',sans-serif;
+  font-size:1.02rem;font-weight:700;
+  color:var(--text);
+  margin-bottom:6px;
+}
+.upload-sub{
+  font-size:0.8rem;
+  color:var(--text-dim);
+  font-weight:500;
+  margin-bottom:14px;
+}
+.upload-btn{
+  display:inline-flex;align-items:center;gap:8px;
+  padding:11px 22px;
+  background:linear-gradient(135deg, rgba(58,168,208,0.25), rgba(42,138,171,0.15));
+  border:1px solid rgba(58,168,208,0.4);
+  color:var(--teal-bright);
+  border-radius:12px;
+  font-family:inherit;font-size:0.86rem;font-weight:700;
+  cursor:pointer;
+  transition:all 0.2s;
+}
+.upload-btn:hover{
+  background:linear-gradient(135deg, rgba(58,168,208,0.35), rgba(42,138,171,0.2));
+  border-color:rgba(58,168,208,0.55);
+  color:var(--text);
+  transform:translateY(-1px);
+}
+
+/* ═══ Image List ═══ */
+.images-list{display:flex;flex-direction:column;gap:8px;}
+.img-item{
+  display:flex;align-items:center;gap:10px;
+  padding:10px;
+  background:var(--surface-2);
+  border:1px solid var(--border);
+  border-radius:12px;
+}
+.img-num{
+  width:28px;height:28px;
+  background:linear-gradient(135deg, rgba(240,184,85,0.22), rgba(240,184,85,0.08));
+  border:1px solid var(--border-gold);
+  color:var(--gold);
+  border-radius:50%;
+  display:flex;align-items:center;justify-content:center;
+  font-size:0.78rem;font-weight:900;
+  flex-shrink:0;
+}
+.img-thumb{
+  width:46px;height:46px;
+  border-radius:9px;
+  object-fit:cover;
+  flex-shrink:0;
+  border:1px solid var(--border);
+}
+.img-info{flex:1;min-width:0;}
+.img-name{
+  font-size:0.84rem;font-weight:700;color:var(--text);
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
+}
+.img-size{
+  font-size:0.72rem;
+  color:var(--text-faint);
+  margin-top:2px;
+}
+.img-actions{display:flex;gap:5px;flex-shrink:0;}
+.img-btn{
+  width:30px;height:30px;
+  display:flex;align-items:center;justify-content:center;
+  background:rgba(42,138,171,0.06);
+  border:1px solid var(--border);
+  color:var(--text-dim);
+  border-radius:8px;
+  cursor:pointer;
+  font-family:inherit;
+  transition:all 0.15s;
+  -webkit-tap-highlight-color:transparent;
+}
+.img-btn:hover{
+  background:rgba(42,138,171,0.15);
+  border-color:rgba(42,138,171,0.4);
+  color:var(--text);
+}
+.img-btn:disabled{opacity:0.3;cursor:not-allowed;}
+.img-btn.danger:hover{
+  background:rgba(212,69,69,0.15);
+  border-color:rgba(212,69,69,0.4);
+  color:#ff8a80;
+}
+
+/* ═══ Settings ═══ */
+.setting-row{
+  display:flex;flex-direction:column;
+  gap:8px;margin-bottom:14px;
+}
+.setting-row:last-child{margin-bottom:0;}
+.setting-label{
+  font-size:0.82rem;
+  font-weight:700;
+  color:var(--text);
+  display:flex;align-items:center;gap:6px;
+}
+.setting-options{display:flex;gap:6px;flex-wrap:wrap;}
+.setting-option{
+  flex:1;
+  min-width:fit-content;
+  padding:9px 12px;
+  background:var(--surface-2);
+  border:1px solid var(--border);
+  color:var(--text-dim);
+  border-radius:10px;
+  font-family:inherit;
+  font-size:0.78rem;font-weight:700;
+  cursor:pointer;
+  transition:all 0.18s;
+  white-space:nowrap;text-align:center;
+}
+.setting-option:hover{
+  background:rgba(42,138,171,0.12);
+  border-color:rgba(42,138,171,0.35);
+  color:var(--text);
+}
+.setting-option.active{
+  background:linear-gradient(135deg, rgba(58,168,208,0.22), rgba(42,138,171,0.1));
+  border-color:rgba(58,168,208,0.5);
+  color:var(--teal-bright);
+  box-shadow:0 4px 12px -2px rgba(58,168,208,0.2);
+}
+
+/* ═══ Convert Button ═══ */
+.convert-btn{
+  display:flex;align-items:center;justify-content:center;gap:9px;
+  width:100%;
+  padding:16px;
+  background:linear-gradient(135deg, #b8923d 0%, var(--gold-soft) 50%, var(--gold) 100%);
+  color:#fff;
+  border:none;
+  border-radius:14px;
+  font-family:inherit;font-size:1rem;font-weight:800;
+  cursor:pointer;
+  margin-top:4px;
+  position:relative;overflow:hidden;
+  box-shadow:
+    0 1px 0 rgba(255,255,255,0.25) inset,
+    0 10px 26px -4px rgba(240,184,85,0.5);
+  transition:transform 0.25s, box-shadow 0.25s;
+}
+.convert-btn::before{
+  content:"";
+  position:absolute;
+  top:0;left:-100%;width:60%;height:100%;
+  background:linear-gradient(100deg, transparent, rgba(255,255,255,0.25), transparent);
+  transform:skewX(-20deg);
+  animation:convertShine 3.5s ease-in-out infinite;
+}
+@keyframes convertShine{
+  0%{left:-100%;}
+  50%,100%{left:200%;}
+}
+.convert-btn:hover:not(:disabled){
+  transform:translateY(-2px);
+  box-shadow:
+    0 1px 0 rgba(255,255,255,0.3) inset,
+    0 14px 32px -4px rgba(240,184,85,0.6);
+}
+.convert-btn:active{transform:translateY(0);}
+.convert-btn:disabled{
+  background:var(--surface-2);
+  color:var(--text-faint);
+  cursor:not-allowed;
+  box-shadow:none;
+}
+.convert-btn:disabled::before{display:none;}
+
+/* ═══ Toast ═══ */
+.toast{
+  position:fixed;
+  top:20px;left:50%;
+  transform:translateX(-50%) translateY(-100px);
+  padding:14px 24px;
+  background:linear-gradient(135deg, var(--green), #15803d);
+  color:#fff;
+  border-radius:12px;
+  font-weight:800;font-size:0.88rem;
+  box-shadow:0 18px 50px rgba(0,0,0,0.5);
+  z-index:99999;
+  opacity:0;
+  transition:opacity 0.3s, transform 0.3s cubic-bezier(0.4,0,0.2,1);
+  max-width:90%;text-align:center;
+}
+.toast.show{opacity:1;transform:translateX(-50%) translateY(0);}
+.toast.error{background:linear-gradient(135deg, var(--red), var(--red-soft));}
+
+/* ═══ Loading Overlay ═══ */
+.loading-overlay{
+  display:none;
+  position:fixed;inset:0;
+  background:rgba(5,10,18,0.85);
+  -webkit-backdrop-filter:blur(8px);
+  backdrop-filter:blur(8px);
+  z-index:99998;
+  align-items:center;justify-content:center;flex-direction:column;
+  gap:18px;
+}
+.loading-overlay.show{display:flex;}
+.spinner{
+  width:48px;height:48px;
+  border:4px solid rgba(255,255,255,0.1);
+  border-top-color:var(--gold);
+  border-radius:50%;
+  animation:spin 0.7s linear infinite;
+}
+@keyframes spin{to{transform:rotate(360deg);}}
+.loading-text{
+  font-family:'Reem Kufi','Tajawal',sans-serif;
+  font-weight:800;
+  color:var(--text);
+  font-size:1rem;
+}
+.loading-progress{
+  font-size:0.85rem;
+  color:var(--gold);
+  font-weight:700;
+}
+
+@media (max-width:380px){
+  body{padding:24px 14px 60px;}
+  .title{font-size:1.7rem;}
+  .subtitle{font-size:0.82rem;}
+  .logo-mark{width:64px;height:64px;}
+  .logo-mark .inner{width:46px;height:46px;}
+  .upload-zone{padding:24px 16px;}
+  .setting-option{font-size:0.74rem;padding:8px 10px;}
+}
+</style>
+</head>
+<body>
+
+<!-- ═══ الخلفية المميزة ═══ -->
+<div class="bg-fx"></div>
+<div class="bg-grid"></div>
+
+<div class="wrap">
+
+  <a href="index.html" class="back-link">
+    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+      <line x1="19" y1="12" x2="5" y2="12"/>
+      <polyline points="12 19 5 12 12 5"/>
+    </svg>
+    <span>القائمة</span>
+  </a>
+
+  <div class="header">
+    <div class="brand-top">
+      <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+        <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/>
+      </svg>
+      <span>أدوات احترافية</span>
+    </div>
+    <div class="logo-mark">
+      <div class="ring"></div>
+      <div class="inner">
+        <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+          <polyline points="14 2 14 8 20 8"/>
+          <line x1="12" y1="18" x2="12" y2="12"/>
+          <line x1="9" y1="15" x2="15" y2="15"/>
+        </svg>
+      </div>
+    </div>
+    <h1 class="title">تحويل الصور إلى PDF</h1>
+    <p class="subtitle">ارفع صورة أو أكثر، رتّبها كما تشاء، واحصل على ملف PDF احترافي</p>
+  </div>
+
+  <div class="card">
+    <div class="card-title">📤 رفع الصور</div>
+    <div class="upload-zone" id="uploadZone">
+      <div class="upload-icon">
+        <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+          <polyline points="17 8 12 3 7 8"/>
+          <line x1="12" y1="3" x2="12" y2="15"/>
+        </svg>
+      </div>
+      <div class="upload-title">اسحب الصور هنا أو اختر من جوالك</div>
+      <div class="upload-sub">يدعم JPG · PNG · WebP · HEIC</div>
+      <button class="upload-btn" type="button" onclick="document.getElementById('fileInput').click()">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M12 5v14M5 12h14"/>
+        </svg>
+        <span>اختيار الصور</span>
+      </button>
+      <input type="file" id="fileInput" accept="image/*" multiple style="display:none">
+    </div>
+  </div>
+
+  <div class="card" id="imagesCard" style="display:none;">
+    <div class="card-title"><span id="imagesTitle">🖼️ الصور المحددة</span></div>
+    <div class="images-list" id="imagesList"></div>
+  </div>
+
+  <div class="card" id="settingsCard" style="display:none;">
+    <div class="card-title">⚙️ الإعدادات</div>
+
+    <div class="setting-row">
+      <label class="setting-label">📐 حجم الورقة</label>
+      <div class="setting-options" id="optPaperSize">
+        <button class="setting-option active" data-value="a4">A4</button>
+        <button class="setting-option" data-value="letter">Letter</button>
+        <button class="setting-option" data-value="fit">حسب الصورة</button>
+      </div>
+    </div>
+
+    <div class="setting-row">
+      <label class="setting-label">🔄 الاتجاه</label>
+      <div class="setting-options" id="optOrientation">
+        <button class="setting-option active" data-value="auto">تلقائي</button>
+        <button class="setting-option" data-value="p">عمودي</button>
+        <button class="setting-option" data-value="l">أفقي</button>
+      </div>
+    </div>
+
+    <div class="setting-row">
+      <label class="setting-label">🎨 الجودة</label>
+      <div class="setting-options" id="optQuality">
+        <button class="setting-option" data-value="0.7">متوسطة</button>
+        <button class="setting-option active" data-value="0.85">عالية</button>
+        <button class="setting-option" data-value="0.95">ممتازة</button>
+      </div>
+    </div>
+
+    <div class="setting-row">
+      <label class="setting-label">📏 هوامش</label>
+      <div class="setting-options" id="optMargin">
+        <button class="setting-option active" data-value="0">بدون</button>
+        <button class="setting-option" data-value="5">صغيرة</button>
+        <button class="setting-option" data-value="15">عادية</button>
+      </div>
+    </div>
+  </div>
+
+  <button class="convert-btn" id="convertBtn" disabled onclick="convertToPDF()">
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+      <polyline points="14 2 14 8 20 8"/>
+      <line x1="12" y1="18" x2="12" y2="12"/>
+      <line x1="9" y1="15" x2="15" y2="15"/>
+    </svg>
+    <span id="convertBtnText">اختر صور أولاً</span>
+  </button>
+
+</div>
+
+<div class="toast" id="toast"></div>
+
+<div class="loading-overlay" id="loadingOverlay">
+  <div class="spinner"></div>
+  <div class="loading-text">جاري التحويل...</div>
+  <div class="loading-progress" id="loadingProgress">0%</div>
+</div>
+
+<script>
+let images = [];
+
+const uploadZone = document.getElementById('uploadZone');
+const fileInput = document.getElementById('fileInput');
+const imagesCard = document.getElementById('imagesCard');
+const imagesList = document.getElementById('imagesList');
+const imagesTitle = document.getElementById('imagesTitle');
+const settingsCard = document.getElementById('settingsCard');
+const convertBtn = document.getElementById('convertBtn');
+const convertBtnText = document.getElementById('convertBtnText');
+const toast = document.getElementById('toast');
+const loadingOverlay = document.getElementById('loadingOverlay');
+const loadingProgress = document.getElementById('loadingProgress');
+
+const settings = {
+  paperSize: 'a4',
+  orientation: 'auto',
+  quality: 0.85,
+  margin: 0
+};
+
+function bindSettingOptions(groupId, settingKey) {
+  const group = document.getElementById(groupId);
+  group.querySelectorAll('.setting-option').forEach(btn => {
+    btn.addEventListener('click', () => {
+      group.querySelectorAll('.setting-option').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      const v = btn.dataset.value;
+      settings[settingKey] = isNaN(parseFloat(v)) ? v : parseFloat(v);
+    });
+  });
+}
+bindSettingOptions('optPaperSize', 'paperSize');
+bindSettingOptions('optOrientation', 'orientation');
+bindSettingOptions('optQuality', 'quality');
+bindSettingOptions('optMargin', 'margin');
+
+fileInput.addEventListener('change', (e) => {
+  handleFiles(e.target.files);
+  e.target.value = '';
+});
+
+['dragenter', 'dragover'].forEach(ev => {
+  uploadZone.addEventListener(ev, (e) => {
+    e.preventDefault();e.stopPropagation();
+    uploadZone.classList.add('dragover');
+  });
+});
+['dragleave', 'drop'].forEach(ev => {
+  uploadZone.addEventListener(ev, (e) => {
+    e.preventDefault();e.stopPropagation();
+    uploadZone.classList.remove('dragover');
+  });
+});
+uploadZone.addEventListener('drop', (e) => { handleFiles(e.dataTransfer.files); });
+uploadZone.addEventListener('click', (e) => {
+  if (e.target.closest('.upload-btn')) return;
+  fileInput.click();
+});
+
+async function handleFiles(files) {
+  const arr = Array.from(files).filter(f => f.type.startsWith('image/'));
+  if (arr.length === 0) {
+    showToast('❌ يرجى اختيار صور صحيحة', 'error');
+    return;
+  }
+  for (const file of arr) {
+    try {
+      const dataUrl = await readFileAsDataURL(file);
+      images.push({
+        id: Date.now() + Math.random(),
+        file, dataUrl,
+        name: file.name,
+        size: formatBytes(file.size)
+      });
+    } catch (err) { console.error('Failed to load image:', err); }
+  }
+  renderImages();
+}
+
+function readFileAsDataURL(file) {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onload = () => resolve(reader.result);
+    reader.onerror = reject;
+    reader.readAsDataURL(file);
+  });
+}
+
+function formatBytes(bytes) {
+  if (bytes < 1024) return bytes + ' B';
+  if (bytes < 1024 * 1024) return (bytes / 1024).toFixed(1) + ' KB';
+  return (bytes / (1024 * 1024)).toFixed(1) + ' MB';
+}
+
+function renderImages() {
+  if (images.length === 0) {
+    imagesCard.style.display = 'none';
+    settingsCard.style.display = 'none';
+    convertBtn.disabled = true;
+    convertBtnText.textContent = 'اختر صور أولاً';
+    return;
+  }
+  imagesCard.style.display = '';
+  settingsCard.style.display = '';
+  convertBtn.disabled = false;
+  convertBtnText.textContent = `تحويل ${images.length} ${images.length === 1 ? 'صورة' : 'صور'} إلى PDF`;
+  imagesTitle.textContent = `🖼️ الصور المحددة (${images.length})`;
+
+  imagesList.innerHTML = images.map((img, idx) => `
+    <div class="img-item" data-id="${img.id}">
+      <div class="img-num">${idx + 1}</div>
+      <img class="img-thumb" src="${img.dataUrl}" alt="">
+      <div class="img-info">
+        <div class="img-name">${escapeHtml(img.name)}</div>
+        <div class="img-size">${img.size}</div>
+      </div>
+      <div class="img-actions">
+        <button class="img-btn" onclick="moveImage('${img.id}', -1)" ${idx === 0 ? 'disabled' : ''} title="نقل للأعلى">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="18 15 12 9 6 15"/></svg>
+        </button>
+        <button class="img-btn" onclick="moveImage('${img.id}', 1)" ${idx === images.length - 1 ? 'disabled' : ''} title="نقل للأسفل">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+        </button>
+        <button class="img-btn danger" onclick="removeImage('${img.id}')" title="حذف">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-2 14a2 2 0 0 1-2 2H9a2 2 0 0 1-2-2L5 6"/></svg>
+        </button>
+      </div>
+    </div>
+  `).join('');
+}
+
+function escapeHtml(str) {
+  const div = document.createElement('div');
+  div.textContent = str;
+  return div.innerHTML;
+}
+
+window.moveImage = function(id, dir) {
+  const idx = images.findIndex(i => String(i.id) === String(id));
+  if (idx === -1) return;
+  const newIdx = idx + dir;
+  if (newIdx < 0 || newIdx >= images.length) return;
+  [images[idx], images[newIdx]] = [images[newIdx], images[idx]];
+  renderImages();
+};
+
+window.removeImage = function(id) {
+  images = images.filter(i => String(i.id) !== String(id));
+  renderImages();
+};
+
+function showToast(msg, type = 'success', duration = 3000) {
+  toast.textContent = msg;
+  toast.className = 'toast show' + (type === 'error' ? ' error' : '');
+  setTimeout(() => toast.classList.remove('show'), duration);
+}
+
+window.convertToPDF = async function() {
+  if (images.length === 0) return;
+  if (!window.jspdf || !window.jspdf.jsPDF) {
+    showToast('❌ مكتبة PDF لم تُحمّل، حدّث الصفحة', 'error');
+    return;
+  }
+
+  loadingOverlay.classList.add('show');
+  loadingProgress.textContent = '0%';
+
+  try {
+    const { jsPDF } = window.jspdf;
+    const PAPER_SIZES = {
+      a4: { w: 210, h: 297 },
+      letter: { w: 216, h: 279 }
+    };
+
+    let pdf = null;
+
+    for (let i = 0; i < images.length; i++) {
+      loadingProgress.textContent = `${i + 1} / ${images.length}`;
+      const imgData = await loadImage(images[i].dataUrl);
+      const imgW = imgData.naturalWidth;
+      const imgH = imgData.naturalHeight;
+      const imgRatio = imgW / imgH;
+
+      let pageW, pageH, orientation;
+      if (settings.paperSize === 'fit') {
+        const pxToMm = 0.2645833;
+        pageW = Math.min(imgW * pxToMm, 297);
+        pageH = pageW / imgRatio;
+        orientation = pageW > pageH ? 'l' : 'p';
+      } else {
+        const paper = PAPER_SIZES[settings.paperSize] || PAPER_SIZES.a4;
+        if (settings.orientation === 'auto') {
+          orientation = imgRatio > 1 ? 'l' : 'p';
+        } else {
+          orientation = settings.orientation;
+        }
+        if (orientation === 'l') { pageW = paper.h; pageH = paper.w; }
+        else { pageW = paper.w; pageH = paper.h; }
+      }
+
+      if (i === 0) {
+        pdf = new jsPDF({
+          orientation, unit: 'mm',
+          format: settings.paperSize === 'fit' ? [pageW, pageH] : settings.paperSize
+        });
+      } else {
+        pdf.addPage(settings.paperSize === 'fit' ? [pageW, pageH] : settings.paperSize, orientation);
+      }
+
+      const margin = settings.margin;
+      const availW = pageW - margin * 2;
+      const availH = pageH - margin * 2;
+
+      let drawW, drawH;
+      if (settings.paperSize === 'fit') {
+        drawW = availW; drawH = availH;
+      } else {
+        const availRatio = availW / availH;
+        if (imgRatio > availRatio) { drawW = availW; drawH = availW / imgRatio; }
+        else { drawH = availH; drawW = availH * imgRatio; }
+      }
+
+      const x = (pageW - drawW) / 2;
+      const y = (pageH - drawH) / 2;
+
+      const compressed = await compressImage(images[i].dataUrl, settings.quality);
+      pdf.addImage(compressed, 'JPEG', x, y, drawW, drawH, undefined, 'FAST');
+      await new Promise(r => setTimeout(r, 30));
+    }
+
+    const filename = `images-${Date.now()}.pdf`;
+    pdf.save(filename);
+
+    loadingOverlay.classList.remove('show');
+    showToast(`✅ تم تحويل ${images.length} ${images.length === 1 ? 'صورة' : 'صور'} بنجاح`);
+  } catch (err) {
+    console.error('PDF conversion failed:', err);
+    loadingOverlay.classList.remove('show');
+    showToast('❌ حدث خطأ أثناء التحويل، حاول مرة أخرى', 'error');
+  }
+};
+
+function loadImage(src) {
+  return new Promise((resolve, reject) => {
+    const img = new Image();
+    img.onload = () => resolve(img);
+    img.onerror = reject;
+    img.src = src;
+  });
+}
+
+async function compressImage(dataUrl, quality) {
+  return new Promise((resolve) => {
+    const img = new Image();
+    img.onload = () => {
+      const canvas = document.createElement('canvas');
+      const MAX_DIM = 2000;
+      let w = img.naturalWidth;
+      let h = img.naturalHeight;
+      if (w > MAX_DIM || h > MAX_DIM) {
+        if (w > h) { h = h * (MAX_DIM / w); w = MAX_DIM; }
+        else { w = w * (MAX_DIM / h); h = MAX_DIM; }
+      }
+      canvas.width = w; canvas.height = h;
+      const ctx = canvas.getContext('2d');
+      ctx.fillStyle = '#fff';
+      ctx.fillRect(0, 0, w, h);
+      ctx.drawImage(img, 0, 0, w, h);
+      resolve(canvas.toDataURL('image/jpeg', quality));
+    };
+    img.onerror = () => resolve(dataUrl);
+    img.src = dataUrl;
+  });
+}
+</script>
+
+</body>
+</html>

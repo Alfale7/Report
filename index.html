@@ -18,14 +18,25 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 
 <!-- ═══ Favicon (أيقونة الموقع) ═══ -->
-<link rel="icon" type="image/x-icon" href="favicon.ico">
+<!-- ═══ Favicon & PWA Icons ═══ -->
+<link rel="icon" type="image/svg+xml" href="favicon.svg">
+<link rel="icon" type="image/png" sizes="48x48" href="favicon-48x48.png">
 <link rel="icon" type="image/png" sizes="32x32" href="favicon-32x32.png">
 <link rel="icon" type="image/png" sizes="16x16" href="favicon-16x16.png">
+<link rel="icon" type="image/png" sizes="96x96" href="favicon-96x96.png">
+<link rel="icon" type="image/png" sizes="192x192" href="icon-192.png">
+<link rel="icon" type="image/png" sizes="512x512" href="icon-512.png">
 <link rel="apple-touch-icon" sizes="180x180" href="apple-touch-icon.png">
 <link rel="shortcut icon" href="favicon.ico">
 <meta name="theme-color" content="#1f3a44">
 
 <title>التقارير الذكية — منصة احترافية لتقارير المدرسة</title>
+
+<!-- ═══ اسم التطبيق على الشاشة الرئيسية ═══ -->
+<meta name="apple-mobile-web-app-title" content="التقارير الذكية">
+<meta name="application-name" content="التقارير الذكية">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <style>
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
 
@@ -5023,13 +5034,26 @@ font-size:0.78rem;text-align:center;margin-top:12px;display:none;
         </div>
 
         <!-- قالب: PDF لباركود -->
-        <div class="tb-card full-width" onclick="window.location.href='pdf-qr.html'">
+        <div class="tb-card" onclick="window.location.href='pdf-qr.html'">
           <div class="tb-card-glow"></div>
           <div class="tb-card-ico">📄</div>
           <div class="tb-card-body">
             <div class="tb-card-title" data-i18n="tbPdfTitle">PDF ← باركود</div>
             <div class="tb-card-go">
               <span data-i18n="tbOpen3">افتح</span>
+              <span>←</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- قالب: صور إلى PDF -->
+        <div class="tb-card" onclick="window.location.href='image-to-pdf.html'">
+          <div class="tb-card-glow"></div>
+          <div class="tb-card-ico">🖼️</div>
+          <div class="tb-card-body">
+            <div class="tb-card-title" data-i18n="tbImg2Pdf">صور ← PDF</div>
+            <div class="tb-card-go">
+              <span data-i18n="tbOpen4">افتح</span>
               <span>←</span>
             </div>
           </div>
@@ -7029,6 +7053,8 @@ const I18N = {
     tbOpen2: "افتح",
     tbPdfTitle: "PDF ← باركود",
     tbOpen3: "افتح",
+    tbImg2Pdf: "صور ← PDF",
+    tbOpen4: "افتح",
     upgradeTitle: "انتهت تحميلاتك المجانية!",
     upgradeSubtitle: "احصل على الباقة الكاملة واستفد من جميع القوالب",
     upFeat1: "13 قالب احترافي معتمد",
@@ -7310,6 +7336,8 @@ const I18N = {
     tbOpen2: "Open",
     tbPdfTitle: "PDF → QR",
     tbOpen3: "Open",
+    tbImg2Pdf: "Images → PDF",
+    tbOpen4: "Open",
     upgradeTitle: "Free downloads ended!",
     upgradeSubtitle: "Get the full package and access all templates",
     upFeat1: "13 professional templates",
