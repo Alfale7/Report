@@ -4719,12 +4719,6 @@ font-size:0.78rem;text-align:center;margin-top:12px;display:none;
             </div>
           </div>
         </div>
-        <div class="lock-overlay">
-          <div class="lock-cta">
-            <span>🔑</span>
-            <span data-i18n="lockCta">سجّل الدخول للوصول</span>
-          </div>
-        </div>
       </div>
       <div class="card-content">
         <div class="card-icon-wrap">
@@ -4771,12 +4765,6 @@ font-size:0.78rem;text-align:center;margin-top:12px;display:none;
               <div class="rs-field" data-i18n="snapFlagF4">المشاركون</div>
               <div class="rs-field" data-i18n="snapFlagF5">التاريخ</div>
             </div>
-          </div>
-        </div>
-        <div class="lock-overlay">
-          <div class="lock-cta">
-            <span>🔑</span>
-            <span data-i18n="lockCta">سجّل الدخول للوصول</span>
           </div>
         </div>
       </div>
@@ -4829,12 +4817,6 @@ font-size:0.78rem;text-align:center;margin-top:12px;display:none;
             </div>
           </div>
         </div>
-        <div class="lock-overlay">
-          <div class="lock-cta">
-            <span>🔑</span>
-            <span data-i18n="lockCta">سجّل الدخول للوصول</span>
-          </div>
-        </div>
       </div>
       <div class="card-content">
         <div class="card-icon-wrap">
@@ -4883,12 +4865,6 @@ font-size:0.78rem;text-align:center;margin-top:12px;display:none;
               <div class="rs-field" data-i18n="snapGreenF4">3 صور</div>
               <div class="rs-field" data-i18n="snapGreenF5">رؤية 2030</div>
             </div>
-          </div>
-        </div>
-        <div class="lock-overlay">
-          <div class="lock-cta">
-            <span>🔑</span>
-            <span data-i18n="lockCta">سجّل الدخول للوصول</span>
           </div>
         </div>
       </div>
@@ -7124,7 +7100,7 @@ function handleCardClick(card){
   const target = card.getAttribute('data-target');
 
   // 👁️ تقارير المعاينة / التجربة - يفتحها أي زائر بدون تسجيل دخول
-  const VIEW_ONLY_AND_FREE_TRIAL = ['report.html', 'tasis.html'];
+  const VIEW_ONLY_AND_FREE_TRIAL = ['report.html', 'tasis.html', 'watny.html', 'alm.html', 'alm2.html', 'green.html'];
   if (target && VIEW_ONLY_AND_FREE_TRIAL.includes(target)) {
     window.location.href = target;
     return;

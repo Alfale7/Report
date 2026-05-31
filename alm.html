@@ -1155,6 +1155,10 @@ document.getElementById('modal-yes').onclick = () => {
 };
 
 function pickPhoto(n){
+  // 🔒 فحص الميزة المدفوعة (رفع الصور)
+  if (typeof window.checkPremiumFeature === 'function') {
+    if (!window.checkPremiumFeature('رفع الصور')) return;
+  }
   document.getElementById('file-' + n).click();
 }
 
@@ -1349,6 +1353,12 @@ function restoreTextareasAfterExport(replacements){
 // 🖼️ تصدير كصورة PNG (مبني على منطق tasis)
 // ═══════════════════════════════════════════════
 async function saveAsImage(){
+  // 🔥 فحص Firebase أولاً - الحماية الفعلية
+  if (typeof window.checkDownloadAccess === 'function') {
+    const allowed = await window.checkDownloadAccess();
+    if (!allowed) return;
+  }
+
   saveData();
   const btn = document.querySelector('.btn-image');
   const originalText = btn.innerHTML;
@@ -1487,6 +1497,12 @@ async function saveAsImage(){
 // 📄 تصدير كـ PDF (مبني على منطق tasis)
 // ═══════════════════════════════════════════════
 async function savePDF(){
+  // 🔥 فحص Firebase أولاً - الحماية الفعلية
+  if (typeof window.checkDownloadAccess === 'function') {
+    const allowed = await window.checkDownloadAccess();
+    if (!allowed) return;
+  }
+
   saveData();
   const btn = document.querySelector('.btn-pdf');
   const originalText = btn.innerHTML;
@@ -1642,6 +1658,12 @@ async function savePDF(){
 // 📤 مشاركة التقرير (مبني على منطق tasis)
 // ═══════════════════════════════════════════════
 async function shareReport(){
+  // 🔥 فحص Firebase أولاً - الحماية الفعلية
+  if (typeof window.checkDownloadAccess === 'function') {
+    const allowed = await window.checkDownloadAccess();
+    if (!allowed) return;
+  }
+
   saveData();
   const btn = document.querySelector('.btn-share');
   const originalText = btn.innerHTML;
@@ -1805,9 +1827,145 @@ document.querySelectorAll('input, textarea').forEach(el => {
 
 loadData();
 applyLang();
+
+// ═══════════════════════════════════════════════════════
+// 🔒 حماية بسيطة وقوية - وضع المعاينة (الزائر / Free)
+// ═══════════════════════════════════════════════════════
+(function() {
+  const styleEl = document.createElement('style');
+  styleEl.textContent = `
+    body.locked-preview input,
+    body.locked-preview textarea,
+    body.locked-preview [contenteditable] {
+      pointer-events: none !important;
+      caret-color: transparent !important;
+      user-select: none !important;
+      -webkit-user-select: none !important;
+    }
+    body.locked-preview .pf,
+    body.locked-preview .pf *,
+    body.locked-preview .photo-cell,
+    body.locked-preview .photo-cell * {
+      pointer-events: none !important;
+    }
+  `;
+  document.head.appendChild(styleEl);
+
+  document.body.classList.add('locked-preview');
+  let _locked = true;
+
+  console.log('🔒 وضع المعاينة مفعّل');
+
+  document.addEventListener('click', function(e) {
+    if (!_locked) return;
+    const target = e.target.closest('input, textarea, [contenteditable], .pf, .pwm, .padd, .photo-cell');
+    if (target) {
+      e.preventDefault();
+      e.stopPropagation();
+      e.stopImmediatePropagation();
+      if (typeof window.showPremiumFeatureModal === 'function') {
+        window.showPremiumFeatureModal('استخدام التقرير');
+      }
+      return false;
+    }
+  }, true);
+
+  document.addEventListener('touchstart', function(e) {
+    if (!_locked) return;
+    const target = e.target.closest('input, textarea, [contenteditable], .pf, .pwm, .padd, .photo-cell');
+    if (target) {
+      e.preventDefault();
+      e.stopPropagation();
+      if (typeof window.showPremiumFeatureModal === 'function') {
+        window.showPremiumFeatureModal('استخدام التقرير');
+      }
+      return false;
+    }
+  }, { capture: true, passive: false });
+
+  document.addEventListener('focusin', function(e) {
+    if (!_locked) return;
+    const target = e.target;
+    if (target.matches && target.matches('input, textarea, [contenteditable]')) {
+      target.blur();
+      if (typeof window.showPremiumFeatureModal === 'function') {
+        window.showPremiumFeatureModal('الكتابة في التقرير');
+      }
+    }
+  }, true);
+
+  document.addEventListener('keydown', function(e) {
+    if (!_locked) return;
+    const target = e.target;
+    if (target.matches && target.matches('input, textarea, [contenteditable]')) {
+      e.preventDefault();
+      e.stopPropagation();
+      if (target.blur) target.blur();
+      return false;
+    }
+  }, true);
+
+  document.addEventListener('paste', function(e) {
+    if (!_locked) return;
+    const target = e.target;
+    if (target.matches && target.matches('input, textarea, [contenteditable]')) {
+      e.preventDefault();
+      e.stopPropagation();
+      if (typeof window.showPremiumFeatureModal === 'function') {
+        window.showPremiumFeatureModal('استخدام التقرير');
+      }
+      return false;
+    }
+  }, true);
+
+  document.addEventListener('beforeinput', function(e) {
+    if (!_locked) return;
+    const target = e.target;
+    if (target.matches && target.matches('input, textarea, [contenteditable]')) {
+      e.preventDefault();
+      e.stopPropagation();
+      return false;
+    }
+  }, true);
+
+  const wrapClear = () => {
+    if (typeof window.confirmClear === 'function' && !window.confirmClear.__wrapped) {
+      const original = window.confirmClear;
+      window.confirmClear = function() {
+        if (_locked) {
+          if (typeof window.showPremiumFeatureModal === 'function') {
+            window.showPremiumFeatureModal('تفريغ البيانات');
+          }
+          return;
+        }
+        return original.apply(this, arguments);
+      };
+      window.confirmClear.__wrapped = true;
+    }
+  };
+  wrapClear();
+  setTimeout(wrapClear, 1000);
+
+  let attempts = 0;
+  const watcher = setInterval(() => {
+    attempts++;
+    if (typeof window.isPremiumUser === 'function' && window.isPremiumUser()) {
+      _locked = false;
+      document.body.classList.remove('locked-preview');
+      clearInterval(watcher);
+      console.log('✅ فُك القفل - مشترك Lifetime/Admin');
+      return;
+    }
+    if (attempts >= 75) {
+      clearInterval(watcher);
+      console.log('⏱️ انتهت المراقبة - المستخدم Free/زائر');
+    }
+  }, 200);
+})();
+
 </script>
 
 <!-- 🔥 Firebase Integration (للحماية) -->
-<script type="module" src="report-firebase.js?v=8"></script>
+<script type="module" src="report-firebase.js?v=10"></script>
 </body>
 </html>
