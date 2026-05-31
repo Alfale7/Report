@@ -283,31 +283,225 @@ function refreshBadge() {
   const b = document.createElement('div');
   b.id = 'userBadgeFB';
   b.innerHTML = `<style>
-    #userBadgeFB{position:fixed;top:14px;left:14px;z-index:9998;display:flex;align-items:center;gap:8px;background:rgba(255,255,255,0.98);padding:8px 14px 8px 8px;border-radius:99px;box-shadow:0 8px 24px rgba(0,0,0,0.18),0 0 0 1px ${admin?'rgba(124,45,18,0.4)':(lifetime?'rgba(212,166,87,0.4)':'rgba(30,107,138,0.2)')};font-family:'Tajawal','Cairo',sans-serif;cursor:pointer;}
-    #userBadgeFB:hover{transform:translateY(-2px);}
-    #userBadgeFB .av{width:32px;height:32px;background:linear-gradient(135deg,${admin?'#7c2d12,#b8923d':(lifetime?'#d4a657,#b8923d':'#1e6b8a,#2a8aab')});color:#fff;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:900;font-size:0.85rem;flex-shrink:0;}
-    #userBadgeFB .nm{font-size:0.78rem;font-weight:900;color:#1a3a4e;max-width:100px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
-    #userBadgeFB .pl{font-size:0.62rem;font-weight:900;color:${admin?'#7c2d12':(lifetime?'#b8923d':'#5a7080')};}
-    #userBadgeFB-menu{position:fixed;top:60px;left:14px;z-index:9999;background:#fff;border-radius:14px;padding:6px;box-shadow:0 18px 50px rgba(0,0,0,0.25);min-width:200px;display:none;font-family:'Tajawal','Cairo',sans-serif;}
-    #userBadgeFB-menu.show{display:block;}
-    #userBadgeFB-menu .mi{display:flex;align-items:center;gap:10px;padding:11px 14px;border-radius:10px;font-size:0.85rem;font-weight:800;color:#1a3a4e;text-decoration:none;cursor:pointer;}
-    #userBadgeFB-menu .mi:hover{background:#f0f4f8;}
-    #userBadgeFB-menu .mi.dn{color:#dc2626;}
-    #userBadgeFB-menu .mi.adm{color:#7c2d12;background:#fef3c7;}
-    #userBadgeFB-menu .dv{height:1px;background:#e8eef3;margin:4px 0;}
+    #userBadgeFB{
+      position:fixed;top:14px;left:14px;z-index:9998;
+      display:flex;align-items:center;gap:10px;
+      background:
+        linear-gradient(180deg, rgba(255,255,255,0.05) 0%, rgba(255,255,255,0) 100%),
+        linear-gradient(135deg, rgba(15,41,66,0.92) 0%, rgba(26,74,110,0.92) 100%);
+      backdrop-filter:blur(20px) saturate(140%);
+      -webkit-backdrop-filter:blur(20px) saturate(140%);
+      padding:7px 14px 7px 7px;
+      border-radius:99px;
+      border:1px solid ${admin?'rgba(212,166,87,0.3)':(lifetime?'rgba(58,168,208,0.25)':'rgba(255,255,255,0.1)')};
+      box-shadow:
+        0 1px 0 rgba(255,255,255,0.08) inset,
+        0 12px 28px -8px rgba(0,0,0,0.5),
+        0 4px 12px -4px ${admin?'rgba(212,166,87,0.3)':(lifetime?'rgba(30,107,138,0.35)':'rgba(0,0,0,0.4)')};
+      font-family:'Tajawal','Cairo',sans-serif;
+      cursor:pointer;
+      transition:transform 0.2s cubic-bezier(0.4,0,0.2,1), box-shadow 0.2s ease, border-color 0.2s ease;
+      -webkit-tap-highlight-color:transparent;
+    }
+    #userBadgeFB:hover{
+      transform:translateY(-2px);
+      border-color:${admin?'rgba(212,166,87,0.5)':(lifetime?'rgba(58,168,208,0.45)':'rgba(255,255,255,0.2)')};
+      box-shadow:
+        0 1px 0 rgba(255,255,255,0.12) inset,
+        0 18px 36px -8px rgba(0,0,0,0.6),
+        0 6px 16px -4px ${admin?'rgba(212,166,87,0.45)':(lifetime?'rgba(30,107,138,0.5)':'rgba(0,0,0,0.5)')};
+    }
+    #userBadgeFB:active{transform:translateY(0);}
+
+    #userBadgeFB .av{
+      position:relative;
+      width:32px;height:32px;
+      background:linear-gradient(135deg, ${admin?'#b8923d,#d4a657,#f0b855':(lifetime?'#1e6b8a,#2a8aab,#3aa8d0':'#4a5568,#2d3748')});
+      color:#fff;border-radius:50%;
+      display:flex;align-items:center;justify-content:center;
+      font-weight:900;font-size:0.88rem;flex-shrink:0;
+      box-shadow:
+        0 1px 0 rgba(255,255,255,0.25) inset,
+        0 3px 10px -2px ${admin?'rgba(212,166,87,0.5)':(lifetime?'rgba(30,107,138,0.5)':'rgba(0,0,0,0.4)')};
+    }
+    #userBadgeFB .av::after{
+      content:"";
+      position:absolute;bottom:-1px;left:-1px;
+      width:9px;height:9px;
+      background:#4caf50;
+      border:2px solid #0f2942;
+      border-radius:50%;
+      box-shadow:0 0 6px rgba(76,175,80,0.6);
+    }
+
+    #userBadgeFB .info{
+      display:flex;flex-direction:column;gap:0;line-height:1.25;
+    }
+    #userBadgeFB .nm{
+      font-family:'Reem Kufi','Tajawal',sans-serif;
+      font-size:0.78rem;font-weight:800;color:#fff;
+      max-width:110px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;
+      letter-spacing:-0.01em;
+    }
+    #userBadgeFB .pl{
+      font-size:0.6rem;font-weight:900;letter-spacing:0.5px;
+      color:${admin?'#f0b855':(lifetime?'#a7d8ec':'rgba(255,255,255,0.6)')};
+      display:flex;align-items:center;gap:3px;
+    }
+    #userBadgeFB .pl-ic{font-size:0.65rem;line-height:1;}
+
+    /* القائمة المنسدلة */
+    #userBadgeFB-menu{
+      position:fixed;top:62px;left:14px;z-index:9999;
+      background:linear-gradient(165deg,#0d1925 0%,#12202f 100%);
+      backdrop-filter:blur(20px) saturate(140%);
+      -webkit-backdrop-filter:blur(20px) saturate(140%);
+      border:1px solid rgba(255,255,255,0.08);
+      border-radius:14px;padding:6px;
+      box-shadow:
+        0 1px 0 rgba(255,255,255,0.05) inset,
+        0 20px 50px -10px rgba(0,0,0,0.7),
+        0 8px 22px -6px rgba(0,0,0,0.5);
+      min-width:220px;
+      display:none;
+      font-family:'Tajawal','Cairo',sans-serif;
+      opacity:0;transform:translateY(-8px) scale(0.96);
+      transition:opacity 0.2s ease, transform 0.2s cubic-bezier(0.4,0,0.2,1);
+      transform-origin:top left;
+    }
+    #userBadgeFB-menu.show{
+      display:block;
+      animation:badgeMenuIn 0.22s cubic-bezier(0.4,0,0.2,1) forwards;
+    }
+    @keyframes badgeMenuIn{
+      to{opacity:1;transform:translateY(0) scale(1);}
+    }
+
+    #userBadgeFB-menu .mi{
+      display:flex;align-items:center;gap:10px;
+      padding:10px 12px;border-radius:10px;
+      font-size:0.85rem;font-weight:700;
+      color:rgba(255,255,255,0.85);
+      text-decoration:none;cursor:pointer;
+      transition:background 0.15s ease, color 0.15s ease;
+    }
+    #userBadgeFB-menu .mi:hover{
+      background:rgba(255,255,255,0.06);
+      color:#fff;
+    }
+    #userBadgeFB-menu .mi-icon{
+      width:28px;height:28px;
+      display:flex;align-items:center;justify-content:center;
+      background:rgba(255,255,255,0.05);
+      border:1px solid rgba(255,255,255,0.08);
+      border-radius:8px;
+      color:rgba(255,255,255,0.7);
+      transition:all 0.15s ease;
+      flex-shrink:0;
+    }
+    #userBadgeFB-menu .mi:hover .mi-icon{
+      background:rgba(255,255,255,0.1);
+      color:#fff;
+    }
+    #userBadgeFB-menu .mi.upgrade{color:#f0b855;}
+    #userBadgeFB-menu .mi.upgrade .mi-icon{
+      background:linear-gradient(135deg, rgba(212,166,87,0.18), rgba(240,184,85,0.08));
+      border-color:rgba(212,166,87,0.35);
+      color:#f0b855;
+    }
+    #userBadgeFB-menu .mi.upgrade:hover{
+      background:linear-gradient(135deg, rgba(212,166,87,0.12), rgba(240,184,85,0.05));
+      color:#f0b855;
+    }
+    #userBadgeFB-menu .mi.upgrade:hover .mi-icon{
+      background:linear-gradient(135deg, rgba(212,166,87,0.28), rgba(240,184,85,0.15));
+      border-color:rgba(212,166,87,0.5);
+    }
+    #userBadgeFB-menu .mi.adm{color:#f0b855;}
+    #userBadgeFB-menu .mi.adm .mi-icon{
+      background:rgba(212,166,87,0.12);
+      border-color:rgba(212,166,87,0.3);
+      color:#f0b855;
+    }
+    #userBadgeFB-menu .mi.dn{color:rgba(255,138,128,0.9);}
+    #userBadgeFB-menu .mi.dn .mi-icon{
+      background:rgba(244,67,54,0.08);
+      border-color:rgba(244,67,54,0.2);
+      color:#ff8a80;
+    }
+    #userBadgeFB-menu .mi.dn:hover{
+      background:rgba(244,67,54,0.1);
+      color:#ff8a80;
+    }
+    #userBadgeFB-menu .mi.dn:hover .mi-icon{
+      background:rgba(244,67,54,0.2);
+      border-color:rgba(244,67,54,0.4);
+    }
+    #userBadgeFB-menu .dv{
+      height:1px;background:rgba(255,255,255,0.06);
+      margin:4px 8px;
+    }
   </style>
   <div class="av">${initial}</div>
-  <div><div class="nm">${name}</div><div class="pl">${admin?'👑 ADMIN':(lifetime?'💎 LIFETIME':'🆓 FREE')}</div></div>`;
+  <div class="info">
+    <div class="nm">${name}</div>
+    <div class="pl">
+      ${admin?'<span class="pl-ic">👑</span><span>ADMIN</span>':(lifetime?'<span class="pl-ic">💎</span><span>LIFETIME</span>':'<span>🆓 FREE</span>')}
+    </div>
+  </div>`;
   document.body.appendChild(b);
 
   const m = document.createElement('div');
   m.id = 'userBadgeFB-menu';
-  m.innerHTML = `<a href="index.html" class="mi"><span>🏠</span><span>الرئيسية</span></a>
-    <a href="profile.html" class="mi"><span>👤</span><span>الملف الشخصي</span></a>
-    ${admin?'<a href="admin.html" class="mi adm"><span>🛠️</span><span>لوحة الإدارة</span></a>':''}
-    ${!lifetime&&!admin?'<a href="#" class="mi" onclick="window._fbShowUpgrade();return false;"><span>💎</span><span>اشترك الآن</span></a>':''}
+  m.innerHTML = `
+    <a href="index.html" class="mi">
+      <span class="mi-icon">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/>
+          <polyline points="9 22 9 12 15 12 15 22"/>
+        </svg>
+      </span>
+      <span>الرئيسية</span>
+    </a>
+    <a href="profile.html" class="mi">
+      <span class="mi-icon">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
+          <circle cx="12" cy="7" r="4"/>
+        </svg>
+      </span>
+      <span>الملف الشخصي</span>
+    </a>
+    ${admin?`
+    <a href="admin.html" class="mi adm">
+      <span class="mi-icon">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M12 2L4 6V12C4 16.4 6.8 20.5 12 22C17.2 20.5 20 16.4 20 12V6L12 2Z"/>
+          <path d="M9 12L11 14L15 10"/>
+        </svg>
+      </span>
+      <span>لوحة الإدارة</span>
+    </a>`:''}
+    ${!lifetime&&!admin?`
+    <a href="#" class="mi upgrade" onclick="window._fbShowUpgrade();return false;">
+      <span class="mi-icon">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/>
+        </svg>
+      </span>
+      <span>اشترك الآن</span>
+    </a>`:''}
     <div class="dv"></div>
-    <a href="#" class="mi dn" onclick="window._fbLogout();return false;"><span>🚪</span><span>تسجيل الخروج</span></a>`;
+    <a href="#" class="mi dn" onclick="window._fbLogout();return false;">
+      <span class="mi-icon">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/>
+          <polyline points="16 17 21 12 16 7"/>
+          <line x1="21" y1="12" x2="9" y2="12"/>
+        </svg>
+      </span>
+      <span>تسجيل الخروج</span>
+    </a>`;
   document.body.appendChild(m);
 
   b.onclick = (e) => { e.stopPropagation(); m.classList.toggle('show'); };
@@ -324,7 +518,14 @@ function showToast(msg, type='success') {
 }
 
 // ═══ APIs مساعدة ═══
-window._fbShowUpgrade = function() { showSubscribeGate(); };
+window._fbShowUpgrade = function() {
+  // ✨ استخدم نفس المودال الفخم اللي للميزات المدفوعة
+  if (typeof window.showPremiumFeatureModal === 'function') {
+    window.showPremiumFeatureModal('الاشتراك الكامل');
+  } else {
+    showSubscribeGate();
+  }
+};
 window._fbLogout = async function() {
   if (!confirm('تسجيل الخروج؟')) return;
   localStorage.clear();
