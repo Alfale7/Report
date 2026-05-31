@@ -2304,7 +2304,7 @@ body.view-tabs .section.tab-section.tab-active{display:block; animation:fadeInTa
       <span class="star">✦</span>
       <span class="line"></span>
     </div>
-    <div class="cover-photo-wrap" id="photoWrap" onclick="document.getElementById('photoInput').click()">
+    <div class="cover-photo-wrap" id="photoWrap" onclick="if(typeof window.checkPremiumFeature === 'function' && !window.checkPremiumFeature('رفع الصورة')) return; document.getElementById('photoInput').click()">
       <div class="cover-photo-placeholder" id="photoPlaceholder">👤</div>
       <img id="photoImg" style="display:none" alt="">
       <div class="cover-photo-hint">اضغط لرفع صورة</div>
@@ -3055,6 +3055,10 @@ function buildCriteria(){
   document.querySelectorAll('.shahed-slot').forEach(slot => {
     slot.addEventListener('click', e => {
       if(e.target.classList.contains('shahed-slot-del') || e.target.classList.contains('shahed-slot-rem')) return;
+      // 🔒 فحص الميزة المدفوعة (رفع الصور)
+      if (typeof window.checkPremiumFeature === 'function') {
+        if (!window.checkPremiumFeature('رفع الصور')) return;
+      }
       const inp = slot.querySelector('input[type=file]');
       if(inp) inp.click();
     });
@@ -3093,6 +3097,10 @@ function buildCvShawaheds(){
     grid.querySelectorAll('.shahed-slot').forEach(slot => {
       slot.addEventListener('click', e => {
         if(e.target.classList.contains('shahed-slot-del') || e.target.classList.contains('shahed-slot-rem')) return;
+        // 🔒 فحص الميزة المدفوعة (رفع الصور)
+        if (typeof window.checkPremiumFeature === 'function') {
+          if (!window.checkPremiumFeature('رفع الصور')) return;
+        }
         const inp = slot.querySelector('input[type=file]');
         if(inp) inp.click();
       });
@@ -3157,6 +3165,10 @@ function loadData(){
             const slot = tpl.firstChild;
             slot.addEventListener('click', e => {
               if(e.target.classList.contains('shahed-slot-del')) return;
+              // 🔒 فحص الميزة المدفوعة (رفع الصور)
+              if (typeof window.checkPremiumFeature === 'function') {
+                if (!window.checkPremiumFeature('رفع الصور')) return;
+              }
               const inp = slot.querySelector('input[type=file]');
               if(inp) inp.click();
             });
@@ -3375,7 +3387,10 @@ if(document.readyState === 'loading'){
 /* ═══════════════════════════════════════════════════════
    📷 الصورة الشخصية
    ═══════════════════════════════════════════════════════ */
-document.getElementById('photoInput').addEventListener('change', e => {
+(function(){
+  const _pi = document.getElementById('photoInput');
+  if(!_pi) return;
+  _pi.addEventListener('change', e => {
   const file = e.target.files[0];
   if(!file) return;
   const reader = new FileReader();
@@ -3386,7 +3401,8 @@ document.getElementById('photoInput').addEventListener('change', e => {
     scheduleSave();
   };
   reader.readAsDataURL(file);
-});
+  });
+})();
 
 /* ═══════════════════════════════════════════════════════
    📷 صور الشواهد (لكل معيار)
@@ -3584,6 +3600,10 @@ function selectTab(targetId){
    ➕ شواهد ديناميكية (إضافة/حذف)
    ═══════════════════════════════════════════════════════ */
 function addShahed(cid){
+  // 🔒 فحص الميزة المدفوعة (إضافة شاهد جديد = رفع صورة)
+  if (typeof window.checkPremiumFeature === 'function') {
+    if (!window.checkPremiumFeature('إضافة شاهد جديد')) return;
+  }
   const grid = document.getElementById('grid-' + cid);
   if(!grid) return;
   // إيجاد أعلى index موجود
@@ -3600,6 +3620,10 @@ function addShahed(cid){
   // ربط onClick
   slot.addEventListener('click', e => {
     if(e.target.classList.contains('shahed-slot-del')) return;
+    // 🔒 فحص الميزة المدفوعة (رفع الصور)
+    if (typeof window.checkPremiumFeature === 'function') {
+      if (!window.checkPremiumFeature('رفع الصور')) return;
+    }
     const inp = slot.querySelector('input[type=file]');
     if(inp) inp.click();
   });
@@ -4202,7 +4226,13 @@ async function exportAsPDFv2(){
 /* ═══════════════════════════════════════════════════════
    🖨️ الطباعة (يستخدم محرك المتصفح الأصلي → نصوص حادّة)
    ═══════════════════════════════════════════════════════ */
-function printReport(){
+async function printReport(){
+  // 🔥 فحص Firebase أولاً - الحماية الفعلية
+  if (typeof window.checkDownloadAccess === 'function') {
+    const allowed = await window.checkDownloadAccess();
+    if (!allowed) return;
+  }
+
   // 1) جهّز الملف بنفس منطق التصدير (يستبدل inputs بـ spans، يصلح letter-spacing، يلفّ الكلمات)
   const stored = prepareForExport();
   // 2) أعطِ المتصفح فرصة لإعادة تخطيط الصفحة قبل فتح حوار الطباعة
@@ -4281,6 +4311,10 @@ function copyLink(){
    🗑️ تفريغ المحتوى
    ═══════════════════════════════════════════════════════ */
 function resetAllData(){
+  // 🔒 فحص الميزة المدفوعة (تفريغ البيانات)
+  if (typeof window.checkPremiumFeature === 'function') {
+    if (!window.checkPremiumFeature('تفريغ البيانات')) return;
+  }
   document.getElementById('resetBackdrop').classList.add('show');
   document.getElementById('resetModal').classList.add('show');
 }
@@ -4477,9 +4511,145 @@ loadData();
 // شغّل تأثير لفت الانتباه بعد قليل من تحميل الصفحة
 setTimeout(startAttentionShine, 600);
 window.addEventListener('beforeunload', saveData);
+
+// ═══════════════════════════════════════════════════════
+// 🔒 حماية بسيطة وقوية - وضع المعاينة (الزائر / Free)
+// ═══════════════════════════════════════════════════════
+(function() {
+  const styleEl = document.createElement('style');
+  styleEl.textContent = `
+    body.locked-preview input,
+    body.locked-preview textarea,
+    body.locked-preview [contenteditable] {
+      pointer-events: none !important;
+      caret-color: transparent !important;
+      user-select: none !important;
+      -webkit-user-select: none !important;
+    }
+    body.locked-preview .pf,
+    body.locked-preview .pf *,
+    body.locked-preview .photo-cell,
+    body.locked-preview .photo-cell * {
+      pointer-events: none !important;
+    }
+  `;
+  document.head.appendChild(styleEl);
+
+  document.body.classList.add('locked-preview');
+  let _locked = true;
+
+  console.log('🔒 وضع المعاينة مفعّل');
+
+  document.addEventListener('click', function(e) {
+    if (!_locked) return;
+    const target = e.target.closest('input, textarea, [contenteditable], .pf, .pwm, .padd, .photo-cell');
+    if (target) {
+      e.preventDefault();
+      e.stopPropagation();
+      e.stopImmediatePropagation();
+      if (typeof window.showPremiumFeatureModal === 'function') {
+        window.showPremiumFeatureModal('استخدام التقرير');
+      }
+      return false;
+    }
+  }, true);
+
+  document.addEventListener('touchstart', function(e) {
+    if (!_locked) return;
+    const target = e.target.closest('input, textarea, [contenteditable], .pf, .pwm, .padd, .photo-cell');
+    if (target) {
+      e.preventDefault();
+      e.stopPropagation();
+      if (typeof window.showPremiumFeatureModal === 'function') {
+        window.showPremiumFeatureModal('استخدام التقرير');
+      }
+      return false;
+    }
+  }, { capture: true, passive: false });
+
+  document.addEventListener('focusin', function(e) {
+    if (!_locked) return;
+    const target = e.target;
+    if (target.matches && target.matches('input, textarea, [contenteditable]')) {
+      target.blur();
+      if (typeof window.showPremiumFeatureModal === 'function') {
+        window.showPremiumFeatureModal('الكتابة في التقرير');
+      }
+    }
+  }, true);
+
+  document.addEventListener('keydown', function(e) {
+    if (!_locked) return;
+    const target = e.target;
+    if (target.matches && target.matches('input, textarea, [contenteditable]')) {
+      e.preventDefault();
+      e.stopPropagation();
+      if (target.blur) target.blur();
+      return false;
+    }
+  }, true);
+
+  document.addEventListener('paste', function(e) {
+    if (!_locked) return;
+    const target = e.target;
+    if (target.matches && target.matches('input, textarea, [contenteditable]')) {
+      e.preventDefault();
+      e.stopPropagation();
+      if (typeof window.showPremiumFeatureModal === 'function') {
+        window.showPremiumFeatureModal('استخدام التقرير');
+      }
+      return false;
+    }
+  }, true);
+
+  document.addEventListener('beforeinput', function(e) {
+    if (!_locked) return;
+    const target = e.target;
+    if (target.matches && target.matches('input, textarea, [contenteditable]')) {
+      e.preventDefault();
+      e.stopPropagation();
+      return false;
+    }
+  }, true);
+
+  const wrapClear = () => {
+    if (typeof window.confirmClear === 'function' && !window.confirmClear.__wrapped) {
+      const original = window.confirmClear;
+      window.confirmClear = function() {
+        if (_locked) {
+          if (typeof window.showPremiumFeatureModal === 'function') {
+            window.showPremiumFeatureModal('تفريغ البيانات');
+          }
+          return;
+        }
+        return original.apply(this, arguments);
+      };
+      window.confirmClear.__wrapped = true;
+    }
+  };
+  wrapClear();
+  setTimeout(wrapClear, 1000);
+
+  let attempts = 0;
+  const watcher = setInterval(() => {
+    attempts++;
+    if (typeof window.isPremiumUser === 'function' && window.isPremiumUser()) {
+      _locked = false;
+      document.body.classList.remove('locked-preview');
+      clearInterval(watcher);
+      console.log('✅ فُك القفل - مشترك Lifetime/Admin');
+      return;
+    }
+    if (attempts >= 75) {
+      clearInterval(watcher);
+      console.log('⏱️ انتهت المراقبة - المستخدم Free/زائر');
+    }
+  }, 200);
+})();
+
 </script>
 
 <!-- 🔥 Firebase Integration -->
-<script type="module" src="report-firebase.js?v=4"></script>
+<script type="module" src="report-firebase.js?v=11"></script>
 </body>
 </html>
