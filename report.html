@@ -1142,7 +1142,13 @@ document.getElementById('muhafaza').addEventListener('click',function(){
   if(v!==null) this.textContent='بمحافظة '+(v||'...');
 });
 
-function openF(id){document.getElementById('i'+id).click();}
+function openF(id){
+  // 🔒 فحص الميزة المدفوعة (رفع الصور)
+  if (typeof window.checkPremiumFeature === 'function') {
+    if (!window.checkPremiumFeature('رفع الصور')) return;
+  }
+  document.getElementById('i'+id).click();
+}
 
 function prev(inp,id){
   if(!inp.files||!inp.files[0])return;
@@ -1766,6 +1772,112 @@ document.addEventListener('click', e => {
 
 // تحميل الثيم المحفوظ عند فتح الصفحة
 loadSavedTheme();
+
+// ═══════════════════════════════════════════════════════
+// 🔒 حماية الميزات التفاعلية (الكتابة + التفريغ) للزائر/Free
+// ═══════════════════════════════════════════════════════
+// يحمي: input[type=text], input[type=number], textarea, contenteditable
+// المسموح: زر الثيم، زر اللغة، التنقل، المشاهدة
+(function setupPremiumGate(){
+  // نستنى report-firebase ينتهي من تحديد حالة المستخدم
+  const checkAndSetup = () => {
+    // ✅ مشترك → ما نتدخل
+    if (typeof window.isPremiumUser === 'function' && window.isPremiumUser()) return;
+
+    // ⛔ Free/زائر → اعترض كل ميزة تفاعلية
+    const intercept = (e) => {
+      if (typeof window.checkPremiumFeature === 'function') {
+        if (!window.isPremiumUser()) {
+          e.preventDefault();
+          e.stopPropagation();
+          window.showPremiumFeatureModal('الكتابة في التقرير');
+          // ابعد التركيز عن الحقل
+          if (e.target && typeof e.target.blur === 'function') e.target.blur();
+          return false;
+        }
+      }
+    };
+
+    // 1️⃣ كل الحقول النصية (input, textarea)
+    const textFields = document.querySelectorAll('input[type="text"], input[type="number"], input[type="date"], textarea');
+    textFields.forEach(el => {
+      // امنع الكتابة بالكيبورد
+      el.addEventListener('keydown', intercept, true);
+      // امنع اللصق
+      el.addEventListener('paste', intercept, true);
+      // عند النقر، اعرض المودال (تجربة سلسة)
+      el.addEventListener('focus', (e) => {
+        if (!window.isPremiumUser()) {
+          e.target.blur();
+          window.showPremiumFeatureModal('الكتابة في التقرير');
+        }
+      }, true);
+      // مظهر "للقراءة فقط"
+      el.setAttribute('readonly', '');
+      el.style.cursor = 'pointer';
+    });
+
+    // 2️⃣ contenteditable عناصر (العناوين)
+    const editables = document.querySelectorAll('[contenteditable="true"]');
+    editables.forEach(el => {
+      el.addEventListener('keydown', intercept, true);
+      el.addEventListener('paste', intercept, true);
+      el.addEventListener('focus', (e) => {
+        if (!window.isPremiumUser()) {
+          e.target.blur();
+          window.showPremiumFeatureModal('الكتابة في التقرير');
+        }
+      }, true);
+      el.addEventListener('beforeinput', intercept, true);
+      el.style.cursor = 'pointer';
+    });
+
+    // 3️⃣ زر التفريغ (يمسح كل البيانات)
+    if (typeof window.confirmClear === 'function') {
+      const _origConfirmClear = window.confirmClear;
+      window.confirmClear = function() {
+        if (!window.isPremiumUser()) {
+          window.showPremiumFeatureModal('تفريغ البيانات');
+          return;
+        }
+        return _origConfirmClear();
+      };
+    }
+
+    console.log('🔒 وضع المعاينة مفعّل (Free/زائر)');
+  };
+
+  // ننتظر شوي حتى يتحدد _user في firebase
+  // نراقب التغيير في حالة المستخدم
+  let attempts = 0;
+  const maxAttempts = 30; // 6 ثواني
+  const waitForFirebase = setInterval(() => {
+    attempts++;
+    // لو المستخدم premium، ألغِ الحماية
+    if (typeof window.isPremiumUser === 'function' && window.isPremiumUser()) {
+      clearInterval(waitForFirebase);
+      // أزل readonly من الحقول لو كانت ضافة
+      document.querySelectorAll('input[readonly], textarea[readonly]').forEach(el => {
+        el.removeAttribute('readonly');
+        el.style.cursor = '';
+      });
+      console.log('✅ مشترك Lifetime/Admin - كل الميزات مفتوحة');
+      return;
+    }
+    // بعد ثانيتين، نقفل
+    if (attempts >= 10) {
+      clearInterval(waitForFirebase);
+      checkAndSetup();
+    }
+  }, 200);
+
+  // فحص نهائي بعد 6 ثواني
+  setTimeout(() => {
+    if (typeof window.isPremiumUser === 'function' && !window.isPremiumUser()) {
+      checkAndSetup();
+    }
+  }, 6000);
+})();
 
 </script>
 

@@ -21,6 +21,10 @@ import { doc, onSnapshot } from "https://www.gstatic.com/firebasejs/10.7.1/fireb
 // التقارير التجريبية المجانية (يفتحها أي مستخدم مسجّل)
 const FREE_TRIAL_REPORTS = ['tasis.html'];
 
+// 👁️ تقارير المعاينة (تفتح لأي زائر/Free لكن الميزات التفاعلية مقفلة)
+// يشاهد كل المحتوى لكن الكتابة/الرفع/التصدير = مدفوع
+const VIEW_ONLY_REPORTS = ['report.html'];
+
 let _user = null;
 let _profile = null;
 let _profileUnsub = null;
@@ -111,6 +115,15 @@ function handleAccess() {
   // ما نتدخل في الصفحات اللي مش تقارير
   if (!_isReportPage) {
     hideFullPageLoader();
+    refreshBadge();
+    return;
+  }
+
+  // 👁️ تقارير المعاينة → افتح للجميع (زائر/Free/Paid) في وضع المعاينة
+  // الحماية بتكون على مستوى الميزات التفاعلية فقط
+  if (VIEW_ONLY_REPORTS.includes(_currentPage)) {
+    hideFullPageLoader();
+    removeAllGuards();
     refreshBadge();
     return;
   }
@@ -384,6 +397,116 @@ window.canDownload = function() {
     return false;
   }
   return true;
+};
+
+// ═══════════════════════════════════════════════════════
+// 🎯 Premium Feature Gate (للوضع التفاعلي: رفع صور / كتابة)
+// ═══════════════════════════════════════════════════════
+// الفكرة: المستخدم Free يقدر يشوف التقرير بالكامل
+// لكن لما يحاول يستخدم ميزة تفاعلية (يكتب أو يرفع صورة)
+// يطلع له مودال "اشترك أولاً"
+
+// يرجع true إذا المستخدم Lifetime أو Admin (يقدر يستخدم الميزة)
+// يرجع false إذا Free/زائر (ويعرض المودال)
+window.isPremiumUser = function() {
+  return !!(_user && (isLifetime(_profile) || isAdmin(_user)));
+};
+
+// المودال الفخم لميزة مدفوعة
+window.showPremiumFeatureModal = function(featureName = 'هذه الميزة') {
+  // امنع تعدد المودالات
+  if (document.getElementById('premiumFeatureModal')) return;
+
+  const name = _user ? (_profile?.displayName || (_user.email || '').split('@')[0]) : '';
+  const isGuest = !_user;
+  const link = 'pay.html';
+
+  const m = document.createElement('div');
+  m.id = 'premiumFeatureModal';
+  m.innerHTML = `<style>
+    #premiumFeatureModal{position:fixed;inset:0;z-index:999997;background:rgba(11,57,70,0.85);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);display:flex;align-items:center;justify-content:center;padding:18px;font-family:'Tajawal','Cairo',sans-serif;animation:pfmFade 0.3s ease-out;}
+    @keyframes pfmFade{from{opacity:0;}to{opacity:1;}}
+    #premiumFeatureModal .pfm-box{max-width:400px;width:100%;background:linear-gradient(160deg,#1a1f2e 0%,#2a3a4e 100%);border:2px solid rgba(212,166,87,0.5);border-radius:24px;padding:28px 22px;text-align:center;box-shadow:0 30px 80px rgba(0,0,0,0.6),0 0 0 1px rgba(212,166,87,0.1) inset;color:#fff;position:relative;overflow:hidden;animation:pfmSlide 0.4s cubic-bezier(0.16,1,0.3,1);}
+    @keyframes pfmSlide{from{transform:translateY(20px) scale(0.95);opacity:0;}to{transform:translateY(0) scale(1);opacity:1;}}
+    #premiumFeatureModal .pfm-box::before{content:"";position:absolute;top:0;left:0;right:0;height:3px;background:linear-gradient(90deg,transparent,#f0b855,transparent);}
+    #premiumFeatureModal .pfm-close{position:absolute;top:12px;left:12px;width:32px;height:32px;border:none;background:rgba(255,255,255,0.1);color:#fff;border-radius:50%;cursor:pointer;font-size:1.1rem;font-weight:900;display:flex;align-items:center;justify-content:center;transition:all 0.2s;}
+    #premiumFeatureModal .pfm-close:hover{background:rgba(255,255,255,0.2);transform:scale(1.1);}
+    #premiumFeatureModal .pfm-tag{display:inline-flex;align-items:center;gap:6px;background:linear-gradient(135deg,#dc2626,#f59e0b);padding:5px 14px;border-radius:99px;font-size:0.74rem;font-weight:900;margin-bottom:12px;letter-spacing:0.3px;animation:pfmPulse 2s ease-in-out infinite;}
+    @keyframes pfmPulse{0%,100%{transform:scale(1);box-shadow:0 4px 12px rgba(220,38,38,0.4);}50%{transform:scale(1.05);box-shadow:0 6px 18px rgba(245,158,11,0.5);}}
+    #premiumFeatureModal .pfm-ic{font-size:3rem;margin-bottom:8px;display:inline-block;filter:drop-shadow(0 4px 14px rgba(240,184,85,0.6));animation:pfmFloat 3s ease-in-out infinite;}
+    @keyframes pfmFloat{0%,100%{transform:translateY(0);}50%{transform:translateY(-5px);}}
+    #premiumFeatureModal h2{font-family:'Reem Kufi','Tajawal',sans-serif;font-size:1.3rem;font-weight:900;margin-bottom:6px;color:#fff;}
+    #premiumFeatureModal .pfm-sub{font-size:0.86rem;color:rgba(255,255,255,0.75);font-weight:600;margin-bottom:16px;line-height:1.6;}
+    #premiumFeatureModal .pfm-sub strong{color:#f4d690;font-weight:800;}
+    #premiumFeatureModal .pfm-features{background:rgba(255,255,255,0.04);border:1px solid rgba(212,166,87,0.2);border-radius:14px;padding:14px;margin-bottom:16px;text-align:right;}
+    #premiumFeatureModal .pfm-feat{display:flex;align-items:center;gap:8px;padding:4px 0;font-size:0.84rem;font-weight:700;color:#fff;}
+    #premiumFeatureModal .pfm-feat .chk{color:#22c55e;font-weight:900;font-size:0.95rem;}
+    #premiumFeatureModal .pfm-price-box{background:linear-gradient(135deg,rgba(212,166,87,0.18),rgba(245,158,11,0.08));border:2px solid rgba(212,166,87,0.5);border-radius:16px;padding:14px;margin-bottom:14px;position:relative;}
+    #premiumFeatureModal .pfm-price-tag{position:absolute;top:-10px;right:50%;transform:translateX(50%);background:#dc2626;color:#fff;padding:3px 12px;border-radius:99px;font-size:0.68rem;font-weight:900;white-space:nowrap;box-shadow:0 4px 12px rgba(220,38,38,0.4);}
+    #premiumFeatureModal .pfm-amount{font-family:'Reem Kufi','Tajawal',sans-serif;font-size:3rem;font-weight:900;color:#ffc107;line-height:1;}
+    #premiumFeatureModal .pfm-currency{font-size:1.05rem;font-weight:800;color:#ffc107;}
+    #premiumFeatureModal .pfm-once{display:inline-block;background:linear-gradient(135deg,#16a34a,#15803d);color:#fff;padding:4px 14px;border-radius:99px;font-size:0.72rem;font-weight:900;margin-top:6px;}
+    #premiumFeatureModal .pfm-cta{display:flex;align-items:center;justify-content:center;gap:8px;width:100%;padding:14px;background:linear-gradient(135deg,#25d366,#128c7e);color:#fff;border:none;border-radius:14px;font-family:inherit;font-size:0.95rem;font-weight:900;text-decoration:none;box-shadow:0 8px 22px rgba(37,211,102,0.4);margin-bottom:10px;box-sizing:border-box;transition:all 0.2s;}
+    #premiumFeatureModal .pfm-cta:hover{transform:translateY(-1px);box-shadow:0 12px 28px rgba(37,211,102,0.55);}
+    #premiumFeatureModal .pfm-cta-login{background:linear-gradient(135deg,#2a8aab,#1e6b8a);box-shadow:0 8px 22px rgba(42,138,171,0.4);}
+    #premiumFeatureModal .pfm-cta-login:hover{box-shadow:0 12px 28px rgba(42,138,171,0.55);}
+    #premiumFeatureModal .pfm-guarantee{font-size:0.74rem;color:rgba(255,255,255,0.65);font-weight:700;margin-bottom:12px;}
+    #premiumFeatureModal .pfm-secondary{display:block;padding:10px;background:rgba(255,255,255,0.06);color:rgba(255,255,255,0.85);border:1px solid rgba(255,255,255,0.12);border-radius:11px;font-size:0.8rem;font-weight:700;text-decoration:none;text-align:center;}
+    #premiumFeatureModal .pfm-secondary:hover{background:rgba(255,255,255,0.12);}
+  </style>
+  <div class="pfm-box">
+    <button class="pfm-close" onclick="document.getElementById('premiumFeatureModal').remove()" aria-label="إغلاق">×</button>
+    <div class="pfm-tag">🔒 ميزة مدفوعة</div>
+    <div class="pfm-ic">💎</div>
+    <h2>${isGuest ? 'سجّل دخولك أولاً' : 'اشترك للاستخدام الكامل'}</h2>
+    <div class="pfm-sub">${isGuest ? 'أنت تشاهد التقرير في وضع المعاينة 👁️<br>للكتابة ورفع الصور <strong>سجّل دخولك واشترك</strong>' : `مرحباً ${name} 👋<br>أنت تشاهد التقرير في وضع المعاينة<br>للاستخدام الكامل <strong>اشترك مرة واحدة</strong>`}</div>
+
+    <div class="pfm-features">
+      <div class="pfm-feat"><span class="chk">✓</span><span>الكتابة في كل الحقول</span></div>
+      <div class="pfm-feat"><span class="chk">✓</span><span>رفع الصور والشعارات</span></div>
+      <div class="pfm-feat"><span class="chk">✓</span><span>التصدير كصورة + PDF</span></div>
+      <div class="pfm-feat"><span class="chk">✓</span><span>المشاركة عبر التطبيقات</span></div>
+      <div class="pfm-feat"><span class="chk">✓</span><span><strong>+15 قالب احترافي</strong> آخر</span></div>
+    </div>
+
+    <div class="pfm-price-box">
+      <div class="pfm-price-tag">🔥 عرض إطلاق</div>
+      <div style="display:flex;align-items:baseline;justify-content:center;gap:5px;margin-top:6px;">
+        <span class="pfm-amount">30</span>
+        <span class="pfm-currency">ريال</span>
+      </div>
+      <div class="pfm-once">💎 دفعة واحدة · مدى الحياة</div>
+    </div>
+
+    ${isGuest 
+      ? `<a href="login.html" class="pfm-cta pfm-cta-login" onclick="sessionStorage.setItem('returnAfterLogin','${_currentPage}');">
+          <span style="font-size:1.2rem">🔑</span>
+          <span>تسجيل الدخول</span>
+        </a>`
+      : `<a href="${link}" target="_blank" rel="noopener" class="pfm-cta">
+          <span style="font-size:1.2rem">📱</span>
+          <span>اشترك عبر الواتساب</span>
+        </a>
+        <div class="pfm-guarantee">🛡️ ضمان استرداد كامل خلال 7 أيام</div>`
+    }
+
+    <a href="javascript:void(0)" class="pfm-secondary" onclick="document.getElementById('premiumFeatureModal').remove()">
+      👁️ متابعة المشاهدة فقط
+    </a>
+  </div>`;
+  document.body.appendChild(m);
+
+  // إغلاق عند الضغط خارج الصندوق
+  m.addEventListener('click', (e) => {
+    if (e.target.id === 'premiumFeatureModal') m.remove();
+  });
+};
+
+// دالة موحّدة: تفحص + تعرض المودال + ترجع true/false
+window.checkPremiumFeature = function(featureName = 'هذه الميزة') {
+  if (window.isPremiumUser()) return true;
+  window.showPremiumFeatureModal(featureName);
+  return false;
 };
 
 // 🎯 ربط تلقائي مع saveAsImage (إن وجدت)
