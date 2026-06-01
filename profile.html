@@ -862,9 +862,10 @@ onUserChange((data) => {
     document.getElementById('adminCard').style.display = 'block';
   }
 
-  // الاسم والجوال
-  if (profile?.phoneNumber || user.phoneNumber) {
-    document.getElementById('userPhone').textContent = profile?.phoneNumber || user.phoneNumber;
+  // الاسم والجوال (نبحث في الحقل الجديد phone أو phoneNumber أو legacyPhone)
+  const userPhone = profile?.phone || profile?.phoneNumber || profile?.legacyPhone || user.phoneNumber;
+  if (userPhone) {
+    document.getElementById('userPhone').textContent = userPhone;
   } else if (user.email && !user.email.includes('@phone.')) {
     document.getElementById('userPhone').textContent = user.email;
   }
@@ -932,7 +933,7 @@ window.changePassword = async function() {
   }
 
   // 📱 للمشتركين القدامى (بالجوال) → واتساب
-  const phone = profile?.legacyPhone || profile?.phoneNumber || '';
+  const phone = profile?.phone || profile?.legacyPhone || profile?.phoneNumber || '';
   const msg = phone
     ? `السلام عليكم، أرغب في تغيير كلمة المرور لحسابي\nرقم الجوال: ${phone}`
     : 'السلام عليكم، أرغب في تغيير كلمة المرور لحسابي';

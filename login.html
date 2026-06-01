@@ -443,13 +443,16 @@ body{
     <!-- تبويبات -->
     <div class="tabs">
       <button class="tab-btn active" id="tabLogin" onclick="switchTab('login')">
-        <span>🔐</span><span>دخول</span>
+        <span>📧</span><span>دخول بالإيميل</span>
+      </button>
+      <button class="tab-btn" id="tabPhoneLogin" onclick="switchTab('phoneLogin')">
+        <span>📱</span><span>دخول بالجوال</span>
       </button>
       <button class="tab-btn" id="tabRegister" onclick="switchTab('register')">
         <span>✨</span><span>حساب جديد</span>
       </button>
       <button class="tab-btn" id="tabLegacy" onclick="switchTab('legacy')">
-        <span>📱</span><span>مشترك سابق</span>
+        <span>💎</span><span>مشترك سابق</span>
       </button>
     </div>
 
@@ -473,12 +476,60 @@ body{
       </div>
     </div>
 
+    <!-- نموذج دخول بالجوال -->
+    <div class="form-pane" id="panePhoneLogin">
+      <div class="field">
+        <label>📱 رقم الجوال</label>
+        <div class="phone-input">
+          <div class="phone-prefix">+966</div>
+          <input type="tel" id="phoneLoginNumber" placeholder="5XXXXXXXX" maxlength="10" autocomplete="tel">
+        </div>
+      </div>
+      <div class="field">
+        <label>🔒 كلمة المرور</label>
+        <input type="password" id="phoneLoginPassword" placeholder="••••••••" dir="ltr" style="text-align:left;" autocomplete="current-password">
+      </div>
+      <button class="btn-primary" id="phoneLoginBtn" onclick="handlePhoneLogin()">
+        <span>📱 دخول بالجوال</span>
+        <span>←</span>
+      </button>
+      <div class="links">
+        <a href="#" onclick="switchTab('login');return false;">دخول بالإيميل</a>
+        <a href="index.html">← الرئيسية</a>
+      </div>
+    </div>
+
+    <!-- نموذج تسجيل جديد -->
     <!-- نموذج تسجيل جديد -->
     <div class="form-pane" id="paneRegister">
-      <div class="field">
+      <!-- زرّان للتبديل بين طريقتي التسجيل -->
+      <div class="reg-method-toggle" style="display:flex;gap:8px;background:#f3f4f6;padding:4px;border-radius:12px;margin-bottom:18px;">
+        <button type="button" id="regMethodEmail" onclick="switchRegMethod('email')" style="flex:1;padding:10px;border:none;border-radius:8px;background:#fff;font:600 0.85rem Tajawal,sans-serif;cursor:pointer;box-shadow:0 1px 3px rgba(0,0,0,0.1);color:#0f172a;">
+          📧 بالإيميل
+        </button>
+        <button type="button" id="regMethodPhone" onclick="switchRegMethod('phone')" style="flex:1;padding:10px;border:none;border-radius:8px;background:transparent;font:600 0.85rem Tajawal,sans-serif;cursor:pointer;color:#64748b;">
+          📱 بالجوال
+        </button>
+      </div>
+
+      <!-- حقل الإيميل (يظهر بالطريقة الافتراضية) -->
+      <div class="field" id="regEmailField">
         <label>📧 البريد الإلكتروني</label>
         <input type="email" id="regEmail" placeholder="example@email.com" dir="ltr" style="text-align:left;" autocomplete="email">
       </div>
+
+      <!-- حقل الجوال (يظهر دائماً - اختياري عند الإيميل، إجباري عند الجوال) -->
+      <div class="field" id="regPhoneField">
+        <label>
+          📱 رقم الجوال
+          <span id="regPhoneLabel" style="color:#9aa3b2;font-weight:400;font-size:0.78rem;">(للتواصل)</span>
+        </label>
+        <div class="phone-input">
+          <div class="phone-prefix">+966</div>
+          <input type="tel" id="regPhone" placeholder="5XXXXXXXX" maxlength="10" autocomplete="tel">
+        </div>
+      </div>
+
       <div class="field">
         <label>🔒 كلمة مرور قوية</label>
         <input type="password" id="regPassword" placeholder="6 أحرف على الأقل" minlength="6" dir="ltr" style="text-align:left;" autocomplete="new-password">
@@ -546,10 +597,11 @@ window.addEventListener('error', function(e) {
 import {
   loginWithEmail,
   loginWithGoogle,
+  loginWithPhone,
   registerWithEmail,
   resetPassword as fbResetPassword,
   onUserChange
-} from './firebase-config.js?v=3';
+} from './firebase-config.js?v=4';
 
 // التحقق من حالة الدخول - إذا داخل، حوّل للموقع
 onUserChange((data) => {
@@ -575,6 +627,11 @@ window.switchTab = function(tab) {
     document.getElementById('paneLogin').classList.add('active');
     document.getElementById('formTitle').textContent = 'مرحباً بك من جديد';
     document.getElementById('formSubtitle').textContent = 'سجّل دخولك للوصول إلى التقارير';
+  } else if (tab === 'phoneLogin') {
+    document.getElementById('tabPhoneLogin').classList.add('active');
+    document.getElementById('panePhoneLogin').classList.add('active');
+    document.getElementById('formTitle').textContent = 'دخول سريع بالجوال 📱';
+    document.getElementById('formSubtitle').textContent = 'أدخل رقم جوالك وكلمة المرور';
   } else if (tab === 'register') {
     document.getElementById('tabRegister').classList.add('active');
     document.getElementById('paneRegister').classList.add('active');
@@ -647,14 +704,71 @@ window.handleLogin = async function() {
   }
 };
 
+// 📱 تسجيل دخول بالجوال
+window.handlePhoneLogin = async function() {
+  hideMessages();
+  const phone = document.getElementById('phoneLoginNumber').value.trim();
+  const password = document.getElementById('phoneLoginPassword').value;
+
+  if (!phone || !password) {
+    showError('أدخل رقم الجوال وكلمة المرور');
+    return;
+  }
+
+  setBusy('phoneLoginBtn', true);
+  const result = await loginWithPhone(phone, password);
+  setBusy('phoneLoginBtn', false);
+
+  if (result.success) {
+    showSuccess('تم الدخول بنجاح!');
+  } else {
+    showError(result.error);
+  }
+};
+
+// 🔄 تبديل طريقة التسجيل: إيميل أو جوال
+let _regMethod = 'email'; // الافتراضي: إيميل
+
+window.switchRegMethod = function(method) {
+  _regMethod = method;
+  const btnEmail = document.getElementById('regMethodEmail');
+  const btnPhone = document.getElementById('regMethodPhone');
+  const emailField = document.getElementById('regEmailField');
+  const phoneLabel = document.getElementById('regPhoneLabel');
+
+  if (method === 'email') {
+    // إيميل = إجباري، جوال = اختياري
+    btnEmail.style.background = '#fff';
+    btnEmail.style.color = '#0f172a';
+    btnEmail.style.boxShadow = '0 1px 3px rgba(0,0,0,0.1)';
+    btnPhone.style.background = 'transparent';
+    btnPhone.style.color = '#64748b';
+    btnPhone.style.boxShadow = 'none';
+
+    emailField.style.display = '';
+    phoneLabel.textContent = '(للتواصل)';
+  } else {
+    // جوال = إجباري، إيميل = مخفي
+    btnPhone.style.background = '#fff';
+    btnPhone.style.color = '#0f172a';
+    btnPhone.style.boxShadow = '0 1px 3px rgba(0,0,0,0.1)';
+    btnEmail.style.background = 'transparent';
+    btnEmail.style.color = '#64748b';
+    btnEmail.style.boxShadow = 'none';
+
+    emailField.style.display = 'none';
+    phoneLabel.textContent = '(مطلوب)';
+  }
+};
+
 // تسجيل جديد
 window.handleRegister = async function() {
   hideMessages();
-  const email = document.getElementById('regEmail').value.trim();
   const password = document.getElementById('regPassword').value;
+  let phone = document.getElementById('regPhone').value.trim();
 
-  if (!email || !password) {
-    showError('أدخل بيانات الحساب الجديد');
+  if (!password) {
+    showError('أدخل كلمة المرور');
     return;
   }
   if (password.length < 6) {
@@ -662,14 +776,64 @@ window.handleRegister = async function() {
     return;
   }
 
+  // تنظيف رقم الجوال
+  let cleanPhone = null;
+  if (phone) {
+    cleanPhone = phone.replace(/\s/g, '').replace(/^\+966/, '0').replace(/^966/, '0');
+    if (!cleanPhone.startsWith('05')) cleanPhone = '0' + cleanPhone;
+    if (!/^05\d{8}$/.test(cleanPhone)) {
+      showError('رقم الجوال يجب أن يكون 10 أرقام ويبدأ بـ 05');
+      return;
+    }
+  }
+
+  // 📧 طريقة الإيميل
+  if (_regMethod === 'email') {
+    const email = document.getElementById('regEmail').value.trim();
+    if (!email) {
+      showError('أدخل البريد الإلكتروني');
+      return;
+    }
+
+    setBusy('regBtn', true);
+    const extra = cleanPhone ? { phone: cleanPhone } : {};
+    const result = await registerWithEmail(email, password, extra);
+    setBusy('regBtn', false);
+
+    if (result.success) {
+      showSuccess('تم إنشاء حسابك! مرحباً بك 🎉');
+    } else {
+      showError(result.error);
+    }
+    return;
+  }
+
+  // 📱 طريقة الجوال (إيميل وهمي)
+  if (!cleanPhone) {
+    showError('أدخل رقم الجوال');
+    return;
+  }
+
+  // نحوّل الجوال لإيميل وهمي
+  const fakeEmail = `${cleanPhone}@phone.ksa2030.one`;
+
   setBusy('regBtn', true);
-  const result = await registerWithEmail(email, password);
+  // نمرر cleanPhone كـ phone وأيضاً نسجّل authMethod = 'phone'
+  const result = await registerWithEmail(fakeEmail, password, { 
+    phone: cleanPhone,
+    authMethod: 'phone'
+  });
   setBusy('regBtn', false);
 
   if (result.success) {
-    showSuccess('تم إنشاء حسابك! مرحباً بك 🎉');
+    showSuccess('تم إنشاء حسابك بالجوال! مرحباً بك 🎉');
   } else {
-    showError(result.error);
+    // لو الإيميل الوهمي مستخدم = الجوال مكرر
+    if (result.error && result.error.includes('مستخدم')) {
+      showError('هذا الرقم مسجّل مسبقاً. استخدم تبويب "دخول بالجوال"');
+    } else {
+      showError(result.error);
+    }
   }
 };
 
@@ -723,6 +887,9 @@ window.resetPassword = async function() {
 document.getElementById('loginPassword').addEventListener('keypress', (e) => {
   if (e.key === 'Enter') handleLogin();
 });
+document.getElementById('phoneLoginPassword').addEventListener('keypress', (e) => {
+  if (e.key === 'Enter') handlePhoneLogin();
+});
 document.getElementById('regPassword').addEventListener('keypress', (e) => {
   if (e.key === 'Enter') handleRegister();
 });
@@ -732,6 +899,12 @@ document.getElementById('legacyPassword').addEventListener('keypress', (e) => {
 
 // تنظيف رقم الجوال أثناء الكتابة
 document.getElementById('legacyPhone').addEventListener('input', (e) => {
+  e.target.value = e.target.value.replace(/[^\d]/g, '');
+});
+document.getElementById('phoneLoginNumber').addEventListener('input', (e) => {
+  e.target.value = e.target.value.replace(/[^\d]/g, '');
+});
+document.getElementById('regPhone').addEventListener('input', (e) => {
   e.target.value = e.target.value.replace(/[^\d]/g, '');
 });
 </script>
