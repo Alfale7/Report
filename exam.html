@@ -1622,6 +1622,13 @@ function setSchoolLogo(dataUrl){
 }
 
 function uploadSchoolLogo(event){
+  // 🔒 حماية: الزائر/Free لا يستطيع رفع شعار المدرسة
+  if (typeof window.checkPremiumFeature === 'function') {
+    if (!window.checkPremiumFeature('رفع شعار المدرسة')) {
+      event.target.value = ''; // امسح القيمة لو حاول
+      return;
+    }
+  }
   const file = event.target.files[0];
   if(!file) return;
   if(!file.type.startsWith('image/')){
@@ -1801,6 +1808,10 @@ function escapeHtml(s){
 
 /* ═══════════ MODE SWITCH ═══════════ */
 function switchMode(mode){
+  // 🔒 حماية: الزائر/Free لا يستطيع تبديل الوضع
+  if (typeof window.checkPremiumFeature === 'function') {
+    if (!window.checkPremiumFeature('تبديل الوضع')) return;
+  }
   syncFromDOM();
   currentMode = mode;
   document.querySelectorAll('.mode-btn').forEach(b => b.classList.toggle('active', b.dataset.mode === mode));
@@ -1810,6 +1821,10 @@ function switchMode(mode){
 
 /* ═══════════ ADD/DELETE ═══════════ */
 function addRow(){
+  // 🔒 حماية
+  if (typeof window.checkPremiumFeature === 'function') {
+    if (!window.checkPremiumFeature('إضافة صف')) return;
+  }
   syncFromDOM();
   const colCount = tableData[currentMode].headers.length;
   tableData[currentMode].rows.push(new Array(colCount).fill(''));
@@ -1828,6 +1843,10 @@ function deleteRow(idx){
 }
 
 function addColumn(){
+  // 🔒 حماية
+  if (typeof window.checkPremiumFeature === 'function') {
+    if (!window.checkPremiumFeature('إضافة عمود')) return;
+  }
   syncFromDOM();
   tableData[currentMode].headers.push('عمود جديد');
   tableData[currentMode].rows.forEach(row => row.push(''));
@@ -1863,6 +1882,10 @@ function closeModal(){
   document.getElementById('modal').classList.remove('show');
 }
 function doClear(){
+  // 🔒 حماية: الزائر/Free لا يستطيع تفريغ البيانات
+  if (typeof window.checkPremiumFeature === 'function') {
+    if (!window.checkPremiumFeature('تفريغ البيانات')) return;
+  }
   closeModal();
   // امسح كل شي
   ['school-name','school-stage','school-term','exam-type','vice-name','principal-name',
@@ -2148,6 +2171,10 @@ function toggleThemeMenu(evt){
 }
 
 function setTheme(theme){
+  // 🔒 حماية: الزائر/Free لا يستطيع تغيير الثيم
+  if (typeof window.checkPremiumFeature === 'function') {
+    if (!window.checkPremiumFeature('تغيير الثيم')) return;
+  }
   document.body.setAttribute('data-theme', theme || '');
   document.querySelectorAll('.theme-option').forEach(opt => {
     opt.classList.toggle('active', (opt.getAttribute('data-theme') || '') === (theme || ''));
@@ -2182,10 +2209,93 @@ document.addEventListener('DOMContentLoaded', () => {
     if(e.key === 'Escape') closeModal();
   });
 });
+
+// ═══════════════════════════════════════════════
+// 🔒 وضع المعاينة - حماية ثلاثية الطبقات
+// (الزائر/Free يشاهد فقط، لا يكتب ولا يحمّل)
+// ═══════════════════════════════════════════════
+(function() {
+  // Layer 1: CSS - تعطيل التفاعل بصرياً
+  const styleEl = document.createElement('style');
+  styleEl.textContent = `
+    body.locked-preview input,
+    body.locked-preview textarea,
+    body.locked-preview [contenteditable],
+    body.locked-preview td,
+    body.locked-preview th {
+      pointer-events: none !important;
+      caret-color: transparent !important;
+      user-select: none !important;
+      -webkit-user-select: none !important;
+    }
+    body.locked-preview .school-logo-frame,
+    body.locked-preview .school-logo-frame * {
+      pointer-events: none !important;
+    }
+  `;
+  document.head.appendChild(styleEl);
+  document.body.classList.add('locked-preview');
+  let _locked = true;
+  console.log('🔒 وضع المعاينة مفعّل');
+
+  // Layer 2: Capture events (6 listeners)
+  const capture = (e) => {
+    if (!_locked) return;
+    const target = e.target.closest('input, textarea, [contenteditable], .school-logo-frame, td, th');
+    if (!target) return;
+    if (target.tagName === 'INPUT' && target.type === 'file') return;
+    e.preventDefault();
+    e.stopPropagation();
+    if (typeof window.showPremiumFeatureModal === 'function') {
+      const isLogo = target.classList.contains('school-logo-frame') ||
+                     target.closest('.school-logo-frame');
+      window.showPremiumFeatureModal(isLogo ? 'رفع شعار المدرسة' : 'الكتابة في الجدول');
+    }
+    return false;
+  };
+  ['click', 'touchstart', 'focusin', 'keydown', 'paste', 'beforeinput'].forEach(evt => {
+    document.addEventListener(evt, capture, { capture: true });
+  });
+
+  // Layer 3: Wrap doClear to prevent reset
+  const wrapClear = () => {
+    if (typeof window.doClear === 'function' && !window.doClear.__wrapped) {
+      const original = window.doClear;
+      window.doClear = function() {
+        if (_locked) {
+          if (typeof window.showPremiumFeatureModal === 'function') {
+            window.showPremiumFeatureModal('تفريغ البيانات');
+          }
+          return;
+        }
+        return original.apply(this, arguments);
+      };
+      window.doClear.__wrapped = true;
+    }
+  };
+  wrapClear();
+  setTimeout(wrapClear, 1000);
+
+  // Watcher: راقب حالة الاشتراك كل 200ms (max 75 attempts = 15s)
+  let attempts = 0;
+  const watcher = setInterval(() => {
+    attempts++;
+    if (attempts > 75) {
+      clearInterval(watcher);
+      return;
+    }
+    if (typeof window.isPremiumUser === 'function' && window.isPremiumUser()) {
+      _locked = false;
+      document.body.classList.remove('locked-preview');
+      clearInterval(watcher);
+      console.log('✅ فُك القفل - مستخدم مشترك');
+    }
+  }, 200);
+})();
 </script>
 
 
 <!-- 🔥 Firebase Integration -->
-<script type="module" src="report-firebase.js"></script>
+<script type="module" src="report-firebase.js?v=12"></script>
 </body>
 </html>
