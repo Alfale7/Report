@@ -94,58 +94,6 @@ export async function registerWithEmail(email, password, extra = {}) {
   }
 }
 
-// ═══════════════════════════════════════════════════════════
-// 📱 دخول بالجوال: نبحث في Firestore عن الإيميل المرتبط بالجوال
-//    ثم نسجّل دخول Firebase العادي
-// ═══════════════════════════════════════════════════════════
-export async function loginWithPhone(phone, password) {
-  try {
-    // تنظيف رقم الجوال
-    let cleanPhone = phone.replace(/\s/g, '').replace(/^\+966/, '0').replace(/^966/, '0');
-    if (!cleanPhone.startsWith('05')) cleanPhone = '0' + cleanPhone;
-    
-    if (!/^05\d{8}$/.test(cleanPhone)) {
-      return { success: false, error: 'رقم الجوال يجب أن يكون 10 أرقام ويبدأ بـ 05' };
-    }
-
-    // ابحث في collection users عن المستخدم بهذا الرقم
-    // نبحث في 3 حقول محتملة: phone, legacyPhone, phoneNumber
-    const usersRef = collection(db, 'users');
-    
-    // نبحث أولاً في الحقل الجديد phone
-    let snap = await getDocs(query(usersRef, where('phone', '==', cleanPhone), limit(1)));
-    
-    // إذا ما حصلنا، نبحث في legacyPhone
-    if (snap.empty) {
-      snap = await getDocs(query(usersRef, where('legacyPhone', '==', cleanPhone), limit(1)));
-    }
-    
-    // إذا ما حصلنا، نبحث في phoneNumber
-    if (snap.empty) {
-      snap = await getDocs(query(usersRef, where('phoneNumber', '==', cleanPhone), limit(1)));
-    }
-
-    if (snap.empty) {
-      return { success: false, error: 'لا يوجد حساب بهذا الرقم. سجّل حساب جديد أولاً.' };
-    }
-
-    // وجدنا المستخدم - نأخذ إيميله
-    const userData = snap.docs[0].data();
-    const userEmail = userData.email;
-
-    if (!userEmail) {
-      return { success: false, error: 'لا يوجد إيميل مرتبط بهذا الرقم' };
-    }
-
-    // سجّل دخول بالإيميل + كلمة المرور
-    const result = await signInWithEmailAndPassword(auth, userEmail, password);
-    await ensureUserDoc(result.user, { authMethod: 'phone' });
-    return { success: true, user: result.user };
-  } catch (error) {
-    return { success: false, error: parseAuthError(error) };
-  }
-}
-
 export async function sendPhoneOTP(phoneNumber, recaptchaContainerId = 'recaptcha-container') {
   try {
     let formatted = phoneNumber.trim().replace(/\s/g, '');
