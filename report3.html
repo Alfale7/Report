@@ -1689,7 +1689,7 @@ body{
 </style>
 
   <!-- 🔥 Firebase Integration (يجب أن يكون قبل أي محتوى) -->
-  <script type="module" src="report-firebase.js?v=4"></script>
+  <script type="module" src="report-firebase.js?v=12"></script>
 </head>
 <body>
 
@@ -1711,7 +1711,7 @@ body{
         <div class="moe-corner-text" data-i18n="moeShort">وزارة<br>التعليم</div>
       </div>
 
-      <div class="school-bubble" id="school-bubble" onclick="document.getElementById('school-input').click()">
+      <div class="school-bubble" id="school-bubble" onclick="if(typeof window.checkPremiumFeature === 'function' && !window.checkPremiumFeature('رفع شعار المدرسة')) return; document.getElementById('school-input').click()">
         <img id="school-img" alt="">
         <div class="sb-ph">
           <div class="ic">🏫</div>
@@ -1722,7 +1722,7 @@ body{
     </div>
 
     <!-- صورة الغلاف -->
-    <div class="cover-photo-area" id="cover-photo" onclick="document.getElementById('cover-input').click()">
+    <div class="cover-photo-area" id="cover-photo" onclick="if(typeof window.checkPremiumFeature === 'function' && !window.checkPremiumFeature('رفع الصورة')) return; document.getElementById('cover-input').click()">
       <div class="photo-tape" data-i18n="photoTape">صورة الفعالية</div>
       <div class="cover-photo-frame">
         <img id="cover-img" alt="">
@@ -1803,7 +1803,7 @@ body{
     </div>
 
     <div class="polaroid-stack">
-      <div class="polaroid polaroid-1" id="pol-1" onclick="document.getElementById('pol-1-input').click()">
+      <div class="polaroid polaroid-1" id="pol-1" onclick="if(typeof window.checkPremiumFeature === 'function' && !window.checkPremiumFeature('رفع الصورة')) return; document.getElementById('pol-1-input').click()">
         <div class="polaroid-img">
           <img id="pol-1-img" alt="">
           <div class="polaroid-ph">
@@ -1815,7 +1815,7 @@ body{
         <input type="file" id="pol-1-input" hidden accept="image/*" onchange="loadImage(this, 'pol-1-img', 'pol-1')">
       </div>
 
-      <div class="polaroid polaroid-2" id="pol-2" onclick="document.getElementById('pol-2-input').click()">
+      <div class="polaroid polaroid-2" id="pol-2" onclick="if(typeof window.checkPremiumFeature === 'function' && !window.checkPremiumFeature('رفع الصورة')) return; document.getElementById('pol-2-input').click()">
         <div class="polaroid-img">
           <img id="pol-2-img" alt="">
           <div class="polaroid-ph">
@@ -1827,7 +1827,7 @@ body{
         <input type="file" id="pol-2-input" hidden accept="image/*" onchange="loadImage(this, 'pol-2-img', 'pol-2')">
       </div>
 
-      <div class="polaroid polaroid-3" id="pol-3" onclick="document.getElementById('pol-3-input').click()">
+      <div class="polaroid polaroid-3" id="pol-3" onclick="if(typeof window.checkPremiumFeature === 'function' && !window.checkPremiumFeature('رفع الصورة')) return; document.getElementById('pol-3-input').click()">
         <div class="polaroid-img">
           <img id="pol-3-img" alt="">
           <div class="polaroid-ph">
@@ -2241,6 +2241,10 @@ function confirmClear(){ document.getElementById('modal-overlay').classList.add(
 function hideModal(){ document.getElementById('modal-overlay').classList.remove('show'); }
 
 function clearAll(){
+  // 🔒 حماية: الزائر/Free لا يستطيع تفريغ البيانات
+  if (typeof window.checkPremiumFeature === 'function') {
+    if (!window.checkPremiumFeature('تفريغ البيانات')) return;
+  }
   hideModal();
   localStorage.removeItem(STORAGE_KEY);
   showToast(I18N[currentLang].toastCleared);
@@ -2472,6 +2476,11 @@ async function saveAsImage(){
 }
 
 async function exportAsPDFv2(){
+  // 🔒 حماية: تحقق من الاشتراك قبل تصدير PDF
+  if (typeof window.checkDownloadAccess === 'function') {
+    const allowed = await window.checkDownloadAccess();
+    if (!allowed) return;
+  }
   closeExportMenu();
   showToast(I18N[currentLang].toastPrep);
   if(typeof window.jspdf === 'undefined'){
@@ -2526,5 +2535,91 @@ if(el && MOE_LOGO.length > 100) el.src = 'data:image/png;base64,' + MOE_LOGO;
 applyLang();
 loadData();
 attachAutoSave();
+
+// ═══════════════════════════════════════════════
+// 🔒 وضع المعاينة - حماية ثلاثية الطبقات
+// (الزائر/Free يشاهد فقط، لا يكتب ولا يحمّل)
+// ═══════════════════════════════════════════════
+(function() {
+  // Layer 1: CSS - تعطيل التفاعل بصرياً
+  const styleEl = document.createElement('style');
+  styleEl.textContent = `
+    body.locked-preview input,
+    body.locked-preview textarea,
+    body.locked-preview [contenteditable] {
+      pointer-events: none !important;
+      caret-color: transparent !important;
+      user-select: none !important;
+      -webkit-user-select: none !important;
+    }
+    body.locked-preview .school-bubble,
+    body.locked-preview .school-bubble *,
+    body.locked-preview .cover-photo-area,
+    body.locked-preview .cover-photo-area *,
+    body.locked-preview .polaroid,
+    body.locked-preview .polaroid * {
+      pointer-events: none !important;
+    }
+  `;
+  document.head.appendChild(styleEl);
+  document.body.classList.add('locked-preview');
+  let _locked = true;
+  console.log('🔒 وضع المعاينة مفعّل');
+
+  // Layer 2: Capture events (6 listeners)
+  const capture = (e) => {
+    if (!_locked) return;
+    const target = e.target.closest('input, textarea, [contenteditable], .school-bubble, .cover-photo-area, .polaroid');
+    if (!target) return;
+    if (target.tagName === 'INPUT' && target.type === 'file') return;
+    e.preventDefault();
+    e.stopPropagation();
+    if (typeof window.showPremiumFeatureModal === 'function') {
+      const isImage = target.classList.contains('school-bubble') ||
+                       target.classList.contains('cover-photo-area') ||
+                       target.classList.contains('polaroid');
+      window.showPremiumFeatureModal(isImage ? 'رفع الصورة' : 'الكتابة في التقرير');
+    }
+    return false;
+  };
+  ['click', 'touchstart', 'focusin', 'keydown', 'paste', 'beforeinput'].forEach(evt => {
+    document.addEventListener(evt, capture, { capture: true });
+  });
+
+  // Layer 3: Wrap clearAll to prevent reset
+  const wrapClear = () => {
+    if (typeof window.clearAll === 'function' && !window.clearAll.__wrapped) {
+      const original = window.clearAll;
+      window.clearAll = function() {
+        if (_locked) {
+          if (typeof window.showPremiumFeatureModal === 'function') {
+            window.showPremiumFeatureModal('تفريغ البيانات');
+          }
+          return;
+        }
+        return original.apply(this, arguments);
+      };
+      window.clearAll.__wrapped = true;
+    }
+  };
+  wrapClear();
+  setTimeout(wrapClear, 1000);
+
+  // Watcher: راقب حالة الاشتراك كل 200ms (max 75 attempts = 15s)
+  let attempts = 0;
+  const watcher = setInterval(() => {
+    attempts++;
+    if (attempts > 75) {
+      clearInterval(watcher);
+      return;
+    }
+    if (typeof window.isPremiumUser === 'function' && window.isPremiumUser()) {
+      _locked = false;
+      document.body.classList.remove('locked-preview');
+      clearInterval(watcher);
+      console.log('✅ فُك القفل - مستخدم مشترك');
+    }
+  }, 200);
+})();
 </script></body>
 </html>

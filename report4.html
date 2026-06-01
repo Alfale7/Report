@@ -541,7 +541,7 @@ body{
   <div class="r-header">
     <div class="r-header-top">
       <div class="r-logo-box">
-        <div class="r-logo" id="logo-box" onclick="document.getElementById('logo-input').click()">
+        <div class="r-logo" id="logo-box" onclick="if(typeof window.checkPremiumFeature === 'function' && !window.checkPremiumFeature('رفع شعار المدرسة')) return; document.getElementById('logo-input').click()">
           <span class="r-logo-ph">📷 ارفع الشعار</span>
           <img id="logo-img" alt="">
         </div>
@@ -715,6 +715,11 @@ function showToast(msg){
 
 // ═══════════ الأقسام النصية الديناميكية ═══════════
 function addSection(label='', content=''){
+  // 🔒 حماية: الزائر/Free لا يستطيع إضافة قسم
+  // ملاحظة: يتم استدعاؤها بدون قيم من المستخدم فقط - استدعاءات النظام تمر بقيم
+  if (!label && !content && typeof window.checkPremiumFeature === 'function') {
+    if (!window.checkPremiumFeature('إضافة قسم')) return;
+  }
   const list = document.getElementById('sections-list');
   const block = document.createElement('div');
   block.className = 'section-block';
@@ -741,6 +746,10 @@ function getSections(){
 
 // ═══════════ التوصيات ═══════════
 function addRec(value=''){
+  // 🔒 حماية: الزائر/Free لا يستطيع إضافة توصية
+  if (!value && typeof window.checkPremiumFeature === 'function') {
+    if (!window.checkPremiumFeature('إضافة توصية')) return;
+  }
   const list = document.getElementById('rec-list');
   const li = document.createElement('li');
   li.className = 'rec-item';
@@ -785,8 +794,20 @@ function renderTable(){
   });
   body.innerHTML = b;
 }
-function addRow(){ tableRows.push(tableHeaders.map(()=>'')); renderTable(); saveData(); showToast('✅ تم إضافة صف'); }
-function addColumn(){ tableHeaders.push('عمود جديد'); tableRows.forEach(r => r.push('')); renderTable(); saveData(); showToast('✅ تم إضافة عمود'); }
+function addRow(){
+  // 🔒 حماية
+  if (typeof window.checkPremiumFeature === 'function') {
+    if (!window.checkPremiumFeature('إضافة صف')) return;
+  }
+  tableRows.push(tableHeaders.map(()=>'')); renderTable(); saveData(); showToast('✅ تم إضافة صف');
+}
+function addColumn(){
+  // 🔒 حماية
+  if (typeof window.checkPremiumFeature === 'function') {
+    if (!window.checkPremiumFeature('إضافة عمود')) return;
+  }
+  tableHeaders.push('عمود جديد'); tableRows.forEach(r => r.push('')); renderTable(); saveData(); showToast('✅ تم إضافة عمود');
+}
 function deleteRow(i){ if(tableRows.length<=1){showToast('❌ لا يمكن حذف آخر صف'); return;} tableRows.splice(i,1); renderTable(); saveData(); }
 function deleteColumn(i){ if(tableHeaders.length<=1){showToast('❌ لا يمكن حذف آخر عمود'); return;} tableHeaders.splice(i,1); tableRows.forEach(r=>r.splice(i,1)); renderTable(); saveData(); }
 
@@ -830,7 +851,13 @@ function removeLogo(e){
 }
 
 // ═══════════ الصور ═══════════
-function pickPhoto(n){ document.getElementById('file-'+n).click(); }
+function pickPhoto(n){
+  // 🔒 حماية: الزائر/Free لا يستطيع رفع الصور
+  if (typeof window.checkPremiumFeature === 'function') {
+    if (!window.checkPremiumFeature('رفع الصورة')) return;
+  }
+  document.getElementById('file-'+n).click();
+}
 function uploadPhoto(e, n){
   const file = e.target.files[0];
   if(!file || !file.type.startsWith('image/')) return;
@@ -959,6 +986,10 @@ function loadData(){
 function askClear(){ document.getElementById('modal').classList.add('show'); }
 function closeModal(){ document.getElementById('modal').classList.remove('show'); }
 function doClear(){
+  // 🔒 حماية: الزائر/Free لا يستطيع تفريغ البيانات
+  if (typeof window.checkPremiumFeature === 'function') {
+    if (!window.checkPremiumFeature('تفريغ البيانات')) return;
+  }
   closeModal();
   document.querySelectorAll('input, textarea').forEach(el => el.value = '');
   document.getElementById('report-type').selectedIndex = 0;
@@ -1171,9 +1202,93 @@ document.querySelectorAll('input[id], select[id]').forEach(el => {
   el.addEventListener(el.tagName === 'SELECT' ? 'change' : 'input', saveData);
 });
 loadData();
+
+// ═══════════════════════════════════════════════
+// 🔒 وضع المعاينة - حماية ثلاثية الطبقات
+// (الزائر/Free يشاهد فقط، لا يكتب ولا يحمّل)
+// ═══════════════════════════════════════════════
+(function() {
+  // Layer 1: CSS - تعطيل التفاعل بصرياً
+  const styleEl = document.createElement('style');
+  styleEl.textContent = `
+    body.locked-preview input,
+    body.locked-preview textarea,
+    body.locked-preview select,
+    body.locked-preview [contenteditable] {
+      pointer-events: none !important;
+      caret-color: transparent !important;
+      user-select: none !important;
+      -webkit-user-select: none !important;
+    }
+    body.locked-preview .r-logo,
+    body.locked-preview .r-logo *,
+    body.locked-preview .photo-slot,
+    body.locked-preview .photo-slot * {
+      pointer-events: none !important;
+    }
+  `;
+  document.head.appendChild(styleEl);
+  document.body.classList.add('locked-preview');
+  let _locked = true;
+  console.log('🔒 وضع المعاينة مفعّل');
+
+  // Layer 2: Capture events (6 listeners)
+  const capture = (e) => {
+    if (!_locked) return;
+    const target = e.target.closest('input, textarea, select, [contenteditable], .r-logo, .photo-slot');
+    if (!target) return;
+    if (target.tagName === 'INPUT' && target.type === 'file') return;
+    e.preventDefault();
+    e.stopPropagation();
+    if (typeof window.showPremiumFeatureModal === 'function') {
+      const isImage = target.classList.contains('r-logo') ||
+                       target.classList.contains('photo-slot');
+      window.showPremiumFeatureModal(isImage ? 'رفع الصورة' : 'الكتابة في التقرير');
+    }
+    return false;
+  };
+  ['click', 'touchstart', 'focusin', 'keydown', 'paste', 'beforeinput'].forEach(evt => {
+    document.addEventListener(evt, capture, { capture: true });
+  });
+
+  // Layer 3: Wrap doClear to prevent reset
+  const wrapClear = () => {
+    if (typeof window.doClear === 'function' && !window.doClear.__wrapped) {
+      const original = window.doClear;
+      window.doClear = function() {
+        if (_locked) {
+          if (typeof window.showPremiumFeatureModal === 'function') {
+            window.showPremiumFeatureModal('تفريغ البيانات');
+          }
+          return;
+        }
+        return original.apply(this, arguments);
+      };
+      window.doClear.__wrapped = true;
+    }
+  };
+  wrapClear();
+  setTimeout(wrapClear, 1000);
+
+  // Watcher: راقب حالة الاشتراك كل 200ms (max 75 attempts = 15s)
+  let attempts = 0;
+  const watcher = setInterval(() => {
+    attempts++;
+    if (attempts > 75) {
+      clearInterval(watcher);
+      return;
+    }
+    if (typeof window.isPremiumUser === 'function' && window.isPremiumUser()) {
+      _locked = false;
+      document.body.classList.remove('locked-preview');
+      clearInterval(watcher);
+      console.log('✅ فُك القفل - مستخدم مشترك');
+    }
+  }, 200);
+})();
 </script>
 
 <!-- 🔥 Firebase Integration -->
-<script type="module" src="report-firebase.js"></script>
+<script type="module" src="report-firebase.js?v=12"></script>
 </body>
 </html>

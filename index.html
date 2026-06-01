@@ -6190,7 +6190,7 @@ font-size:0.78rem;text-align:center;margin-top:12px;display:none;
       </div>
     </div>
 
-    <div class="preview-card r-magazine locked" data-target="report3.html" onclick="handleCardClick(this)">
+    <div class="preview-card r-magazine" data-target="report3.html" onclick="handleCardClick(this)">
       <span class="card-badge badge-premium">🎨 <span data-i18n="badgeArtistic">تصميم فني</span></span>
       <div class="thumb thumb-magazine">
         <div class="real-snap snap-magazine">
@@ -6222,12 +6222,6 @@ font-size:0.78rem;text-align:center;margin-top:12px;display:none;
             </div>
           </div>
         </div>
-        <div class="lock-overlay">
-          <div class="lock-cta">
-            <span>🔑</span>
-            <span data-i18n="lockCta">سجّل الدخول للوصول</span>
-          </div>
-        </div>
       </div>
       <div class="card-content">
         <div class="card-icon-wrap">
@@ -6246,18 +6240,12 @@ font-size:0.78rem;text-align:center;margin-top:12px;display:none;
       </div>
     </div>
 
-    <div class="preview-card r-report4 locked" data-target="report4.html" onclick="handleCardClick(this)">
+    <div class="preview-card r-report4" data-target="report4.html" onclick="handleCardClick(this)">
       <span class="card-badge badge-new">✨ <span data-i18n="badgeNew">جديد</span></span>
       <div class="thumb thumb-report4">
         <div class="iframe-snap-wrap" id="iframe-report4">
           <div class="iframe-loading" data-i18n="loadingPreview">جاري تحميل المعاينة</div>
           <iframe src="report4.html" loading="lazy" scrolling="no" sandbox="allow-same-origin allow-scripts" title="معاينة التقرير المرن" onload="this.parentElement.classList.add('loaded')"></iframe>
-        </div>
-        <div class="lock-overlay">
-          <div class="lock-cta">
-            <span>🔑</span>
-            <span data-i18n="lockCta">سجّل الدخول للوصول</span>
-          </div>
         </div>
       </div>
       <div class="card-content">
@@ -7895,7 +7883,7 @@ function handleCardClick(card){
   const target = card.getAttribute('data-target');
 
   // 👁️ تقارير المعاينة / التجربة - يفتحها أي زائر بدون تسجيل دخول
-  const VIEW_ONLY_AND_FREE_TRIAL = ['report.html', 'tasis.html', 'watny.html', 'alm.html', 'alm2.html', 'green.html', 'shawahed.html', 'enjaz.html', 'kg.html', 'report2.html'];
+  const VIEW_ONLY_AND_FREE_TRIAL = ['report.html', 'tasis.html', 'watny.html', 'alm.html', 'alm2.html', 'green.html', 'shawahed.html', 'enjaz.html', 'kg.html', 'report2.html', 'report3.html', 'report4.html'];
   if (target && VIEW_ONLY_AND_FREE_TRIAL.includes(target)) {
     window.location.href = target;
     return;
