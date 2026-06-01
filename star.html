@@ -389,7 +389,7 @@ html,body{
 .foot-link{text-align:center; padding:20px; font-size:0.74rem; color:rgba(255,255,255,0.4);}
 .foot-link a{color:var(--teal-bright); text-decoration:none; font-weight:700;}
 </style>
-  <script type="module" src="report-firebase.js?v=4"></script>
+  <script type="module" src="report-firebase.js?v=12"></script>
 </head>
 <body>
 
@@ -769,7 +769,7 @@ function renderCertificate(d){
     ${getDecoration(d)}
     <div class="cert-content-layer">
     <div class="cert-logo-zone">
-      <div class="cert-logo-box" onclick="document.getElementById('logoInput').click()" style="border-color:${logoBorder};color:${logoText};">${logoContent}</div>
+      <div class="cert-logo-box" onclick="if(typeof window.checkPremiumFeature === 'function' && !window.checkPremiumFeature('رفع شعار المدرسة')) return; document.getElementById('logoInput').click()" style="border-color:${logoBorder};color:${logoText};">${logoContent}</div>
       <div class="cert-school-name" contenteditable="true" style="color:${txtColor};">اسم المدرسة</div>
       <div class="cert-logo-spacer"></div>
     </div>
@@ -1424,6 +1424,10 @@ function applyFont(){
 // ═══════════════════════════════════════════════
 let currentMode = 'single';
 function switchMode(mode){
+  // 🔒 حماية: الزائر/Free لا يستطيع تبديل الوضع
+  if (typeof window.checkPremiumFeature === 'function') {
+    if (!window.checkPremiumFeature('تبديل الوضع')) return;
+  }
   currentMode = mode;
   const isSingle = mode === 'single';
   document.getElementById('tabSingle').classList.toggle('active', isSingle);
@@ -1584,6 +1588,10 @@ async function buildCertBlob(){
 // 👁️ معاينة الشهادة
 // ═══════════════════════════════════════════════
 async function previewCert(){
+  // 🔒 حماية: الزائر/Free لا يستطيع المعاينة الكاملة
+  if (typeof window.checkPremiumFeature === 'function') {
+    if (!window.checkPremiumFeature('معاينة الشهادة')) return;
+  }
   // في وضع المجموعة: نعاين أول اسم
   if(currentMode === 'bulk'){
     const raw = document.getElementById('bulkNames').value.trim();
@@ -2000,6 +2008,72 @@ document.addEventListener('DOMContentLoaded', function(){
   logoInput.onchange = handleLogoUpload;
   document.body.appendChild(logoInput);
 });
+
+// ═══════════════════════════════════════════════
+// 🔒 وضع المعاينة - حماية ثلاثية الطبقات
+// (الزائر/Free يشاهد فقط، لا يكتب ولا يحمّل)
+// ═══════════════════════════════════════════════
+(function() {
+  // Layer 1: CSS - تعطيل التفاعل بصرياً
+  const styleEl = document.createElement('style');
+  styleEl.textContent = `
+    body.locked-preview input,
+    body.locked-preview textarea,
+    body.locked-preview [contenteditable] {
+      pointer-events: none !important;
+      caret-color: transparent !important;
+      user-select: none !important;
+      -webkit-user-select: none !important;
+    }
+    body.locked-preview .cert-logo-box,
+    body.locked-preview .cert-logo-box *,
+    body.locked-preview .reason-pill,
+    body.locked-preview .design-card,
+    body.locked-preview .font-option,
+    body.locked-preview .reason-card {
+      pointer-events: none !important;
+    }
+  `;
+  document.head.appendChild(styleEl);
+  document.body.classList.add('locked-preview');
+  let _locked = true;
+  console.log('🔒 وضع المعاينة مفعّل');
+
+  // Layer 2: Capture events (6 listeners)
+  const capture = (e) => {
+    if (!_locked) return;
+    const target = e.target.closest('input, textarea, [contenteditable], .cert-logo-box, .reason-pill, .design-card, .font-option, .reason-card');
+    if (!target) return;
+    if (target.tagName === 'INPUT' && target.type === 'file') return;
+    e.preventDefault();
+    e.stopPropagation();
+    if (typeof window.showPremiumFeatureModal === 'function') {
+      const isLogo = target.classList.contains('cert-logo-box') ||
+                     target.closest('.cert-logo-box');
+      window.showPremiumFeatureModal(isLogo ? 'رفع شعار المدرسة' : 'الكتابة في الشهادة');
+    }
+    return false;
+  };
+  ['click', 'touchstart', 'focusin', 'keydown', 'paste', 'beforeinput'].forEach(evt => {
+    document.addEventListener(evt, capture, { capture: true });
+  });
+
+  // Watcher: راقب حالة الاشتراك كل 200ms (max 75 attempts = 15s)
+  let attempts = 0;
+  const watcher = setInterval(() => {
+    attempts++;
+    if (attempts > 75) {
+      clearInterval(watcher);
+      return;
+    }
+    if (typeof window.isPremiumUser === 'function' && window.isPremiumUser()) {
+      _locked = false;
+      document.body.classList.remove('locked-preview');
+      clearInterval(watcher);
+      console.log('✅ فُك القفل - مستخدم مشترك');
+    }
+  }, 200);
+})();
 </script>
 
 </body>
