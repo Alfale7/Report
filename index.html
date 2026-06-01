@@ -6022,7 +6022,7 @@ font-size:0.78rem;text-align:center;margin-top:12px;display:none;
     </div>
 
     <!-- Card: إذاعة مدرسية -->
-    <div class="preview-card r-radio locked" data-target="radio.html" onclick="handleCardClick(this)">
+    <div class="preview-card r-radio" data-target="radio.html" onclick="handleCardClick(this)">
       <span class="card-badge badge-pop">🎙️ <span data-i18n="badgeWeekly">أسبوعي</span></span>
       <div class="thumb thumb-admin thumb-radio">
         <div class="ta-band"></div>
@@ -6033,12 +6033,6 @@ font-size:0.78rem;text-align:center;margin-top:12px;display:none;
           <div class="ta-row"></div>
           <div class="ta-row short"></div>
           <div class="ta-row"></div>
-        </div>
-        <div class="lock-overlay">
-          <div class="lock-cta">
-            <span>🔑</span>
-            <span data-i18n="lockCta">سجّل الدخول للوصول</span>
-          </div>
         </div>
       </div>
       <div class="card-content">
@@ -7841,7 +7835,7 @@ function handleCardClick(card){
   const target = card.getAttribute('data-target');
 
   // 👁️ تقارير المعاينة / التجربة - يفتحها أي زائر بدون تسجيل دخول
-  const VIEW_ONLY_AND_FREE_TRIAL = ['report.html', 'tasis.html', 'watny.html', 'alm.html', 'alm2.html', 'green.html', 'shawahed.html', 'enjaz.html', 'kg.html', 'report2.html', 'report3.html', 'report4.html', 'teacher.html', 'arabic.html', 'cert.html', 'exam.html', 'star.html', 'plan.html', 'visit.html'];
+  const VIEW_ONLY_AND_FREE_TRIAL = ['report.html', 'tasis.html', 'watny.html', 'alm.html', 'alm2.html', 'green.html', 'shawahed.html', 'enjaz.html', 'kg.html', 'report2.html', 'report3.html', 'report4.html', 'teacher.html', 'arabic.html', 'cert.html', 'exam.html', 'star.html', 'plan.html', 'visit.html', 'radio.html'];
   if (target && VIEW_ONLY_AND_FREE_TRIAL.includes(target)) {
     window.location.href = target;
     return;
