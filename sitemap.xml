@@ -2,114 +2,260 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
         xmlns:xhtml="http://www.w3.org/1999/xhtml">
 
+  <!-- ═══════════════════════════════════════════
+       🏠 الصفحة الرئيسية (أعلى أولوية)
+       ═══════════════════════════════════════════ -->
   <url>
     <loc>https://ksa2030.one/</loc>
-    <lastmod>2026-05-31</lastmod>
+    <lastmod>2026-06-01</lastmod>
     <changefreq>weekly</changefreq>
     <priority>1.0</priority>
   </url>
 
-  <url>
-    <loc>https://ksa2030.one/profile.html</loc>
-    <lastmod>2026-05-31</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.7</priority>
-  </url>
-
+  <!-- ═══════════════════════════════════════════
+       📄 الصفحات الأساسية
+       ═══════════════════════════════════════════ -->
   <url>
     <loc>https://ksa2030.one/login.html</loc>
-    <lastmod>2026-05-31</lastmod>
+    <lastmod>2026-06-01</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>
 
   <url>
+    <loc>https://ksa2030.one/profile.html</loc>
+    <lastmod>2026-06-01</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+
+  <url>
+    <loc>https://ksa2030.one/contact.html</loc>
+    <lastmod>2026-06-01</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.5</priority>
+  </url>
+
+  <url>
+    <loc>https://ksa2030.one/faq.html</loc>
+    <lastmod>2026-06-01</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.5</priority>
+  </url>
+
+  <url>
+    <loc>https://ksa2030.one/privacy.html</loc>
+    <lastmod>2026-06-01</lastmod>
+    <changefreq>yearly</changefreq>
+    <priority>0.3</priority>
+  </url>
+
+  <url>
+    <loc>https://ksa2030.one/terms.html</loc>
+    <lastmod>2026-06-01</lastmod>
+    <changefreq>yearly</changefreq>
+    <priority>0.3</priority>
+  </url>
+
+  <!-- ═══════════════════════════════════════════
+       💎 التقارير المدفوعة (أولوية عالية - 0.9)
+       ═══════════════════════════════════════════ -->
+  <url>
     <loc>https://ksa2030.one/enjaz.html</loc>
-    <lastmod>2026-05-31</lastmod>
+    <lastmod>2026-06-01</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.9</priority>
   </url>
 
   <url>
     <loc>https://ksa2030.one/kg.html</loc>
-    <lastmod>2026-05-31</lastmod>
+    <lastmod>2026-06-01</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.9</priority>
   </url>
 
   <url>
     <loc>https://ksa2030.one/shawahed.html</loc>
-    <lastmod>2026-05-31</lastmod>
+    <lastmod>2026-06-01</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.9</priority>
   </url>
 
   <url>
     <loc>https://ksa2030.one/report.html</loc>
-    <lastmod>2026-05-31</lastmod>
+    <lastmod>2026-06-01</lastmod>
     <changefreq>monthly</changefreq>
-    <priority>0.8</priority>
+    <priority>0.9</priority>
+  </url>
+
+  <url>
+    <loc>https://ksa2030.one/star.html</loc>
+    <lastmod>2026-06-01</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.9</priority>
+  </url>
+
+  <!-- ═══════════════════════════════════════════
+       🇸🇦 تقارير المناسبات الوطنية (أولوية 0.85)
+       ═══════════════════════════════════════════ -->
+  <url>
+    <loc>https://ksa2030.one/watny.html</loc>
+    <lastmod>2026-06-01</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.85</priority>
   </url>
 
   <url>
     <loc>https://ksa2030.one/tasis.html</loc>
-    <lastmod>2026-05-31</lastmod>
+    <lastmod>2026-06-01</lastmod>
     <changefreq>monthly</changefreq>
-    <priority>0.8</priority>
-  </url>
-
-  <url>
-    <loc>https://ksa2030.one/watny.html</loc>
-    <lastmod>2026-05-31</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.8</priority>
+    <priority>0.85</priority>
   </url>
 
   <url>
     <loc>https://ksa2030.one/alm.html</loc>
-    <lastmod>2026-05-31</lastmod>
+    <lastmod>2026-06-01</lastmod>
     <changefreq>monthly</changefreq>
-    <priority>0.8</priority>
+    <priority>0.85</priority>
   </url>
 
   <url>
     <loc>https://ksa2030.one/alm2.html</loc>
-    <lastmod>2026-05-31</lastmod>
+    <lastmod>2026-06-01</lastmod>
     <changefreq>monthly</changefreq>
-    <priority>0.8</priority>
+    <priority>0.85</priority>
   </url>
 
   <url>
     <loc>https://ksa2030.one/green.html</loc>
-    <lastmod>2026-05-31</lastmod>
+    <lastmod>2026-06-01</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.85</priority>
+  </url>
+
+  <!-- ═══════════════════════════════════════════
+       🎓 المناسبات التعليمية والثقافية (0.8)
+       ═══════════════════════════════════════════ -->
+  <url>
+    <loc>https://ksa2030.one/teacher.html</loc>
+    <lastmod>2026-06-01</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
 
   <url>
+    <loc>https://ksa2030.one/arabic.html</loc>
+    <lastmod>2026-06-01</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+
+  <url>
+    <loc>https://ksa2030.one/ealaqa.html</loc>
+    <lastmod>2026-06-01</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+
+  <!-- ═══════════════════════════════════════════
+       📋 التقارير الإدارية (0.75)
+       ═══════════════════════════════════════════ -->
+  <url>
+    <loc>https://ksa2030.one/minutes.html</loc>
+    <lastmod>2026-06-01</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.75</priority>
+  </url>
+
+  <url>
+    <loc>https://ksa2030.one/council.html</loc>
+    <lastmod>2026-06-01</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.75</priority>
+  </url>
+
+  <url>
+    <loc>https://ksa2030.one/parents.html</loc>
+    <lastmod>2026-06-01</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.75</priority>
+  </url>
+
+  <url>
+    <loc>https://ksa2030.one/radio.html</loc>
+    <lastmod>2026-06-01</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.75</priority>
+  </url>
+
+  <!-- ═══════════════════════════════════════════
+       🏫 التقارير المدرسية (0.75)
+       ═══════════════════════════════════════════ -->
+  <url>
+    <loc>https://ksa2030.one/plan.html</loc>
+    <lastmod>2026-06-01</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.75</priority>
+  </url>
+
+  <url>
+    <loc>https://ksa2030.one/visit.html</loc>
+    <lastmod>2026-06-01</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.75</priority>
+  </url>
+
+  <url>
+    <loc>https://ksa2030.one/trip.html</loc>
+    <lastmod>2026-06-01</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.75</priority>
+  </url>
+
+  <!-- ═══════════════════════════════════════════
+       📊 الجداول والوثائق (0.75)
+       ═══════════════════════════════════════════ -->
+  <url>
+    <loc>https://ksa2030.one/exam.html</loc>
+    <lastmod>2026-06-01</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.75</priority>
+  </url>
+
+  <url>
+    <loc>https://ksa2030.one/cert.html</loc>
+    <lastmod>2026-06-01</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.75</priority>
+  </url>
+
+  <!-- ═══════════════════════════════════════════
+       🛠️ الأدوات المجانية (0.7)
+       ═══════════════════════════════════════════ -->
+  <url>
+    <loc>https://ksa2030.one/image-to-pdf.html</loc>
+    <lastmod>2026-06-01</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+
+  <url>
     <loc>https://ksa2030.one/qr.html</loc>
-    <lastmod>2026-05-31</lastmod>
+    <lastmod>2026-06-01</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
 
   <url>
     <loc>https://ksa2030.one/link-qr.html</loc>
-    <lastmod>2026-05-31</lastmod>
+    <lastmod>2026-06-01</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
 
   <url>
     <loc>https://ksa2030.one/pdf-qr.html</loc>
-    <lastmod>2026-05-31</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.7</priority>
-  </url>
-
-  <url>
-    <loc>https://ksa2030.one/image-to-pdf.html</loc>
-    <lastmod>2026-05-31</lastmod>
+    <lastmod>2026-06-01</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
