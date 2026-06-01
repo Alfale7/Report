@@ -3536,6 +3536,127 @@ width:30%;height:2px;background:#6b4a2b;opacity:0.5;
 .snap-arabic .rs-field{border-color:#1e6b8a; color:#1e6b8a;}
 .snap-arabic .rs-footer{color:#1e6b8a;}
 
+/* تقرير الفعاليات - كتاب رقمي تفاعلي */
+.thumb-book{
+  background: linear-gradient(135deg, #f4e4c1 0%, #e8d3a3 100%);
+  padding: 14px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.book-snap{
+  width: 100%;
+  height: 100%;
+  background: #fdf6e3;
+  border-radius: 6px;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.15), inset 0 0 30px rgba(0,0,0,0.05);
+  display: flex;
+  position: relative;
+  overflow: hidden;
+}
+.book-snap-spine{
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 50%;
+  width: 4px;
+  transform: translateX(-50%);
+  background: linear-gradient(180deg, rgba(0,0,0,0.15), rgba(0,0,0,0.3), rgba(0,0,0,0.15));
+  z-index: 2;
+}
+.book-snap-page{
+  flex: 1;
+  padding: 12px;
+  display: flex;
+  flex-direction: column;
+  position: relative;
+}
+.book-snap-left{
+  background: linear-gradient(135deg, #2d4a3e 0%, #1a3528 100%);
+  color: #f4e4c1;
+  border-radius: 6px 0 0 6px;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+}
+.book-snap-cover-eyebrow{
+  font-size: 0.5rem;
+  letter-spacing: 2px;
+  color: #c5a059;
+  margin-bottom: 6px;
+  font-weight: 700;
+}
+.book-snap-cover-title{
+  font-size: 0.85rem;
+  font-weight: 900;
+  font-family: 'Aref Ruqaa', serif;
+  margin-bottom: 6px;
+}
+.book-snap-cover-divider{
+  width: 30px;
+  height: 2px;
+  background: #c5a059;
+  margin: 4px 0;
+}
+.book-snap-cover-sub{
+  font-size: 0.55rem;
+  opacity: 0.85;
+  margin-bottom: 8px;
+}
+.book-snap-cover-year{
+  font-size: 0.6rem;
+  color: #c5a059;
+  font-weight: 700;
+}
+.book-snap-right{
+  background: #fdf6e3;
+  border-radius: 0 6px 6px 0;
+  gap: 6px;
+}
+.book-snap-eyebrow{
+  font-size: 0.5rem;
+  letter-spacing: 2px;
+  color: #2d4a3e;
+  font-weight: 700;
+}
+.book-snap-title-line{
+  height: 4px;
+  background: #2d4a3e;
+  border-radius: 2px;
+  width: 70%;
+}
+.book-snap-meta{
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 3px;
+  margin-top: 4px;
+}
+.book-snap-meta-cell{
+  height: 8px;
+  background: rgba(45,74,62,0.15);
+  border-radius: 2px;
+}
+.book-snap-images{
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 3px;
+  margin-top: 4px;
+}
+.book-snap-img{
+  height: 16px;
+  background: linear-gradient(135deg, #c5a059, #8b6f37);
+  border-radius: 2px;
+}
+.book-snap-text-line{
+  height: 3px;
+  background: rgba(45,74,62,0.2);
+  border-radius: 1px;
+  margin-top: 2px;
+}
+.book-snap-text-line.short{
+  width: 60%;
+}
+
 /* تقرير الجريدة - أزرق ملكي + ذهبي + ورق عتيق */
 .snap-newspaper{background:linear-gradient(180deg, #f5ecd6 0%, #fbf4dd 100%);}
 .snap-newspaper .rs-header{background:linear-gradient(135deg, #1a3a5c, #0f2440); color:#f5ecd6; border-bottom:2px solid #c5a059;}
@@ -6101,7 +6222,7 @@ font-size:0.78rem;text-align:center;margin-top:12px;display:none;
         <div class="cat-text">
           <div class="cat-title">
             <span data-i18n="catSchool">التقارير المدرسية</span>
-            <span class="cat-count">3</span>
+            <span class="cat-count">4</span>
           </div>
           <div class="cat-sub" data-i18n="catSchoolSub">تقارير الأنشطة والفعاليات</div>
         </div>
@@ -6229,6 +6350,54 @@ font-size:0.78rem;text-align:center;margin-top:12px;display:none;
             <span class="meta-pill">📷 <span data-i18n="metaPhotosFlex">3 صور + شعار</span></span>
             <span class="meta-sep"></span>
             <span class="meta-pill">🎨 <span data-i18n="metaThemesFlex">6 ثيمات</span></span>
+          </div>
+        </div>
+        <div class="card-action">‹</div>
+      </div>
+    </div>
+
+    <!-- Card: تقرير الفعاليات كتاب رقمي -->
+    <div class="preview-card r-book" data-target="report5.html" onclick="handleCardClick(this)">
+      <span class="card-badge badge-premium">📖 <span data-i18n="badgeBook">كتاب رقمي</span></span>
+      <div class="thumb thumb-book">
+        <div class="book-snap">
+          <div class="book-snap-spine"></div>
+          <div class="book-snap-page book-snap-left">
+            <div class="book-snap-cover-eyebrow">EVENTS REPORT</div>
+            <div class="book-snap-cover-title">تقرير الفعاليات</div>
+            <div class="book-snap-cover-divider"></div>
+            <div class="book-snap-cover-sub">كتاب رقمي تفاعلي</div>
+            <div class="book-snap-cover-year">١٤٤٧ هـ</div>
+          </div>
+          <div class="book-snap-page book-snap-right">
+            <div class="book-snap-eyebrow">EVENT 01</div>
+            <div class="book-snap-title-line"></div>
+            <div class="book-snap-meta">
+              <div class="book-snap-meta-cell"></div>
+              <div class="book-snap-meta-cell"></div>
+              <div class="book-snap-meta-cell"></div>
+              <div class="book-snap-meta-cell"></div>
+            </div>
+            <div class="book-snap-images">
+              <div class="book-snap-img"></div>
+              <div class="book-snap-img"></div>
+            </div>
+            <div class="book-snap-text-line"></div>
+            <div class="book-snap-text-line short"></div>
+          </div>
+        </div>
+      </div>
+      <div class="card-content">
+        <div class="card-icon-wrap">
+          <div class="card-icon">📖</div>
+        </div>
+        <div class="card-text">
+          <div class="title" data-i18n="cardBookTitle">تقرير الفعاليات · كتاب رقمي</div>
+          <div class="desc" data-i18n="cardBookDesc">كتاب تفاعلي بصفحات متعددة · 5 ثيمات · تأثير تقليب</div>
+          <div class="meta">
+            <span class="meta-pill">📄 <span data-i18n="metaPagesBook">صفحات لا محدودة</span></span>
+            <span class="meta-sep"></span>
+            <span class="meta-pill">🎨 <span data-i18n="metaThemesBook">5 ثيمات</span></span>
           </div>
         </div>
         <div class="card-action">‹</div>
@@ -7164,6 +7333,11 @@ const I18N = {
     cardFlexDesc: "عام أو خاص · أقسام مرنة · 6 ثيمات ملوّنة 🎨",
     metaPhotosFlex: "3 صور + شعار",
     metaThemesFlex: "6 ثيمات",
+    badgeBook: "كتاب رقمي",
+    cardBookTitle: "تقرير الفعاليات · كتاب رقمي",
+    cardBookDesc: "كتاب تفاعلي بصفحات متعددة · 5 ثيمات · تأثير تقليب 📖",
+    metaPagesBook: "صفحات لا محدودة",
+    metaThemesBook: "5 ثيمات",
     catDocs: "الجداول والوثائق",
     catDocsSub: "جداول الاختبارات وشهايد الشكر",
     catStar: "نجم/ة الأسبوع",
@@ -7447,6 +7621,11 @@ const I18N = {
     cardFlexDesc: "General or specific · Flexible sections · 6 color themes 🎨",
     metaPhotosFlex: "3 photos + logo",
     metaThemesFlex: "6 themes",
+    badgeBook: "Digital Book",
+    cardBookTitle: "Events Report · Digital Book",
+    cardBookDesc: "Interactive book with multiple pages · 5 themes · Page flip 📖",
+    metaPagesBook: "Unlimited pages",
+    metaThemesBook: "5 themes",
     catDocs: "Schedules & Documents",
     catDocsSub: "Exam schedules and certificates",
     catStar: "Star of the Week",
@@ -7835,7 +8014,7 @@ function handleCardClick(card){
   const target = card.getAttribute('data-target');
 
   // 👁️ تقارير المعاينة / التجربة - يفتحها أي زائر بدون تسجيل دخول
-  const VIEW_ONLY_AND_FREE_TRIAL = ['report.html', 'tasis.html', 'watny.html', 'alm.html', 'alm2.html', 'green.html', 'shawahed.html', 'enjaz.html', 'kg.html', 'report2.html', 'report3.html', 'report4.html', 'teacher.html', 'arabic.html', 'cert.html', 'exam.html', 'star.html', 'plan.html', 'visit.html', 'radio.html'];
+  const VIEW_ONLY_AND_FREE_TRIAL = ['report.html', 'tasis.html', 'watny.html', 'alm.html', 'alm2.html', 'green.html', 'shawahed.html', 'enjaz.html', 'kg.html', 'report2.html', 'report3.html', 'report4.html', 'teacher.html', 'arabic.html', 'cert.html', 'exam.html', 'star.html', 'plan.html', 'visit.html', 'radio.html', 'report5.html'];
   if (target && VIEW_ONLY_AND_FREE_TRIAL.includes(target)) {
     window.location.href = target;
     return;
