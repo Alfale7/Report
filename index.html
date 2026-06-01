@@ -5822,7 +5822,7 @@ font-size:0.78rem;text-align:center;margin-top:12px;display:none;
         <div class="cat-cards">
 
     <!-- Card: زيارة صفية -->
-    <div class="preview-card r-visit locked" data-target="visit.html" onclick="handleCardClick(this)">
+    <div class="preview-card r-visit" data-target="visit.html" onclick="handleCardClick(this)">
       <span class="card-badge badge-new">✨ <span data-i18n="badgeNew2">جديد</span></span>
       <div class="thumb thumb-admin thumb-visit">
         <div class="ta-band"></div>
@@ -5845,12 +5845,6 @@ font-size:0.78rem;text-align:center;margin-top:12px;display:none;
           <div class="ta-cell"></div>
           <div class="ta-cell"></div>
           <div class="ta-cell"></div>
-        </div>
-        <div class="lock-overlay">
-          <div class="lock-cta">
-            <span>🔑</span>
-            <span data-i18n="lockCta">سجّل الدخول للوصول</span>
-          </div>
         </div>
       </div>
       <div class="card-content">
@@ -5947,7 +5941,7 @@ font-size:0.78rem;text-align:center;margin-top:12px;display:none;
     </div>
 
     <!-- Card: خطة فصلية للمعلم -->
-    <div class="preview-card r-plan locked" data-target="plan.html" onclick="handleCardClick(this)">
+    <div class="preview-card r-plan" data-target="plan.html" onclick="handleCardClick(this)">
       <span class="card-badge badge-new">✨ <span data-i18n="badgeNew2">جديد</span></span>
       <div class="thumb thumb-admin thumb-plan">
         <div class="ta-band"></div>
@@ -5970,12 +5964,6 @@ font-size:0.78rem;text-align:center;margin-top:12px;display:none;
           <div class="ta-cell"></div>
           <div class="ta-cell"></div>
           <div class="ta-cell"></div>
-        </div>
-        <div class="lock-overlay">
-          <div class="lock-cta">
-            <span>🔑</span>
-            <span data-i18n="lockCta">سجّل الدخول للوصول</span>
-          </div>
         </div>
       </div>
       <div class="card-content">
@@ -7853,7 +7841,7 @@ function handleCardClick(card){
   const target = card.getAttribute('data-target');
 
   // 👁️ تقارير المعاينة / التجربة - يفتحها أي زائر بدون تسجيل دخول
-  const VIEW_ONLY_AND_FREE_TRIAL = ['report.html', 'tasis.html', 'watny.html', 'alm.html', 'alm2.html', 'green.html', 'shawahed.html', 'enjaz.html', 'kg.html', 'report2.html', 'report3.html', 'report4.html', 'teacher.html', 'arabic.html', 'cert.html', 'exam.html', 'star.html'];
+  const VIEW_ONLY_AND_FREE_TRIAL = ['report.html', 'tasis.html', 'watny.html', 'alm.html', 'alm2.html', 'green.html', 'shawahed.html', 'enjaz.html', 'kg.html', 'report2.html', 'report3.html', 'report4.html', 'teacher.html', 'arabic.html', 'cert.html', 'exam.html', 'star.html', 'plan.html', 'visit.html'];
   if (target && VIEW_ONLY_AND_FREE_TRIAL.includes(target)) {
     window.location.href = target;
     return;

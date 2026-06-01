@@ -779,7 +779,7 @@ html,body{
 </style>
 
   <!-- 🔥 Firebase Integration (يجب أن يكون قبل أي محتوى) -->
-  <script type="module" src="report-firebase.js"></script>
+  <script type="module" src="report-firebase.js?v=12"></script>
 </head>
 <body>
 
@@ -1429,6 +1429,10 @@ function toArabicDigits(n){
 }
 
 function toggleRubric(headEl){
+  // 🔒 حماية: الزائر/Free لا يستطيع التفاعل مع بطاقات التقييم
+  if (typeof window.checkPremiumFeature === 'function') {
+    if (!window.checkPremiumFeature('فتح بطاقة التقييم')) return;
+  }
   const card = headEl.closest('.rubric-card');
   card.classList.toggle('open');
 }
@@ -1446,6 +1450,11 @@ function updateRubricSummary(){
 // تبديل التبويب (A / B)
 let currentEvalTab = 'A';
 function switchEvalTab(tab){
+  // 🔒 حماية: الزائر/Free لا يستطيع تبديل التبويب
+  // ملاحظة: نسمح بـ 'A' كاستدعاء افتراضي من loadData، لكن نمنع B
+  if (tab === 'B' && typeof window.checkPremiumFeature === 'function') {
+    if (!window.checkPremiumFeature('تبديل التبويب')) return;
+  }
   currentEvalTab = tab;
   document.querySelectorAll('.eval-tab').forEach(b => {
     b.classList.toggle('active', b.dataset.tab === tab);
@@ -1589,6 +1598,10 @@ function loadData(){
 }
 
 function doClear(){
+  // 🔒 حماية: الزائر/Free لا يستطيع تفريغ البيانات
+  if (typeof window.checkPremiumFeature === 'function') {
+    if (!window.checkPremiumFeature('تفريغ البيانات')) return;
+  }
   document.querySelectorAll('input, textarea').forEach(el => {
     if(el.type === 'radio') el.checked = false;
     else el.value = '';
@@ -1876,6 +1889,87 @@ document.querySelectorAll('input, textarea').forEach(el => {
 
 applyLang();
 loadData();
+
+// ═══════════════════════════════════════════════
+// 🔒 وضع المعاينة - حماية ثلاثية الطبقات
+// (الزائر/Free يشاهد فقط، لا يكتب ولا يحمّل)
+// ═══════════════════════════════════════════════
+(function() {
+  // Layer 1: CSS - تعطيل التفاعل بصرياً
+  const styleEl = document.createElement('style');
+  styleEl.textContent = `
+    body.locked-preview input,
+    body.locked-preview textarea,
+    body.locked-preview [contenteditable] {
+      pointer-events: none !important;
+      caret-color: transparent !important;
+      user-select: none !important;
+      -webkit-user-select: none !important;
+    }
+    body.locked-preview .tahaqq-opt,
+    body.locked-preview .rubric-card,
+    body.locked-preview .rubric-card *,
+    body.locked-preview .eval-tab {
+      pointer-events: none !important;
+    }
+  `;
+  document.head.appendChild(styleEl);
+  document.body.classList.add('locked-preview');
+  let _locked = true;
+  console.log('🔒 وضع المعاينة مفعّل');
+
+  // Layer 2: Capture events (6 listeners)
+  const capture = (e) => {
+    if (!_locked) return;
+    const target = e.target.closest('input, textarea, [contenteditable], .tahaqq-opt, .rubric-card, .eval-tab');
+    if (!target) return;
+    if (target.tagName === 'INPUT' && target.type === 'file') return;
+    e.preventDefault();
+    e.stopPropagation();
+    if (typeof window.showPremiumFeatureModal === 'function') {
+      window.showPremiumFeatureModal('الكتابة في التقرير');
+    }
+    return false;
+  };
+  ['click', 'touchstart', 'focusin', 'keydown', 'paste', 'beforeinput'].forEach(evt => {
+    document.addEventListener(evt, capture, { capture: true });
+  });
+
+  // Layer 3: Wrap doClear to prevent reset
+  const wrapClear = () => {
+    if (typeof window.doClear === 'function' && !window.doClear.__wrapped) {
+      const original = window.doClear;
+      window.doClear = function() {
+        if (_locked) {
+          if (typeof window.showPremiumFeatureModal === 'function') {
+            window.showPremiumFeatureModal('تفريغ البيانات');
+          }
+          return;
+        }
+        return original.apply(this, arguments);
+      };
+      window.doClear.__wrapped = true;
+    }
+  };
+  wrapClear();
+  setTimeout(wrapClear, 1000);
+
+  // Watcher: راقب حالة الاشتراك كل 200ms (max 75 attempts = 15s)
+  let attempts = 0;
+  const watcher = setInterval(() => {
+    attempts++;
+    if (attempts > 75) {
+      clearInterval(watcher);
+      return;
+    }
+    if (typeof window.isPremiumUser === 'function' && window.isPremiumUser()) {
+      _locked = false;
+      document.body.classList.remove('locked-preview');
+      clearInterval(watcher);
+      console.log('✅ فُك القفل - مستخدم مشترك');
+    }
+  }, 200);
+})();
 </script>
 
 </body>
