@@ -5701,7 +5701,7 @@ font-size:0.78rem;text-align:center;margin-top:12px;display:none;
       <div class="cat-body">
         <div class="cat-cards">
 
-    <div class="preview-card r-teacher locked" data-target="teacher.html" onclick="handleCardClick(this)">
+    <div class="preview-card r-teacher" data-target="teacher.html" onclick="handleCardClick(this)">
       <span class="card-badge badge-new">✨ <span data-i18n="badgeNew">جديد</span></span>
       <div class="thumb thumb-teacher">
         <div class="real-snap snap-teacher">
@@ -5733,12 +5733,6 @@ font-size:0.78rem;text-align:center;margin-top:12px;display:none;
             </div>
           </div>
         </div>
-        <div class="lock-overlay">
-          <div class="lock-cta">
-            <span>🔑</span>
-            <span data-i18n="lockCta">سجّل الدخول للوصول</span>
-          </div>
-        </div>
       </div>
       <div class="card-content">
         <div class="card-icon-wrap">
@@ -5757,7 +5751,7 @@ font-size:0.78rem;text-align:center;margin-top:12px;display:none;
       </div>
     </div>
 
-    <div class="preview-card r-arabic locked" data-target="arabic.html" onclick="handleCardClick(this)">
+    <div class="preview-card r-arabic" data-target="arabic.html" onclick="handleCardClick(this)">
       <span class="card-badge badge-new">✨ <span data-i18n="badgeNew">جديد</span></span>
       <div class="thumb thumb-arabic">
         <div class="real-snap snap-arabic">
@@ -5787,12 +5781,6 @@ font-size:0.78rem;text-align:center;margin-top:12px;display:none;
               <div class="rs-field" data-i18n="snapArabicF4">العدد</div>
               <div class="rs-field" data-i18n="snapArabicF5">التاريخ</div>
             </div>
-          </div>
-        </div>
-        <div class="lock-overlay">
-          <div class="lock-cta">
-            <span>🔑</span>
-            <span data-i18n="lockCta">سجّل الدخول للوصول</span>
           </div>
         </div>
       </div>
@@ -7883,7 +7871,7 @@ function handleCardClick(card){
   const target = card.getAttribute('data-target');
 
   // 👁️ تقارير المعاينة / التجربة - يفتحها أي زائر بدون تسجيل دخول
-  const VIEW_ONLY_AND_FREE_TRIAL = ['report.html', 'tasis.html', 'watny.html', 'alm.html', 'alm2.html', 'green.html', 'shawahed.html', 'enjaz.html', 'kg.html', 'report2.html', 'report3.html', 'report4.html'];
+  const VIEW_ONLY_AND_FREE_TRIAL = ['report.html', 'tasis.html', 'watny.html', 'alm.html', 'alm2.html', 'green.html', 'shawahed.html', 'enjaz.html', 'kg.html', 'report2.html', 'report3.html', 'report4.html', 'teacher.html', 'arabic.html'];
   if (target && VIEW_ONLY_AND_FREE_TRIAL.includes(target)) {
     window.location.href = target;
     return;

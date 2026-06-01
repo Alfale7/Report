@@ -896,7 +896,7 @@ html,body{
 </style>
 
   <!-- 🔥 Firebase Integration (يجب أن يكون قبل أي محتوى) -->
-  <script type="module" src="report-firebase.js?v=4"></script>
+  <script type="module" src="report-firebase.js?v=12"></script>
 </head>
 <body>
 
@@ -956,7 +956,7 @@ html,body{
       <div class="moe-corner-arabic">
         <img id="moeLogoArabic" src="" alt="وزارة التعليم">
       </div>
-      <div class="school-corner-arabic" id="schoolWrapArabic" onclick="document.getElementById('schoolInputArabic').click()">
+      <div class="school-corner-arabic" id="schoolWrapArabic" onclick="if(typeof window.checkPremiumFeature === 'function' && !window.checkPremiumFeature('رفع شعار المدرسة')) return; document.getElementById('schoolInputArabic').click()">
         <img id="schoolLogoArabic" alt="">
         <div class="school-ph-arabic">
           <div class="ic">🏫</div>
@@ -1239,6 +1239,10 @@ function showToast(msg){
 // Photos
 // ═══════════════════════════════════════════════
 function pickPhoto(n){
+  // 🔒 حماية: الزائر/Free لا يستطيع رفع الصور
+  if (typeof window.checkPremiumFeature === 'function') {
+    if (!window.checkPremiumFeature('رفع الصورة')) return;
+  }
   document.getElementById('file-'+n).click();
 }
 function uploadPhoto(e, n){
@@ -1333,6 +1337,10 @@ function loadData(){
 }
 
 function clearAll(){
+  // 🔒 حماية: الزائر/Free لا يستطيع تفريغ البيانات
+  if (typeof window.checkPremiumFeature === 'function') {
+    if (!window.checkPremiumFeature('تفريغ البيانات')) return;
+  }
   if(!confirm('سيتم حذف كل البيانات. هل أنت متأكد؟')) return;
   document.querySelectorAll('input, textarea').forEach(el => el.value = '');
   document.querySelectorAll('.photo-slot').forEach(slot => {
@@ -1751,6 +1759,11 @@ function loadJsPDF(){
 // دالة PDF مستقلة - تستخدم html2canvas مباشرة
 // ═══════════════════════════════════════════════
 async function exportAsPDFv2(){
+  // 🔒 حماية: تحقق من الاشتراك قبل تصدير PDF
+  if (typeof window.checkDownloadAccess === 'function') {
+    const allowed = await window.checkDownloadAccess();
+    if (!allowed) return;
+  }
   closeExportMenu();
   
   // toast
@@ -1943,6 +1956,89 @@ async function exportAsPDFv2(){
     });
   }
 }
+
+// ═══════════════════════════════════════════════
+// 🔒 وضع المعاينة - حماية ثلاثية الطبقات
+// (الزائر/Free يشاهد فقط، لا يكتب ولا يحمّل)
+// ═══════════════════════════════════════════════
+(function() {
+  // Layer 1: CSS - تعطيل التفاعل بصرياً
+  const styleEl = document.createElement('style');
+  styleEl.textContent = `
+    body.locked-preview input,
+    body.locked-preview textarea,
+    body.locked-preview [contenteditable] {
+      pointer-events: none !important;
+      caret-color: transparent !important;
+      user-select: none !important;
+      -webkit-user-select: none !important;
+    }
+    body.locked-preview .school-bubble,
+    body.locked-preview .school-bubble *,
+    body.locked-preview .photo-slot,
+    body.locked-preview .photo-slot * {
+      pointer-events: none !important;
+    }
+  `;
+  document.head.appendChild(styleEl);
+  document.body.classList.add('locked-preview');
+  let _locked = true;
+  console.log('🔒 وضع المعاينة مفعّل');
+
+  // Layer 2: Capture events (6 listeners)
+  const capture = (e) => {
+    if (!_locked) return;
+    const target = e.target.closest('input, textarea, [contenteditable], .school-bubble, .photo-slot');
+    if (!target) return;
+    if (target.tagName === 'INPUT' && target.type === 'file') return;
+    e.preventDefault();
+    e.stopPropagation();
+    if (typeof window.showPremiumFeatureModal === 'function') {
+      const isImage = target.classList.contains('school-bubble') ||
+                       target.classList.contains('photo-slot');
+      window.showPremiumFeatureModal(isImage ? 'رفع الصورة' : 'الكتابة في التقرير');
+    }
+    return false;
+  };
+  ['click', 'touchstart', 'focusin', 'keydown', 'paste', 'beforeinput'].forEach(evt => {
+    document.addEventListener(evt, capture, { capture: true });
+  });
+
+  // Layer 3: Wrap clearAll to prevent reset
+  const wrapClear = () => {
+    if (typeof window.clearAll === 'function' && !window.clearAll.__wrapped) {
+      const original = window.clearAll;
+      window.clearAll = function() {
+        if (_locked) {
+          if (typeof window.showPremiumFeatureModal === 'function') {
+            window.showPremiumFeatureModal('تفريغ البيانات');
+          }
+          return;
+        }
+        return original.apply(this, arguments);
+      };
+      window.clearAll.__wrapped = true;
+    }
+  };
+  wrapClear();
+  setTimeout(wrapClear, 1000);
+
+  // Watcher: راقب حالة الاشتراك كل 200ms (max 75 attempts = 15s)
+  let attempts = 0;
+  const watcher = setInterval(() => {
+    attempts++;
+    if (attempts > 75) {
+      clearInterval(watcher);
+      return;
+    }
+    if (typeof window.isPremiumUser === 'function' && window.isPremiumUser()) {
+      _locked = false;
+      document.body.classList.remove('locked-preview');
+      clearInterval(watcher);
+      console.log('✅ فُك القفل - مستخدم مشترك');
+    }
+  }, 200);
+})();
 
 </script>
 
