@@ -1609,34 +1609,74 @@ function handleEvidenceUpload(event, pageIdx){
   if(!pages[pageIdx]) return;
   if(!Array.isArray(pages[pageIdx].images)) pages[pageIdx].images = [];
 
-  let processed = 0;
-  showToast(`⏳ جارٍ معالجة ${files.length} صورة...`, 30000);
+  // 🆕 امسح القيمة فوراً (قبل المعالجة، لتجنب مشاكل عند إعادة الـ render)
+  event.target.value = '';
 
-  Array.from(files).forEach(file => {
-    if(!file.type.startsWith('image/')){
-      processed++;
+  const totalFiles = files.length;
+  showToast(`⏳ جارٍ معالجة ${totalFiles} صورة...`, 30000);
+
+  // 🆕 معالجة سيرية (واحدة بعد واحدة) مع render بعد كل صورة
+  //    هذا يضمن أن المستخدم يشوف كل صورة وهي تنزل
+  let processedCount = 0;
+  const fileArray = Array.from(files);
+
+  async function processNext(){
+    if(fileArray.length === 0){
+      // 🆕 انتهت المعالجة - render نهائي + حفظ + إشعار
+      saveData();
+      forceRerender();
+      showToast(`✅ أُضيفت ${processedCount} صورة بنجاح`);
       return;
     }
-    // قلّل حجم الصورة قبل الحفظ (لتجنب امتلاء localStorage)
-    compressImage(file, 1200, 0.82).then(dataUrl => {
+
+    const file = fileArray.shift();
+    if(!file.type.startsWith('image/')){
+      processNext();
+      return;
+    }
+
+    try {
+      const dataUrl = await compressImage(file, 1200, 0.82);
       pages[pageIdx].images.push({src: dataUrl, caption: ''});
-      processed++;
-      if(processed === files.length){
-        saveData();
-        renderBook();
-        showToast(`✅ أُضيفت ${files.length} صورة`);
+      processedCount++;
+
+      // 🆕 احفظ + render فوراً بعد كل صورة
+      saveData();
+      forceRerender();
+
+      // 🆕 إشعار تقدم (لو فيه أكثر من صورة)
+      if(totalFiles > 1){
+        showToast(`✨ ${processedCount} من ${totalFiles}...`, 2000);
       }
-    }).catch(err => {
-      console.error(err);
-      processed++;
-      if(processed === files.length){
-        saveData();
-        renderBook();
-      }
-    });
+
+      // 🆕 امهال صغير ليرى المستخدم النتيجة قبل الصورة التالية
+      await new Promise(r => setTimeout(r, 80));
+      processNext();
+    } catch(err) {
+      console.error('فشل تحميل الصورة:', err);
+      processNext();
+    }
+  }
+
+  processNext();
+}
+
+/* 🆕 إعادة رسم قسرية للكتاب تضمن ظهور التغييرات فوراً */
+function forceRerender(){
+  // 1) أعد رسم الكتاب
+  renderBook();
+
+  // 2) أجبر المتصفح على reflow (يحلّ مشكلة التحديث المتأخر على iOS Safari)
+  const book = document.getElementById('book');
+  if(book){
+    // قراءة layout property → يجبر المتصفح على إعادة الحساب
+    void book.offsetHeight;
+  }
+
+  // 3) requestAnimationFrame يضمن أن الـ render يتم في الـ frame التالي
+  requestAnimationFrame(() => {
+    // empty: نستخدم rAF فقط لضمان commit الـ DOM updates
   });
-  // امسح القيمة لتسمح برفع نفس الصورة مرة ثانية
-  event.target.value = '';
 }
 
 /* ضغط الصور قبل الحفظ */
