@@ -1747,6 +1747,11 @@ async function saveAsImage(){
 // التصدير كـ PDF - باستخدام prepareForExport
 // ═══════════════════════════════════════════════
 async function exportAsPDFv2(){
+  // 🔒 حماية: تحقق من الاشتراك قبل تصدير PDF
+  if (typeof window.checkDownloadAccess === 'function') {
+    const allowed = await window.checkDownloadAccess();
+    if (!allowed) return;
+  }
   closeExportMenu();
   showToast(I18N[currentLang].toastPrep);
 
