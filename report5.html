@@ -1100,6 +1100,14 @@ html, body{
 /* ═══════════════════════════════════════════════════════
    🎬 رسومات وانتقالات
    ═══════════════════════════════════════════════════════ */
+/* 🆕 وميض على الصفحة الجديدة لتأكيد الإضافة بصرياً */
+@keyframes evidenceHighlight{
+  0%{box-shadow: inset 0 0 0 0 rgba(147,51,234,0.6), 0 4px 24px rgba(0,0,0,0.18);}
+  30%{box-shadow: inset 0 0 0 8px rgba(147,51,234,0.5), 0 0 30px rgba(147,51,234,0.4);}
+  60%{box-shadow: inset 0 0 0 6px rgba(147,51,234,0.3), 0 0 24px rgba(147,51,234,0.25);}
+  100%{box-shadow: inset 0 0 0 0 rgba(147,51,234,0), 0 4px 24px rgba(0,0,0,0.18);}
+}
+
 @keyframes fadeInUp{
   from{opacity:0; transform:translateY(20px);}
   to{opacity:1; transform:translateY(0);}
@@ -1186,10 +1194,6 @@ html, body{
   <!-- 💾 قائمة الحفظ المنبثقة -->
   <div class="theme-pop export-pop" id="exportPop">
     <div style="font-size:0.72rem; font-weight:800; color:var(--ink-soft); padding:6px 12px 4px;">اختر طريقة الحفظ</div>
-    <button class="theme-pop-item" onclick="exportInteractive()">
-      <span class="swatch" style="background:linear-gradient(135deg,#2c979d,#3ba87e); display:flex; align-items:center; justify-content:center; color:#fff; font-size:0.85rem;">📖</span>
-      <span>كتاب تفاعلي (HTML)</span>
-    </button>
     <button class="theme-pop-item" onclick="exportPDF()">
       <span class="swatch" style="background:linear-gradient(135deg,#d32f2f,#b71c1c); display:flex; align-items:center; justify-content:center; color:#fff; font-size:0.85rem;">📄</span>
       <span>تقرير PDF (كتاب)</span>
@@ -1720,7 +1724,8 @@ function addEventPage(){
     if (!window.checkPremiumFeature('إضافة صفحة فعالية')) return;
   }
   document.getElementById('addPop').classList.remove('open');
-  // أضف قبل الخاتمة
+
+  // أضف الصفحة قبل الخاتمة
   const closingIdx = pages.findIndex(p => p.type === 'closing');
   const newPage = {type:'event', title:'', date:'', place:'', executor:'', audience:'', description:'', goals:'', results:''};
   if(closingIdx === -1){
@@ -1728,12 +1733,21 @@ function addEventPage(){
   } else {
     pages.splice(closingIdx, 0, newPage);
   }
-  // انتقل لصفحة الفعالية الجديدة
-  const newIdx = pages.indexOf(newPage);
-  currentSpread = Math.floor(newIdx / 2);
+
+  // 🆕 احفظ فوراً
   saveData();
-  renderBook();
-  showToast('✅ تمت إضافة صفحة فعالية جديدة');
+
+  // 🆕 انتقل بشكل واضح
+  const newIdx = pages.indexOf(newPage);
+  const newSpread = Math.floor(newIdx / 2);
+  if(newSpread !== currentSpread){
+    currentSpread = newSpread;
+    renderBook();
+    showToast('📋 صفحة فعالية جديدة جاهزة - ابدأ بكتابة بيانات الفعالية', 4500);
+  } else {
+    renderBook();
+    showToast('📋 صفحة فعالية جديدة - اسحب الصفحة لرؤيتها', 4500);
+  }
 }
 
 function addEvidencePage(){
@@ -1742,7 +1756,8 @@ function addEvidencePage(){
     if (!window.checkPremiumFeature('إضافة صفحة شواهد')) return;
   }
   document.getElementById('addPop').classList.remove('open');
-  // أضف قبل الخاتمة
+
+  // أضف الصفحة قبل الخاتمة
   const closingIdx = pages.findIndex(p => p.type === 'closing');
   const newPage = {type:'evidence', title:'', images:[]};
   if(closingIdx === -1){
@@ -1750,11 +1765,35 @@ function addEvidencePage(){
   } else {
     pages.splice(closingIdx, 0, newPage);
   }
-  const newIdx = pages.indexOf(newPage);
-  currentSpread = Math.floor(newIdx / 2);
+
+  // 🆕 احفظ فوراً قبل أي شيء آخر (لضمان عدم الفقدان)
   saveData();
-  renderBook();
-  showToast('📸 تمت إضافة صفحة شواهد جديدة');
+
+  // 🆕 احسب موقع الصفحة الجديدة وانتقل لها مباشرة
+  const newIdx = pages.indexOf(newPage);
+  const newSpread = Math.floor(newIdx / 2);
+
+  // 🆕 إذا الصفحة الجديدة في spread آخر، انتقل لها بشكل واضح
+  if(newSpread !== currentSpread){
+    currentSpread = newSpread;
+    renderBook();
+    // 🆕 إشعار قوي: المستخدم الآن في صفحة الشواهد
+    showToast('📸 صفحة شواهد جديدة جاهزة - اضغط "إضافة صورة" لرفع الصور', 4500);
+  } else {
+    renderBook();
+    showToast('📸 صفحة شواهد جديدة - اسحب الصفحة لرؤيتها', 4500);
+  }
+
+  // 🆕 ميّز الصفحة الجديدة بصرياً (وميض خفيف)
+  setTimeout(() => {
+    const pageEls = document.querySelectorAll('.page');
+    pageEls.forEach(el => {
+      if(el.querySelector('.evidence-page')){
+        el.style.animation = 'evidenceHighlight 1.2s ease';
+        setTimeout(() => { el.style.animation = ''; }, 1300);
+      }
+    });
+  }, 100);
 }
 
 function deletePage(pageIdx){
@@ -1917,135 +1956,6 @@ document.addEventListener('click', (e) => {
 });
 
 /* ───────────────────────────────────────────────
-   📖 تصدير 1: كتاب تفاعلي HTML
-   ───────────────────────────────────────────────
-   ينشئ ملف HTML مستقل يحوي: كل البيانات + تأثير flip + الثيم الحالي
-   يفتح في أي متصفح بدون انترنت
-*/
-function exportInteractive(){
-  // 🔒 حماية: تحقق من الاشتراك قبل التصدير
-  if (typeof window.checkDownloadAccess === 'function') {
-    window.checkDownloadAccess().then(allowed => {
-      if (!allowed) return;
-      _doExportInteractive();
-    });
-    return;
-  }
-  _doExportInteractive();
-}
-
-function _doExportInteractive(){
-  document.getElementById('exportPop').classList.remove('open');
-  showToast('⏳ جارٍ إنشاء الكتاب التفاعلي...', 30000);
-
-  try {
-    // 1) جمع البيانات الحالية
-    const data = {
-      theme: document.body.getAttribute('data-theme') || '',
-      pages: pages,
-      currentSpread: 0
-    };
-
-    // 2) قراءة كود المصفحة الحالية (الـ HTML الكامل)
-    let html = document.documentElement.outerHTML;
-
-    // 3) أزل أزرار الإضافة/الحذف من النسخة المصدّرة (وضع قراءة فقط)
-    //    + استبدل البيانات الافتراضية في init() بالبيانات الحالية
-    const exportedData = JSON.stringify(data);
-
-    // 4) نضيف سكربت يفرض تحميل البيانات المضمنة بدل localStorage
-    const injectScript = `
-<script>
-// 📦 بيانات الكتاب المضمنة (وضع التصدير - قراءة فقط)
-window.__EXPORTED_BOOK_DATA__ = ${exportedData};
-window.__IS_EXPORTED__ = true;
-<\/script>`;
-
-    // أضف السكربت قبل </head>
-    html = html.replace('</head>', injectScript + '\n</head>');
-
-    // 5) في النسخة المصدّرة: نعدّل init و loadData ليستخدما البيانات المضمنة
-    //    + نخفي زر الإضافة وزر الحفظ (وضع قراءة)
-    //    + نمنع التعديل على الحقول (readonly)
-    const readonlyScript = `
-<script>
-// 🔒 وضع القراءة فقط (للنسخة المصدّرة)
-window.addEventListener('DOMContentLoaded', () => {
-  if(!window.__IS_EXPORTED__) return;
-
-  // اخفِ أزرار التعديل
-  const hideSelectors = [
-    '[onclick*="addEventPage"]',
-    '[onclick*="toggleExport"]',
-    '#exportPop',
-    '.delete-page-btn'
-  ];
-  hideSelectors.forEach(sel => {
-    document.querySelectorAll(sel).forEach(el => el.style.display = 'none');
-  });
-
-  // اجعل كل الحقول readonly
-  setTimeout(() => {
-    document.querySelectorAll('input, textarea').forEach(el => {
-      el.setAttribute('readonly', 'readonly');
-      el.style.cursor = 'default';
-    });
-  }, 200);
-});
-<\/script>`;
-    html = html.replace('</body>', readonlyScript + '\n</body>');
-
-    // 6) عدّل دالة loadData و init في النسخة المصدّرة
-    //    نحقن البيانات قبل init بطريقة آمنة
-    const overrideScript = `
-<script>
-// ♻️ استبدل loadData ليستخدم البيانات المضمنة
-if(window.__IS_EXPORTED__ && window.__EXPORTED_BOOK_DATA__){
-  const _origLoadData = window.loadData;
-  window.loadData = function(){
-    const d = window.__EXPORTED_BOOK_DATA__;
-    if(d.theme) document.body.setAttribute('data-theme', d.theme);
-    if(Array.isArray(d.pages)){
-      pages = d.pages;
-      currentSpread = 0;
-      return true;
-    }
-    return false;
-  };
-  // عطّل saveData (لا حفظ في النسخة المصدّرة)
-  window.saveData = function(){};
-}
-<\/script>`;
-    html = html.replace('</body>', overrideScript + '\n</body>');
-
-    // 7) عنوان الملف المنزل
-    const cover = pages.find(p => p.type === 'cover');
-    const school = (cover && cover.school) ? cover.school.trim() : '';
-    const year = (cover && cover.year) ? cover.year.trim() : '';
-    let filename = 'تقرير-الفعاليات';
-    if(school) filename += '-' + school.replace(/\s+/g,'-').substring(0,30);
-    if(year) filename += '-' + year.replace(/\s+/g,'-');
-    filename += '.html';
-
-    // 8) تنزيل الملف
-    const blob = new Blob([html], {type: 'text/html;charset=utf-8'});
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = filename;
-    document.body.appendChild(a);
-    a.click();
-    document.body.removeChild(a);
-    setTimeout(() => URL.revokeObjectURL(url), 1000);
-
-    showToast('✅ تم تنزيل الكتاب التفاعلي');
-  } catch(e){
-    console.error(e);
-    showToast('❌ فشل التصدير: ' + e.message);
-  }
-}
-
-/* ───────────────────────────────────────────────
    📄 تصدير 2: PDF بشكل كتاب (صفحتين في ورقة A4 أفقية)
    ───────────────────────────────────────────────
    - يحمّل jsPDF + html2canvas من CDN عند الحاجة
@@ -2072,6 +1982,20 @@ async function exportPDF(){
     if (!allowed) return;
   }
   document.getElementById('exportPop').classList.remove('open');
+
+  // 🆕 تحقق من صفحات الشواهد الفاضية قبل التصدير
+  const emptyEvidencePages = pages.filter(p =>
+    p.type === 'evidence' && (!Array.isArray(p.images) || p.images.length === 0)
+  );
+  if(emptyEvidencePages.length > 0){
+    const proceed = confirm(
+      `⚠️ تنبيه: لديك ${emptyEvidencePages.length} صفحة شواهد فاضية (بدون صور).\n\n` +
+      `هل تريد المتابعة وتصدير PDF بهذه الصفحات فاضية؟\n\n` +
+      `اضغط "إلغاء" للرجوع ورفع الصور أولاً.`
+    );
+    if(!proceed) return;
+  }
+
   showToast('⏳ جارٍ تجهيز PDF... (قد يستغرق دقيقة)', 60000);
 
   try {
