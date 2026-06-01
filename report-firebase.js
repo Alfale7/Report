@@ -299,7 +299,10 @@ function refreshBadge() {
         0 12px 28px -8px rgba(0,0,0,0.5),
         0 4px 12px -4px ${admin?'rgba(212,166,87,0.3)':(lifetime?'rgba(30,107,138,0.35)':'rgba(0,0,0,0.4)')};
       font-family:'Tajawal','Cairo',sans-serif;
-      cursor:pointer;
+      cursor:grab;
+      user-select:none;
+      -webkit-user-select:none;
+      touch-action:none;
       transition:transform 0.2s cubic-bezier(0.4,0,0.2,1), box-shadow 0.2s ease, border-color 0.2s ease;
       -webkit-tap-highlight-color:transparent;
     }
@@ -504,7 +507,114 @@ function refreshBadge() {
     </a>`;
   document.body.appendChild(m);
 
-  b.onclick = (e) => { e.stopPropagation(); m.classList.toggle('show'); };
+  // ═══════════════════════════════════════════════
+  // 🎯 السحب (Draggable) - المستخدم يحرّك الأيقونة
+  // ═══════════════════════════════════════════════
+  const DRAG_KEY = 'userBadgeFB_position';
+  let isDragging = false;
+  let hasMoved = false;
+  let startX = 0, startY = 0;
+  let badgeStartX = 0, badgeStartY = 0;
+  const DRAG_THRESHOLD = 5; // أكثر من 5 بكسل = سحب وليس نقر
+
+  // استرجع الموقع المحفوظ
+  try {
+    const savedPos = localStorage.getItem(DRAG_KEY);
+    if (savedPos) {
+      const pos = JSON.parse(savedPos);
+      // تحقق إن الموقع لسة ضمن نافذة المتصفح
+      const maxX = window.innerWidth - 80;
+      const maxY = window.innerHeight - 60;
+      if (pos.x >= 0 && pos.x <= maxX && pos.y >= 0 && pos.y <= maxY) {
+        b.style.left = pos.x + 'px';
+        b.style.top = pos.y + 'px';
+      }
+    }
+  } catch(e) { /* تجاهل */ }
+
+  // ═══ بداية السحب ═══
+  const handleStart = (clientX, clientY) => {
+    isDragging = true;
+    hasMoved = false;
+    startX = clientX;
+    startY = clientY;
+    const rect = b.getBoundingClientRect();
+    badgeStartX = rect.left;
+    badgeStartY = rect.top;
+    b.style.transition = 'none';
+    b.style.cursor = 'grabbing';
+  };
+
+  // ═══ أثناء السحب ═══
+  const handleMove = (clientX, clientY) => {
+    if (!isDragging) return;
+    const dx = clientX - startX;
+    const dy = clientY - startY;
+    // لو تحرّك أكثر من الحد، يعتبر سحب
+    if (Math.abs(dx) > DRAG_THRESHOLD || Math.abs(dy) > DRAG_THRESHOLD) {
+      hasMoved = true;
+      m.classList.remove('show'); // أغلق القائمة لو مفتوحة
+    }
+    if (hasMoved) {
+      let newX = badgeStartX + dx;
+      let newY = badgeStartY + dy;
+      // حدود الشاشة
+      const maxX = window.innerWidth - b.offsetWidth;
+      const maxY = window.innerHeight - b.offsetHeight;
+      newX = Math.max(0, Math.min(newX, maxX));
+      newY = Math.max(0, Math.min(newY, maxY));
+      b.style.left = newX + 'px';
+      b.style.top = newY + 'px';
+    }
+  };
+
+  // ═══ نهاية السحب ═══
+  const handleEnd = () => {
+    if (!isDragging) return;
+    isDragging = false;
+    b.style.transition = 'transform 0.2s cubic-bezier(0.4,0,0.2,1), box-shadow 0.2s ease, border-color 0.2s ease';
+    b.style.cursor = 'pointer';
+    if (hasMoved) {
+      // احفظ الموقع
+      const rect = b.getBoundingClientRect();
+      try {
+        localStorage.setItem(DRAG_KEY, JSON.stringify({ x: rect.left, y: rect.top }));
+      } catch(e) { /* تجاهل */ }
+    }
+  };
+
+  // أحداث Mouse
+  b.addEventListener('mousedown', (e) => {
+    handleStart(e.clientX, e.clientY);
+    e.preventDefault();
+  });
+  document.addEventListener('mousemove', (e) => {
+    if (isDragging) handleMove(e.clientX, e.clientY);
+  });
+  document.addEventListener('mouseup', handleEnd);
+
+  // أحداث Touch
+  b.addEventListener('touchstart', (e) => {
+    const t = e.touches[0];
+    handleStart(t.clientX, t.clientY);
+  }, { passive: true });
+  document.addEventListener('touchmove', (e) => {
+    if (!isDragging) return;
+    const t = e.touches[0];
+    handleMove(t.clientX, t.clientY);
+    if (hasMoved) e.preventDefault();
+  }, { passive: false });
+  document.addEventListener('touchend', handleEnd);
+
+  // ═══ النقر (يفتح القائمة فقط لو ما تحرّك) ═══
+  b.onclick = (e) => {
+    e.stopPropagation();
+    if (hasMoved) {
+      hasMoved = false;
+      return; // كان سحب، ما نفتح القائمة
+    }
+    m.classList.toggle('show');
+  };
   document.addEventListener('click', () => m.classList.remove('show'));
 }
 
