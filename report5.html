@@ -1550,6 +1550,17 @@ function renderBook(){
     leftPageIdx = currentSpread * 2 + 1;
   }
 
+  // 🆕 debug log (يطبع في console للتشخيص)
+  console.log('🎨 renderBook:', {
+    pages: pages.length,
+    currentSpread,
+    spreads,
+    isMobile,
+    rightPageIdx,
+    leftPageIdx,
+    pageTypes: pages.map(p => p.type)
+  });
+
   document.getElementById('totalSpreads').textContent = spreads;
   document.getElementById('curSpread').textContent = currentSpread + 1;
 
@@ -1605,6 +1616,12 @@ function renderEvidencePage(data, evIdx){
   const idx = pages.indexOf(data);
   const images = Array.isArray(data.images) ? data.images : [];
 
+  // 🆕 ضمان وجود معرّف فريد لكل صفحة شواهد (يبقى ثابت حتى لو تغير index)
+  if(!data._id){
+    data._id = 'evd_' + Date.now() + '_' + Math.random().toString(36).slice(2, 9);
+  }
+  const pageId = data._id;
+
   let gridHTML = '';
   if(images.length === 0){
     gridHTML = `
@@ -1619,13 +1636,13 @@ function renderEvidencePage(data, evIdx){
       gridHTML += `
         <div class="evidence-item">
           <div class="evidence-img-wrap">
-            <button class="evidence-img-del" onclick="deleteEvidenceImage(${idx}, ${i})" title="حذف الصورة">×</button>
+            <button class="evidence-img-del" onclick="deleteEvidenceImageById('${pageId}', ${i})" title="حذف الصورة">×</button>
             <img src="${img.src}" alt="شاهد ${i+1}">
           </div>
           <input type="text" class="evidence-caption"
                  placeholder="وصف الصورة (اختياري)..."
                  value="${esc(img.caption || '')}"
-                 oninput="updateEvidenceCaption(${idx}, ${i}, this.value)">
+                 oninput="updateEvidenceCaptionById('${pageId}', ${i}, this.value)">
         </div>`;
     });
     gridHTML += '</div>';
@@ -1633,24 +1650,63 @@ function renderEvidencePage(data, evIdx){
 
   return `
     <div class="page-inner evidence-page">
-      <button class="delete-page-btn" onclick="deletePage(${idx})" title="حذف الصفحة">×</button>
+      <button class="delete-page-btn" onclick="deletePageById('${pageId}')" title="حذف الصفحة">×</button>
       <div class="evidence-header">
         <div class="evidence-badge">📸</div>
         <input type="text" class="evidence-title-input"
                placeholder="عنوان الشواهد..."
                value="${esc(data.title || '')}"
-               oninput="updatePageField(${idx}, 'title', this.value); renderToc();">
+               oninput="updatePageFieldById('${pageId}', 'title', this.value); renderToc();">
       </div>
 
       <label class="evidence-upload-btn">
         <span class="ic">📷</span>
         <span>إضافة صورة (من الكاميرا أو المعرض)</span>
-        <input type="file" accept="image/*" multiple onchange="handleEvidenceUpload(event, ${idx})">
+        <input type="file" accept="image/*" multiple onchange="handleEvidenceUploadById(event, '${pageId}')">
       </label>
 
       ${gridHTML}
     </div>
   `;
+}
+
+/* 🆕 دوال مساعدة - تستخدم ID بدل index لتجنب bugs الفهرسة */
+function findPageById(pageId){
+  return pages.findIndex(p => p && p._id === pageId);
+}
+
+function handleEvidenceUploadById(event, pageId){
+  const idx = findPageById(pageId);
+  if(idx === -1){
+    showToast(`🐛 لم نعثر على الصفحة (ID: ${pageId.slice(0,15)}...). أعد تحميل الصفحة`, 8000);
+    event.target.value = '';
+    return;
+  }
+  handleEvidenceUpload(event, idx);
+}
+
+function deleteEvidenceImageById(pageId, imgIdx){
+  const idx = findPageById(pageId);
+  if(idx === -1){ showToast('🐛 الصفحة غير موجودة', 5000); return; }
+  deleteEvidenceImage(idx, imgIdx);
+}
+
+function updateEvidenceCaptionById(pageId, imgIdx, caption){
+  const idx = findPageById(pageId);
+  if(idx === -1) return;
+  updateEvidenceCaption(idx, imgIdx, caption);
+}
+
+function deletePageById(pageId){
+  const idx = findPageById(pageId);
+  if(idx === -1){ showToast('🐛 الصفحة غير موجودة', 5000); return; }
+  deletePage(idx);
+}
+
+function updatePageFieldById(pageId, field, value){
+  const idx = findPageById(pageId);
+  if(idx === -1) return;
+  updatePageField(idx, field, value);
 }
 
 /* ═══ التعامل مع رفع الصور ═══ */
