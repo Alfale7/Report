@@ -8161,14 +8161,33 @@ function showMaintenancePage(data) {
 }
 
 // راقب وضع الصيانة فوراً
+// ═══════════════════════════════════════════════════════
+// 🛠️ فحص وضع الصيانة - ينتظر Auth يخلّص أولاً
+// ═══════════════════════════════════════════════════════
+let _maintenanceData = null;        // بيانات الصيانة الحالية
+let _authResolved = false;          // هل auth خلّص؟
+let _pendingMaintenanceCheck = false; // هل في فحص معلّق؟
+
+function checkAndShowMaintenance() {
+  if (!_authResolved) {
+    _pendingMaintenanceCheck = true;
+    return;
+  }
+  if (!_maintenanceData?.active) {
+    if (_maintenanceShown) window.location.reload();
+    return;
+  }
+  // الصيانة مفعّلة - تحقق هل المستخدم أدمن
+  const isUserAdmin = _currentUserForMaintenance && isAdmin(_currentUserForMaintenance);
+  if (!isUserAdmin) {
+    showMaintenancePage(_maintenanceData);
+  }
+}
+
 try {
   listenToMaintenance((data) => {
-    const isUserAdmin = _currentUserForMaintenance && isAdmin(_currentUserForMaintenance);
-    if (data?.active) {
-      if (!isUserAdmin) showMaintenancePage(data);
-    } else if (_maintenanceShown) {
-      window.location.reload();
-    }
+    _maintenanceData = data;
+    checkAndShowMaintenance();
   });
 } catch (e) {
   console.warn('Maintenance listener failed:', e);
@@ -8180,9 +8199,12 @@ let _indexProfileUnsub = null;
 onUserChange((data) => {
   // 🛠️ خزّن المستخدم لفحص الصيانة
   _currentUserForMaintenance = data?.user || null;
-  // لو كان أدمن وعرضت الصيانة، شيلها
-  if (_maintenanceShown && data?.user && isAdmin(data.user)) {
-    window.location.reload();
+  _authResolved = true; // ✅ Auth خلّص الآن
+  
+  // نفّذ فحص الصيانة المعلّق
+  if (_pendingMaintenanceCheck || _maintenanceShown) {
+    _pendingMaintenanceCheck = false;
+    checkAndShowMaintenance();
   }
 
   const ctaRow = document.getElementById('ctaRow');

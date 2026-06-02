@@ -240,28 +240,38 @@ function hideMaintenancePage() {
 // 🛡️ الصفحات المستثناة من وضع الصيانة (يفتحها الأدمن دائماً)
 const MAINTENANCE_EXEMPT_PAGES = ['admin.html', 'login.html'];
 
-// ابدأ فوراً بمراقبة وضع الصيانة (بدون انتظار auth)
+// ═══════════════════════════════════════════════════════
+// 🛠️ فحص وضع الصيانة - ينتظر Auth يخلّص أولاً
+// ═══════════════════════════════════════════════════════
+let _maintenanceData = null;
+let _authResolved = false;
+let _pendingMaintenanceCheck = false;
+
+function checkAndShowMaintenance() {
+  // الصفحات المستثناة (admin.html و login.html) لا تتأثر بالصيانة أبداً
+  if (MAINTENANCE_EXEMPT_PAGES.includes(_currentPage)) {
+    return;
+  }
+  // انتظر auth يخلّص
+  if (!_authResolved) {
+    _pendingMaintenanceCheck = true;
+    return;
+  }
+  if (!_maintenanceData?.active) {
+    if (_maintenanceShown) hideMaintenancePage();
+    return;
+  }
+  // الصيانة مفعّلة - تحقق من الأدمن
+  const isUserAdmin = _user && isAdmin(_user);
+  if (!isUserAdmin) {
+    showMaintenancePage(_maintenanceData);
+  }
+}
+
 try {
   listenToMaintenance((data) => {
-    // 🛡️ الصفحات المستثناة (admin.html و login.html) لا تتأثر بالصيانة أبداً
-    if (MAINTENANCE_EXEMPT_PAGES.includes(_currentPage)) {
-      return;
-    }
-
-    // تحقق هل المستخدم الحالي أدمن؟
-    const isUserAdmin = _user && isAdmin(_user);
-
-    if (data?.active) {
-      // الصيانة مفعّلة
-      if (!isUserAdmin) {
-        showMaintenancePage(data);
-      }
-    } else {
-      // الصيانة غير مفعّلة - لو كنا نعرض صفحة الصيانة، شيلها
-      if (_maintenanceShown) {
-        hideMaintenancePage();
-      }
-    }
+    _maintenanceData = data;
+    checkAndShowMaintenance();
   });
 } catch (e) {
   console.warn('Maintenance listener failed:', e);
@@ -269,6 +279,9 @@ try {
 
 // ═══ مراقبة Auth + Profile ═══
 onAuthStateChanged(auth, (user) => {
+  // ✅ Auth خلّص الآن
+  _authResolved = true;
+  
   if (_profileUnsub) {
     _profileUnsub();
     _profileUnsub = null;
@@ -280,14 +293,20 @@ onAuthStateChanged(auth, (user) => {
     localStorage.removeItem('loggedUser');
     localStorage.removeItem('isSubscribed');
     handleAccess();
+    // 🛠️ تحقق من الصيانة (مستخدم زائر)
+    if (_pendingMaintenanceCheck) {
+      _pendingMaintenanceCheck = false;
+      checkAndShowMaintenance();
+    }
     return;
   }
 
   _user = user;
 
-  // ✅ لو كان المستخدم أدمن وكنا نعرض صفحة الصيانة، شيلها
-  if (isAdmin(user) && _maintenanceShown) {
-    hideMaintenancePage();
+  // 🛠️ تحقق من الصيانة الآن بعد ما عرفنا من المستخدم
+  if (_pendingMaintenanceCheck || _maintenanceShown) {
+    _pendingMaintenanceCheck = false;
+    checkAndShowMaintenance();
   }
 
   // Real-time listener للبروفايل
