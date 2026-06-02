@@ -5,7 +5,13 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <meta name="color-scheme" content="light only">
 <meta name="theme-color" content="#0b3946">
-<title>تقرير الفعاليات · كتاب رقمي</title>
+<!-- 🆕 منع cache: يضمن أن المستخدم يحصل على آخر نسخة دائماً -->
+<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+<meta http-equiv="Pragma" content="no-cache">
+<meta http-equiv="Expires" content="0">
+<!-- نسخة الملف -->
+<meta name="version" content="v2.1.0-2026-06-02">
+<title>تقرير الفعاليات · كتاب رقمي · v2.1</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;800;900&family=Reem+Kufi:wght@400;500;600;700&family=Aref+Ruqaa:wght@400;700&display=swap" rel="stylesheet">
@@ -2645,10 +2651,13 @@ function init(){
 }
 init();
 
-// 🆕 إعادة الرسم بعد التحميل الكامل (يحلّ مشكلة iOS Safari مع viewport)
+// 🆕 إظهار نسخة الملف بعد التحميل (للتأكد من الإصدار الصحيح)
 window.addEventListener('load', () => {
   setTimeout(() => {
     renderBook();
+    console.log('✅ النسخة المحمّلة: v2.1.0 - 2026-06-02');
+    // toast صغير في الزاوية يؤكد النسخة (يختفي بعد 3 ثوانٍ)
+    showToast('✅ النسخة v2.1.0', 2500);
   }, 100);
 });
 
