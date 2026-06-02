@@ -842,6 +842,9 @@ transition:all 0.2s;
 
   <!-- 🔥 Firebase Integration (يجب أن يكون قبل أي محتوى) -->
   <script type="module" src="report-firebase.js?v=12"></script>
+
+  <!-- 📲 مكتبة QR Code (للنشر بـ Firestore) -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
 </head>
 <body>
 
@@ -1931,6 +1934,198 @@ loadSavedTheme();
   }, 200);
 })();
 
+// ═══════════════════════════════════════════════════════
+// 📲 QR Code - نشر التقرير وتوليد رمز QR
+// ═══════════════════════════════════════════════════════
+let _currentReportId = null;
+
+// 📥 استرجع reportId المحفوظ (لو موجود) من localStorage
+try {
+  _currentReportId = localStorage.getItem('report_html_published_id') || null;
+} catch(e) {}
+
+// 🎯 الدالة الرئيسية: توليد QR
+window.generateQRCode = async function() {
+  closeExportMenu();
+
+  // افتح الـ popup
+  const backdrop = document.getElementById('qrBackdrop');
+  const content = document.getElementById('qrContent');
+  backdrop.classList.add('show');
+  content.innerHTML = '<div class="qr-loading">جاري إنشاء الرمز...</div>';
+
+  try {
+    // 1️⃣ تحقق من تسجيل الدخول
+    if (!window._fbUser) {
+      content.innerHTML = `
+        <div class="qr-error">
+          ⚠️ يجب تسجيل الدخول أولاً لنشر التقرير
+        </div>
+        <div class="qr-actions">
+          <button class="qr-btn primary full" onclick="window.location.href='login.html'">
+            تسجيل الدخول →
+          </button>
+        </div>`;
+      return;
+    }
+
+    // 2️⃣ تحقق من الاشتراك
+    if (typeof window.isPremiumUser === 'function' && !window.isPremiumUser()) {
+      content.innerHTML = `
+        <div class="qr-error">
+          💎 ميزة QR Code للمشتركين فقط
+        </div>
+        <div class="qr-actions">
+          <button class="qr-btn primary full" onclick="window.location.href='index.html#pricing'">
+            اشترك الآن (30 ريال) →
+          </button>
+        </div>`;
+      return;
+    }
+
+    // 3️⃣ اجمع بيانات التقرير من الحقول
+    const reportData = collectReportDataForQR();
+
+    // 4️⃣ استورد دوال Firebase
+    const { publishReport } = await import('./firebase-config.js');
+
+    // 5️⃣ انشر التقرير
+    const result = await publishReport({
+      reportId: _currentReportId, // لو موجود، يحدّثه
+      reportType: 'report',
+      reportTitle: reportData.title || 'تقرير الإدارة العامة للتعليم',
+      content: reportData,
+      theme: document.body.getAttribute('data-theme') || '',
+      lang: document.documentElement.getAttribute('lang') || 'ar'
+    });
+
+    if (!result.success) {
+      content.innerHTML = `
+        <div class="qr-error">❌ ${result.error}</div>
+        <div class="qr-actions">
+          <button class="qr-btn secondary full" onclick="generateQRCode()">إعادة المحاولة</button>
+        </div>`;
+      return;
+    }
+
+    // 6️⃣ احفظ ID التقرير للاستخدام لاحقاً
+    _currentReportId = result.reportId;
+    try {
+      localStorage.setItem('report_html_published_id', _currentReportId);
+    } catch(e) {}
+
+    // 7️⃣ ولّد QR Code
+    const url = result.url;
+    content.innerHTML = `
+      <div class="qr-success">✅ تم نشر التقرير بنجاح!</div>
+      <div class="qr-canvas-wrap">
+        <div id="qrCanvas"></div>
+      </div>
+      <div class="qr-url">${url}</div>
+      <div class="qr-actions">
+        <button class="qr-btn primary" onclick="downloadQRImage()">
+          📥 تحميل QR
+        </button>
+        <button class="qr-btn secondary" onclick="copyQRLink('${url}')">
+          📋 نسخ الرابط
+        </button>
+        <button class="qr-btn primary full" onclick="shareQRLink('${url}')">
+          📤 مشاركة الرابط
+        </button>
+      </div>`;
+
+    // أنشئ QR
+    setTimeout(() => {
+      new QRCode(document.getElementById('qrCanvas'), {
+        text: url,
+        width: 220,
+        height: 220,
+        colorDark: '#0f172a',
+        colorLight: '#ffffff',
+        correctLevel: QRCode.CorrectLevel.H
+      });
+    }, 100);
+
+  } catch (err) {
+    console.error('generateQRCode error:', err);
+    content.innerHTML = `
+      <div class="qr-error">❌ خطأ: ${err.message}</div>
+      <div class="qr-actions">
+        <button class="qr-btn secondary full" onclick="generateQRCode()">إعادة المحاولة</button>
+      </div>`;
+  }
+};
+
+// 🔧 جمع بيانات التقرير من الحقول
+function collectReportDataForQR() {
+  const data = { title: 'تقرير الإدارة العامة' };
+  // اجمع كل input + textarea + contenteditable
+  document.querySelectorAll('input, textarea').forEach(el => {
+    if (el.id || el.name) {
+      data[el.id || el.name] = el.value;
+    }
+  });
+  document.querySelectorAll('[contenteditable="true"]').forEach((el, i) => {
+    const key = el.id || 'content_' + i;
+    data[key] = el.textContent || '';
+  });
+  // اجمع الصور (إذا في الذاكرة فقط)
+  document.querySelectorAll('img.photo-img, .photo-slot img').forEach((el, i) => {
+    if (el.src && el.src.startsWith('data:image')) {
+      data['photo_' + i] = el.src;
+    }
+  });
+  return data;
+}
+
+// 🔒 إغلاق Popup
+window.closeQRModal = function() {
+  document.getElementById('qrBackdrop').classList.remove('show');
+};
+
+// 📥 تحميل QR كصورة
+window.downloadQRImage = function() {
+  const img = document.querySelector('#qrCanvas img');
+  if (!img) return;
+  const a = document.createElement('a');
+  a.href = img.src;
+  a.download = 'QR-report-' + (_currentReportId || 'report') + '.png';
+  a.click();
+};
+
+// 📋 نسخ الرابط
+window.copyQRLink = function(url) {
+  if (navigator.clipboard) {
+    navigator.clipboard.writeText(url).then(() => {
+      alert('✅ تم نسخ الرابط');
+    });
+  } else {
+    // fallback
+    const t = document.createElement('textarea');
+    t.value = url;
+    document.body.appendChild(t);
+    t.select();
+    document.execCommand('copy');
+    t.remove();
+    alert('✅ تم نسخ الرابط');
+  }
+};
+
+// 📤 مشاركة الرابط
+window.shareQRLink = async function(url) {
+  if (navigator.share) {
+    try {
+      await navigator.share({
+        title: 'تقرير من ksa2030.one',
+        text: '📲 شاهد تقريري الرقمي',
+        url: url
+      });
+    } catch(e) { /* المستخدم ألغى */ }
+  } else {
+    copyQRLink(url);
+  }
+};
+
 </script>
 
 
@@ -1961,6 +2156,184 @@ loadSavedTheme();
     </span>
     <span class="arrow">‹</span>
   </button>
+  <button class="export-option" onclick="generateQRCode()">
+    <span class="ico qr" style="background:linear-gradient(135deg,#1e6b8a,#3aa8d0);color:#fff;">📲</span>
+    <span class="opt-text">
+      <div class="opt-title">رمز QR Code</div>
+      <div class="opt-desc">شارك التقرير برمز ذكي قابل للمسح</div>
+    </span>
+    <span class="arrow">‹</span>
+  </button>
   <button class="export-cancel-btn" onclick="closeExportMenu()">إلغاء</button>
+</div>
+
+<!-- ═══════════════════════════════════════════════
+     📲 QR Code Popup
+     ═══════════════════════════════════════════════ -->
+<style>
+  .qr-backdrop {
+    position: fixed;
+    inset: 0;
+    background: rgba(5, 10, 18, 0.85);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    z-index: 99998;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+    animation: qrFadeIn 0.3s ease;
+  }
+  .qr-backdrop.show { display: flex; }
+  @keyframes qrFadeIn { from { opacity: 0; } to { opacity: 1; } }
+
+  .qr-modal {
+    background: linear-gradient(135deg, #fff, #f8fafc);
+    border-radius: 24px;
+    padding: 28px 24px;
+    max-width: 380px;
+    width: 100%;
+    box-shadow: 0 20px 60px rgba(0,0,0,0.4);
+    text-align: center;
+    position: relative;
+    animation: qrSlideUp 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+  }
+  @keyframes qrSlideUp {
+    from { opacity: 0; transform: translateY(40px) scale(0.95); }
+    to { opacity: 1; transform: translateY(0) scale(1); }
+  }
+  .qr-close {
+    position: absolute;
+    top: 12px;
+    left: 12px;
+    background: #f1f5f9;
+    border: none;
+    width: 32px; height: 32px;
+    border-radius: 50%;
+    font: 600 1.2rem 'Tajawal',sans-serif;
+    color: #64748b;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+  .qr-close:hover { background: #e2e8f0; color: #0f172a; }
+
+  .qr-title {
+    font: 900 1.3rem 'Aref Ruqaa', serif;
+    color: #0f172a;
+    margin-bottom: 6px;
+    background: linear-gradient(135deg, #1e6b8a, #3aa8d0);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+  .qr-subtitle {
+    font: 500 0.85rem 'Tajawal', sans-serif;
+    color: #64748b;
+    margin-bottom: 22px;
+  }
+  .qr-canvas-wrap {
+    background: #fff;
+    border: 3px solid #f0b855;
+    border-radius: 18px;
+    padding: 14px;
+    display: inline-block;
+    margin-bottom: 18px;
+    box-shadow: 0 8px 24px rgba(240, 184, 85, 0.2);
+  }
+  .qr-canvas-wrap img,
+  .qr-canvas-wrap canvas {
+    display: block;
+    margin: 0 auto;
+  }
+  .qr-loading {
+    padding: 60px 0;
+    color: #64748b;
+    font: 600 0.9rem 'Tajawal', sans-serif;
+  }
+  .qr-loading::before {
+    content: '';
+    display: inline-block;
+    width: 24px; height: 24px;
+    border: 3px solid #f1f5f9;
+    border-top-color: #1e6b8a;
+    border-radius: 50%;
+    animation: qrSpin 0.8s linear infinite;
+    margin-left: 8px;
+    vertical-align: middle;
+  }
+  @keyframes qrSpin { to { transform: rotate(360deg); } }
+  .qr-url {
+    background: #f8fafc;
+    border: 1px solid #e2e8f0;
+    border-radius: 10px;
+    padding: 10px 12px;
+    font: 600 0.78rem monospace;
+    color: #1e6b8a;
+    word-break: break-all;
+    margin-bottom: 16px;
+    direction: ltr;
+    text-align: center;
+  }
+  .qr-actions {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+    margin-top: 14px;
+  }
+  .qr-btn {
+    padding: 12px 14px;
+    border: none;
+    border-radius: 12px;
+    font: 800 0.85rem 'Tajawal', sans-serif;
+    cursor: pointer;
+    transition: all 0.2s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+  }
+  .qr-btn.primary {
+    background: linear-gradient(135deg, #1e6b8a, #3aa8d0);
+    color: #fff;
+    box-shadow: 0 4px 12px rgba(30, 107, 138, 0.3);
+  }
+  .qr-btn.primary:hover { transform: translateY(-2px); box-shadow: 0 6px 18px rgba(30, 107, 138, 0.4); }
+  .qr-btn.secondary {
+    background: #fff;
+    color: #1e6b8a;
+    border: 1.5px solid #cbd5e1;
+  }
+  .qr-btn.secondary:hover { background: #f8fafc; border-color: #1e6b8a; }
+  .qr-btn.full { grid-column: 1 / -1; }
+
+  .qr-error {
+    background: #fef2f2;
+    border: 1px solid #fecaca;
+    color: #dc2626;
+    padding: 14px;
+    border-radius: 12px;
+    font: 600 0.85rem 'Tajawal', sans-serif;
+    margin-bottom: 12px;
+  }
+  .qr-success {
+    background: #f0fdf4;
+    border: 1px solid #bbf7d0;
+    color: #15803d;
+    padding: 14px;
+    border-radius: 12px;
+    font: 600 0.85rem 'Tajawal', sans-serif;
+    margin-bottom: 12px;
+  }
+</style>
+
+<div class="qr-backdrop" id="qrBackdrop" onclick="if(event.target===this)closeQRModal()">
+  <div class="qr-modal">
+    <button class="qr-close" onclick="closeQRModal()">✕</button>
+    <div class="qr-title">📲 رمز QR Code</div>
+    <div class="qr-subtitle">شارك تقريرك برمز ذكي قابل للمسح</div>
+    <div id="qrContent">
+      <div class="qr-loading">جاري إنشاء الرمز...</div>
+    </div>
+  </div>
 </div></body>
 </html>

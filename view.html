@@ -1,0 +1,414 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>📲 عرض التقرير - ksa2030</title>
+  <link rel="icon" type="image/png" sizes="48x48" href="favicon-48x48.png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Aref+Ruqaa:wght@400;700&family=Reem+Kufi:wght@400;500;600;700&family=Tajawal:wght@400;500;700;900&family=Amiri:wght@400;700&display=swap" rel="stylesheet">
+
+  <style>
+    :root {
+      --navy: #050a12;
+      --teal: #1e6b8a;
+      --teal-bright: #3aa8d0;
+      --gold: #f0b855;
+      --gold-bright: #ffd76e;
+    }
+
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    html, body {
+      min-height: 100vh;
+      background: linear-gradient(135deg, #050a12 0%, #0a1929 50%, #050a12 100%);
+      font-family: 'Tajawal', sans-serif;
+      color: #fff;
+      padding: 20px;
+    }
+
+    /* الـ Header */
+    .view-header {
+      max-width: 900px;
+      margin: 0 auto 24px;
+      background: rgba(255,255,255,0.05);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      border: 1px solid rgba(240, 184, 85, 0.2);
+      border-radius: 20px;
+      padding: 18px 22px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 12px;
+    }
+    .view-brand {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    .view-brand-logo {
+      width: 44px; height: 44px;
+      border-radius: 12px;
+      background: linear-gradient(135deg, #1e6b8a, #3aa8d0);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.4rem;
+    }
+    .view-brand-text {
+      font: 900 1.1rem 'Aref Ruqaa', serif;
+      color: #f0b855;
+    }
+    .view-brand-text small {
+      display: block;
+      font: 500 0.7rem 'Tajawal',sans-serif;
+      color: rgba(255,255,255,0.6);
+      margin-top: 2px;
+    }
+    .view-meta {
+      display: flex;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+    .view-meta-item {
+      background: rgba(240, 184, 85, 0.1);
+      border: 1px solid rgba(240, 184, 85, 0.2);
+      padding: 6px 12px;
+      border-radius: 99px;
+      font: 700 0.78rem 'Tajawal',sans-serif;
+      color: #f0b855;
+    }
+
+    /* محتوى التقرير */
+    .view-content {
+      max-width: 900px;
+      margin: 0 auto;
+      background: #fff;
+      color: #0f172a;
+      border-radius: 24px;
+      padding: 30px 24px;
+      box-shadow: 0 20px 60px rgba(0,0,0,0.5);
+      min-height: 60vh;
+    }
+    .report-title {
+      font: 900 1.8rem 'Aref Ruqaa', serif;
+      color: #1e6b8a;
+      text-align: center;
+      margin-bottom: 12px;
+      padding-bottom: 16px;
+      border-bottom: 3px solid #f0b855;
+    }
+    .report-subtitle {
+      text-align: center;
+      color: #64748b;
+      font: 600 0.95rem 'Tajawal',sans-serif;
+      margin-bottom: 24px;
+    }
+    .report-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 14px;
+      margin-bottom: 24px;
+    }
+    .report-field {
+      background: #f8fafc;
+      border: 1.5px solid #e2e8f0;
+      border-radius: 12px;
+      padding: 14px;
+    }
+    .report-field-label {
+      font: 700 0.78rem 'Tajawal',sans-serif;
+      color: #64748b;
+      margin-bottom: 6px;
+      display: block;
+    }
+    .report-field-value {
+      font: 700 1rem 'Tajawal',sans-serif;
+      color: #0f172a;
+      word-wrap: break-word;
+    }
+    .report-section {
+      background: #f8fafc;
+      border: 1.5px solid #e2e8f0;
+      border-radius: 12px;
+      padding: 16px;
+      margin-bottom: 14px;
+    }
+    .report-section-title {
+      font: 800 1rem 'Aref Ruqaa', serif;
+      color: #1e6b8a;
+      margin-bottom: 10px;
+      padding-bottom: 8px;
+      border-bottom: 1.5px dashed #cbd5e1;
+    }
+    .report-section-text {
+      font: 500 0.95rem 'Tajawal',sans-serif;
+      color: #334155;
+      line-height: 1.8;
+      white-space: pre-wrap;
+    }
+    .report-photos {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 12px;
+      margin-top: 20px;
+    }
+    .report-photos img {
+      width: 100%;
+      border-radius: 12px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+    }
+
+    /* الـ Loading */
+    .loading {
+      text-align: center;
+      padding: 80px 20px;
+      color: rgba(255,255,255,0.7);
+    }
+    .loading-spinner {
+      width: 50px; height: 50px;
+      border: 4px solid rgba(240, 184, 85, 0.2);
+      border-top-color: #f0b855;
+      border-radius: 50%;
+      animation: spin 0.8s linear infinite;
+      margin: 0 auto 16px;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    /* الـ Error */
+    .error-state {
+      text-align: center;
+      padding: 60px 20px;
+      max-width: 500px;
+      margin: 0 auto;
+      background: rgba(255,255,255,0.05);
+      backdrop-filter: blur(10px);
+      border-radius: 20px;
+      border: 1px solid rgba(220, 38, 38, 0.3);
+    }
+    .error-icon { font-size: 4rem; margin-bottom: 16px; }
+    .error-title {
+      font: 900 1.4rem 'Aref Ruqaa', serif;
+      color: #f0b855;
+      margin-bottom: 10px;
+    }
+    .error-text {
+      color: rgba(255,255,255,0.8);
+      font: 500 0.95rem 'Tajawal',sans-serif;
+      line-height: 1.7;
+      margin-bottom: 24px;
+    }
+    .error-btn {
+      display: inline-block;
+      background: linear-gradient(135deg, #1e6b8a, #3aa8d0);
+      color: #fff;
+      padding: 12px 28px;
+      border-radius: 12px;
+      text-decoration: none;
+      font: 800 0.95rem 'Tajawal',sans-serif;
+      transition: transform 0.2s;
+    }
+    .error-btn:hover { transform: translateY(-2px); }
+
+    /* Footer */
+    .view-footer {
+      max-width: 900px;
+      margin: 24px auto 0;
+      text-align: center;
+      color: rgba(255,255,255,0.5);
+      font: 500 0.85rem 'Tajawal',sans-serif;
+    }
+    .view-footer a {
+      color: #f0b855;
+      text-decoration: none;
+      font-weight: 800;
+    }
+
+    @media (max-width: 600px) {
+      .report-grid { grid-template-columns: 1fr; }
+      .report-title { font-size: 1.4rem; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Header -->
+  <div class="view-header">
+    <div class="view-brand">
+      <div class="view-brand-logo">📲</div>
+      <div class="view-brand-text">
+        ksa2030.one
+        <small>تقرير رقمي · امسح وشاهد</small>
+      </div>
+    </div>
+    <div class="view-meta" id="metaWrap" style="display:none;">
+      <span class="view-meta-item" id="viewsCount">👁️ —</span>
+    </div>
+  </div>
+
+  <!-- المحتوى -->
+  <div id="contentArea">
+    <div class="loading">
+      <div class="loading-spinner"></div>
+      <div>جاري تحميل التقرير...</div>
+    </div>
+  </div>
+
+  <!-- Footer -->
+  <div class="view-footer">
+    صنع بـ ❤️ على <a href="/">ksa2030.one</a>
+  </div>
+
+  <!-- Firebase -->
+  <script type="module">
+    import { getPublishedReport, incrementReportViews } from './firebase-config.js';
+
+    // ═══ اقرأ ID التقرير من URL ═══
+    const params = new URLSearchParams(window.location.search);
+    const reportId = params.get('r');
+
+    if (!reportId) {
+      showError('❌ رابط غير صحيح', 'لم يتم تحديد التقرير المراد عرضه');
+    } else {
+      loadReport(reportId);
+    }
+
+    async function loadReport(id) {
+      const result = await getPublishedReport(id);
+      if (!result.success) {
+        showError('🔍 تقرير غير موجود', result.error || 'لم نتمكن من العثور على هذا التقرير');
+        return;
+      }
+      renderReport(result.data);
+      // زيادة عداد المشاهدات
+      incrementReportViews(id).catch(() => {});
+    }
+
+    function renderReport(data) {
+      const content = data.content || {};
+      const title = data.reportTitle || 'تقرير مدرسي';
+      const lang = data.lang || 'ar';
+
+      // اعرض المعلومات
+      document.getElementById('metaWrap').style.display = 'flex';
+      document.getElementById('viewsCount').textContent = '👁️ ' + ((data.views || 0) + 1);
+
+      // ابني HTML
+      let html = `
+        <div class="view-content">
+          <div class="report-title">${escapeHTML(title)}</div>
+          <div class="report-subtitle">تقرير منشور رقمياً عبر منصة ksa2030</div>
+      `;
+
+      // الحقول المفتاحية
+      const keyFields = {
+        'schoolName': '🏫 المدرسة',
+        'district': '📍 الإدارة',
+        'date': '📅 التاريخ',
+        'reportName': '📝 اسم التقرير',
+        'principal': '👤 المدير',
+        'teacher': '👤 المعلم'
+      };
+
+      const fieldsHTML = [];
+      for (const key in keyFields) {
+        if (content[key]) {
+          fieldsHTML.push(`
+            <div class="report-field">
+              <span class="report-field-label">${keyFields[key]}</span>
+              <div class="report-field-value">${escapeHTML(content[key])}</div>
+            </div>
+          `);
+        }
+      }
+      if (fieldsHTML.length) {
+        html += `<div class="report-grid">${fieldsHTML.join('')}</div>`;
+      }
+
+      // أقسام النصوص الطويلة
+      const textFields = {
+        'description': '📋 الوصف',
+        'goals': '🎯 الأهداف',
+        'activities': '🎨 الأنشطة',
+        'recommendations': '💡 التوصيات',
+        'results': '✅ النتائج',
+        'notes': '📝 ملاحظات'
+      };
+
+      for (const key in textFields) {
+        if (content[key] && content[key].trim()) {
+          html += `
+            <div class="report-section">
+              <div class="report-section-title">${textFields[key]}</div>
+              <div class="report-section-text">${escapeHTML(content[key])}</div>
+            </div>
+          `;
+        }
+      }
+
+      // أي حقول نصية أخرى
+      for (const key in content) {
+        if (
+          !keyFields[key] &&
+          !textFields[key] &&
+          !key.startsWith('photo_') &&
+          typeof content[key] === 'string' &&
+          content[key].trim() &&
+          content[key].length > 20 &&
+          !content[key].startsWith('data:')
+        ) {
+          html += `
+            <div class="report-section">
+              <div class="report-section-title">📄 ${escapeHTML(key)}</div>
+              <div class="report-section-text">${escapeHTML(content[key])}</div>
+            </div>
+          `;
+        }
+      }
+
+      // الصور
+      const photos = [];
+      for (const key in content) {
+        if (key.startsWith('photo_') && content[key]?.startsWith('data:image')) {
+          photos.push(content[key]);
+        }
+      }
+      if (photos.length) {
+        html += `<div class="report-photos">`;
+        photos.forEach(src => {
+          html += `<img src="${src}" alt="صورة">`;
+        });
+        html += `</div>`;
+      }
+
+      html += `</div>`;
+      document.getElementById('contentArea').innerHTML = html;
+    }
+
+    function showError(title, text) {
+      document.getElementById('contentArea').innerHTML = `
+        <div class="error-state">
+          <div class="error-icon">😔</div>
+          <div class="error-title">${title}</div>
+          <div class="error-text">${text}</div>
+          <a href="/" class="error-btn">العودة للرئيسية →</a>
+        </div>
+      `;
+    }
+
+    function escapeHTML(str) {
+      if (str == null) return '';
+      return String(str)
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#39;');
+    }
+  </script>
+
+</body>
+</html>

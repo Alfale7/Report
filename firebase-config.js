@@ -352,6 +352,111 @@ export function listenToMaintenance(callback) {
   });
 }
 
+// ═══════════════════════════════════════════════════════
+// 📲 نشر التقارير - يولّد رابط فريد لكل تقرير
+// المعلم يحفظ تقريره → نولّد له ID فريد
+// يقدر يشاركه برابط أو QR Code
+// ═══════════════════════════════════════════════════════
+
+// 🔧 توليد ID قصير ومميز للتقرير (مثل: a3k9x2)
+function generateShortId() {
+  const chars = 'abcdefghijklmnopqrstuvwxyz0123456789';
+  let id = '';
+  for (let i = 0; i < 6; i++) {
+    id += chars[Math.floor(Math.random() * chars.length)];
+  }
+  return id;
+}
+
+// 📤 نشر تقرير جديد (أو تحديث موجود)
+export async function publishReport(reportData) {
+  try {
+    const user = auth.currentUser;
+    if (!user) {
+      return { success: false, error: 'يجب تسجيل الدخول أولاً' };
+    }
+
+    // إذا التقرير له ID مسبق، نحدّثه. وإلا نولّد ID جديد
+    const reportId = reportData.reportId || generateShortId();
+
+    const data = {
+      reportId,
+      userId: user.uid,
+      userEmail: user.email,
+      reportType: reportData.reportType || 'general', // مثل: report, watny, etc.
+      reportTitle: reportData.reportTitle || 'تقرير مدرسي',
+      content: reportData.content, // كل بيانات التقرير
+      theme: reportData.theme || '',
+      lang: reportData.lang || 'ar',
+      views: reportData.views || 0,
+      createdAt: reportData.createdAt || serverTimestamp(),
+      updatedAt: serverTimestamp()
+    };
+
+    await setDoc(doc(db, 'publishedReports', reportId), data, { merge: true });
+
+    return {
+      success: true,
+      reportId,
+      url: `${window.location.origin}/view.html?r=${reportId}`
+    };
+  } catch (error) {
+    console.error('publishReport:', error);
+    return { success: false, error: error.message };
+  }
+}
+
+// 📥 قراءة تقرير منشور بواسطة ID
+export async function getPublishedReport(reportId) {
+  try {
+    if (!reportId || typeof reportId !== 'string') {
+      return { success: false, error: 'رقم التقرير غير صحيح' };
+    }
+    const snap = await getDoc(doc(db, 'publishedReports', reportId));
+    if (!snap.exists()) {
+      return { success: false, error: 'التقرير غير موجود' };
+    }
+    return { success: true, data: snap.data() };
+  } catch (error) {
+    console.error('getPublishedReport:', error);
+    return { success: false, error: error.message };
+  }
+}
+
+// 📊 زيادة عداد المشاهدات
+export async function incrementReportViews(reportId) {
+  try {
+    const ref = doc(db, 'publishedReports', reportId);
+    const snap = await getDoc(ref);
+    if (snap.exists()) {
+      const currentViews = snap.data().views || 0;
+      await setDoc(ref, { views: currentViews + 1 }, { merge: true });
+    }
+  } catch (error) {
+    console.warn('incrementReportViews failed:', error);
+  }
+}
+
+// 📋 قائمة التقارير المنشورة للمستخدم الحالي
+export async function getUserPublishedReports(uid) {
+  try {
+    if (!uid) return { success: false, error: 'معرّف المستخدم مفقود' };
+    const q = query(
+      collection(db, 'publishedReports'),
+      where('userId', '==', uid),
+      orderBy('updatedAt', 'desc'),
+      limit(50)
+    );
+    const snap = await getDocs(q);
+    const reports = [];
+    snap.forEach(doc => reports.push(doc.data()));
+    return { success: true, reports };
+  } catch (error) {
+    console.error('getUserPublishedReports:', error);
+    return { success: false, error: error.message };
+  }
+}
+
 // ═══ الصلاحيات ═══
 
 export function isLifetime(profile) {
