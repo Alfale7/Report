@@ -4090,20 +4090,11 @@ filter:drop-shadow(0 1px 2px rgba(0,0,0,0.35));
 .r-council .card-icon{background:linear-gradient(135deg,#3b6db5,#1e3a6e);color:#fff;}
 .r-council .card-icon-wrap::after{background:#3b6db5;}
 
-.r-parents .card-icon{background:linear-gradient(135deg,#e8754a,#c45530);color:#fff;}
-.r-parents .card-icon-wrap::after{background:#e8754a;}
-
 .r-plan .card-icon{background:linear-gradient(135deg,#2a9d8f,#1a6e8a);color:#fff;}
 .r-plan .card-icon-wrap::after{background:#2a9d8f;}
 
-.r-minutes .card-icon{background:linear-gradient(135deg,#4a4a52,#2a2a32);color:#c9a45b;}
-.r-minutes .card-icon-wrap::after{background:#4a4a52;}
-
 .r-radio .card-icon{background:linear-gradient(135deg,#e83a5a,#c91c4a);color:#fff;}
 .r-radio .card-icon-wrap::after{background:#e83a5a;}
-
-.r-trip .card-icon{background:linear-gradient(135deg,#4caf50,#2e7d32);color:#fff;}
-.r-trip .card-icon-wrap::after{background:#4caf50;}
 
 /* ═══ مصغّر مشترك للتقارير الإدارية ═══ */
 .thumb-admin{
@@ -4169,14 +4160,6 @@ filter:drop-shadow(0 1px 2px rgba(0,0,0,0.35));
 .thumb-council .ta-row::after{background:#1e3a6e;opacity:0.4;}
 .thumb-council .ta-cell{border-color:rgba(30,58,110,0.2);}
 
-.thumb-parents{color:#c45530;}
-.thumb-parents .ta-band{background:linear-gradient(90deg,#c45530,#e8754a,#c45530);}
-.thumb-parents .ta-title{color:#c45530;}
-.thumb-parents .ta-sub{color:#e8754a;}
-.thumb-parents .ta-row{border-color:rgba(196,85,48,0.25);}
-.thumb-parents .ta-row::after{background:#c45530;opacity:0.4;}
-.thumb-parents .ta-cell{border-color:rgba(196,85,48,0.2);}
-
 .thumb-plan{color:#1a6e8a;}
 .thumb-plan .ta-band{background:linear-gradient(90deg,#1a6e8a,#2a9d8f,#1a6e8a);}
 .thumb-plan .ta-title{color:#1a6e8a;}
@@ -4185,14 +4168,6 @@ filter:drop-shadow(0 1px 2px rgba(0,0,0,0.35));
 .thumb-plan .ta-row::after{background:#1a6e8a;opacity:0.4;}
 .thumb-plan .ta-cell{border-color:rgba(26,110,138,0.2);}
 
-.thumb-minutes{color:#2a2a32;}
-.thumb-minutes .ta-band{background:linear-gradient(90deg,#2a2a32,#4a4a52,#c9a45b,#4a4a52,#2a2a32);}
-.thumb-minutes .ta-title{color:#2a2a32;}
-.thumb-minutes .ta-sub{color:#c9a45b;}
-.thumb-minutes .ta-row{border-color:rgba(42,42,50,0.25);}
-.thumb-minutes .ta-row::after{background:#c9a45b;opacity:0.6;}
-.thumb-minutes .ta-cell{border-color:rgba(42,42,50,0.2);}
-
 .thumb-radio{color:#c91c4a;}
 .thumb-radio .ta-band{background:linear-gradient(90deg,#c91c4a,#e83a5a,#ff7a3a,#e83a5a,#c91c4a);}
 .thumb-radio .ta-title{color:#c91c4a;}
@@ -4200,14 +4175,6 @@ filter:drop-shadow(0 1px 2px rgba(0,0,0,0.35));
 .thumb-radio .ta-row{border-color:rgba(201,28,74,0.25);}
 .thumb-radio .ta-row::after{background:#c91c4a;opacity:0.4;}
 .thumb-radio .ta-cell{border-color:rgba(201,28,74,0.2);}
-
-.thumb-trip{color:#2e7d32;}
-.thumb-trip .ta-band{background:linear-gradient(90deg,#2e7d32,#4caf50,#8bc34a,#4caf50,#2e7d32);}
-.thumb-trip .ta-title{color:#2e7d32;}
-.thumb-trip .ta-sub{color:#4caf50;}
-.thumb-trip .ta-row{border-color:rgba(46,125,50,0.25);}
-.thumb-trip .ta-row::after{background:#2e7d32;opacity:0.4;}
-.thumb-trip .ta-cell{border-color:rgba(46,125,50,0.2);}
 
 /* Thumb جدول الاختبارات */
 .thumb-exam{background:linear-gradient(180deg,#fbf9f4 0%,#f3efe6 100%);}
@@ -5933,9 +5900,9 @@ font-size:0.78rem;text-align:center;margin-top:12px;display:none;
         <div class="cat-text">
           <div class="cat-title">
             <span data-i18n="catAdmin">التقارير الإدارية</span>
-            <span class="cat-count">7</span>
+            <span class="cat-count">4</span>
           </div>
-          <div class="cat-sub" data-i18n="catAdminSub">زيارة صفية، اجتماعات، خطط، محاضر</div>
+          <div class="cat-sub" data-i18n="catAdminSub">زيارة صفية، مجلس المعلمين، الخطة الفصلية</div>
         </div>
         <div class="cat-chevron">▼</div>
       </div>
@@ -5945,27 +5912,10 @@ font-size:0.78rem;text-align:center;margin-top:12px;display:none;
     <!-- Card: زيارة صفية -->
     <div class="preview-card r-visit" data-target="visit.html" onclick="handleCardClick(this)">
       <span class="card-badge badge-new">✨ <span data-i18n="badgeNew2">جديد</span></span>
-      <div class="thumb thumb-admin thumb-visit">
-        <div class="ta-band"></div>
-        <div class="ta-title">تقرير زيارة صفية</div>
-        <div class="ta-sub">CLASSROOM VISIT</div>
-        <div class="ta-rows">
-          <div class="ta-row"></div>
-          <div class="ta-row"></div>
-        </div>
-        <div class="ta-table">
-          <div class="ta-cell head"></div>
-          <div class="ta-cell head"></div>
-          <div class="ta-cell head"></div>
-          <div class="ta-cell head"></div>
-          <div class="ta-cell"></div>
-          <div class="ta-cell"></div>
-          <div class="ta-cell"></div>
-          <div class="ta-cell"></div>
-          <div class="ta-cell"></div>
-          <div class="ta-cell"></div>
-          <div class="ta-cell"></div>
-          <div class="ta-cell"></div>
+      <div class="thumb thumb-visit">
+        <div class="iframe-snap-wrap" id="iframe-visit">
+          <div class="iframe-loading" data-i18n="loadingPreview">جاري تحميل المعاينة</div>
+          <iframe src="visit.html" loading="lazy" scrolling="no" sandbox="allow-same-origin allow-scripts" title="معاينة تقرير الزيارة الصفية" onload="this.parentElement.classList.add('loaded')"></iframe>
         </div>
       </div>
       <div class="card-content">
@@ -5986,24 +5936,12 @@ font-size:0.78rem;text-align:center;margin-top:12px;display:none;
     </div>
 
     <!-- Card: مجلس المعلمين -->
-    <div class="preview-card r-council locked" data-target="council.html" onclick="handleCardClick(this)">
+    <div class="preview-card r-council" data-target="council.html" onclick="handleCardClick(this)">
       <span class="card-badge badge-new">✨ <span data-i18n="badgeNew2">جديد</span></span>
-      <div class="thumb thumb-admin thumb-council">
-        <div class="ta-band"></div>
-        <div class="ta-title">مجلس المعلمين</div>
-        <div class="ta-sub">TEACHERS COUNCIL</div>
-        <div class="ta-rows">
-          <div class="ta-row"></div>
-          <div class="ta-row"></div>
-          <div class="ta-row short"></div>
-          <div class="ta-row"></div>
-          <div class="ta-row short"></div>
-        </div>
-        <div class="lock-overlay">
-          <div class="lock-cta">
-            <span>🔑</span>
-            <span data-i18n="lockCta">سجّل الدخول للوصول</span>
-          </div>
+      <div class="thumb thumb-council">
+        <div class="iframe-snap-wrap" id="iframe-council">
+          <div class="iframe-loading" data-i18n="loadingPreview">جاري تحميل المعاينة</div>
+          <iframe src="council.html" loading="lazy" scrolling="no" sandbox="allow-same-origin allow-scripts" title="معاينة محضر مجلس المعلمين" onload="this.parentElement.classList.add('loaded')"></iframe>
         </div>
       </div>
       <div class="card-content">
@@ -6023,68 +5961,13 @@ font-size:0.78rem;text-align:center;margin-top:12px;display:none;
       </div>
     </div>
 
-    <!-- Card: مجلس الآباء -->
-    <div class="preview-card r-parents locked" data-target="parents.html" onclick="handleCardClick(this)">
-      <span class="card-badge badge-new">✨ <span data-i18n="badgeNew2">جديد</span></span>
-      <div class="thumb thumb-admin thumb-parents">
-        <div class="ta-band"></div>
-        <div class="ta-title">مجلس الآباء والمعلمين</div>
-        <div class="ta-sub">PARENTS COUNCIL</div>
-        <div class="ta-rows">
-          <div class="ta-row"></div>
-          <div class="ta-row short"></div>
-          <div class="ta-row"></div>
-          <div class="ta-row"></div>
-          <div class="ta-row short"></div>
-        </div>
-        <div class="lock-overlay">
-          <div class="lock-cta">
-            <span>🔑</span>
-            <span data-i18n="lockCta">سجّل الدخول للوصول</span>
-          </div>
-        </div>
-      </div>
-      <div class="card-content">
-        <div class="card-icon-wrap">
-          <div class="card-icon">👨‍👩‍👧‍👦</div>
-        </div>
-        <div class="card-text">
-          <div class="title" data-i18n="cardParentsTitle">اجتماع مجلس الآباء</div>
-          <div class="desc" data-i18n="cardParentsDesc">تواصل المدرسة وأولياء الأمور</div>
-          <div class="meta">
-            <span class="meta-pill">📝 <span data-i18n="metaAgenda">جدول أعمال</span></span>
-            <span class="meta-sep"></span>
-            <span class="meta-pill">🖨️ <span data-i18n="metaPrint">طباعة</span></span>
-          </div>
-        </div>
-        <div class="card-action">‹</div>
-      </div>
-    </div>
-
     <!-- Card: خطة فصلية للمعلم -->
     <div class="preview-card r-plan" data-target="plan.html" onclick="handleCardClick(this)">
       <span class="card-badge badge-new">✨ <span data-i18n="badgeNew2">جديد</span></span>
-      <div class="thumb thumb-admin thumb-plan">
-        <div class="ta-band"></div>
-        <div class="ta-title">خطة فصلية</div>
-        <div class="ta-sub">TERM PLAN</div>
-        <div class="ta-table">
-          <div class="ta-cell head"></div>
-          <div class="ta-cell head"></div>
-          <div class="ta-cell head"></div>
-          <div class="ta-cell head"></div>
-          <div class="ta-cell"></div>
-          <div class="ta-cell"></div>
-          <div class="ta-cell"></div>
-          <div class="ta-cell"></div>
-          <div class="ta-cell"></div>
-          <div class="ta-cell"></div>
-          <div class="ta-cell"></div>
-          <div class="ta-cell"></div>
-          <div class="ta-cell"></div>
-          <div class="ta-cell"></div>
-          <div class="ta-cell"></div>
-          <div class="ta-cell"></div>
+      <div class="thumb thumb-plan">
+        <div class="iframe-snap-wrap" id="iframe-plan">
+          <div class="iframe-loading" data-i18n="loadingPreview">جاري تحميل المعاينة</div>
+          <iframe src="plan.html" loading="lazy" scrolling="no" sandbox="allow-same-origin allow-scripts" title="معاينة الخطة الفصلية" onload="this.parentElement.classList.add('loaded')"></iframe>
         </div>
       </div>
       <div class="card-content">
@@ -6104,56 +5987,13 @@ font-size:0.78rem;text-align:center;margin-top:12px;display:none;
       </div>
     </div>
 
-    <!-- Card: محضر اجتماع عام -->
-    <div class="preview-card r-minutes locked" data-target="minutes.html" onclick="handleCardClick(this)">
-      <span class="card-badge badge-premium">💎 <span data-i18n="badgeFormal">رسمي</span></span>
-      <div class="thumb thumb-admin thumb-minutes">
-        <div class="ta-band"></div>
-        <div class="ta-title">محضر اجتماع</div>
-        <div class="ta-sub">OFFICIAL MINUTES</div>
-        <div class="ta-rows">
-          <div class="ta-row"></div>
-          <div class="ta-row short"></div>
-          <div class="ta-row"></div>
-          <div class="ta-row"></div>
-          <div class="ta-row short"></div>
-        </div>
-        <div class="lock-overlay">
-          <div class="lock-cta">
-            <span>🔑</span>
-            <span data-i18n="lockCta">سجّل الدخول للوصول</span>
-          </div>
-        </div>
-      </div>
-      <div class="card-content">
-        <div class="card-icon-wrap">
-          <div class="card-icon">📜</div>
-        </div>
-        <div class="card-text">
-          <div class="title" data-i18n="cardMinutesTitle">محضر اجتماع عام</div>
-          <div class="desc" data-i18n="cardMinutesDesc">قالب رسمي مرن لأي اجتماع</div>
-          <div class="meta">
-            <span class="meta-pill">⚖️ <span data-i18n="metaFormal">رسمي</span></span>
-            <span class="meta-sep"></span>
-            <span class="meta-pill">🖨️ <span data-i18n="metaPrint">طباعة</span></span>
-          </div>
-        </div>
-        <div class="card-action">‹</div>
-      </div>
-    </div>
-
     <!-- Card: إذاعة مدرسية -->
     <div class="preview-card r-radio" data-target="radio.html" onclick="handleCardClick(this)">
       <span class="card-badge badge-pop">🎙️ <span data-i18n="badgeWeekly">أسبوعي</span></span>
-      <div class="thumb thumb-admin thumb-radio">
-        <div class="ta-band"></div>
-        <div class="ta-title">الإذاعة المدرسية</div>
-        <div class="ta-sub">MORNING ASSEMBLY</div>
-        <div class="ta-rows">
-          <div class="ta-row"></div>
-          <div class="ta-row"></div>
-          <div class="ta-row short"></div>
-          <div class="ta-row"></div>
+      <div class="thumb thumb-radio">
+        <div class="iframe-snap-wrap" id="iframe-radio">
+          <div class="iframe-loading" data-i18n="loadingPreview">جاري تحميل المعاينة</div>
+          <iframe src="radio.html" loading="lazy" scrolling="no" sandbox="allow-same-origin allow-scripts" title="معاينة الإذاعة المدرسية" onload="this.parentElement.classList.add('loaded')"></iframe>
         </div>
       </div>
       <div class="card-content">
@@ -6173,43 +6013,7 @@ font-size:0.78rem;text-align:center;margin-top:12px;display:none;
       </div>
     </div>
 
-    <!-- Card: رحلة مدرسية -->
-    <div class="preview-card r-trip locked" data-target="trip.html" onclick="handleCardClick(this)">
-      <span class="card-badge badge-new">🌳 <span data-i18n="badgeAdventure">رحلة</span></span>
-      <div class="thumb thumb-admin thumb-trip">
-        <div class="ta-band"></div>
-        <div class="ta-title">تقرير رحلة مدرسية</div>
-        <div class="ta-sub">SCHOOL TRIP</div>
-        <div class="ta-rows">
-          <div class="ta-row"></div>
-          <div class="ta-row short"></div>
-          <div class="ta-row"></div>
-          <div class="ta-row"></div>
-          <div class="ta-row short"></div>
-        </div>
-        <div class="lock-overlay">
-          <div class="lock-cta">
-            <span>🔑</span>
-            <span data-i18n="lockCta">سجّل الدخول للوصول</span>
-          </div>
-        </div>
-      </div>
-      <div class="card-content">
-        <div class="card-icon-wrap">
-          <div class="card-icon">🚌</div>
-        </div>
-        <div class="card-text">
-          <div class="title" data-i18n="cardTripTitle">تقرير رحلة مدرسية</div>
-          <div class="desc" data-i18n="cardTripDesc">وجهة · مرافقين · أنشطة · صور</div>
-          <div class="meta">
-            <span class="meta-pill">📷 <span data-i18n="metaPhotos">3 صور</span></span>
-            <span class="meta-sep"></span>
-            <span class="meta-pill">🖨️ <span data-i18n="metaPrint">طباعة</span></span>
-          </div>
-        </div>
-        <div class="card-action">‹</div>
-      </div>
-    </div>
+    <!-- Card: رحلة مدرسية - تم الحذف -->
 
         </div>
       </div>
@@ -7301,7 +7105,7 @@ const I18N = {
     snapArabicF4: "العدد",
     snapArabicF5: "التاريخ",
     catAdmin: "التقارير الإدارية",
-    catAdminSub: "زيارة صفية، اجتماعات، خطط، محاضر",
+    catAdminSub: "زيارة صفية، مجلس المعلمين، الخطة الفصلية",
     catSchool: "التقارير المدرسية",
     catSchoolSub: "تقارير الأنشطة والفعاليات",
     snapNewsTitle: "جريدة الفعاليات",
@@ -7452,16 +7256,10 @@ const I18N = {
     cardVisitDesc: "للمشرفين · ٨ معايير تقييم · توصيات",
     cardCouncilTitle: "اجتماع مجلس المعلمين",
     cardCouncilDesc: "جدول أعمال · حضور · قرارات",
-    cardParentsTitle: "اجتماع مجلس الآباء",
-    cardParentsDesc: "تواصل المدرسة وأولياء الأمور",
     cardPlanTitle: "خطة فصلية للمعلم",
     cardPlanDesc: "أهداف · موضوعات · أساليب · تقويم",
-    cardMinutesTitle: "محضر اجتماع عام",
-    cardMinutesDesc: "قالب رسمي مرن لأي اجتماع",
     cardRadioTitle: "الإذاعة المدرسية",
     cardRadioDesc: "فقرات · مقدّمين · موضوع الأسبوع",
-    cardTripTitle: "تقرير رحلة مدرسية",
-    cardTripDesc: "وجهة · مرافقين · أنشطة · صور",
     lockCta: "سجّل الدخول للوصول",
     metaPhotos: "3 صور",
     metaThemesReport: "5 ثيمات",
@@ -7589,7 +7387,7 @@ const I18N = {
     snapArabicF4: "Count",
     snapArabicF5: "Date",
     catAdmin: "Administrative Reports",
-    catAdminSub: "Class visits, meetings, plans, minutes",
+    catAdminSub: "Class visits, council meetings, term plans",
     catSchool: "School Reports",
     catSchoolSub: "Activity and event reports",
     snapNewsTitle: "Events Newspaper",
@@ -7740,16 +7538,10 @@ const I18N = {
     cardVisitDesc: "For supervisors · 8 criteria · Recommendations",
     cardCouncilTitle: "Teachers Council Meeting",
     cardCouncilDesc: "Agenda · Attendance · Decisions",
-    cardParentsTitle: "Parents Council Meeting",
-    cardParentsDesc: "School-parents communication",
     cardPlanTitle: "Teacher's Term Plan",
     cardPlanDesc: "Goals · Topics · Methods · Assessment",
-    cardMinutesTitle: "General Meeting Minutes",
-    cardMinutesDesc: "Flexible official template",
     cardRadioTitle: "Morning Assembly",
     cardRadioDesc: "Segments · Presenters · Weekly theme",
-    cardTripTitle: "School Trip Report",
-    cardTripDesc: "Destination · Escorts · Activities · Photos",
     lockCta: "Login to access",
     metaPhotos: "3 photos",
     metaThemesReport: "5 themes",
@@ -8014,7 +7806,7 @@ function handleCardClick(card){
   const target = card.getAttribute('data-target');
 
   // 👁️ تقارير المعاينة / التجربة - يفتحها أي زائر بدون تسجيل دخول
-  const VIEW_ONLY_AND_FREE_TRIAL = ['report.html', 'tasis.html', 'watny.html', 'alm.html', 'alm2.html', 'green.html', 'shawahed.html', 'enjaz.html', 'kg.html', 'report2.html', 'report3.html', 'report4.html', 'teacher.html', 'arabic.html', 'cert.html', 'exam.html', 'star.html', 'plan.html', 'visit.html', 'radio.html', 'report5.html'];
+  const VIEW_ONLY_AND_FREE_TRIAL = ['report.html', 'tasis.html', 'watny.html', 'alm.html', 'alm2.html', 'green.html', 'shawahed.html', 'enjaz.html', 'kg.html', 'report2.html', 'report3.html', 'report4.html', 'teacher.html', 'arabic.html', 'cert.html', 'exam.html', 'star.html', 'plan.html', 'visit.html', 'radio.html', 'report5.html', 'council.html'];
   if (target && VIEW_ONLY_AND_FREE_TRIAL.includes(target)) {
     window.location.href = target;
     return;

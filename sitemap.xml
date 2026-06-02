@@ -161,22 +161,8 @@
        📋 التقارير الإدارية (0.75)
        ═══════════════════════════════════════════ -->
   <url>
-    <loc>https://ksa2030.one/minutes.html</loc>
-    <lastmod>2026-06-01</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.75</priority>
-  </url>
-
-  <url>
     <loc>https://ksa2030.one/council.html</loc>
-    <lastmod>2026-06-01</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.75</priority>
-  </url>
-
-  <url>
-    <loc>https://ksa2030.one/parents.html</loc>
-    <lastmod>2026-06-01</lastmod>
+    <lastmod>2026-06-02</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.75</priority>
   </url>
@@ -205,13 +191,6 @@
     <priority>0.75</priority>
   </url>
 
-  <url>
-    <loc>https://ksa2030.one/trip.html</loc>
-    <lastmod>2026-06-01</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.75</priority>
-  </url>
-
   <!-- ═══════════════════════════════════════════
        📊 الجداول والوثائق (0.75)
        ═══════════════════════════════════════════ -->
@@ -227,6 +206,37 @@
     <lastmod>2026-06-01</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.75</priority>
+  </url>
+
+  <!-- ═══════════════════════════════════════════
+       📑 تقارير إضافية (0.8)
+       ═══════════════════════════════════════════ -->
+  <url>
+    <loc>https://ksa2030.one/report2.html</loc>
+    <lastmod>2026-06-01</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+
+  <url>
+    <loc>https://ksa2030.one/report3.html</loc>
+    <lastmod>2026-06-01</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+
+  <url>
+    <loc>https://ksa2030.one/report4.html</loc>
+    <lastmod>2026-06-01</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+
+  <url>
+    <loc>https://ksa2030.one/report5.html</loc>
+    <lastmod>2026-06-01</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.85</priority>
   </url>
 
   <!-- ═══════════════════════════════════════════
