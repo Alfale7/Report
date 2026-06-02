@@ -1292,6 +1292,13 @@ function loadData(){
     if(Array.isArray(d.pages) && d.pages.length > 0){
       pages = d.pages;
       currentSpread = d.currentSpread || 0;
+      // 🆕 صحّح currentSpread حسب الجهاز الحالي
+      // (لو الكتاب محفوظ على ديسكتوب وفُتح على جوال أو العكس)
+      // ملاحظة: isMobileDevice() يُعرّف لاحقاً في الكود فنستخدمه بشكل آمن
+      const isMobile = (window.innerWidth <= 768) || ('ontouchstart' in window) || /iPhone|iPad|iPod|Android|Mobile/i.test(navigator.userAgent || '');
+      const maxSpread = isMobile ? pages.length - 1 : Math.ceil(pages.length / 2) - 1;
+      if(currentSpread > maxSpread) currentSpread = 0;
+      if(currentSpread < 0) currentSpread = 0;
       return true;
     }
   }catch(e){}
@@ -1498,13 +1505,26 @@ function esc(s){
 /* ═══════════════════════════════════════════════════════
    🎨 رندر الكتاب كاملاً
    ═══════════════════════════════════════════════════════ */
+
+// 🆕 اكتشاف الجوال بأقوى طريقة (يدعم iOS Safari عند التحميل)
+function isMobileDevice(){
+  // 1) فحص العرض
+  const widthCheck = window.innerWidth <= 768;
+  // 2) فحص اللمس (الأجهزة اللمسية)
+  const touchCheck = ('ontouchstart' in window) || (navigator.maxTouchPoints > 0);
+  // 3) فحص User Agent (للتأكد)
+  const uaCheck = /iPhone|iPad|iPod|Android|Mobile/i.test(navigator.userAgent || '');
+  // إذا أي اثنين من الثلاثة موجبة → جوال
+  return (widthCheck && touchCheck) || (widthCheck && uaCheck) || (touchCheck && uaCheck && window.innerWidth <= 900);
+}
+
 function renderBook(){
   const book = document.getElementById('book');
   // احذف كل الصفحات السابقة (ابقي الـ spine فقط)
   book.querySelectorAll('.page').forEach(el => el.remove());
 
-  // 🆕 اكتشف الجوال: على الجوال صفحة وحدة في كل spread
-  const isMobile = window.innerWidth <= 768;
+  // 🆕 اكتشف الجوال بطريقة موثوقة
+  const isMobile = isMobileDevice();
 
   let spreads, rightPageIdx, leftPageIdx;
 
@@ -1657,15 +1677,19 @@ function handleEvidenceUpload(event, pageIdx){
       // 🆕 انتهت المعالجة - render نهائي + حفظ + إشعار
       saveData();
       forceRerender();
-      showToast(`✅ أُضيفت ${processedCount} صورة بنجاح`);
+      if(processedCount > 0){
+        showToast(`✅ أُضيفت ${processedCount} صورة بنجاح`);
+      } else {
+        showToast(`❌ لم يتم رفع أي صورة - حاول مرة أخرى`, 4000);
+      }
       return;
     }
 
     const file = fileArray.shift();
-    if(!file.type.startsWith('image/')){
-      processNext();
-      return;
-    }
+    // 🆕 قبول أي ملف من الـ input (السطر اللي fail على iOS HEIC)
+    //    الـ input له accept="image/*" أصلاً فالمتصفح يفلتر
+    //    file.type قد يكون فاضي على iOS أو "image/heic" - نقبلهم كلهم
+    //    إن لم يكن صورة فعلاً سيفشل compressImage تلقائياً
 
     try {
       const dataUrl = await compressImage(file, 1200, 0.82);
@@ -1685,7 +1709,8 @@ function handleEvidenceUpload(event, pageIdx){
       await new Promise(r => setTimeout(r, 80));
       processNext();
     } catch(err) {
-      console.error('فشل تحميل الصورة:', err);
+      console.error('فشل تحميل الصورة:', err, 'file:', file.name, 'type:', file.type);
+      // 🆕 إكمال المعالجة لكن لا نزيد العدّاد
       processNext();
     }
   }
@@ -1811,7 +1836,7 @@ function addEventPage(){
 
   // 🆕 انتقل بشكل واضح (على الجوال: spread = صفحة، على الديسكتوب: spread = 2 صفحات)
   const newIdx = pages.indexOf(newPage);
-  const newSpread = window.innerWidth <= 768 ? newIdx : Math.floor(newIdx / 2);
+  const newSpread = isMobileDevice() ? newIdx : Math.floor(newIdx / 2);
   if(newSpread !== currentSpread){
     currentSpread = newSpread;
     renderBook();
@@ -1843,7 +1868,7 @@ function addEvidencePage(){
 
   // 🆕 احسب موقع الصفحة الجديدة وانتقل لها مباشرة
   const newIdx = pages.indexOf(newPage);
-  const newSpread = window.innerWidth <= 768 ? newIdx : Math.floor(newIdx / 2);
+  const newSpread = isMobileDevice() ? newIdx : Math.floor(newIdx / 2);
 
   // 🆕 إذا الصفحة الجديدة في spread آخر، انتقل لها بشكل واضح
   if(newSpread !== currentSpread){
@@ -1931,7 +1956,7 @@ function flipTo(targetSpread, direction){
 }
 
 function goToPage(pageIdx){
-  currentSpread = window.innerWidth <= 768 ? pageIdx : Math.floor(pageIdx / 2);
+  currentSpread = isMobileDevice() ? pageIdx : Math.floor(pageIdx / 2);
   renderBook();
   saveData();
 }
@@ -2076,7 +2101,7 @@ async function exportPDF(){
     if(!result){
       // 🆕 انتقل تلقائياً للصفحة الفاضية الأولى (يدعم الجوال والديسكتوب)
       const firstEmptyIdx = emptyEvidenceIndices[0];
-      currentSpread = window.innerWidth <= 768 ? firstEmptyIdx : Math.floor(firstEmptyIdx / 2);
+      currentSpread = isMobileDevice() ? firstEmptyIdx : Math.floor(firstEmptyIdx / 2);
       renderBook();
       showToast(`📸 انتقلت لصفحة الشواهد رقم ${firstEmptyIdx + 1} - ارفع الصور`, 5000);
       // وميض على الصفحة
@@ -2436,13 +2461,20 @@ function init(){
 }
 init();
 
+// 🆕 إعادة الرسم بعد التحميل الكامل (يحلّ مشكلة iOS Safari مع viewport)
+window.addEventListener('load', () => {
+  setTimeout(() => {
+    renderBook();
+  }, 100);
+});
+
 // 🆕 إعادة الرسم عند تغيير حجم النافذة (دوران الجوال)
 let _resizeTimer;
 window.addEventListener('resize', () => {
   clearTimeout(_resizeTimer);
   _resizeTimer = setTimeout(() => {
     // اضبط currentSpread إذا خرج عن النطاق
-    const isMobileNow = window.innerWidth <= 768;
+    const isMobileNow = isMobileDevice();
     const maxSpread = isMobileNow ? pages.length - 1 : Math.ceil(pages.length / 2) - 1;
     if(currentSpread > maxSpread) currentSpread = maxSpread;
     if(currentSpread < 0) currentSpread = 0;
