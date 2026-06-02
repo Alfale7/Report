@@ -1670,6 +1670,7 @@ function handleEvidenceUpload(event, pageIdx){
   // 🆕 معالجة سيرية (واحدة بعد واحدة) مع render بعد كل صورة
   //    هذا يضمن أن المستخدم يشوف كل صورة وهي تنزل
   let processedCount = 0;
+  let lastError = null;
   const fileArray = Array.from(files);
 
   async function processNext(){
@@ -1680,7 +1681,18 @@ function handleEvidenceUpload(event, pageIdx){
       if(processedCount > 0){
         showToast(`✅ أُضيفت ${processedCount} صورة بنجاح`);
       } else {
-        showToast(`❌ لم يتم رفع أي صورة - حاول مرة أخرى`, 4000);
+        // 🆕 رسالة خطأ مفصّلة حسب نوع المشكلة
+        let errMsg = '❌ لم يتم رفع أي صورة';
+        if(lastError && lastError.message){
+          if(lastError.message.includes('HEIC') || lastError.message.includes('غير مدعومة')){
+            errMsg = '❌ صيغة الصورة غير مدعومة (HEIC). افتح إعدادات iPhone > الكاميرا > الصيغ > اختر "الأكثر توافقاً"';
+          } else if(lastError.message.includes('مهلة')){
+            errMsg = '❌ انتهت مهلة المعالجة. الصورة كبيرة جداً';
+          } else {
+            errMsg = '❌ ' + lastError.message;
+          }
+        }
+        showToast(errMsg, 8000);
       }
       return;
     }
@@ -1709,7 +1721,8 @@ function handleEvidenceUpload(event, pageIdx){
       await new Promise(r => setTimeout(r, 80));
       processNext();
     } catch(err) {
-      console.error('فشل تحميل الصورة:', err, 'file:', file.name, 'type:', file.type);
+      console.error('فشل تحميل الصورة:', err, 'file:', file.name, 'type:', file.type, 'size:', file.size);
+      lastError = err; // 🆕 احفظ آخر خطأ للعرض
       // 🆕 إكمال المعالجة لكن لا نزيد العدّاد
       processNext();
     }
@@ -1739,26 +1752,74 @@ function forceRerender(){
 /* ضغط الصور قبل الحفظ */
 function compressImage(file, maxWidth, quality){
   return new Promise((resolve, reject) => {
+    if(!file){
+      reject(new Error('لا يوجد ملف'));
+      return;
+    }
+
+    // 🆕 لو الملف صغير جداً (أقل من 1KB) فهو غالباً تالف
+    if(file.size < 1024){
+      reject(new Error('الملف صغير جداً أو تالف'));
+      return;
+    }
+
     const reader = new FileReader();
+
+    // 🆕 timeout لو القراءة تأخرت كثيراً (HEIC على iOS قد يعلّق)
+    const timeout = setTimeout(() => {
+      reject(new Error('انتهت مهلة قراءة الصورة - قد تكون بصيغة غير مدعومة (HEIC). جرّب من المعرض بدل الكاميرا'));
+    }, 15000);
+
     reader.onload = e => {
+      clearTimeout(timeout);
       const img = new Image();
+
+      // 🆕 timeout للتحميل أيضاً
+      const imgTimeout = setTimeout(() => {
+        reject(new Error('تعذّر تحميل الصورة - صيغة غير مدعومة'));
+      }, 10000);
+
       img.onload = () => {
-        const canvas = document.createElement('canvas');
-        let w = img.width, h = img.height;
-        if(w > maxWidth){
-          h = h * (maxWidth / w);
-          w = maxWidth;
+        clearTimeout(imgTimeout);
+        try {
+          // 🆕 تحقق من أبعاد الصورة
+          if(!img.width || !img.height){
+            reject(new Error('أبعاد الصورة غير صحيحة'));
+            return;
+          }
+
+          const canvas = document.createElement('canvas');
+          let w = img.width, h = img.height;
+          if(w > maxWidth){
+            h = h * (maxWidth / w);
+            w = maxWidth;
+          }
+          canvas.width = w;
+          canvas.height = h;
+          const ctx = canvas.getContext('2d');
+          ctx.drawImage(img, 0, 0, w, h);
+          const dataUrl = canvas.toDataURL('image/jpeg', quality);
+
+          // 🆕 تحقق أن الـ output ليس فاضي
+          if(!dataUrl || dataUrl.length < 100){
+            reject(new Error('فشل ضغط الصورة'));
+            return;
+          }
+          resolve(dataUrl);
+        } catch(canvasErr){
+          reject(new Error('فشل معالجة Canvas: ' + canvasErr.message));
         }
-        canvas.width = w;
-        canvas.height = h;
-        const ctx = canvas.getContext('2d');
-        ctx.drawImage(img, 0, 0, w, h);
-        resolve(canvas.toDataURL('image/jpeg', quality));
       };
-      img.onerror = reject;
+      img.onerror = (err) => {
+        clearTimeout(imgTimeout);
+        reject(new Error('تعذّر تحميل الصورة - قد تكون بصيغة HEIC أو غير مدعومة'));
+      };
       img.src = e.target.result;
     };
-    reader.onerror = reject;
+    reader.onerror = (err) => {
+      clearTimeout(timeout);
+      reject(new Error('فشل قراءة الملف'));
+    };
     reader.readAsDataURL(file);
   });
 }
