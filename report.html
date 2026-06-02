@@ -1956,7 +1956,11 @@ window.generateQRCode = async function() {
 
   try {
     // 1️⃣ تحقق من تسجيل الدخول
-    if (!window._fbUser) {
+    const currentUser = (typeof window.getFirebaseUser === 'function')
+      ? window.getFirebaseUser()
+      : null;
+
+    if (!currentUser) {
       content.innerHTML = `
         <div class="qr-error">
           ⚠️ يجب تسجيل الدخول أولاً لنشر التقرير
@@ -1969,8 +1973,13 @@ window.generateQRCode = async function() {
       return;
     }
 
-    // 2️⃣ تحقق من الاشتراك
-    if (typeof window.isPremiumUser === 'function' && !window.isPremiumUser()) {
+    // 2️⃣ تحقق من الاشتراك (Lifetime أو Admin)
+    const isUserLifetime = (typeof window.isFirebaseLifetime === 'function')
+      && window.isFirebaseLifetime();
+    const isUserAdmin = (typeof window.isFirebaseAdmin === 'function')
+      && window.isFirebaseAdmin();
+
+    if (!isUserLifetime && !isUserAdmin) {
       content.innerHTML = `
         <div class="qr-error">
           💎 ميزة QR Code للمشتركين فقط
