@@ -2067,23 +2067,62 @@ window.generateQRCode = async function() {
 
 // 🔧 جمع بيانات التقرير من الحقول
 function collectReportDataForQR() {
-  const data = { title: 'تقرير الإدارة العامة' };
-  // اجمع كل input + textarea + contenteditable
-  document.querySelectorAll('input, textarea').forEach(el => {
-    if (el.id || el.name) {
-      data[el.id || el.name] = el.value;
+  const data = {};
+
+  // 1️⃣ اجمع كل العناصر اللي عندها id (مهم - الحقول الرئيسية في report.html بأيدي)
+  const allFieldsWithId = document.querySelectorAll('[id]');
+  allFieldsWithId.forEach(el => {
+    const id = el.id;
+    // تجاهل العناصر اللي مش حقول
+    if (['exportBackdrop', 'exportMenu', 'modal-ov', 'page', 'langCode',
+         'qrBackdrop', 'qrContent', 'qrCanvas'].includes(id)) return;
+
+    // contenteditable → textContent
+    if (el.hasAttribute('contenteditable')) {
+      const text = el.textContent?.trim();
+      if (text) data[id] = text;
+    }
+    // input/textarea → value
+    else if (el.tagName === 'INPUT' || el.tagName === 'TEXTAREA') {
+      const val = el.value?.trim();
+      if (val) data[id] = val;
     }
   });
-  document.querySelectorAll('[contenteditable="true"]').forEach((el, i) => {
-    const key = el.id || 'content_' + i;
-    data[key] = el.textContent || '';
+
+  // 2️⃣ اجمع باقي contenteditable اللي بدون id
+  document.querySelectorAll('[contenteditable="true"]:not([id])').forEach((el, i) => {
+    const text = el.textContent?.trim();
+    if (text) {
+      // استخدم class كـ key لو موجود
+      const cls = el.className?.split(' ')[0];
+      const key = cls ? cls + '_' + i : 'ce_' + i;
+      data[key] = text;
+    }
   });
-  // اجمع الصور (إذا في الذاكرة فقط)
-  document.querySelectorAll('img.photo-img, .photo-slot img').forEach((el, i) => {
+
+  // 3️⃣ اجمع الـ placeholders كاسم بديل (للعرض)
+  const labels = {};
+  document.querySelectorAll('[id][data-ph], [id][placeholder]').forEach(el => {
+    const id = el.id;
+    if (data[id]) {
+      labels[id] = el.getAttribute('data-ph') || el.getAttribute('placeholder') || id;
+    }
+  });
+  if (Object.keys(labels).length) data._labels = labels;
+
+  // 4️⃣ عنوان التقرير (من tbar أو sbar)
+  const title = document.querySelector('.tbar')?.textContent?.trim();
+  const subtitle = document.querySelector('.sbar')?.textContent?.trim();
+  if (title) data._title = title;
+  if (subtitle) data._subtitle = subtitle;
+
+  // 5️⃣ اجمع الصور (Base64 فقط - من الذاكرة)
+  document.querySelectorAll('img').forEach((el, i) => {
     if (el.src && el.src.startsWith('data:image')) {
       data['photo_' + i] = el.src;
     }
   });
+
   return data;
 }
 

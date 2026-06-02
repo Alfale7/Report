@@ -289,8 +289,9 @@
 
     function renderReport(data) {
       const content = data.content || {};
-      const title = data.reportTitle || 'تقرير مدرسي';
-      const lang = data.lang || 'ar';
+      const title = content._title || data.reportTitle || 'تقرير مدرسي';
+      const subtitle = content._subtitle || '';
+      const labels = content._labels || {};
 
       // اعرض المعلومات
       document.getElementById('metaWrap').style.display = 'flex';
@@ -300,73 +301,101 @@
       let html = `
         <div class="view-content">
           <div class="report-title">${escapeHTML(title)}</div>
-          <div class="report-subtitle">تقرير منشور رقمياً عبر منصة ksa2030</div>
       `;
 
-      // الحقول المفتاحية
-      const keyFields = {
-        'schoolName': '🏫 المدرسة',
-        'district': '📍 الإدارة',
-        'date': '📅 التاريخ',
-        'reportName': '📝 اسم التقرير',
-        'principal': '👤 المدير',
-        'teacher': '👤 المعلم'
+      if (subtitle) {
+        html += `<div class="report-subtitle">${escapeHTML(subtitle)}</div>`;
+      } else {
+        html += `<div class="report-subtitle">تقرير منشور رقمياً عبر منصة ksa2030</div>`;
+      }
+
+      // الحقول الأساسية (نعرف كل id ونعرف ترجمته)
+      const fieldNames = {
+        // الإدارة + الوزارة
+        'moe-school-name': '🏫 اسم المدرسة',
+        'moe-office': '🏛️ مكتب التعليم',
+        'moe-admin': '📍 الإدارة العامة',
+        // معلومات التقرير
+        'f-date': '📅 التاريخ',
+        'f-place': '📍 المكان',
+        'f-exec': '👤 المنفّذ',
+        'f-bene': '🎯 المستفيدون',
+        'f-count': '👥 العدد',
+        'f-princ': '👤 المدير',
+        'f-goals': '🎯 الأهداف',
+        'f-desc': '📋 الوصف'
       };
 
+      // الحقول القصيرة (في شبكة)
+      const shortFieldKeys = ['moe-school-name', 'moe-office', 'moe-admin',
+                              'f-date', 'f-place', 'f-exec', 'f-bene', 'f-count', 'f-princ'];
+      const longFieldKeys = ['f-goals', 'f-desc'];
+
+      // الحقول القصيرة
       const fieldsHTML = [];
-      for (const key in keyFields) {
-        if (content[key]) {
+      shortFieldKeys.forEach(key => {
+        if (content[key] && content[key].trim()) {
+          const label = fieldNames[key] || labels[key] || key;
           fieldsHTML.push(`
             <div class="report-field">
-              <span class="report-field-label">${keyFields[key]}</span>
+              <span class="report-field-label">${escapeHTML(label)}</span>
               <div class="report-field-value">${escapeHTML(content[key])}</div>
             </div>
           `);
         }
-      }
+      });
       if (fieldsHTML.length) {
         html += `<div class="report-grid">${fieldsHTML.join('')}</div>`;
       }
 
-      // أقسام النصوص الطويلة
-      const textFields = {
-        'description': '📋 الوصف',
-        'goals': '🎯 الأهداف',
-        'activities': '🎨 الأنشطة',
-        'recommendations': '💡 التوصيات',
-        'results': '✅ النتائج',
-        'notes': '📝 ملاحظات'
-      };
-
-      for (const key in textFields) {
+      // الحقول الطويلة
+      longFieldKeys.forEach(key => {
         if (content[key] && content[key].trim()) {
+          const label = fieldNames[key] || labels[key] || key;
           html += `
             <div class="report-section">
-              <div class="report-section-title">${textFields[key]}</div>
+              <div class="report-section-title">${escapeHTML(label)}</div>
+              <div class="report-section-text">${escapeHTML(content[key])}</div>
+            </div>
+          `;
+        }
+      });
+
+      // أي حقول إضافية (مش معروفة - نعرضها للأمان)
+      const knownKeys = new Set([
+        ...Object.keys(fieldNames),
+        '_title', '_subtitle', '_labels'
+      ]);
+
+      const extraFieldsHTML = [];
+      for (const key in content) {
+        if (knownKeys.has(key)) continue;
+        if (key.startsWith('photo_')) continue;
+        if (key.startsWith('_')) continue;
+        if (typeof content[key] !== 'string') continue;
+        if (!content[key].trim()) continue;
+        if (content[key].startsWith('data:')) continue;
+
+        const label = labels[key] || key;
+        // قصير أم طويل؟
+        if (content[key].length < 60) {
+          extraFieldsHTML.push(`
+            <div class="report-field">
+              <span class="report-field-label">${escapeHTML(label)}</span>
+              <div class="report-field-value">${escapeHTML(content[key])}</div>
+            </div>
+          `);
+        } else {
+          html += `
+            <div class="report-section">
+              <div class="report-section-title">📄 ${escapeHTML(label)}</div>
               <div class="report-section-text">${escapeHTML(content[key])}</div>
             </div>
           `;
         }
       }
-
-      // أي حقول نصية أخرى
-      for (const key in content) {
-        if (
-          !keyFields[key] &&
-          !textFields[key] &&
-          !key.startsWith('photo_') &&
-          typeof content[key] === 'string' &&
-          content[key].trim() &&
-          content[key].length > 20 &&
-          !content[key].startsWith('data:')
-        ) {
-          html += `
-            <div class="report-section">
-              <div class="report-section-title">📄 ${escapeHTML(key)}</div>
-              <div class="report-section-text">${escapeHTML(content[key])}</div>
-            </div>
-          `;
-        }
+      if (extraFieldsHTML.length) {
+        html += `<div class="report-grid">${extraFieldsHTML.join('')}</div>`;
       }
 
       // الصور
@@ -377,11 +406,14 @@
         }
       }
       if (photos.length) {
-        html += `<div class="report-photos">`;
+        html += `
+          <div class="report-section">
+            <div class="report-section-title">📸 الصور</div>
+            <div class="report-photos">`;
         photos.forEach(src => {
           html += `<img src="${src}" alt="صورة">`;
         });
-        html += `</div>`;
+        html += `</div></div>`;
       }
 
       html += `</div>`;
