@@ -1503,38 +1503,50 @@ function renderBook(){
   // احذف كل الصفحات السابقة (ابقي الـ spine فقط)
   book.querySelectorAll('.page').forEach(el => el.remove());
 
-  // كل منظر يحوي صفحتين: يمنى (مقدمة) ويسرى (تالية)
-  const spreads = Math.ceil(pages.length / 2);
-  document.getElementById('totalSpreads').textContent = spreads;
+  // 🆕 اكتشف الجوال: على الجوال صفحة وحدة في كل spread
+  const isMobile = window.innerWidth <= 768;
 
-  // اضمن currentSpread في النطاق
-  if(currentSpread >= spreads) currentSpread = spreads - 1;
-  if(currentSpread < 0) currentSpread = 0;
+  let spreads, rightPageIdx, leftPageIdx;
+
+  if(isMobile){
+    // 📱 الجوال: كل صفحة = spread مستقل
+    spreads = pages.length;
+    if(currentSpread >= spreads) currentSpread = spreads - 1;
+    if(currentSpread < 0) currentSpread = 0;
+    rightPageIdx = currentSpread;
+    leftPageIdx = -1; // لا توجد صفحة يسار على الجوال
+  } else {
+    // 💻 الديسكتوب: كل spread = صفحتان
+    spreads = Math.ceil(pages.length / 2);
+    if(currentSpread >= spreads) currentSpread = spreads - 1;
+    if(currentSpread < 0) currentSpread = 0;
+    rightPageIdx = currentSpread * 2;
+    leftPageIdx = currentSpread * 2 + 1;
+  }
+
+  document.getElementById('totalSpreads').textContent = spreads;
   document.getElementById('curSpread').textContent = currentSpread + 1;
 
-  const rightPageIdx = currentSpread * 2;
-  const leftPageIdx = currentSpread * 2 + 1;
-
-  // 🆕 عرض معلومات الصفحات الفعلية (إجمالي الصفحات + التي تظهر الآن)
+  // 🆕 عرض معلومات الصفحات الفعلية
   const pagesInfoEl = document.getElementById('pagesInfo');
   if(pagesInfoEl){
     const totalPages = pages.length;
     const pagesShown = [];
-    if(rightPageIdx < pages.length) pagesShown.push(rightPageIdx + 1);
-    if(leftPageIdx < pages.length) pagesShown.push(leftPageIdx + 1);
+    if(rightPageIdx >= 0 && rightPageIdx < pages.length) pagesShown.push(rightPageIdx + 1);
+    if(leftPageIdx >= 0 && leftPageIdx < pages.length) pagesShown.push(leftPageIdx + 1);
     pagesInfoEl.textContent = `الصفحات ${pagesShown.join('-')} من ${totalPages}`;
   }
 
-  // الصفحة اليمنى (في RTL: السابقة من الكتاب)
-  if(rightPageIdx < pages.length){
+  // الصفحة اليمنى
+  if(rightPageIdx >= 0 && rightPageIdx < pages.length){
     const pageEl = document.createElement('div');
     pageEl.className = 'page page-right';
     pageEl.innerHTML = renderPageContent(pages[rightPageIdx]) +
                        `<div class="page-number">صفحة ${rightPageIdx + 1}</div>`;
     book.appendChild(pageEl);
   }
-  // الصفحة اليسرى (التالية)
-  if(leftPageIdx < pages.length){
+  // الصفحة اليسرى (فقط على الديسكتوب)
+  if(leftPageIdx >= 0 && leftPageIdx < pages.length){
     const pageEl = document.createElement('div');
     pageEl.className = 'page page-left';
     pageEl.innerHTML = renderPageContent(pages[leftPageIdx]) +
@@ -1797,9 +1809,9 @@ function addEventPage(){
   // 🆕 احفظ فوراً
   saveData();
 
-  // 🆕 انتقل بشكل واضح
+  // 🆕 انتقل بشكل واضح (على الجوال: spread = صفحة، على الديسكتوب: spread = 2 صفحات)
   const newIdx = pages.indexOf(newPage);
-  const newSpread = Math.floor(newIdx / 2);
+  const newSpread = window.innerWidth <= 768 ? newIdx : Math.floor(newIdx / 2);
   if(newSpread !== currentSpread){
     currentSpread = newSpread;
     renderBook();
@@ -1831,7 +1843,7 @@ function addEvidencePage(){
 
   // 🆕 احسب موقع الصفحة الجديدة وانتقل لها مباشرة
   const newIdx = pages.indexOf(newPage);
-  const newSpread = Math.floor(newIdx / 2);
+  const newSpread = window.innerWidth <= 768 ? newIdx : Math.floor(newIdx / 2);
 
   // 🆕 إذا الصفحة الجديدة في spread آخر، انتقل لها بشكل واضح
   if(newSpread !== currentSpread){
@@ -1919,7 +1931,7 @@ function flipTo(targetSpread, direction){
 }
 
 function goToPage(pageIdx){
-  currentSpread = Math.floor(pageIdx / 2);
+  currentSpread = window.innerWidth <= 768 ? pageIdx : Math.floor(pageIdx / 2);
   renderBook();
   saveData();
 }
@@ -2062,9 +2074,9 @@ async function exportPDF(){
     );
 
     if(!result){
-      // 🆕 انتقل تلقائياً للصفحة الفاضية الأولى
+      // 🆕 انتقل تلقائياً للصفحة الفاضية الأولى (يدعم الجوال والديسكتوب)
       const firstEmptyIdx = emptyEvidenceIndices[0];
-      currentSpread = Math.floor(firstEmptyIdx / 2);
+      currentSpread = window.innerWidth <= 768 ? firstEmptyIdx : Math.floor(firstEmptyIdx / 2);
       renderBook();
       showToast(`📸 انتقلت لصفحة الشواهد رقم ${firstEmptyIdx + 1} - ارفع الصور`, 5000);
       // وميض على الصفحة
@@ -2423,6 +2435,20 @@ function init(){
   renderBook();
 }
 init();
+
+// 🆕 إعادة الرسم عند تغيير حجم النافذة (دوران الجوال)
+let _resizeTimer;
+window.addEventListener('resize', () => {
+  clearTimeout(_resizeTimer);
+  _resizeTimer = setTimeout(() => {
+    // اضبط currentSpread إذا خرج عن النطاق
+    const isMobileNow = window.innerWidth <= 768;
+    const maxSpread = isMobileNow ? pages.length - 1 : Math.ceil(pages.length / 2) - 1;
+    if(currentSpread > maxSpread) currentSpread = maxSpread;
+    if(currentSpread < 0) currentSpread = 0;
+    renderBook();
+  }, 250);
+});
 
 // ═══════════════════════════════════════════════
 // 🔒 وضع المعاينة - حماية ثلاثية الطبقات
