@@ -1662,16 +1662,52 @@ function handleEvidenceUpload(event, pageIdx){
       return;
     }
   }
+
+  // 🆕 تشخيص فوري - أين بالضبط نحن
   const files = event.target.files;
-  if(!files || files.length === 0) return;
-  if(!pages[pageIdx]) return;
+
+  // 🆕 رسائل تشخيص مفصّلة بدل الانسحاب الصامت
+  if(!files){
+    showToast('🐛 لا يوجد ملفات في الحدث (event.target.files = null)', 8000);
+    return;
+  }
+  if(files.length === 0){
+    showToast('🐛 لم يتم اختيار أي ملف', 6000);
+    return;
+  }
+  if(!pages[pageIdx]){
+    showToast(`🐛 الصفحة رقم ${pageIdx} غير موجودة في الكتاب (الكتاب فيه ${pages.length} صفحة فقط)`, 10000);
+    return;
+  }
+  if(pages[pageIdx].type !== 'evidence'){
+    showToast(`🐛 صفحة ${pageIdx + 1} نوعها "${pages[pageIdx].type}" وليست شواهد`, 10000);
+    return;
+  }
   if(!Array.isArray(pages[pageIdx].images)) pages[pageIdx].images = [];
+
+  // 🆕 تحقق من الملف الأول مباشرة
+  const firstFile = files[0];
+  if(!firstFile){
+    showToast('🐛 الملف الأول فارغ', 8000);
+    return;
+  }
+  if(firstFile.size === 0){
+    showToast('🐛 الملف بحجم 0 - ربما لم يكتمل التحميل', 10000);
+    return;
+  }
+  // طيب نعرض معلومات الملف للمستخدم
+  console.log('📁 معلومات الملف:', {
+    name: firstFile.name,
+    type: firstFile.type,
+    size: firstFile.size,
+    lastModified: firstFile.lastModified
+  });
 
   // 🆕 امسح القيمة فوراً (قبل المعالجة، لتجنب مشاكل عند إعادة الـ render)
   event.target.value = '';
 
   const totalFiles = files.length;
-  showToast(`⏳ جارٍ معالجة ${totalFiles} صورة...`, 30000);
+  showToast(`⏳ جارٍ معالجة ${totalFiles} صورة (${Math.round(firstFile.size/1024)} KB)...`, 30000);
 
   // 🆕 معالجة سيرية (واحدة بعد واحدة) مع render بعد كل صورة
   //    هذا يضمن أن المستخدم يشوف كل صورة وهي تنزل
@@ -1751,7 +1787,9 @@ function handleEvidenceUpload(event, pageIdx){
       processNext();
     } catch(err) {
       console.error('فشل تحميل الصورة:', err, 'file:', file.name, 'type:', file.type, 'size:', file.size);
-      lastError = err; // 🆕 احفظ آخر خطأ للعرض
+      // 🆕 ضمان أن lastError يحتوي رسالة - حتى لو err.message فاضي
+      lastError = err instanceof Error ? err : new Error(String(err) || 'خطأ غير معروف أثناء معالجة الصورة');
+      if(!lastError.message) lastError.message = 'خطأ غير معروف - لم يتم استلام تفاصيل من المتصفح';
       // 🆕 إكمال المعالجة لكن لا نزيد العدّاد
       processNext();
     }
