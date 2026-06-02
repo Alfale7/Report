@@ -1279,8 +1279,14 @@ function saveData(){
       pages: pages,
       currentSpread: currentSpread
     };
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
-  }catch(e){console.warn('save fail',e);}
+    const json = JSON.stringify(data);
+    localStorage.setItem(STORAGE_KEY, json);
+    return {success: true, size: json.length};
+  }catch(e){
+    console.warn('save fail',e);
+    // 🆕 ارجع تفاصيل الخطأ للمستدعي
+    return {success: false, error: e, errorName: e.name, errorMessage: e.message};
+  }
 }
 
 function loadData(){
@@ -1684,15 +1690,22 @@ function handleEvidenceUpload(event, pageIdx){
         // 🆕 رسالة خطأ مفصّلة حسب نوع المشكلة
         let errMsg = '❌ لم يتم رفع أي صورة';
         if(lastError && lastError.message){
-          if(lastError.message.includes('HEIC') || lastError.message.includes('غير مدعومة')){
+          if(lastError.message.includes('امتلأت ذاكرة')){
+            errMsg = '⚠️ امتلأت ذاكرة المتصفح! احذف صور قديمة من الصفحات السابقة، أو صدّر التقرير الآن قبل إضافة المزيد';
+          } else if(lastError.message.includes('HEIC') || lastError.message.includes('غير مدعومة')){
             errMsg = '❌ صيغة الصورة غير مدعومة (HEIC). افتح إعدادات iPhone > الكاميرا > الصيغ > اختر "الأكثر توافقاً"';
           } else if(lastError.message.includes('مهلة')){
             errMsg = '❌ انتهت مهلة المعالجة. الصورة كبيرة جداً';
+          } else if(lastError.message.includes('Quota') || lastError.message.includes('quota')){
+            errMsg = '⚠️ امتلأت ذاكرة المتصفح! احذف صور قديمة';
           } else {
             errMsg = '❌ ' + lastError.message;
           }
+        } else {
+          // 🆕 لو ما فيه lastError أبداً - قد يكون متصفح خاص/Private
+          errMsg = '❌ تعذّر رفع الصورة. تأكد أنك لست في وضع التصفح الخاص (Private Browsing)';
         }
-        showToast(errMsg, 8000);
+        showToast(errMsg, 10000);
       }
       return;
     }
@@ -1708,8 +1721,24 @@ function handleEvidenceUpload(event, pageIdx){
       pages[pageIdx].images.push({src: dataUrl, caption: ''});
       processedCount++;
 
-      // 🆕 احفظ + render فوراً بعد كل صورة
-      saveData();
+      // 🆕 احفظ + تحقق من نجاح الحفظ
+      const saveResult = saveData();
+      if(saveResult && saveResult.success === false){
+        // 🚨 فشل حفظ localStorage - غالباً امتلأ التخزين
+        // أرجع الصورة من الذاكرة المؤقتة
+        pages[pageIdx].images.pop();
+        processedCount--;
+        lastError = new Error(
+          saveResult.errorName === 'QuotaExceededError' || /quota|exceed|storage/i.test(saveResult.errorMessage || '')
+            ? 'امتلأت ذاكرة الموقع. احذف بعض الصور أو الصفحات لإفساح المجال'
+            : 'تعذّر حفظ الصورة: ' + (saveResult.errorMessage || 'خطأ غير معروف')
+        );
+        // أوقف المعالجة
+        fileArray.length = 0;
+        processNext();
+        return;
+      }
+
       forceRerender();
 
       // 🆕 إشعار تقدم (لو فيه أكثر من صورة)
