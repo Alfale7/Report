@@ -698,6 +698,164 @@ body{
 /* ════════════════════════════════════════════════ */
 
 /* ════════════════════════════════════════════════ */
+/* 🛠️ وضع الصيانة (Maintenance Mode)                   */
+/* ════════════════════════════════════════════════ */
+.maintenance-panel{
+  background:linear-gradient(135deg,#fff,#f8fafc);
+  border-radius:20px;
+  padding:22px 20px;
+  margin-bottom:16px;
+  box-shadow:0 8px 24px rgba(0,0,0,0.08);
+  border:1.5px solid #e2e8f0;
+  position:relative;
+  overflow:hidden;
+  transition:border-color 0.3s ease;
+}
+.maintenance-panel::before{
+  content:"";
+  position:absolute;
+  top:0;left:0;right:0;
+  height:4px;
+  background:linear-gradient(90deg,#64748b,#94a3b8);
+  transition:background 0.3s ease;
+}
+.maintenance-panel.active{
+  border-color:#fca5a5;
+  background:linear-gradient(135deg,#fef2f2,#fff);
+}
+.maintenance-panel.active::before{
+  background:linear-gradient(90deg,#dc2626,#ef4444,#f59e0b);
+}
+.mp-header{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:12px;
+  margin-bottom:18px;
+  flex-wrap:wrap;
+}
+.mp-title-wrap{
+  display:flex;
+  align-items:center;
+  gap:12px;
+}
+.mp-icon{
+  font-size:1.9rem;
+  background:linear-gradient(135deg,#e2e8f0,#cbd5e1);
+  width:48px;height:48px;
+  border-radius:14px;
+  display:flex;align-items:center;justify-content:center;
+  flex-shrink:0;
+  transition:background 0.3s ease;
+}
+.maintenance-panel.active .mp-icon{
+  background:linear-gradient(135deg,#fee2e2,#fecaca);
+}
+.mp-title{
+  font:900 1.1rem 'Tajawal',sans-serif;
+  color:#1e293b;
+  margin:0 0 4px;
+}
+.mp-sub{
+  font:500 0.82rem 'Tajawal',sans-serif;
+  color:#64748b;
+  margin:0;
+}
+.mp-status{
+  display:flex;
+  align-items:center;
+  gap:8px;
+  background:#f1f5f9;
+  padding:8px 14px;
+  border-radius:99px;
+  font:700 0.85rem 'Tajawal',sans-serif;
+  color:#475569;
+  transition:all 0.3s ease;
+}
+.maintenance-panel.active .mp-status{
+  background:#fef2f2;
+  color:#dc2626;
+}
+.mp-status-dot{
+  width:10px;height:10px;
+  border-radius:50%;
+  background:#94a3b8;
+  box-shadow:0 0 0 3px rgba(148,163,184,0.2);
+  transition:all 0.3s ease;
+}
+.maintenance-panel.active .mp-status-dot{
+  background:#dc2626;
+  box-shadow:0 0 0 3px rgba(220,38,38,0.2);
+  animation:pulse-maintenance 1.8s ease-in-out infinite;
+}
+@keyframes pulse-maintenance{
+  0%,100%{box-shadow:0 0 0 3px rgba(220,38,38,0.2);}
+  50%{box-shadow:0 0 0 6px rgba(220,38,38,0.4);}
+}
+.mp-body{
+  display:flex;
+  flex-direction:column;
+  gap:14px;
+}
+.mp-info{
+  background:rgba(241,245,249,0.6);
+  border-radius:12px;
+  padding:12px 14px;
+  border:1px solid rgba(226,232,240,0.8);
+}
+.mp-info-row{
+  display:flex;
+  align-items:flex-start;
+  gap:10px;
+  font:500 0.85rem 'Tajawal',sans-serif;
+  color:#334155;
+  padding:6px 0;
+}
+.mp-info-row strong{
+  font-weight:900;
+  color:#1e293b;
+}
+.mp-info-icon{
+  font-size:1rem;
+  flex-shrink:0;
+}
+.mp-btn-toggle{
+  width:100%;
+  background:linear-gradient(135deg,#dc2626,#b91c1c);
+  color:#fff;
+  border:none;
+  padding:14px 20px;
+  border-radius:14px;
+  font:900 0.95rem 'Tajawal',sans-serif;
+  cursor:pointer;
+  transition:all 0.2s ease;
+  box-shadow:0 4px 12px rgba(220,38,38,0.25);
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  gap:8px;
+}
+.mp-btn-toggle:hover{
+  transform:translateY(-2px);
+  box-shadow:0 6px 18px rgba(220,38,38,0.35);
+}
+.mp-btn-toggle:active{
+  transform:translateY(0);
+}
+.mp-btn-toggle:disabled{
+  opacity:0.6;
+  cursor:not-allowed;
+  transform:none;
+}
+.maintenance-panel.active .mp-btn-toggle{
+  background:linear-gradient(135deg,#059669,#047857);
+  box-shadow:0 4px 12px rgba(5,150,105,0.25);
+}
+.maintenance-panel.active .mp-btn-toggle:hover{
+  box-shadow:0 6px 18px rgba(5,150,105,0.35);
+}
+
+/* ════════════════════════════════════════════════ */
 /* ⏰ إعدادات المؤقت التنازلي والعرض                  */
 /* ════════════════════════════════════════════════ */
 .offer-settings{
@@ -1606,6 +1764,42 @@ body{
     <!-- ════════════════════════════════════════════════ -->
 
     <!-- ════════════════════════════════════════════════ -->
+    <!-- 🛠️ وضع الصيانة (Maintenance Mode)                 -->
+    <!-- ════════════════════════════════════════════════ -->
+    <div class="maintenance-panel" id="maintenancePanel">
+      <div class="mp-header">
+        <div class="mp-title-wrap">
+          <span class="mp-icon">🛠️</span>
+          <div>
+            <h3 class="mp-title">وضع الصيانة</h3>
+            <p class="mp-sub">إيقاف الموقع مؤقتاً للزوار وتظهر صفحة "تحت الصيانة"</p>
+          </div>
+        </div>
+        <div class="mp-status" id="mpStatus">
+          <span class="mp-status-dot" id="mpStatusDot"></span>
+          <span id="mpStatusText">جاري التحميل...</span>
+        </div>
+      </div>
+
+      <div class="mp-body">
+        <div class="mp-info">
+          <div class="mp-info-row">
+            <span class="mp-info-icon">👁️</span>
+            <span><strong>الزوار والمستخدمون:</strong> يشوفون صفحة "الموقع تحت الصيانة"</span>
+          </div>
+          <div class="mp-info-row">
+            <span class="mp-info-icon">👑</span>
+            <span><strong>الأدمن (أنت):</strong> تستخدم الموقع عادي للاختبار والتحديث</span>
+          </div>
+        </div>
+
+        <button class="mp-btn-toggle" id="mpToggleBtn" onclick="toggleMaintenance()">
+          <span id="mpToggleText">جاري التحميل...</span>
+        </button>
+      </div>
+    </div>
+
+    <!-- ════════════════════════════════════════════════ -->
     <!-- ⏰ إعدادات المؤقت التنازلي والعرض                 -->
     <!-- ════════════════════════════════════════════════ -->
     <div class="offer-settings">
@@ -1765,6 +1959,9 @@ import {
   deactivateUser,
   getOfferSettings,
   setOfferSettings,
+  getMaintenanceMode,
+  setMaintenanceMode,
+  listenToMaintenance,
   db
 } from './firebase-config.js';
 
@@ -2439,7 +2636,79 @@ setTimeout(() => {
   if (typeof getOfferSettings === 'function') {
     loadOfferSettings();
   }
+  // تحميل وضع الصيانة + ربط المراقب الفوري
+  if (typeof getMaintenanceMode === 'function') {
+    loadMaintenanceMode();
+  }
 }, 1500);
+
+// ═══════════════════════════════════════════════
+// 🛠️ وضع الصيانة - تحميل وتحديث
+// ═══════════════════════════════════════════════
+let _currentMaintenance = { active: false };
+
+async function loadMaintenanceMode() {
+  try {
+    const status = await getMaintenanceMode();
+    _currentMaintenance = status;
+    updateMaintenanceUI(status);
+
+    // اربط المراقب الفوري للتحديثات
+    listenToMaintenance((newStatus) => {
+      _currentMaintenance = newStatus;
+      updateMaintenanceUI(newStatus);
+    });
+  } catch (err) {
+    console.error('loadMaintenanceMode:', err);
+  }
+}
+
+function updateMaintenanceUI(status) {
+  const panel = document.getElementById('maintenancePanel');
+  const statusText = document.getElementById('mpStatusText');
+  const toggleText = document.getElementById('mpToggleText');
+  const toggleBtn = document.getElementById('mpToggleBtn');
+
+  if (!panel) return;
+
+  if (status.active) {
+    panel.classList.add('active');
+    statusText.textContent = '🔴 مفعّل';
+    toggleText.textContent = '✅ إيقاف وضع الصيانة (تشغيل الموقع)';
+  } else {
+    panel.classList.remove('active');
+    statusText.textContent = '⚪ غير مفعّل';
+    toggleText.textContent = '🛠️ تفعيل وضع الصيانة (إيقاف الموقع)';
+  }
+  toggleBtn.disabled = false;
+}
+
+window.toggleMaintenance = async function() {
+  const btn = document.getElementById('mpToggleBtn');
+  const newState = !_currentMaintenance.active;
+
+  const confirmMsg = newState
+    ? '⚠️ هل أنت متأكد من تفعيل وضع الصيانة؟\n\nسيُمنع جميع الزوار والمستخدمين من استخدام الموقع.\nأنت فقط (الأدمن) ستستطيع الوصول.'
+    : '✅ هل تريد إعادة تشغيل الموقع؟\n\nسيُسمح للجميع باستخدام الموقع مرة أخرى.';
+
+  if (!confirm(confirmMsg)) return;
+
+  btn.disabled = true;
+  document.getElementById('mpToggleText').textContent = 'جاري الحفظ...';
+
+  try {
+    const result = await setMaintenanceMode(newState);
+    if (result.success) {
+      showToast(newState ? '🛠️ تم تفعيل وضع الصيانة' : '✅ تم إعادة تشغيل الموقع', 'success');
+    } else {
+      showToast('❌ خطأ: ' + result.error, 'error');
+      btn.disabled = false;
+    }
+  } catch (err) {
+    showToast('❌ خطأ: ' + err.message, 'error');
+    btn.disabled = false;
+  }
+};
 
 </script>
 

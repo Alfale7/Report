@@ -297,6 +297,61 @@ export function listenToOffer(callback) {
   });
 }
 
+// ═══════════════════════════════════════════════════════
+// 🛠️ وضع الصيانة (Maintenance Mode)
+// يفعّلها الأدمن من admin.html
+// لما تكون مفعّلة → الزوار والمستخدمون العاديون يشوفون صفحة "تحت الصيانة"
+// الأدمن يظل يشتغل عادي
+// ═══════════════════════════════════════════════════════
+export async function getMaintenanceMode() {
+  try {
+    const ref = doc(db, 'settings', 'maintenance');
+    const snap = await getDoc(ref);
+    if (snap.exists()) {
+      return snap.data();
+    }
+    return {
+      active: false,
+      message: 'الموقع تحت الصيانة والتحديث',
+      submessage: 'نعتذر عن الإزعاج، نعمل على تحسين خدماتنا لكم'
+    };
+  } catch (error) {
+    console.error('getMaintenanceMode:', error);
+    return { active: false };
+  }
+}
+
+export async function setMaintenanceMode(active, customMessage = null) {
+  try {
+    const data = {
+      active: !!active,
+      updatedAt: serverTimestamp()
+    };
+    if (customMessage !== null) {
+      data.message = customMessage.message || 'الموقع تحت الصيانة والتحديث';
+      data.submessage = customMessage.submessage || 'نعتذر عن الإزعاج، نعمل على تحسين خدماتنا لكم';
+    }
+    await setDoc(doc(db, 'settings', 'maintenance'), data, { merge: true });
+    return { success: true };
+  } catch (error) {
+    return { success: false, error: error.message };
+  }
+}
+
+export function listenToMaintenance(callback) {
+  const ref = doc(db, 'settings', 'maintenance');
+  return onSnapshot(ref, (snap) => {
+    if (snap.exists()) {
+      callback(snap.data());
+    } else {
+      callback({ active: false });
+    }
+  }, (error) => {
+    console.error('listenToMaintenance:', error);
+    callback({ active: false });
+  });
+}
+
 // ═══ الصلاحيات ═══
 
 export function isLifetime(profile) {

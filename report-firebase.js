@@ -12,7 +12,8 @@ import {
   SITE_CONFIG,
   logout,
   getUserProfile,
-  incrementDownloadCount
+  incrementDownloadCount,
+  listenToMaintenance
 } from './firebase-config.js';
 
 import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
@@ -62,6 +63,210 @@ if (_isReportPage) {
   }
 }
 
+// ═══════════════════════════════════════════════════════
+// 🛠️ فحص وضع الصيانة - يشتغل قبل أي شي ثاني
+// لو الموقع تحت الصيانة + المستخدم مش أدمن → نعرض صفحة الصيانة
+// ═══════════════════════════════════════════════════════
+let _maintenanceShown = false;
+
+function showMaintenancePage(data) {
+  if (_maintenanceShown) return;
+  _maintenanceShown = true;
+
+  // أزل شاشة التحميل
+  hideFullPageLoader();
+
+  // أزل كل شي ثاني
+  document.body.innerHTML = '';
+  document.body.style.cssText = 'margin:0;padding:0;overflow:hidden;';
+
+  const msg = data?.message || 'الموقع تحت الصيانة والتحديث';
+  const submsg = data?.submessage || 'نعتذر عن الإزعاج، نعمل على تحسين خدماتنا لكم';
+
+  const overlay = document.createElement('div');
+  overlay.id = 'maintenanceOverlay';
+  overlay.innerHTML = `
+    <style>
+      @import url('https://fonts.googleapis.com/css2?family=Aref+Ruqaa:wght@700&family=Tajawal:wght@400;600;700;900&display=swap');
+      #maintenanceOverlay {
+        position: fixed;
+        inset: 0;
+        z-index: 99999999;
+        background: linear-gradient(135deg, #050a12 0%, #0a3447 50%, #1e6b8a 100%);
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        color: #fff;
+        font-family: 'Tajawal', 'Cairo', sans-serif;
+        text-align: center;
+        padding: 24px;
+        direction: rtl;
+      }
+      #maintenanceOverlay::before {
+        content: '';
+        position: absolute;
+        inset: 0;
+        background: radial-gradient(circle at 30% 20%, rgba(212,166,87,0.15) 0%, transparent 50%),
+                    radial-gradient(circle at 70% 80%, rgba(58,168,208,0.12) 0%, transparent 50%);
+        pointer-events: none;
+      }
+      .m-content {
+        position: relative;
+        z-index: 2;
+        max-width: 520px;
+        animation: fadeUp 0.7s ease;
+      }
+      @keyframes fadeUp {
+        from { opacity: 0; transform: translateY(20px); }
+        to { opacity: 1; transform: translateY(0); }
+      }
+      .m-icon {
+        font-size: 5rem;
+        margin-bottom: 24px;
+        animation: spin 4s linear infinite;
+        display: inline-block;
+      }
+      @keyframes spin {
+        from { transform: rotate(0deg); }
+        to { transform: rotate(360deg); }
+      }
+      .m-title {
+        font-family: 'Aref Ruqaa', serif;
+        font-size: clamp(1.6rem, 5vw, 2.4rem);
+        font-weight: 700;
+        color: #f0b855;
+        margin-bottom: 18px;
+        line-height: 1.4;
+      }
+      .m-sub {
+        font-size: clamp(0.95rem, 2.8vw, 1.1rem);
+        font-weight: 600;
+        color: rgba(255,255,255,0.85);
+        line-height: 1.7;
+        margin-bottom: 32px;
+      }
+      .m-divider {
+        width: 60px;
+        height: 3px;
+        background: linear-gradient(90deg, transparent, #d4a657, transparent);
+        margin: 0 auto 28px;
+      }
+      .m-footer {
+        font-size: 0.85rem;
+        color: rgba(255,255,255,0.5);
+        margin-top: 24px;
+      }
+      .m-footer a {
+        color: #d4a657;
+        text-decoration: none;
+        font-weight: 700;
+      }
+      .m-dots {
+        display: flex;
+        gap: 8px;
+        justify-content: center;
+        margin-top: 16px;
+      }
+      .m-dot {
+        width: 10px;
+        height: 10px;
+        border-radius: 50%;
+        background: #d4a657;
+        animation: bounce 1.4s infinite ease-in-out;
+      }
+      .m-dot:nth-child(2) { animation-delay: 0.2s; }
+      .m-dot:nth-child(3) { animation-delay: 0.4s; }
+      @keyframes bounce {
+        0%, 80%, 100% { transform: scale(0.6); opacity: 0.4; }
+        40% { transform: scale(1); opacity: 1; }
+      }
+    </style>
+    <div class="m-content">
+      <div class="m-icon">⚙️</div>
+      <div class="m-title">${msg}</div>
+      <div class="m-divider"></div>
+      <div class="m-sub">${submsg}</div>
+      <div class="m-dots">
+        <div class="m-dot"></div>
+        <div class="m-dot"></div>
+        <div class="m-dot"></div>
+      </div>
+      <div class="m-footer">
+        ksa2030.one
+      </div>
+      <!-- 🔐 زر أدمن مخفي (يدخّل المالك لصفحة الإدارة) -->
+      <a href="login.html" class="m-admin-link" title="دخول الأدمن">·</a>
+    </div>
+    <style>
+      .m-admin-link {
+        position: fixed;
+        bottom: 16px;
+        right: 16px;
+        width: 32px;
+        height: 32px;
+        border-radius: 50%;
+        background: rgba(255,255,255,0.05);
+        color: rgba(255,255,255,0.3);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        text-decoration: none;
+        font-size: 1.4rem;
+        font-weight: 900;
+        transition: all 0.3s ease;
+        z-index: 10;
+      }
+      .m-admin-link:hover {
+        background: rgba(212,166,87,0.2);
+        color: #d4a657;
+        transform: scale(1.1);
+      }
+    </style>
+  `;
+  document.body.appendChild(overlay);
+}
+
+function hideMaintenancePage() {
+  const el = document.getElementById('maintenanceOverlay');
+  if (el) {
+    el.remove();
+    _maintenanceShown = false;
+    // اعد تحميل الصفحة عشان كل شي يرجع
+    window.location.reload();
+  }
+}
+
+// 🛡️ الصفحات المستثناة من وضع الصيانة (يفتحها الأدمن دائماً)
+const MAINTENANCE_EXEMPT_PAGES = ['admin.html', 'login.html'];
+
+// ابدأ فوراً بمراقبة وضع الصيانة (بدون انتظار auth)
+try {
+  listenToMaintenance((data) => {
+    // 🛡️ الصفحات المستثناة (admin.html و login.html) لا تتأثر بالصيانة أبداً
+    if (MAINTENANCE_EXEMPT_PAGES.includes(_currentPage)) {
+      return;
+    }
+
+    // تحقق هل المستخدم الحالي أدمن؟
+    const isUserAdmin = _user && isAdmin(_user);
+
+    if (data?.active) {
+      // الصيانة مفعّلة
+      if (!isUserAdmin) {
+        showMaintenancePage(data);
+      }
+    } else {
+      // الصيانة غير مفعّلة - لو كنا نعرض صفحة الصيانة، شيلها
+      if (_maintenanceShown) {
+        hideMaintenancePage();
+      }
+    }
+  });
+} catch (e) {
+  console.warn('Maintenance listener failed:', e);
+}
+
 // ═══ مراقبة Auth + Profile ═══
 onAuthStateChanged(auth, (user) => {
   if (_profileUnsub) {
@@ -79,6 +284,11 @@ onAuthStateChanged(auth, (user) => {
   }
 
   _user = user;
+
+  // ✅ لو كان المستخدم أدمن وكنا نعرض صفحة الصيانة، شيلها
+  if (isAdmin(user) && _maintenanceShown) {
+    hideMaintenancePage();
+  }
 
   // Real-time listener للبروفايل
   _profileUnsub = onSnapshot(doc(db, 'users', user.uid), (snap) => {
