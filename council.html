@@ -302,7 +302,8 @@ html,body{
   vertical-align:middle;
 }
 .dyn-table tbody tr:nth-child(even) td{background:#f0f1ec;}
-.dyn-table tbody td input{
+.dyn-table tbody td input,
+.dyn-table tbody td textarea{
   width:100%;
   border:none;
   background:transparent;
@@ -311,6 +312,16 @@ html,body{
   color:#072730;
   outline:none;
   padding:3px 4px;
+}
+.dyn-table tbody td textarea{
+  resize:none;
+  overflow:hidden;
+  min-height:24px;
+  line-height:1.5;
+  display:block;
+  word-wrap:break-word;
+  overflow-wrap:break-word;
+  white-space:pre-wrap;
 }
 .dyn-table .row-num{
   font-weight:800;
@@ -647,9 +658,9 @@ html,body{
           <tr><th>م</th><th>الاسم</th><th>الصفة</th><th>التوقيع</th></tr>
         </thead>
         <tbody>
-          <tr><td class="row-num">1</td><td><input type="text"></td><td><input type="text"></td><td><input type="text"></td></tr>
-          <tr><td class="row-num">2</td><td><input type="text"></td><td><input type="text"></td><td><input type="text"></td></tr>
-          <tr><td class="row-num">3</td><td><input type="text"></td><td><input type="text"></td><td><input type="text"></td></tr>
+          <tr><td class="row-num">1</td><td><textarea rows="1"></textarea></td><td><textarea rows="1"></textarea></td><td><textarea rows="1"></textarea></td></tr>
+          <tr><td class="row-num">2</td><td><textarea rows="1"></textarea></td><td><textarea rows="1"></textarea></td><td><textarea rows="1"></textarea></td></tr>
+          <tr><td class="row-num">3</td><td><textarea rows="1"></textarea></td><td><textarea rows="1"></textarea></td><td><textarea rows="1"></textarea></td></tr>
         </tbody>
       </table>
       <button class="add-row-btn" onclick="addRow('attendance-table', 4)">+ إضافة حاضر</button>
@@ -790,7 +801,7 @@ function saveData(){
     const rows = [];
     tb.querySelectorAll('tr').forEach(tr => {
       const cells = [];
-      tr.querySelectorAll('input').forEach(inp => cells.push(inp.value));
+      tr.querySelectorAll('input, textarea').forEach(inp => cells.push(inp.value));
       rows.push(cells);
     });
     data['table_'+ti] = rows;
@@ -815,13 +826,54 @@ function loadData(){
           }
         }
       } else if(k.startsWith('table_')){
-        // restore rows later if needed
+        // 🆕 استعد بيانات الجدول
+        const ti = parseInt(k.split('_')[1]);
+        const tables = document.querySelectorAll('.dyn-table tbody');
+        const tbody = tables[ti];
+        if(!tbody) return;
+        const savedRows = d[k];
+        if(!Array.isArray(savedRows)) return;
+
+        // امسح كل الصفوف الحالية ما عدا الـ template
+        const existingRows = Array.from(tbody.querySelectorAll('tr'));
+        const currentCount = existingRows.length;
+        const neededCount = savedRows.length;
+
+        // أضف صفوف إذا كانت محفوظة أكثر من الموجودة
+        if(neededCount > currentCount){
+          // احسب عدد الخلايا في الصف الأول لمعرفة عدد الأعمدة
+          const firstRow = existingRows[0];
+          const colsCount = firstRow ? firstRow.querySelectorAll('td').length : 4;
+          const tableId = tbody.closest('.dyn-table').id;
+          for(let i = currentCount; i < neededCount; i++){
+            // أضف صف بدون استدعاء saveData
+            const tr = document.createElement('tr');
+            const rowNum = tbody.children.length + 1;
+            let html = `<td class="row-num">${rowNum}</td>`;
+            for(let c = 0; c < colsCount - 2; c++){
+              html += `<td><textarea rows="1"></textarea></td>`;
+            }
+            html += `<td><button class="del-btn" onclick="this.closest('tr').remove(); updateRowNumbers('${tableId}'); saveData();">×</button></td>`;
+            tr.innerHTML = html;
+            tbody.appendChild(tr);
+          }
+        }
+
+        // املأ القيم
+        const allRows = tbody.querySelectorAll('tr');
+        savedRows.forEach((rowData, ri) => {
+          if(!allRows[ri]) return;
+          const fields = allRows[ri].querySelectorAll('input, textarea');
+          rowData.forEach((val, ci) => {
+            if(fields[ci]) fields[ci].value = val;
+          });
+        });
       } else {
         const el = document.getElementById(k);
         if(el) el.value = d[k];
       }
     });
-  } catch(e){}
+  } catch(e){ console.warn('loadData fail', e); }
 }
 
 function doClear(){
@@ -1117,6 +1169,12 @@ function removePhoto(e, n){
 }
 
 // Dynamic table rows
+// Auto-resize helper for table textareas
+function autoResizeTextarea(ta){
+  ta.style.height = 'auto';
+  ta.style.height = (ta.scrollHeight) + 'px';
+}
+
 function addRow(tableId, cols){
   // 🔒 حماية: تحقق من Premium قبل الإضافة
   if (typeof window.checkPremiumFeature === 'function') {
@@ -1127,12 +1185,15 @@ function addRow(tableId, cols){
   const rowNum = tbody.children.length + 1;
   let html = `<td class="row-num">${rowNum}</td>`;
   for(let i = 0; i < cols - 1; i++){
-    html += `<td><input type="text"></td>`;
+    html += `<td><textarea rows="1"></textarea></td>`;
   }
   html += `<td><button class="del-btn" onclick="this.closest('tr').remove(); updateRowNumbers('${tableId}'); saveData();">×</button></td>`;
   tr.innerHTML = html;
   tbody.appendChild(tr);
-  tr.querySelectorAll('input').forEach(inp => inp.addEventListener('input', saveData));
+  tr.querySelectorAll('textarea').forEach(ta => {
+    ta.addEventListener('input', () => { autoResizeTextarea(ta); saveData(); });
+    autoResizeTextarea(ta);
+  });
   saveData();
 }
 function updateRowNumbers(tableId){
@@ -1146,7 +1207,19 @@ document.querySelectorAll('input, textarea').forEach(el => {
   el.addEventListener('input', saveData);
 });
 
+// 🆕 Auto-resize للـ textareas في الجدول (يكبر مع المحتوى تلقائياً)
+document.querySelectorAll('.dyn-table tbody textarea').forEach(ta => {
+  ta.addEventListener('input', () => autoResizeTextarea(ta));
+});
+
 loadData();
+
+// بعد loadData: أعد ضبط ارتفاع كل textareas الجدول لتظهر النصوص الكاملة
+setTimeout(() => {
+  document.querySelectorAll('.dyn-table tbody textarea').forEach(ta => {
+    autoResizeTextarea(ta);
+  });
+}, 100);
 
 // ═══════════════════════════════════════════════
 // 🔒 وضع المعاينة - حماية ثلاثية الطبقات
