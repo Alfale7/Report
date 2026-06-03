@@ -6,9 +6,15 @@
   <title>إتمام الاشتراك · ksa2030</title>
   <meta name="theme-color" content="#050a12">
 
-  <!-- ⚡ Instant Pricing - من localStorage قبل أي شي -->
+  <!-- ⚡ Anti-Flash Pricing System -->
+  <style id="priceHideStyle">
+    [data-price] { visibility: hidden !important; }
+    html.price-ready [data-price] { visibility: visible !important; animation: priceReveal 0.25s ease-out; }
+    @keyframes priceReveal { from { opacity: 0; } to { opacity: 1; } }
+  </style>
   <script>
   (function(){
+    var hasCache = false;
     try {
       var cached = localStorage.getItem('ksa2030_pricing_cache_v1');
       if (cached) {
@@ -24,20 +30,33 @@
             discountPercent: (data.originalPrice > data.currentPrice) ? Math.round(((data.originalPrice - data.currentPrice) / data.originalPrice) * 100) : 0,
             loaded: true, fromCache: true
           };
+          hasCache = true;
         }
       }
     } catch(e) {}
     if (!window.__PRICING__) {
       window.__PRICING__ = { currentPrice: 49, originalPrice: 99, currency: 'ريال', isOfferActive: true, offerLabel: 'عرض محدود', discountPercent: 50, loaded: false };
     }
-    document.addEventListener('DOMContentLoaded', function(){
+    function applyPricing(){
       var p = window.__PRICING__;
       document.querySelectorAll('[data-price="current"]').forEach(function(el){ el.textContent = p.currentPrice; });
       document.querySelectorAll('[data-price="original"]').forEach(function(el){ el.textContent = p.originalPrice; });
       document.querySelectorAll('[data-price="currency"]').forEach(function(el){ el.textContent = p.currency; });
       document.querySelectorAll('[data-price="discount"]').forEach(function(el){ el.textContent = p.discountPercent; });
       document.querySelectorAll('[data-price="offer-wrap"]').forEach(function(el){ el.style.display = p.isOfferActive ? '' : 'none'; });
-    });
+      document.documentElement.classList.add('price-ready');
+    }
+    if (hasCache) {
+      if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', applyPricing);
+      } else {
+        applyPricing();
+      }
+    } else {
+      window.__PRICING_WAITING__ = true;
+      setTimeout(function(){ if (window.__PRICING_WAITING__) { window.__PRICING_WAITING__ = false; applyPricing(); } }, 2000);
+      window.__APPLY_PRICING_FN__ = applyPricing;
+    }
   })();
   </script>
 

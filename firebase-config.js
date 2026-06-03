@@ -271,6 +271,18 @@ function updatePriceElements() {
   document.querySelectorAll('[data-price="full"]').forEach(el => {
     el.textContent = `${_currentPricing.currentPrice} ${_currentPricing.currency}`;
   });
+
+  // ✨ كشف الأسعار للزائر الجديد (anti-flash)
+  if (typeof window !== 'undefined') {
+    window.__PRICING_WAITING__ = false;
+    if (typeof window.__APPLY_PRICING_FN__ === 'function') {
+      window.__APPLY_PRICING_FN__();
+    }
+    // كشف عام
+    if (document.documentElement) {
+      document.documentElement.classList.add('price-ready');
+    }
+  }
 }
 
 /**
