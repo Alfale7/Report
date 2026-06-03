@@ -8,9 +8,9 @@
 
   <!-- ⚡ Anti-Flash Pricing System -->
   <style id="priceHideStyle">
-    [data-price] { visibility: hidden !important; }
-    html.price-ready [data-price] { visibility: visible !important; animation: priceReveal 0.25s ease-out; }
-    @keyframes priceReveal { from { opacity: 0; } to { opacity: 1; } }
+    [data-price] { visibility: hidden !important; opacity: 0 !important; }
+    html.price-ready [data-price] { visibility: visible !important; opacity: 1 !important; animation: priceReveal 0.3s ease-out; }
+    @keyframes priceReveal { from { opacity: 0; transform: translateY(2px); } to { opacity: 1; transform: translateY(0); } }
   </style>
   <script>
   (function(){
@@ -599,10 +599,10 @@
         <div class="order-total">
           <span class="order-total-label">المجموع</span>
           <span>
-            <span class="discount-badge" data-price="offer-wrap">-<span data-price="discount">50</span>%</span>
-            <span class="original-price" data-price="original">99</span>
-            <span class="order-total-amount" data-price="current">49</span>
-            <span class="order-total-currency" data-price="currency">ريال</span>
+            <span class="discount-badge" data-price="offer-wrap">-<span data-price="discount"></span>%</span>
+            <span class="original-price" data-price="original"></span>
+            <span class="order-total-amount" data-price="current"></span>
+            <span class="order-total-currency" data-price="currency"></span>
           </span>
         </div>
       </div>

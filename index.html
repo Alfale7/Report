@@ -9,15 +9,18 @@
   /* 🙈 إخفاء كل أسعار للحظة حتى نتأكد من القيمة الصحيحة */
   [data-price] {
     visibility: hidden !important;
+    /* احتياط: حتى لو visibility ما اشتغل، النص مدفون بعيد */
+    opacity: 0 !important;
   }
-  /* 💀 لما السعر يكون جاهز، نزيل الإخفاء */
+  /* لو الـ JS فشل تماماً، بعد 3 ثواني نظهر الافتراضي (يطبّق من JS) */
   html.price-ready [data-price] {
     visibility: visible !important;
-    animation: priceReveal 0.25s ease-out;
+    opacity: 1 !important;
+    animation: priceReveal 0.3s ease-out;
   }
   @keyframes priceReveal {
-    from { opacity: 0; }
-    to { opacity: 1; }
+    from { opacity: 0; transform: translateY(2px); }
+    to { opacity: 1; transform: translateY(0); }
   }
 </style>
 
@@ -5194,12 +5197,12 @@ font-size:0.78rem;text-align:center;margin-top:12px;display:none;
       <div class="hpc-price-row">
         <div class="hpc-old" data-price="offer-wrap">
           <span data-i18n="hpcOldLabel">السعر الأصلي</span>
-          <span class="hpc-strike" data-price="original">99</span>
+          <span class="hpc-strike" data-price="original"></span>
         </div>
         <div class="hpc-now">
           <div class="hpc-amount">
-            <span class="hpc-num" data-price="current">49</span>
-            <span class="hpc-cur" data-price="currency" data-i18n="hpcCur">ريال</span>
+            <span class="hpc-num" data-price="current"></span>
+            <span class="hpc-cur" data-price="currency" data-i18n="hpcCur"></span>
           </div>
           <div class="hpc-once" data-i18n="hpcOnce">دفعة واحدة فقط</div>
         </div>
@@ -6988,7 +6991,7 @@ font-size:0.78rem;text-align:center;margin-top:12px;display:none;
           <span data-i18n="priceLine1">النسخة الذهبية مدى الحياة</span>
         </div>
         <div class="price-line-2">
-          <span data-i18n="priceLine2Pre">بـ</span> <span class="price-num" data-price="current">49</span> <span data-i18n="priceLine2Post">ريال فقط!</span>
+          <span data-i18n="priceLine2Pre">بـ</span> <span class="price-num" data-price="current"></span> <span data-i18n="priceLine2Post">ريال فقط!</span>
         </div>
       </div>
 
@@ -7057,13 +7060,13 @@ font-size:0.78rem;text-align:center;margin-top:12px;display:none;
     </div>
 
     <div class="upgrade-price-block">
-      <div class="upgrade-price-old">
-        <span class="price-strike">59 <span data-i18n="upCurrency">ريال</span></span>
-        <span class="discount-badge" data-i18n="upDiscount">خصم 17%</span>
+      <div class="upgrade-price-old" data-price="offer-wrap">
+        <span class="price-strike"><span data-price="original"></span> <span data-price="currency" data-i18n="upCurrency">ريال</span></span>
+        <span class="discount-badge">خصم <span data-price="discount"></span>%</span>
       </div>
       <div class="upgrade-price-new">
-        <span class="price-amount">49</span>
-        <span class="price-currency" data-i18n="upCurrency">ريال</span>
+        <span class="price-amount" data-price="current"></span>
+        <span class="price-currency" data-price="currency" data-i18n="upCurrency">ريال</span>
       </div>
       <div class="upgrade-price-note" data-i18n="upPriceNote">دفعة واحدة · مدى الحياة</div>
     </div>
