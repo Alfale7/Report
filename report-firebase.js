@@ -490,8 +490,8 @@ function showSubscribeGate() {
     </div>
 
     <a href="${link}" target="_blank" rel="noopener" class="uct">
-      <span style="font-size:1.3rem">📱</span>
-      <span>اشترك عبر الواتساب الآن</span>
+      <span style="font-size:1.3rem">💳</span>
+      <span>اشترك الآن</span>
     </a>
     <div class="ug">🛡️ ضمان استرداد كامل خلال 7 أيام</div>
 
@@ -1205,8 +1205,8 @@ window.showPremiumFeatureModal = function(featureName = 'هذه الميزة') {
           <span>تسجيل الدخول</span>
         </a>`
       : `<a href="${link}" target="_blank" rel="noopener" class="pfm-btn pfm-btn-pay">
-          <span style="font-size:1.05rem">📱</span>
-          <span>اشترك عبر الواتساب</span>
+          <span style="font-size:1.05rem">💳</span>
+          <span>اشترك الآن</span>
         </a>
         <div class="pfm-guarantee">🛡️ ضمان استرداد كامل خلال 7 أيام</div>`
     }

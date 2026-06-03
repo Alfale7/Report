@@ -561,15 +561,6 @@
         <div class="brand-tagline">إتمام الاشتراك</div>
       </div>
 
-      <!-- 📢 إشعار مؤقت (يُحذف لما يجي Moyasar) -->
-      <div class="notice-banner" id="tempNotice">
-        <span class="ic">✨</span>
-        <span class="text">
-          نوفر حالياً <b>الدفع المباشر عبر الواتساب</b> ⚡<br>
-          استجابة فورية خلال دقائق · تفعيل خلال ساعة
-        </span>
-      </div>
-
       <!-- 💎 ملخص الاشتراك -->
       <div class="order-summary">
         <div class="order-row">
@@ -634,12 +625,11 @@
         <div class="trust-badge"><span class="ic">⚡</span> تفعيل فوري</div>
       </div>
 
-      <!-- 💳 طرق الدفع المتاحة (تظهر لما يفعّل Moyasar) -->
+      <!-- 💳 طرق الدفع المتاحة -->
       <div class="payment-methods" id="paymentMethods" style="display:none;">
         <span class="pm-icon mada">مدى</span>
         <span class="pm-icon visa">VISA</span>
         <span class="pm-icon mc">MC</span>
-        <span class="pm-icon apple">  Pay</span>
         <span class="pm-icon stc">STC Pay</span>
       </div>
 
@@ -653,16 +643,6 @@
           </div>
         </div>
       </div>
-
-      <!-- 🟢 زر الواتس (الأساسي حالياً) -->
-      <a href="https://wa.me/966552052867?text=السلام%20عليكم%2C%20أرغب%20في%20الاشتراك%20بمنصة%20ksa2030%20%2830%20ريال%20مدى%20الحياة%29%20💎"
-         class="wa-fallback"
-         id="waButton"
-         target="_blank"
-         rel="noopener">
-        <span class="ic">📱</span>
-        <span>اشترك الآن عبر الواتساب</span>
-      </a>
 
       <!-- Footer -->
       <div class="pay-footer">
@@ -679,13 +659,24 @@
   <script type="module">
   import { onUserChange, onPricingChange, getPricing } from './firebase-config.js?v=4';
 
-  // ⚙️ إعدادات Moyasar - حدّث هنا لما يصلك المفتاح
+  // ⚙️ إعدادات Moyasar
+  // ═══════════════════════════════════════════════════════════════
+  // 📋 للتفعيل:
+  //    1. اذهب لـ: https://moyasar.com (سجّل حساب جديد)
+  //    2. Dashboard → Settings → API Keys
+  //    3. انسخ "Publishable Key" (يبدأ بـ pk_test_ أو pk_live_)
+  //    4. ضعه أسفل واجعل enabled = true
+  // ═══════════════════════════════════════════════════════════════
   const MOYASAR_CONFIG = {
-    // ❌ غير مفعّل حالياً - لما تصل API Keys غيّر إلى true
-    enabled: false,
+    // 🔥 غيّر إلى true لتفعيل Moyasar Form
+    enabled: true,
 
-    // 🔑 من Moyasar Dashboard (تحت Settings → API Keys)
-    publishable_key: 'pk_test_XXXXXXXXXXXXXXXXX', // ⚠️ بدّل هذا
+    // 🔑 الصق الـ Publishable Key هنا:
+    // ⚠️ Test Key للتجربة (آمن للنشر العام):
+    publishable_key: 'pk_test_2EWWsFvx4PEsFEkR3DNobKdTARTtFZWFwuQyUPCM',
+    
+    // ✅ Live Key للإنتاج (بعد موافقة ميسّر):
+    // publishable_key: 'pk_live_XXXXXXXXXXXXXXXXX',
 
     // العملة
     currency: 'SAR',
@@ -694,7 +685,9 @@
     description: 'اشتراك مدى الحياة - منصة ksa2030',
 
     // طرق الدفع المتاحة
-    methods: ['creditcard', 'applepay', 'stcpay'],
+    // 🆕 بعد التحقق من Apple Pay، أضف 'applepay'
+    // 🆕 بعد موافقة تابي/تمارا، أضف 'tabby' و 'tamara'
+    methods: ['creditcard', 'stcpay'],
 
     // ✅ Callback URL (بعد الدفع الناجح)
     callback_url: 'https://ksa2030.one/success.html',
@@ -706,50 +699,23 @@
 
   onUserChange((data) => {
     _user = data?.user;
-    updateWhatsAppLink();
   });
 
   // ═══ مراقبة تغييرات السعر اللحظية ═══
   onPricingChange((pricing) => {
     _pricing = pricing;
-    updateWhatsAppLink();
     // لو Moyasar مفعّل، أعد التهيئة بالسعر الجديد
     if (MOYASAR_CONFIG.enabled && document.getElementById('moyasarSection').style.display === 'block') {
       initMoyasar();
     }
   });
 
-  // ═══ تحديث رابط الواتساب باسم المستخدم والسعر الحالي ═══
-  function updateWhatsAppLink() {
-    const waBtn = document.getElementById('waButton');
-    if (!waBtn) return;
-
-    const price = _pricing.currentPrice || 49;
-    const currency = _pricing.currency || 'ريال';
-
-    let text = `السلام عليكم، أرغب في الاشتراك بمنصة ksa2030 (${price} ${currency} مدى الحياة) 💎`;
-
-    if (_user?.email) {
-      text += `\n\nبريدي: ${_user.email}`;
-    }
-
-    waBtn.href = `https://wa.me/966552052867?text=${encodeURIComponent(text)}`;
-  }
-
-  // ═══ تفعيل Moyasar (لما يكون جاهز) ═══
+  // ═══ تفعيل Moyasar ═══
   function initMoyasar() {
     if (!MOYASAR_CONFIG.enabled) {
-      console.log('⏳ Moyasar غير مفعّل حالياً - استخدم WhatsApp');
+      console.log('⏳ Moyasar غير مفعّل حالياً');
       return;
     }
-
-    // إخفاء الإشعار المؤقت
-    const notice = document.getElementById('tempNotice');
-    if (notice) notice.style.display = 'none';
-
-    // إخفاء زر الواتس
-    const waBtn = document.getElementById('waButton');
-    if (waBtn) waBtn.style.display = 'none';
 
     // إظهار قسم الدفع
     document.getElementById('moyasarSection').style.display = 'block';
@@ -792,13 +758,6 @@
         plan: 'lifetime',
         product: 'ksa2030_subscription',
         priceAtPurchase: _pricing.currentPrice
-      },
-
-      // تخصيص المظهر
-      apple_pay: {
-        country: 'SA',
-        label: 'منصة ksa2030',
-        validate_merchant_url: 'https://ksa2030.one/api/applepay/validate'
       }
     });
   }
