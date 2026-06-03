@@ -5100,14 +5100,14 @@ font-size:0.78rem;text-align:center;margin-top:12px;display:none;
       </div>
 
       <div class="hpc-price-row">
-        <div class="hpc-old">
+        <div class="hpc-old" data-price="offer-wrap">
           <span data-i18n="hpcOldLabel">السعر الأصلي</span>
-          <span class="hpc-strike">99</span>
+          <span class="hpc-strike" data-price="original">99</span>
         </div>
         <div class="hpc-now">
           <div class="hpc-amount">
-            <span class="hpc-num">30</span>
-            <span class="hpc-cur" data-i18n="hpcCur">ريال</span>
+            <span class="hpc-num" data-price="current">49</span>
+            <span class="hpc-cur" data-price="currency" data-i18n="hpcCur">ريال</span>
           </div>
           <div class="hpc-once" data-i18n="hpcOnce">دفعة واحدة فقط</div>
         </div>
@@ -6896,7 +6896,7 @@ font-size:0.78rem;text-align:center;margin-top:12px;display:none;
           <span data-i18n="priceLine1">النسخة الذهبية مدى الحياة</span>
         </div>
         <div class="price-line-2">
-          <span data-i18n="priceLine2Pre">بـ</span> <span class="price-num">30</span> <span data-i18n="priceLine2Post">ريال فقط!</span>
+          <span data-i18n="priceLine2Pre">بـ</span> <span class="price-num" data-price="current">49</span> <span data-i18n="priceLine2Post">ريال فقط!</span>
         </div>
       </div>
 
@@ -7034,7 +7034,7 @@ const I18N = {
     hpcFeat2: "تحميلات بلا حدود",
     hpcFeat3: "تحديثات مدى الحياة",
     hpcFeat4: "بدون عمولات إضافية",
-    hpcCta: "اشترك الآن - 30 ريال",
+    hpcCta: "اشترك الآن",
     hpcTrust: "ضمان استرداد كامل خلال 7 أيام",
     spsCount: "انضم لأكثر من 500 معلم اشتركوا",
     appSub: "منصة احترافية متكاملة لإعداد وتنزيل تقارير المناسبات المدرسية بتصاميم جاهزة، قابلة للتخصيص، وبجودة عالية ✨",
@@ -7316,7 +7316,7 @@ const I18N = {
     hpcFeat2: "Unlimited downloads",
     hpcFeat3: "Lifetime updates",
     hpcFeat4: "No extra fees",
-    hpcCta: "Subscribe Now - 30 SAR",
+    hpcCta: "Subscribe Now",
     hpcTrust: "Full refund guarantee within 7 days",
     spsCount: "Join 500+ teachers",
     appSub: "A professional all-in-one platform for creating and downloading school event reports with ready-made, customizable designs and premium quality ✨",
@@ -7687,11 +7687,14 @@ function openLogin(){
 }
 
 function openSubscribeWhatsApp(){
-  const phone = '966550522867';
+  const phone = '966552052867';
+  // 💰 اقرأ السعر من النظام الديناميكي
+  const price = (window.__PRICING__ && window.__PRICING__.currentPrice) || 49;
+  const currency = (window.__PRICING__ && window.__PRICING__.currency) || 'ريال';
   const msg = encodeURIComponent(
     'السلام عليكم 🌟\n\n' +
     'أرغب في الاشتراك بمنصة التقارير المدرسية\n' +
-    'العرض: 30 ريال (مدى الحياة) 💎\n\n' +
+    `العرض: ${price} ${currency} (مدى الحياة) 💎\n\n` +
     'المصدر: ksa2030.one'
   );
   window.open(`https://wa.me/${phone}?text=${msg}`, '_blank');
@@ -7888,7 +7891,7 @@ document.getElementById('loginModal').addEventListener('click', function(e){
 
 <!-- ═══ Firebase Integration ═══ -->
 <script type="module">
-import { onUserChange, logout, isLifetime, isAdmin, SITE_CONFIG, db, listenToOffer, listenToMaintenance } from './firebase-config.js';
+import { onUserChange, logout, isLifetime, isAdmin, SITE_CONFIG, db, listenToOffer, listenToMaintenance, onPricingChange } from './firebase-config.js?v=4';
 import { doc, onSnapshot, updateDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
 // ═══════════════════════════════════════════════════════

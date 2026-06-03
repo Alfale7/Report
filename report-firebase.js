@@ -13,7 +13,9 @@ import {
   logout,
   getUserProfile,
   incrementDownloadCount,
-  listenToMaintenance
+  listenToMaintenance,
+  onPricingChange,
+  getPricing
 } from './firebase-config.js';
 
 import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
@@ -434,6 +436,11 @@ function showSubscribeGate() {
   if (document.getElementById('subscribeGate')) return;
   const link = 'pay.html';
   const name = _profile?.displayName || (_user.email || '').split('@')[0];
+  
+  // 💰 السعر الديناميكي
+  const pricing = (typeof getPricing === 'function') ? getPricing() : null;
+  const price = pricing?.currentPrice || window.__PRICING__?.currentPrice || 49;
+  const currency = pricing?.currency || window.__PRICING__?.currency || 'ريال';
 
   const g = document.createElement('div');
   g.id = 'subscribeGate';
@@ -463,7 +470,7 @@ function showSubscribeGate() {
     <div class="ub">🔒 محتوى مدفوع</div>
     <div class="ic">💎</div>
     <h2>اشترك لفتح هذا التقرير</h2>
-    <div class="su">مرحباً ${name} 👋<br>افتح كل القوالب الاحترافية بـ 30 ريال مدى الحياة</div>
+    <div class="su">مرحباً ${name} 👋<br>افتح كل القوالب الاحترافية بـ ${price} ${currency} مدى الحياة</div>
 
     <div class="uf">
       <div class="uft"><span style="color:#16a34a">✓</span><strong>+15 قالب احترافي</strong> معتمد</div>
@@ -476,8 +483,8 @@ function showSubscribeGate() {
     <div class="upb">
       <div class="upt">🔥 عرض إطلاق محدود</div>
       <div style="display:flex;align-items:baseline;justify-content:center;gap:5px;margin-top:8px;">
-        <span class="uam">30</span>
-        <span class="ucu">ريال</span>
+        <span class="uam" id="sg-live-price">${price}</span>
+        <span class="ucu" id="sg-live-currency">${currency}</span>
       </div>
       <div class="uo">💎 دفعة واحدة · مدى الحياة</div>
     </div>
@@ -494,6 +501,26 @@ function showSubscribeGate() {
     </div>
   </div>`;
   document.body.appendChild(g);
+
+  // 🔥 التحديث الفوري للسعر داخل Subscribe Gate
+  onPricingChange((newPricing) => {
+    const priceEl = document.getElementById('sg-live-price');
+    const curEl = document.getElementById('sg-live-currency');
+    if (priceEl && newPricing.currentPrice) {
+      priceEl.textContent = newPricing.currentPrice;
+      // ✨ تأثير بصري عند التحديث
+      priceEl.style.transition = 'all 0.4s ease';
+      priceEl.style.transform = 'scale(1.2)';
+      priceEl.style.textShadow = '0 0 20px rgba(34,197,94,0.8)';
+      setTimeout(() => {
+        priceEl.style.transform = 'scale(1)';
+        priceEl.style.textShadow = '';
+      }, 500);
+    }
+    if (curEl && newPricing.currency) {
+      curEl.textContent = newPricing.currency;
+    }
+  });
 }
 
 // ═══ شارة المستخدم في الزاوية ═══
@@ -919,7 +946,9 @@ window.trackDownload = async function() {
       if (used >= limit) {
         // التحميل الأخير - اعرض رسالة بعد ثانية
         setTimeout(() => {
-          alert('🎁 انتهت تحميلاتك المجانية!\n\nاشترك مرة واحدة فقط بـ 30 ريال للحصول على تحميلات بلا حدود 💎');
+          const price = window.__PRICING__?.currentPrice || 49;
+          const currency = window.__PRICING__?.currency || 'ريال';
+          alert(`🎁 انتهت تحميلاتك المجانية!\n\nاشترك مرة واحدة فقط بـ ${price} ${currency} للحصول على تحميلات بلا حدود 💎`);
           showSubscribeGate();
         }, 800);
       }
@@ -948,7 +977,9 @@ window.canDownload = function() {
 
   if (used >= limit) {
     showSubscribeGate();
-    alert('🎁 لقد استخدمت جميع تحميلاتك المجانية\n\nاشترك مرة واحدة فقط بـ 30 ريال 💎');
+    const price2 = window.__PRICING__?.currentPrice || 49;
+    const currency2 = window.__PRICING__?.currency || 'ريال';
+    alert(`🎁 لقد استخدمت جميع تحميلاتك المجانية\n\nاشترك مرة واحدة فقط بـ ${price2} ${currency2} 💎`);
     return false;
   }
   return true;
@@ -975,6 +1006,14 @@ window.showPremiumFeatureModal = function(featureName = 'هذه الميزة') {
   const name = _user ? (_profile?.displayName || (_user.email || '').split('@')[0]) : '';
   const isGuest = !_user;
   const link = 'pay.html';
+
+  // 💰 السعر الديناميكي من Firestore (lhzy)
+  const pricing = window.__PRICING__ || {};
+  const price = pricing.currentPrice || 49;
+  const currency = pricing.currency || 'ريال';
+  const originalPrice = pricing.originalPrice || 99;
+  const discount = pricing.discountPercent || 50;
+  const isOfferActive = pricing.isOfferActive !== false;
 
   const m = document.createElement('div');
   m.id = 'premiumFeatureModal';
@@ -1152,7 +1191,10 @@ window.showPremiumFeatureModal = function(featureName = 'هذه الميزة') {
     <div class="pfm-price">
       <div class="pfm-price-left">
         <span class="pfm-price-label">اشتراك مدى الحياة</span>
-        <span class="pfm-price-value">30 <span class="cur">ريال</span></span>
+        <span class="pfm-price-value">
+          <span id="pfm-live-price">${price}</span>
+          <span class="cur" id="pfm-live-currency">${currency}</span>
+        </span>
       </div>
       <div class="pfm-price-right">دفعة<br>واحدة</div>
     </div>
@@ -1175,9 +1217,51 @@ window.showPremiumFeatureModal = function(featureName = 'هذه الميزة') {
   </div>`;
   document.body.appendChild(m);
 
+  // 🔥 التحديث الفوري للسعر داخل المودال المفتوح
+  // يتفاعل مع تغيير السعر من admin بدون إغلاق/فتح
+  const _liveUnsub = onPricingChange((newPricing) => {
+    const priceEl = document.getElementById('pfm-live-price');
+    const curEl = document.getElementById('pfm-live-currency');
+    if (priceEl && newPricing.currentPrice) {
+      priceEl.textContent = newPricing.currentPrice;
+      // ✨ إضافة تأثير بصري لطيف عند التحديث
+      priceEl.style.transition = 'all 0.3s ease';
+      priceEl.style.transform = 'scale(1.15)';
+      priceEl.style.color = '#22c55e';
+      setTimeout(() => {
+        priceEl.style.transform = 'scale(1)';
+        priceEl.style.color = '';
+      }, 400);
+    }
+    if (curEl && newPricing.currency) {
+      curEl.textContent = newPricing.currency;
+    }
+  });
+
+  // 🗑️ تنظيف الـ listener عند الإغلاق
+  const _cleanup = () => {
+    if (typeof _liveUnsub === 'function') _liveUnsub();
+    m.remove();
+  };
+
+  // ربط زر الإغلاق
+  const closeBtn = m.querySelector('.pfm-x');
+  if (closeBtn) {
+    closeBtn.onclick = _cleanup;
+  }
+
+  // ربط الرابط الثانوي "متابعة المشاهدة"
+  const secondaryLink = m.querySelector('.pfm-secondary');
+  if (secondaryLink) {
+    secondaryLink.onclick = (e) => {
+      e.preventDefault();
+      _cleanup();
+    };
+  }
+
   // إغلاق عند الضغط خارج الصندوق
   m.addEventListener('click', (e) => {
-    if (e.target.id === 'premiumFeatureModal') m.remove();
+    if (e.target.id === 'premiumFeatureModal') _cleanup();
   });
 };
 

@@ -1544,6 +1544,273 @@ body{
   .user-actions{flex-direction:column;}
   .user-item{flex-wrap:wrap;}
 }
+
+/* ═══════════════════════════════════════════════════
+   💰 Pricing Panel - لوحة التحكم بالأسعار
+   ═══════════════════════════════════════════════════ */
+.pricing-panel{
+  background:linear-gradient(135deg, #fef3c7 0%, #fff 100%);
+  border:2px solid #fbbf24;
+  border-radius:18px;
+  padding:22px 22px 24px;
+  margin-bottom:24px;
+  box-shadow:0 8px 24px rgba(251,191,36,0.15);
+  position:relative;
+  overflow:hidden;
+}
+.pricing-panel::before{
+  content:"";
+  position:absolute;
+  top:-50px;
+  left:-50px;
+  width:150px;
+  height:150px;
+  background:radial-gradient(circle, rgba(251,191,36,0.25), transparent);
+  pointer-events:none;
+}
+.pp-header{
+  display:flex;
+  justify-content:space-between;
+  align-items:flex-start;
+  gap:14px;
+  margin-bottom:20px;
+  position:relative;
+  z-index:1;
+  flex-wrap:wrap;
+}
+.pp-title-wrap{
+  display:flex;
+  align-items:flex-start;
+  gap:12px;
+  flex:1;
+  min-width:0;
+}
+.pp-icon{
+  font-size:2rem;
+  flex-shrink:0;
+  filter:drop-shadow(0 2px 6px rgba(0,0,0,0.1));
+}
+.pp-title{
+  font:800 1.05rem 'Reem Kufi',sans-serif;
+  color:#7c2d12;
+  margin:0 0 4px;
+}
+.pp-sub{
+  font:500 0.78rem 'Tajawal',sans-serif;
+  color:#92400e;
+  margin:0;
+  line-height:1.5;
+}
+.pp-status{
+  display:inline-flex;
+  align-items:center;
+  gap:6px;
+  background:rgba(245,158,11,0.15);
+  padding:6px 12px;
+  border-radius:99px;
+  font:700 0.75rem 'Tajawal',sans-serif;
+  color:#92400e;
+  white-space:nowrap;
+}
+.pp-status-dot{
+  width:8px;height:8px;
+  border-radius:50%;
+  background:#22c55e;
+  box-shadow:0 0 8px #22c55e;
+  animation:pulse-pp 2s infinite;
+}
+@keyframes pulse-pp{
+  0%,100%{transform:scale(1);opacity:1;}
+  50%{transform:scale(1.2);opacity:0.7;}
+}
+.pp-body{position:relative;z-index:1;}
+
+/* المعاينة الحية */
+.pp-preview{
+  background:linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+  border-radius:14px;
+  padding:18px;
+  margin-bottom:18px;
+  text-align:center;
+  position:relative;
+  overflow:hidden;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,0.1);
+}
+.pp-preview::after{
+  content:"";
+  position:absolute;
+  top:0;right:0;
+  width:80px;height:80px;
+  background:radial-gradient(circle, rgba(232,197,71,0.3), transparent);
+  pointer-events:none;
+}
+.pp-preview-label{
+  font:700 0.7rem 'Reem Kufi',sans-serif;
+  color:#fbbf24;
+  letter-spacing:1.5px;
+  margin-bottom:10px;
+  text-transform:uppercase;
+}
+.pp-preview-content{
+  display:flex;
+  align-items:baseline;
+  justify-content:center;
+  gap:8px;
+  flex-wrap:wrap;
+}
+.pp-prev-strike{
+  text-decoration:line-through;
+  color:rgba(255,255,255,0.4);
+  font:700 1rem 'Tajawal',sans-serif;
+}
+.pp-prev-num{
+  font:900 2.4rem 'Tajawal',sans-serif;
+  background:linear-gradient(135deg, #fff, #fbbf24);
+  -webkit-background-clip:text;
+  -webkit-text-fill-color:transparent;
+  background-clip:text;
+}
+.pp-prev-cur{
+  font:700 0.95rem 'Tajawal',sans-serif;
+  color:rgba(255,255,255,0.85);
+}
+.pp-prev-discount{
+  background:linear-gradient(135deg, #dc2626, #f59e0b);
+  color:#fff;
+  padding:3px 10px;
+  border-radius:99px;
+  font:900 0.75rem 'Reem Kufi',sans-serif;
+  margin-right:6px;
+}
+.pp-preview-offer{
+  margin-top:8px;
+  font:700 0.8rem 'Tajawal',sans-serif;
+  color:#fbbf24;
+}
+
+/* النموذج */
+.pp-form{display:flex;flex-direction:column;gap:14px;}
+.pp-field-row{display:flex;gap:12px;}
+.pp-field{flex:1;display:flex;flex-direction:column;gap:5px;}
+.pp-label{
+  font:700 0.8rem 'Tajawal',sans-serif;
+  color:#7c2d12;
+}
+.pp-input{
+  background:#fff;
+  border:1.5px solid rgba(251,191,36,0.5);
+  border-radius:10px;
+  padding:10px 12px;
+  font:600 0.9rem 'Tajawal',sans-serif;
+  color:#1a1a22;
+  outline:none;
+  transition:all 0.2s;
+}
+.pp-input:focus{
+  border-color:#f59e0b;
+  box-shadow:0 0 0 3px rgba(251,191,36,0.2);
+}
+.pp-hint{
+  font:500 0.7rem 'Tajawal',sans-serif;
+  color:#a16207;
+  opacity:0.85;
+}
+
+/* Toggle Switch */
+.pp-toggle-wrap{flex:1;display:flex;flex-direction:column;gap:5px;}
+.pp-toggle{
+  display:flex;
+  align-items:center;
+  gap:10px;
+  cursor:pointer;
+  user-select:none;
+}
+.pp-toggle input{display:none;}
+.pp-toggle-slider{
+  width:44px;
+  height:24px;
+  background:#cbd5e1;
+  border-radius:99px;
+  position:relative;
+  transition:all 0.25s;
+  flex-shrink:0;
+}
+.pp-toggle-slider::after{
+  content:"";
+  position:absolute;
+  top:2px;
+  right:2px;
+  width:20px;height:20px;
+  background:#fff;
+  border-radius:50%;
+  transition:all 0.25s;
+  box-shadow:0 2px 4px rgba(0,0,0,0.2);
+}
+.pp-toggle input:checked + .pp-toggle-slider{
+  background:linear-gradient(135deg,#22c55e,#16a34a);
+}
+.pp-toggle input:checked + .pp-toggle-slider::after{
+  right:22px;
+}
+.pp-toggle-label{
+  font:700 0.85rem 'Tajawal',sans-serif;
+  color:#7c2d12;
+}
+
+/* Discount Calculation */
+.pp-calc{
+  background:rgba(34,197,94,0.1);
+  border:1px solid rgba(34,197,94,0.3);
+  border-radius:10px;
+  padding:10px 14px;
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  font:700 0.85rem 'Tajawal',sans-serif;
+  color:#166534;
+}
+.pp-calc strong{
+  font:900 1.1rem 'Tajawal',sans-serif;
+  color:#15803d;
+}
+
+/* Save Button */
+.pp-save-btn{
+  background:linear-gradient(135deg, #f59e0b, #d97706);
+  color:#fff;
+  border:none;
+  border-radius:12px;
+  padding:14px 22px;
+  font:900 0.95rem 'Tajawal',sans-serif;
+  cursor:pointer;
+  transition:all 0.2s;
+  box-shadow:0 6px 18px rgba(245,158,11,0.4);
+}
+.pp-save-btn:hover{
+  transform:translateY(-1px);
+  box-shadow:0 8px 22px rgba(245,158,11,0.55);
+}
+.pp-save-btn:active{transform:translateY(0);}
+.pp-save-btn:disabled{
+  opacity:0.6;
+  cursor:wait;
+  transform:none;
+}
+
+.pp-meta{
+  text-align:center;
+  font:500 0.7rem 'Tajawal',sans-serif;
+  color:#92400e;
+  opacity:0.75;
+}
+
+@media (max-width:600px){
+  .pp-field-row{flex-direction:column;gap:12px;}
+  .pp-preview-content{gap:6px;}
+  .pp-prev-num{font-size:2rem;}
+  .pp-header{flex-direction:column;align-items:stretch;}
+  .pp-status{align-self:flex-start;}
+}
 </style>
 </head>
 <body>
@@ -1764,6 +2031,101 @@ body{
     <!-- ════════════════════════════════════════════════ -->
 
     <!-- ════════════════════════════════════════════════ -->
+    <!-- 💰 إعدادات السعر (Dynamic Pricing Control)        -->
+    <!-- ════════════════════════════════════════════════ -->
+    <div class="pricing-panel" id="pricingPanel">
+      <div class="pp-header">
+        <div class="pp-title-wrap">
+          <span class="pp-icon">💰</span>
+          <div>
+            <h3 class="pp-title">إعدادات السعر والعرض</h3>
+            <p class="pp-sub">تحكم بسعر الاشتراك ونسبة الخصم - تنعكس فوراً على كل الموقع</p>
+          </div>
+        </div>
+        <div class="pp-status">
+          <span class="pp-status-dot active"></span>
+          <span id="ppStatusText">جاري التحميل...</span>
+        </div>
+      </div>
+
+      <div class="pp-body">
+
+        <!-- 👀 معاينة حية -->
+        <div class="pp-preview">
+          <div class="pp-preview-label">👀 المعاينة الحية:</div>
+          <div class="pp-preview-content">
+            <span class="pp-prev-strike" id="ppPrevOriginal">99</span>
+            <span class="pp-prev-num" id="ppPrevCurrent">49</span>
+            <span class="pp-prev-cur" id="ppPrevCurrency">ريال</span>
+            <span class="pp-prev-discount" id="ppPrevDiscount">-50%</span>
+          </div>
+          <div class="pp-preview-offer" id="ppPrevOffer">🔥 عرض محدود</div>
+        </div>
+
+        <!-- النموذج -->
+        <div class="pp-form">
+          <div class="pp-field-row">
+            <div class="pp-field">
+              <label class="pp-label">💎 السعر الحالي (ريال)</label>
+              <input type="number" class="pp-input" id="ppCurrentPrice" min="1" max="9999" value="49">
+              <span class="pp-hint">السعر اللي يدفعه المستخدم</span>
+            </div>
+            <div class="pp-field">
+              <label class="pp-label">💸 السعر الأصلي (ريال)</label>
+              <input type="number" class="pp-input" id="ppOriginalPrice" min="1" max="9999" value="99">
+              <span class="pp-hint">السعر المشطوب (يحسب الخصم)</span>
+            </div>
+          </div>
+
+          <div class="pp-field-row">
+            <div class="pp-field">
+              <label class="pp-label">💱 العملة</label>
+              <select class="pp-input" id="ppCurrency">
+                <option value="ريال">ريال (SAR)</option>
+                <option value="درهم">درهم (AED)</option>
+                <option value="دينار">دينار (KWD/JOD)</option>
+                <option value="جنيه">جنيه (EGP)</option>
+              </select>
+            </div>
+            <div class="pp-field">
+              <label class="pp-label">🏷️ نص العرض</label>
+              <input type="text" class="pp-input" id="ppOfferLabel" maxlength="30" value="عرض محدود" placeholder="مثال: عرض رمضان">
+              <span class="pp-hint">يظهر بجنب الخصم</span>
+            </div>
+          </div>
+
+          <div class="pp-field-row">
+            <div class="pp-toggle-wrap">
+              <label class="pp-toggle">
+                <input type="checkbox" id="ppOfferActive" checked>
+                <span class="pp-toggle-slider"></span>
+                <span class="pp-toggle-label">🎁 إظهار العرض والخصم</span>
+              </label>
+              <p class="pp-hint">لو معطّل، يظهر السعر الحالي فقط بدون الخصم</p>
+            </div>
+          </div>
+
+          <!-- Discount Calculation Display -->
+          <div class="pp-calc">
+            <span>📊 نسبة الخصم المحسوبة:</span>
+            <strong id="ppCalcDiscount">50%</strong>
+          </div>
+
+          <!-- Save Button -->
+          <button class="pp-save-btn" id="ppSaveBtn" onclick="savePricing()">
+            <span id="ppSaveText">💾 حفظ التغييرات</span>
+          </button>
+
+          <!-- Last Update Info -->
+          <div class="pp-meta" id="ppMeta">
+            آخر تحديث: <span id="ppLastUpdate">—</span>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- ════════════════════════════════════════════════ -->
     <!-- 🛠️ وضع الصيانة (Maintenance Mode)                 -->
     <!-- ════════════════════════════════════════════════ -->
     <div class="maintenance-panel" id="maintenancePanel">
@@ -1962,8 +2324,11 @@ import {
   getMaintenanceMode,
   setMaintenanceMode,
   listenToMaintenance,
+  onPricingChange,
+  updatePricing,
+  getPricing,
   db
-} from './firebase-config.js';
+} from './firebase-config.js?v=4';
 
 import { doc, updateDoc, deleteDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
@@ -2338,7 +2703,9 @@ function getTimeAgo(dateStr) {
 
 // تفعيل
 window.handleActivate = async function(uid, name) {
-  if (!confirm(`تفعيل اشتراك Lifetime 💎 لـ "${name}"؟\nالمبلغ: 30 ريال (مدى الحياة)`)) return;
+  const _adminPrice = _currentPricing?.currentPrice || 49;
+  const _adminCur = _currentPricing?.currency || 'ريال';
+  if (!confirm(`تفعيل اشتراك Lifetime 💎 لـ "${name}"؟\nالمبلغ: ${_adminPrice} ${_adminCur} (مدى الحياة)`)) return;
 
   const result = await activateUserLifetime(uid);
   if (result.success) {
@@ -2709,6 +3076,157 @@ window.toggleMaintenance = async function() {
     btn.disabled = false;
   }
 };
+
+// ═══════════════════════════════════════════════════
+// 💰 إدارة الأسعار الديناميكية
+// ═══════════════════════════════════════════════════
+
+let _currentPricing = null;
+
+// 📡 الاستماع للتغييرات اللحظية
+onPricingChange((pricing) => {
+  _currentPricing = pricing;
+  updatePricingUI(pricing);
+});
+
+// 🎨 تحديث UI الأدمن بناءً على السعر الحالي
+function updatePricingUI(pricing) {
+  if (!pricing || !pricing.loaded) return;
+
+  // النموذج
+  const curPriceInput = document.getElementById('ppCurrentPrice');
+  const origPriceInput = document.getElementById('ppOriginalPrice');
+  const currencySelect = document.getElementById('ppCurrency');
+  const offerLabelInput = document.getElementById('ppOfferLabel');
+  const offerActiveCheck = document.getElementById('ppOfferActive');
+
+  if (curPriceInput && document.activeElement !== curPriceInput) {
+    curPriceInput.value = pricing.currentPrice;
+  }
+  if (origPriceInput && document.activeElement !== origPriceInput) {
+    origPriceInput.value = pricing.originalPrice;
+  }
+  if (currencySelect) currencySelect.value = pricing.currency;
+  if (offerLabelInput && document.activeElement !== offerLabelInput) {
+    offerLabelInput.value = pricing.offerLabel;
+  }
+  if (offerActiveCheck) offerActiveCheck.checked = pricing.isOfferActive;
+
+  // المعاينة
+  updatePreview();
+
+  // Status
+  const statusText = document.getElementById('ppStatusText');
+  if (statusText) statusText.textContent = pricing.isOfferActive ? '🎁 العرض مفعّل' : '⚪ بدون عرض';
+
+  // آخر تحديث
+  const lastUpdate = document.getElementById('ppLastUpdate');
+  if (lastUpdate && pricing.updatedAt) {
+    const date = pricing.updatedAt.toDate ? pricing.updatedAt.toDate() : new Date(pricing.updatedAt);
+    lastUpdate.textContent = date.toLocaleString('ar-SA');
+  }
+}
+
+// 👀 تحديث المعاينة الحية
+function updatePreview() {
+  const cur = parseFloat(document.getElementById('ppCurrentPrice').value) || 0;
+  const orig = parseFloat(document.getElementById('ppOriginalPrice').value) || 0;
+  const currency = document.getElementById('ppCurrency').value;
+  const offerLabel = document.getElementById('ppOfferLabel').value;
+  const offerActive = document.getElementById('ppOfferActive').checked;
+
+  document.getElementById('ppPrevCurrent').textContent = cur;
+  document.getElementById('ppPrevOriginal').textContent = orig;
+  document.getElementById('ppPrevCurrency').textContent = currency;
+
+  // حساب الخصم
+  let discount = 0;
+  if (orig > cur && orig > 0) {
+    discount = Math.round(((orig - cur) / orig) * 100);
+  }
+  document.getElementById('ppPrevDiscount').textContent = `-${discount}%`;
+  document.getElementById('ppCalcDiscount').textContent = `${discount}%`;
+
+  // العرض
+  document.getElementById('ppPrevOffer').textContent = `🔥 ${offerLabel}`;
+  
+  // إظهار/إخفاء حسب isOfferActive
+  document.getElementById('ppPrevOriginal').style.display = offerActive ? '' : 'none';
+  document.getElementById('ppPrevDiscount').style.display = offerActive ? '' : 'none';
+  document.getElementById('ppPrevOffer').style.display = offerActive ? '' : 'none';
+}
+
+// 🎨 ربط الـ events للمعاينة الحية
+['ppCurrentPrice', 'ppOriginalPrice', 'ppCurrency', 'ppOfferLabel', 'ppOfferActive'].forEach(id => {
+  const el = document.getElementById(id);
+  if (el) {
+    el.addEventListener('input', updatePreview);
+    el.addEventListener('change', updatePreview);
+  }
+});
+
+// 💾 حفظ الأسعار
+window.savePricing = async function() {
+  const btn = document.getElementById('ppSaveBtn');
+  const btnText = document.getElementById('ppSaveText');
+
+  const currentPrice = parseFloat(document.getElementById('ppCurrentPrice').value);
+  const originalPrice = parseFloat(document.getElementById('ppOriginalPrice').value);
+  const currency = document.getElementById('ppCurrency').value;
+  const offerLabel = document.getElementById('ppOfferLabel').value.trim();
+  const isOfferActive = document.getElementById('ppOfferActive').checked;
+
+  // التحقق من القيم
+  if (!currentPrice || currentPrice < 1) {
+    showToast('❌ السعر الحالي مطلوب ولا يقل عن 1', 'error');
+    return;
+  }
+  if (!originalPrice || originalPrice < 1) {
+    showToast('❌ السعر الأصلي مطلوب ولا يقل عن 1', 'error');
+    return;
+  }
+  if (isOfferActive && originalPrice <= currentPrice) {
+    if (!confirm('⚠️ السعر الأصلي يجب أن يكون أكبر من السعر الحالي لإظهار خصم. هل تريد المتابعة على أي حال؟')) {
+      return;
+    }
+  }
+  if (!offerLabel) {
+    showToast('❌ نص العرض مطلوب', 'error');
+    return;
+  }
+
+  // تأكيد
+  if (!confirm(`💎 هل تريد حفظ السعر الجديد؟\n\nالسعر الحالي: ${currentPrice} ${currency}\nالسعر الأصلي: ${originalPrice} ${currency}\nالعرض: ${isOfferActive ? '✅ مفعّل' : '❌ معطّل'}\n\n⚡ التغيير سينعكس فوراً على جميع زوار الموقع!`)) {
+    return;
+  }
+
+  btn.disabled = true;
+  btnText.textContent = '⏳ جاري الحفظ...';
+
+  try {
+    await updatePricing({
+      currentPrice,
+      originalPrice,
+      currency,
+      isOfferActive,
+      offerLabel,
+      offerEmoji: '🔥'
+    });
+    showToast(`✅ تم حفظ السعر الجديد: ${currentPrice} ${currency}`, 'success');
+    btnText.textContent = '✅ تم الحفظ بنجاح';
+    setTimeout(() => {
+      btnText.textContent = '💾 حفظ التغييرات';
+      btn.disabled = false;
+    }, 2000);
+  } catch (err) {
+    showToast('❌ خطأ: ' + err.message, 'error');
+    btnText.textContent = '💾 حفظ التغييرات';
+    btn.disabled = false;
+  }
+};
+
+// تحديث المعاينة الأولية
+setTimeout(updatePreview, 100);
 
 </script>
 

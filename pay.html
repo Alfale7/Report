@@ -1,581 +1,767 @@
 <!DOCTYPE html>
 <html lang="ar" dir="rtl">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<meta name="theme-color" content="#0a3447">
-<title>الدفع · منصة التقارير الذكية</title>
-<link href="https://fonts.googleapis.com/css2?family=Reem+Kufi:wght@400;600;700&family=Tajawal:wght@400;500;700;900&display=swap" rel="stylesheet">
-<style>
-*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
-html,body{width:100%;max-width:100%;overflow-x:hidden;}
-body{
-  font-family:'Tajawal','Cairo',sans-serif;
-  background:linear-gradient(135deg,#0a3447 0%,#0e4a63 40%,#134d68 100%);
-  min-height:100vh;
-  color:#fff;
-  padding:18px 14px 30px;
-  position:relative;
-}
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <title>إتمام الاشتراك · ksa2030</title>
+  <meta name="theme-color" content="#050a12">
 
-/* Background Orbs */
-.bg-orbs{position:absolute;inset:0;overflow:hidden;pointer-events:none;z-index:0;}
-.orb{position:absolute;border-radius:50%;filter:blur(80px);opacity:0.25;}
-.orb-1{width:300px;height:300px;background:#d4a657;top:-100px;right:-80px;}
-.orb-2{width:250px;height:250px;background:#16a34a;bottom:-50px;left:-80px;}
+  <!-- Favicon -->
+  <link rel="icon" type="image/png" sizes="48x48" href="favicon-48x48.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="favicon-32x32.png">
+  <link rel="apple-touch-icon" sizes="180x180" href="apple-touch-icon.png">
 
-.container{max-width:520px;margin:0 auto;position:relative;z-index:1;}
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Aref+Ruqaa:wght@400;700&family=Reem+Kufi:wght@400;500;600;700&family=Tajawal:wght@400;500;700;900&display=swap" rel="stylesheet">
 
-/* Back */
-.back{
-  display:inline-flex;
-  align-items:center;
-  gap:6px;
-  color:#fff;
-  text-decoration:none;
-  font-weight:900;
-  font-size:0.86rem;
-  margin-bottom:16px;
-  padding:8px 14px;
-  background:rgba(255,255,255,0.1);
-  border-radius:99px;
-  transition:background 0.2s;
-}
-.back:hover{background:rgba(255,255,255,0.18);}
+  <!-- 💳 Moyasar Payment Form (يتم تفعيله لما تجي الـ API Keys) -->
+  <link rel="stylesheet" href="https://cdn.moyasar.com/mpf/1.13.0/moyasar.css" />
+  <script src="https://cdn.moyasar.com/mpf/1.13.0/moyasar.js"></script>
 
-/* Price Card */
-.price-card{
-  background:linear-gradient(135deg,#fff8e1,#fff);
-  color:#1a3a4e;
-  border-radius:24px;
-  padding:24px 22px;
-  margin-bottom:18px;
-  text-align:center;
-  box-shadow:0 24px 60px rgba(0,0,0,0.4);
-  position:relative;
-  overflow:hidden;
-  border:2px solid rgba(212,166,87,0.4);
-}
-.price-card::before{
-  content:"";
-  position:absolute;
-  top:0;left:0;right:0;
-  height:5px;
-  background:linear-gradient(90deg,#d4a657,#fbbf24,#d4a657);
-}
-.pc-badge{
-  display:inline-block;
-  background:linear-gradient(135deg,#dc2626,#f59e0b);
-  color:#fff;
-  padding:5px 14px;
-  border-radius:99px;
-  font-size:0.74rem;
-  font-weight:900;
-  margin-bottom:12px;
-  box-shadow:0 6px 16px rgba(220,38,38,0.4);
-  animation:pulse 2s ease-in-out infinite;
-}
-@keyframes pulse{0%,100%{transform:scale(1);}50%{transform:scale(1.05);}}
-.pc-icon{font-size:2.6rem;margin-bottom:6px;display:inline-block;}
-.pc-title{
-  font-family:'Reem Kufi',sans-serif;
-  font-size:1.2rem;
-  font-weight:700;
-  color:#1a3a4e;
-  margin-bottom:4px;
-}
-.pc-price{
-  display:flex;
-  align-items:baseline;
-  justify-content:center;
-  gap:5px;
-  margin:10px 0 4px;
-}
-.pc-amount{
-  font-family:'Reem Kufi',sans-serif;
-  font-size:3.8rem;
-  font-weight:900;
-  background:linear-gradient(135deg,#d4a657,#b8923d);
-  -webkit-background-clip:text;
-  -webkit-text-fill-color:transparent;
-  background-clip:text;
-  line-height:1;
-}
-.pc-cur{
-  font-size:1.3rem;
-  font-weight:800;
-  color:#1e6b8a;
-}
-.pc-lifetime{
-  display:inline-block;
-  background:linear-gradient(135deg,#16a34a,#15803d);
-  color:#fff;
-  padding:5px 14px;
-  border-radius:99px;
-  font-size:0.78rem;
-  font-weight:900;
-}
+  <style>
+    /* ═══════════════════════════════════════════════════════
+       🎨 ألوان index.html بالضبط (هوية موحدة)
+       ═══════════════════════════════════════════════════════ */
+    :root {
+      --bg-deep: #050a12;
+      --bg-mid: #0a1620;
+      --green: #4caf50;
+      --green-dim: #2a9d8f;
+      --blue: #3b6db5;
+      --gold: #e8c547;
+      --gold-deep: #d4a657;
+      --teal: #1e6b8a;
+      --teal-bright: #2a8aab;
+      --teal-light: #3aa8d0;
+      --text-dim: rgba(255, 255, 255, 0.7);
+      --text-mute: rgba(255, 255, 255, 0.5);
+    }
 
-/* Steps */
-.steps-title{
-  font-family:'Reem Kufi',sans-serif;
-  font-size:1.1rem;
-  text-align:center;
-  margin-bottom:14px;
-  color:#fff;
-}
-.steps-title span{
-  display:inline-block;
-  background:linear-gradient(135deg,#d4a657,#b8923d);
-  color:#fff;
-  width:28px;
-  height:28px;
-  border-radius:50%;
-  font-size:0.86rem;
-  font-weight:900;
-  margin-left:6px;
-  line-height:28px;
-}
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    html, body {
+      font-family: 'Tajawal', 'Tahoma', 'Arial', sans-serif;
+      min-height: 100vh;
+      width: 100%;
+      overflow-x: hidden;
+      background: var(--bg-deep);
+      color: #fff;
+      -webkit-font-smoothing: antialiased;
+    }
 
-/* Payment Card */
-.pay-card{
-  background:#fff;
-  color:#1a3a4e;
-  border-radius:20px;
-  padding:22px 20px;
-  margin-bottom:14px;
-  box-shadow:0 14px 36px rgba(0,0,0,0.25);
-  position:relative;
-  overflow:hidden;
-  border:1.5px solid transparent;
-  transition:all 0.3s;
-}
-.pay-card:hover{border-color:#1e6b8a;}
-.pay-card::before{
-  content:"";
-  position:absolute;
-  top:0;left:0;right:0;
-  height:4px;
-  background:linear-gradient(90deg,#1e6b8a,#2a8aab);
-}
-.pc-header{
-  display:flex;
-  align-items:center;
-  gap:12px;
-  margin-bottom:14px;
-}
-.pc-step{
-  width:36px;
-  height:36px;
-  background:linear-gradient(135deg,#1e6b8a,#2a8aab);
-  color:#fff;
-  border-radius:10px;
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  font-weight:900;
-  font-size:1rem;
-  flex-shrink:0;
-  box-shadow:0 6px 14px rgba(30,107,138,0.4);
-}
-.pc-title2{
-  font-family:'Reem Kufi',sans-serif;
-  font-size:1rem;
-  font-weight:700;
-  color:#1a3a4e;
-  line-height:1.3;
-}
-.pc-sub{
-  font-size:0.78rem;
-  color:#5a7080;
-  font-weight:700;
-  margin-top:2px;
-}
+    /* ═══════════════════════════════════════════════════════
+       🌌 الخلفية - نفس index.html
+       ═══════════════════════════════════════════════════════ */
+    .bg-layer {
+      position: fixed;
+      inset: 0;
+      z-index: 0;
+      background:
+        radial-gradient(ellipse at top right, rgba(76, 175, 80, 0.18) 0%, transparent 50%),
+        radial-gradient(ellipse at top left, rgba(59, 109, 181, 0.15) 0%, transparent 50%),
+        radial-gradient(ellipse at bottom center, rgba(232, 197, 71, 0.08) 0%, transparent 60%),
+        linear-gradient(180deg, #050a12 0%, #0a1620 50%, #050a12 100%);
+    }
+    .bg-grid {
+      position: fixed;
+      inset: 0;
+      z-index: 0;
+      background-image:
+        linear-gradient(rgba(255, 255, 255, 0.02) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255, 255, 255, 0.02) 1px, transparent 1px);
+      background-size: 40px 40px;
+      pointer-events: none;
+    }
+    .orb {
+      position: fixed;
+      border-radius: 50%;
+      filter: blur(60px);
+      pointer-events: none;
+      z-index: 0;
+      opacity: 0.5;
+      animation: orbDrift 24s ease-in-out infinite;
+    }
+    .orb-1 { top: 5%; right: -10%; width: 280px; height: 280px; background: radial-gradient(circle, rgba(76, 175, 80, 0.4), transparent); }
+    .orb-2 { top: 30%; left: -15%; width: 320px; height: 320px; background: radial-gradient(circle, rgba(59, 109, 181, 0.35), transparent); animation-delay: -8s; }
+    .orb-3 { bottom: 10%; right: 30%; width: 240px; height: 240px; background: radial-gradient(circle, rgba(232, 197, 71, 0.25), transparent); animation-delay: -16s; }
+    @keyframes orbDrift {
+      0%, 100% { transform: translate(0, 0) scale(1); opacity: 0.5; }
+      50% { transform: translate(20px, -25px) scale(1.05); opacity: 0.65; }
+    }
 
-.bank-info{
-  background:linear-gradient(135deg,#f0f9ff,#f8fafc);
-  border:1.5px solid #e0f2fe;
-  border-radius:14px;
-  padding:14px 16px;
-  margin-bottom:10px;
-}
-.bank-row{
-  display:flex;
-  align-items:center;
-  justify-content:space-between;
-  gap:8px;
-  padding:8px 0;
-  border-bottom:1px solid #e0f2fe;
-}
-.bank-row:last-child{border-bottom:none;}
-.br-label{
-  font-size:0.76rem;
-  color:#5a7080;
-  font-weight:800;
-}
-.br-value{
-  font-size:0.92rem;
-  color:#1a3a4e;
-  font-weight:900;
-  text-align:left;
-  font-family:'Tajawal',monospace;
-  letter-spacing:0.5px;
-  direction:ltr;
-}
+    /* ═══════════════════════════════════════════════════════
+       🎯 الحاوية المركزية
+       ═══════════════════════════════════════════════════════ */
+    .wrap {
+      position: relative;
+      z-index: 1;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 24px 14px 40px;
+    }
 
-.copy-btn{
-  width:100%;
-  background:linear-gradient(135deg,#1e6b8a,#2a8aab);
-  color:#fff;
-  border:none;
-  padding:14px;
-  border-radius:13px;
-  font-family:inherit;
-  font-size:0.92rem;
-  font-weight:900;
-  cursor:pointer;
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  gap:8px;
-  transition:all 0.2s;
-  box-shadow:0 8px 20px rgba(30,107,138,0.35);
-  margin-top:10px;
-}
-.copy-btn:hover{
-  transform:translateY(-2px);
-  box-shadow:0 12px 26px rgba(30,107,138,0.45);
-}
-.copy-btn:active{transform:translateY(0);}
-.copy-btn.copied{
-  background:linear-gradient(135deg,#16a34a,#15803d);
-  box-shadow:0 8px 20px rgba(22,163,74,0.4);
-}
+    .pay-card {
+      position: relative;
+      width: 100%;
+      max-width: 480px;
+      background: linear-gradient(145deg, rgba(15, 41, 66, 0.92), rgba(10, 22, 32, 0.85));
+      backdrop-filter: blur(28px) saturate(180%);
+      -webkit-backdrop-filter: blur(28px) saturate(180%);
+      border: 1px solid rgba(232, 197, 71, 0.2);
+      border-radius: 28px;
+      padding: 36px 26px 30px;
+      box-shadow:
+        0 28px 80px rgba(0, 0, 0, 0.6),
+        inset 0 1px 0 rgba(255, 255, 255, 0.08);
+    }
 
-/* Amount Card */
-.amount-card{
-  background:linear-gradient(135deg,rgba(212,166,87,0.15),rgba(245,158,11,0.05));
-  border:1.5px dashed rgba(212,166,87,0.5);
-  border-radius:14px;
-  padding:14px;
-  margin:10px 0 14px;
-  text-align:center;
-}
-.amount-card .label{
-  font-size:0.78rem;
-  color:#7c2d12;
-  font-weight:800;
-  margin-bottom:4px;
-}
-.amount-card .value{
-  font-family:'Reem Kufi',sans-serif;
-  font-size:1.8rem;
-  font-weight:900;
-  color:#b8923d;
-  line-height:1;
-}
+    /* شارة "اشتراك مدى الحياة" */
+    .top-pill {
+      position: absolute;
+      top: -16px;
+      left: 50%;
+      transform: translateX(-50%);
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background: linear-gradient(135deg, #e8c547, #d4a657);
+      color: #050a12;
+      padding: 8px 22px;
+      border-radius: 99px;
+      font: 800 0.72rem 'Reem Kufi', sans-serif;
+      letter-spacing: 1.5px;
+      box-shadow: 0 8px 24px rgba(232, 197, 71, 0.5);
+      white-space: nowrap;
+    }
+    .top-pill::before {
+      content: '💎';
+      font-size: 0.85rem;
+    }
 
-/* WhatsApp Card */
-.wa-card{
-  background:linear-gradient(135deg,#25d366,#128c7e);
-  color:#fff;
-  border-radius:20px;
-  padding:22px 20px;
-  margin-bottom:14px;
-  box-shadow:0 14px 36px rgba(37,211,102,0.4);
-  position:relative;
-  overflow:hidden;
-}
-.wa-card::before{
-  content:"";
-  position:absolute;
-  top:-30px;
-  left:-30px;
-  width:120px;
-  height:120px;
-  background:rgba(255,255,255,0.08);
-  border-radius:50%;
-}
-.wa-text{
-  position:relative;
-  z-index:1;
-  text-align:center;
-  margin-bottom:12px;
-}
-.wa-title{
-  font-family:'Reem Kufi',sans-serif;
-  font-size:1.1rem;
-  font-weight:700;
-  margin-bottom:4px;
-}
-.wa-sub{
-  font-size:0.82rem;
-  opacity:0.95;
-  font-weight:700;
-}
-.wa-btn{
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  gap:10px;
-  width:100%;
-  padding:15px;
-  background:#fff;
-  color:#128c7e;
-  border:none;
-  border-radius:13px;
-  font-family:inherit;
-  font-size:1rem;
-  font-weight:900;
-  cursor:pointer;
-  text-decoration:none;
-  box-shadow:0 8px 20px rgba(0,0,0,0.2);
-  transition:transform 0.2s;
-  position:relative;
-  z-index:1;
-}
-.wa-btn:hover{transform:translateY(-2px);}
-.wa-btn .icon{font-size:1.4rem;}
+    /* ═══════════════════════════════════════════════════════
+       🎨 Brand Mark
+       ═══════════════════════════════════════════════════════ */
+    .brand {
+      text-align: center;
+      margin-bottom: 22px;
+    }
+    .brand-mark {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 64px;
+      height: 64px;
+      border-radius: 20px;
+      background: linear-gradient(135deg, #4caf50 0%, #2a9d8f 50%, #1a7a8a 100%);
+      box-shadow:
+        0 12px 32px rgba(76, 175, 80, 0.4),
+        inset 0 1px 0 rgba(255, 255, 255, 0.3);
+      margin-bottom: 14px;
+    }
+    .brand-icon { font-size: 1.7rem; }
+    .brand-name {
+      font: 700 1.6rem 'Aref Ruqaa', serif;
+      background: linear-gradient(135deg, #fff 0%, #e8c547 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      letter-spacing: -0.5px;
+    }
+    .brand-tagline {
+      font: 600 0.7rem 'Reem Kufi', sans-serif;
+      color: #e8c547;
+      letter-spacing: 3px;
+      text-transform: uppercase;
+      opacity: 0.85;
+      margin-top: 3px;
+    }
 
-/* Trust badges */
-.trust-row{
-  display:flex;
-  gap:8px;
-  margin-top:18px;
-}
-.trust-badge{
-  flex:1;
-  background:rgba(255,255,255,0.06);
-  border:1px solid rgba(255,255,255,0.12);
-  border-radius:12px;
-  padding:10px;
-  text-align:center;
-  font-size:0.72rem;
-  font-weight:800;
-  color:rgba(255,255,255,0.85);
-}
-.trust-badge .ic{font-size:1.4rem;margin-bottom:4px;display:block;}
+    /* ═══════════════════════════════════════════════════════
+       💎 ملخص الاشتراك
+       ═══════════════════════════════════════════════════════ */
+    .order-summary {
+      background: linear-gradient(135deg, rgba(232, 197, 71, 0.1), rgba(30, 107, 138, 0.08));
+      border: 1px solid rgba(232, 197, 71, 0.25);
+      border-radius: 18px;
+      padding: 18px 20px;
+      margin-bottom: 22px;
+      position: relative;
+      overflow: hidden;
+    }
+    .order-summary::before {
+      content: '';
+      position: absolute;
+      top: 0; right: 0;
+      width: 100px; height: 100px;
+      background: radial-gradient(circle, rgba(232, 197, 71, 0.15), transparent);
+      pointer-events: none;
+    }
+    .order-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 12px;
+      position: relative;
+      z-index: 1;
+    }
+    .order-row:last-of-type { margin-bottom: 0; }
+    .order-label {
+      font: 600 0.85rem 'Tajawal', sans-serif;
+      color: var(--text-dim);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .order-value {
+      font: 800 0.95rem 'Tajawal', sans-serif;
+      color: #fff;
+    }
+    .order-divider {
+      height: 1px;
+      background: linear-gradient(90deg, transparent, rgba(232, 197, 71, 0.3), transparent);
+      margin: 12px 0;
+    }
+    .order-total {
+      display: flex;
+      justify-content: space-between;
+      align-items: baseline;
+      padding-top: 6px;
+    }
+    .order-total-label {
+      font: 700 0.85rem 'Reem Kufi', sans-serif;
+      color: #e8c547;
+      letter-spacing: 1px;
+    }
+    .order-total-amount {
+      font: 900 1.8rem 'Tajawal', sans-serif;
+      background: linear-gradient(135deg, #fff 0%, #e8c547 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+    .order-total-currency {
+      font-size: 0.85rem;
+      color: var(--text-dim);
+      margin-right: 4px;
+    }
+    .original-price {
+      text-decoration: line-through;
+      color: rgba(255, 255, 255, 0.4);
+      font-size: 0.85rem;
+      margin-left: 8px;
+    }
+    .discount-badge {
+      display: inline-block;
+      background: linear-gradient(135deg, #dc2626, #f59e0b);
+      color: #fff;
+      padding: 2px 8px;
+      border-radius: 99px;
+      font: 800 0.65rem 'Reem Kufi', sans-serif;
+      margin-right: 6px;
+    }
 
-/* Toast */
-.toast{
-  position:fixed;
-  top:20px;
-  left:50%;
-  transform:translateX(-50%);
-  background:linear-gradient(135deg,#16a34a,#15803d);
-  color:#fff;
-  padding:14px 22px;
-  border-radius:99px;
-  font-weight:900;
-  font-size:0.88rem;
-  box-shadow:0 18px 40px rgba(22,163,74,0.5);
-  z-index:9999;
-  opacity:0;
-  pointer-events:none;
-  transition:all 0.3s;
-  display:flex;
-  align-items:center;
-  gap:8px;
-}
-.toast.show{opacity:1;transform:translateX(-50%) translateY(0);}
-.toast.show.hide{opacity:0;transform:translateX(-50%) translateY(-20px);}
+    /* ═══════════════════════════════════════════════════════
+       ✨ المزايا
+       ═══════════════════════════════════════════════════════ */
+    .features-list {
+      list-style: none;
+      margin-bottom: 22px;
+    }
+    .feature-item {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 8px 0;
+      font: 600 0.85rem 'Tajawal', sans-serif;
+      color: var(--text-dim);
+    }
+    .feature-item .check {
+      width: 22px;
+      height: 22px;
+      flex-shrink: 0;
+      background: linear-gradient(135deg, #4caf50, #2a9d8f);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #fff;
+      font-size: 0.7rem;
+      font-weight: 900;
+      box-shadow: 0 2px 8px rgba(76, 175, 80, 0.4);
+    }
 
-@media (max-width:480px){
-  .price-card{padding:20px 18px;}
-  .pc-amount{font-size:3rem;}
-  .pay-card{padding:18px 16px;}
-  .br-value{font-size:0.84rem;}
-  .wa-btn{font-size:0.92rem;}
-}
-</style>
+    /* ═══════════════════════════════════════════════════════
+       💳 Moyasar Form Wrapper
+       ═══════════════════════════════════════════════════════ */
+    .payment-section {
+      background: rgba(0, 0, 0, 0.25);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-radius: 18px;
+      padding: 18px;
+      margin-bottom: 18px;
+    }
+    .payment-title {
+      font: 700 1rem 'Reem Kufi', sans-serif;
+      color: #fff;
+      margin-bottom: 14px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .payment-title::before {
+      content: '💳';
+      font-size: 1.1rem;
+    }
+
+    /* Moyasar form custom styling */
+    #moyasar-form {
+      min-height: 100px;
+    }
+    .mysr-form {
+      border-radius: 12px !important;
+    }
+
+    /* ═══════════════════════════════════════════════════════
+       🔒 شارات الثقة
+       ═══════════════════════════════════════════════════════ */
+    .trust-badges {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 14px;
+      flex-wrap: wrap;
+      margin: 16px 0;
+      padding: 12px;
+      background: rgba(76, 175, 80, 0.08);
+      border: 1px solid rgba(76, 175, 80, 0.2);
+      border-radius: 14px;
+    }
+    .trust-badge {
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      font: 700 0.72rem 'Tajawal', sans-serif;
+      color: #86efac;
+    }
+    .trust-badge .ic { font-size: 0.9rem; }
+
+    /* ═══════════════════════════════════════════════════════
+       💳 شعارات طرق الدفع
+       ═══════════════════════════════════════════════════════ */
+    .payment-methods {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      flex-wrap: wrap;
+      margin: 14px 0;
+      padding: 10px;
+      background: rgba(255, 255, 255, 0.04);
+      border-radius: 12px;
+    }
+    .pm-icon {
+      background: #fff;
+      border-radius: 6px;
+      padding: 5px 10px;
+      font: 800 0.7rem 'Tajawal', sans-serif;
+      color: #1f1f1f;
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+    }
+    .pm-icon.visa { color: #1a1f71; }
+    .pm-icon.mc { color: #ea001b; }
+    .pm-icon.mada { background: linear-gradient(135deg, #000, #1a1a1a); color: #fff; }
+    .pm-icon.apple { background: #000; color: #fff; }
+    .pm-icon.stc { background: linear-gradient(135deg, #4b1389, #6b1ec4); color: #fff; }
+
+    /* ═══════════════════════════════════════════════════════
+       🎯 الزر الاحتياطي (واتس - مؤقت حتى الموافقة)
+       ═══════════════════════════════════════════════════════ */
+    .wa-fallback {
+      display: block;
+      width: 100%;
+      padding: 16px 22px;
+      background: linear-gradient(135deg, #25d366 0%, #128c7e 100%);
+      color: #fff;
+      border: none;
+      border-radius: 13px;
+      font: 900 1rem 'Tajawal', sans-serif;
+      cursor: pointer;
+      text-align: center;
+      text-decoration: none;
+      transition: all 0.25s ease;
+      box-shadow: 0 8px 24px rgba(37, 211, 102, 0.4);
+      margin-top: 10px;
+    }
+    .wa-fallback:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 12px 32px rgba(37, 211, 102, 0.55);
+    }
+    .wa-fallback .ic { font-size: 1.2rem; margin-left: 6px; }
+
+    /* ═══════════════════════════════════════════════════════
+       📢 إشعار مؤقت (حتى تفعيل Moyasar)
+       ═══════════════════════════════════════════════════════ */
+    .notice-banner {
+      background: linear-gradient(135deg, rgba(232, 197, 71, 0.15), rgba(212, 166, 87, 0.1));
+      border: 1px solid rgba(232, 197, 71, 0.35);
+      border-radius: 14px;
+      padding: 14px 16px;
+      margin-bottom: 16px;
+      display: flex;
+      align-items: flex-start;
+      gap: 10px;
+    }
+    .notice-banner .ic {
+      font-size: 1.3rem;
+      flex-shrink: 0;
+      line-height: 1.3;
+    }
+    .notice-banner .text {
+      font: 600 0.85rem 'Tajawal', sans-serif;
+      color: rgba(255, 255, 255, 0.92);
+      line-height: 1.5;
+    }
+    .notice-banner .text b {
+      color: #e8c547;
+      font-weight: 800;
+    }
+
+    /* الفوتر */
+    .pay-footer {
+      text-align: center;
+      margin-top: 22px;
+      padding-top: 18px;
+      border-top: 1px solid rgba(255, 255, 255, 0.06);
+      color: var(--text-mute);
+      font: 500 0.78rem 'Tajawal', sans-serif;
+      line-height: 1.7;
+    }
+    .pay-footer .home-link {
+      color: #3aa8d0;
+      text-decoration: none;
+      font-weight: 700;
+      transition: color 0.2s;
+    }
+    .pay-footer .home-link:hover { color: #e8c547; }
+
+    /* Loading state */
+    .loading-state {
+      text-align: center;
+      padding: 40px 20px;
+      color: var(--text-dim);
+    }
+    .loading-spinner {
+      width: 40px;
+      height: 40px;
+      margin: 0 auto 14px;
+      border: 3px solid rgba(232, 197, 71, 0.2);
+      border-top-color: #e8c547;
+      border-radius: 50%;
+      animation: spin 0.8s linear infinite;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    /* الموبايل */
+    @media (max-width: 480px) {
+      .wrap { padding: 18px 12px 30px; align-items: flex-start; padding-top: 26px; }
+      .pay-card { padding: 30px 20px 24px; border-radius: 22px; }
+      .brand-mark { width: 56px; height: 56px; border-radius: 18px; margin-bottom: 12px; }
+      .brand-icon { font-size: 1.5rem; }
+      .brand-name { font-size: 1.4rem; }
+      .order-total-amount { font-size: 1.5rem; }
+      .top-pill { font-size: 0.66rem; padding: 7px 16px; }
+    }
+
+    @supports (padding: max(0px)) {
+      .wrap { padding-bottom: max(30px, env(safe-area-inset-bottom)); }
+    }
+  </style>
 </head>
 <body>
 
-<div class="bg-orbs">
+  <!-- 🌌 الخلفية -->
+  <div class="bg-layer"></div>
+  <div class="bg-grid"></div>
   <div class="orb orb-1"></div>
   <div class="orb orb-2"></div>
-</div>
+  <div class="orb orb-3"></div>
 
-<div class="toast" id="toast">
-  <span>✅</span>
-  <span id="toastMsg">تم النسخ!</span>
-</div>
+  <div class="wrap">
+    <div class="pay-card">
 
-<div class="container">
-  <a href="index.html" class="back">← الرجوع للرئيسية</a>
+      <!-- شارة علوية -->
+      <div class="top-pill">اشتراك مدى الحياة</div>
 
-  <!-- بطاقة السعر -->
-  <div class="price-card">
-    <span class="pc-badge">🔥 عرض إطلاق محدود</span>
-    <div class="pc-icon">💎</div>
-    <div class="pc-title">منصة التقارير الذكية</div>
-    <div class="pc-price">
-      <span class="pc-amount">30</span>
-      <span class="pc-cur">ريال</span>
+      <!-- Brand -->
+      <div class="brand">
+        <div class="brand-mark">
+          <span class="brand-icon">📚</span>
+        </div>
+        <h1 class="brand-name">ksa2030</h1>
+        <div class="brand-tagline">إتمام الاشتراك</div>
+      </div>
+
+      <!-- 📢 إشعار مؤقت (يُحذف لما يجي Moyasar) -->
+      <div class="notice-banner" id="tempNotice">
+        <span class="ic">✨</span>
+        <span class="text">
+          نوفر حالياً <b>الدفع المباشر عبر الواتساب</b> ⚡<br>
+          استجابة فورية خلال دقائق · تفعيل خلال ساعة
+        </span>
+      </div>
+
+      <!-- 💎 ملخص الاشتراك -->
+      <div class="order-summary">
+        <div class="order-row">
+          <span class="order-label">
+            <span>📚</span>
+            <span>منصة التقارير الذكية</span>
+          </span>
+          <span class="order-value">21 تقرير</span>
+        </div>
+        <div class="order-row">
+          <span class="order-label">
+            <span>⏱️</span>
+            <span>المدة</span>
+          </span>
+          <span class="order-value">مدى الحياة</span>
+        </div>
+        <div class="order-row">
+          <span class="order-label">
+            <span>🔄</span>
+            <span>التحديثات</span>
+          </span>
+          <span class="order-value">مجانية ودائمة</span>
+        </div>
+
+        <div class="order-divider"></div>
+
+        <div class="order-total">
+          <span class="order-total-label">المجموع</span>
+          <span>
+            <span class="discount-badge" data-price="offer-wrap">-<span data-price="discount">50</span>%</span>
+            <span class="original-price" data-price="original">99</span>
+            <span class="order-total-amount" data-price="current">49</span>
+            <span class="order-total-currency" data-price="currency">ريال</span>
+          </span>
+        </div>
+      </div>
+
+      <!-- ✨ المزايا -->
+      <ul class="features-list">
+        <li class="feature-item">
+          <span class="check">✓</span>
+          <span>وصول كامل لجميع التقارير الـ 21</span>
+        </li>
+        <li class="feature-item">
+          <span class="check">✓</span>
+          <span>تنزيل غير محدود (PDF + صورة + مشاركة)</span>
+        </li>
+        <li class="feature-item">
+          <span class="check">✓</span>
+          <span>جميع الإضافات والتحديثات القادمة مجاناً</span>
+        </li>
+        <li class="feature-item">
+          <span class="check">✓</span>
+          <span>دعم فني مباشر عبر الواتساب</span>
+        </li>
+      </ul>
+
+      <!-- 🔒 شارات الثقة -->
+      <div class="trust-badges">
+        <div class="trust-badge"><span class="ic">🔒</span> دفع آمن 100%</div>
+        <div class="trust-badge"><span class="ic">🛡️</span> ضمان استرداد 7 أيام</div>
+        <div class="trust-badge"><span class="ic">⚡</span> تفعيل فوري</div>
+      </div>
+
+      <!-- 💳 طرق الدفع المتاحة (تظهر لما يفعّل Moyasar) -->
+      <div class="payment-methods" id="paymentMethods" style="display:none;">
+        <span class="pm-icon mada">مدى</span>
+        <span class="pm-icon visa">VISA</span>
+        <span class="pm-icon mc">MC</span>
+        <span class="pm-icon apple">  Pay</span>
+        <span class="pm-icon stc">STC Pay</span>
+      </div>
+
+      <!-- 💳 Moyasar Payment Form (يظهر لما يكون مفعّل) -->
+      <div class="payment-section" id="moyasarSection" style="display:none;">
+        <div class="payment-title">اختر طريقة الدفع</div>
+        <div id="moyasar-form">
+          <div class="loading-state">
+            <div class="loading-spinner"></div>
+            <div>جاري تحميل نموذج الدفع...</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 🟢 زر الواتس (الأساسي حالياً) -->
+      <a href="https://wa.me/966552052867?text=السلام%20عليكم%2C%20أرغب%20في%20الاشتراك%20بمنصة%20ksa2030%20%2830%20ريال%20مدى%20الحياة%29%20💎"
+         class="wa-fallback"
+         id="waButton"
+         target="_blank"
+         rel="noopener">
+        <span class="ic">📱</span>
+        <span>اشترك الآن عبر الواتساب</span>
+      </a>
+
+      <!-- Footer -->
+      <div class="pay-footer">
+        صنع بـ ❤️ على
+        <a href="index.html" class="home-link">ksa2030.one</a>
+      </div>
+
     </div>
-    <div class="pc-lifetime">💎 مدى الحياة · دفعة واحدة</div>
   </div>
 
-  <!-- الخطوات -->
-  <div class="steps-title">طريقة الدفع البسيطة 👇</div>
+  <!-- ═══════════════════════════════════════════════════════
+       📜 JavaScript - تكامل Moyasar (جاهز للتفعيل)
+       ═══════════════════════════════════════════════════════ -->
+  <script type="module">
+  import { onUserChange, onPricingChange, getPricing } from './firebase-config.js?v=4';
 
-  <!-- البطاقة 1: تحويل بنكي -->
-  <div class="pay-card">
-    <div class="pc-header">
-      <div class="pc-step">1</div>
-      <div>
-        <div class="pc-title2">حوّل المبلغ على الحساب البنكي</div>
-        <div class="pc-sub">🏦 بنك الراجحي - تحويل آمن وسريع</div>
-      </div>
-    </div>
+  // ⚙️ إعدادات Moyasar - حدّث هنا لما يصلك المفتاح
+  const MOYASAR_CONFIG = {
+    // ❌ غير مفعّل حالياً - لما تصل API Keys غيّر إلى true
+    enabled: false,
 
-    <!-- المبلغ -->
-    <div class="amount-card">
-      <div class="label">💰 المبلغ المطلوب</div>
-      <div class="value">30 ريال</div>
-    </div>
+    // 🔑 من Moyasar Dashboard (تحت Settings → API Keys)
+    publishable_key: 'pk_test_XXXXXXXXXXXXXXXXX', // ⚠️ بدّل هذا
 
-    <!-- بيانات الحساب -->
-    <div class="bank-info">
-      <div class="bank-row">
-        <span class="br-label">🏦 البنك</span>
-        <span class="br-value" style="font-family:inherit;direction:rtl;">الراجحي</span>
-      </div>
-      <div class="bank-row">
-        <span class="br-label">📛 الاسم</span>
-        <span class="br-value" style="font-family:inherit;direction:rtl;">صلاح الفالح</span>
-      </div>
-      <div class="bank-row">
-        <span class="br-label">💳 الآيبان</span>
-        <span class="br-value" id="ibanText">SA2680000154608010376006</span>
-      </div>
-    </div>
+    // العملة
+    currency: 'SAR',
 
-    <button class="copy-btn" id="copyBtn" onclick="copyIBAN()">
-      <span>📋</span>
-      <span>نسخ رقم الآيبان</span>
-    </button>
-  </div>
+    // وصف العملية
+    description: 'اشتراك مدى الحياة - منصة ksa2030',
 
-  <!-- البطاقة 2: إرسال الإيصال -->
-  <div class="wa-card">
-    <div class="pc-header" style="margin-bottom:14px;">
-      <div class="pc-step" style="background:rgba(255,255,255,0.25);">2</div>
-      <div class="wa-text" style="text-align:right;margin:0;">
-        <div class="wa-title">✅ بعد التحويل، أرسل الإيصال</div>
-        <div class="wa-sub">سيتم تفعيل اشتراكك خلال 1-3 دقائق</div>
-      </div>
-    </div>
+    // طرق الدفع المتاحة
+    methods: ['creditcard', 'applepay', 'stcpay'],
 
-    <a href="#" id="waBtn" class="wa-btn">
-      <span class="icon">💬</span>
-      <span>إرسال الإيصال على الواتساب</span>
-    </a>
-  </div>
+    // ✅ Callback URL (بعد الدفع الناجح)
+    callback_url: 'https://ksa2030.one/success.html',
+  };
 
-  <!-- شارات الثقة -->
-  <div class="trust-row">
-    <div class="trust-badge">
-      <span class="ic">⚡</span>
-      <span>تفعيل خلال<br>1-3 دقائق</span>
-    </div>
-    <div class="trust-badge">
-      <span class="ic">🛡️</span>
-      <span>ضمان استرداد<br>7 أيام</span>
-    </div>
-    <div class="trust-badge">
-      <span class="ic">🔒</span>
-      <span>دفع آمن<br>100%</span>
-    </div>
-  </div>
-</div>
+  // ═══ التحقق من حالة المستخدم ═══
+  let _user = null;
+  let _pricing = getPricing();
 
-<script type="module">
-import { onUserChange, isLifetime } from './firebase-config.js';
+  onUserChange((data) => {
+    _user = data?.user;
+    updateWhatsAppLink();
+  });
 
-let _userEmail = '';
-let _userName = '';
-let _userId = '';
+  // ═══ مراقبة تغييرات السعر اللحظية ═══
+  onPricingChange((pricing) => {
+    _pricing = pricing;
+    updateWhatsAppLink();
+    // لو Moyasar مفعّل، أعد التهيئة بالسعر الجديد
+    if (MOYASAR_CONFIG.enabled && document.getElementById('moyasarSection').style.display === 'block') {
+      initMoyasar();
+    }
+  });
 
-// متابعة حالة المستخدم
-onUserChange((data) => {
-  if (data?.user) {
-    _userEmail = data.user.email || '';
-    _userName = data.profile?.displayName || _userEmail.split('@')[0] || 'عميل جديد';
-    _userId = data.user.uid.substring(0, 8);
+  // ═══ تحديث رابط الواتساب باسم المستخدم والسعر الحالي ═══
+  function updateWhatsAppLink() {
+    const waBtn = document.getElementById('waButton');
+    if (!waBtn) return;
 
-    // إذا كان مشترك Lifetime، أبلغه
-    if (isLifetime(data.profile)) {
-      alert('💎 أنت مشترك Lifetime بالفعل!\nاستمتع بكل القوالب.');
-      window.location.href = 'index.html';
+    const price = _pricing.currentPrice || 49;
+    const currency = _pricing.currency || 'ريال';
+
+    let text = `السلام عليكم، أرغب في الاشتراك بمنصة ksa2030 (${price} ${currency} مدى الحياة) 💎`;
+
+    if (_user?.email) {
+      text += `\n\nبريدي: ${_user.email}`;
+    }
+
+    waBtn.href = `https://wa.me/966552052867?text=${encodeURIComponent(text)}`;
+  }
+
+  // ═══ تفعيل Moyasar (لما يكون جاهز) ═══
+  function initMoyasar() {
+    if (!MOYASAR_CONFIG.enabled) {
+      console.log('⏳ Moyasar غير مفعّل حالياً - استخدم WhatsApp');
       return;
     }
 
-    updateWhatsAppLink();
-  } else {
-    updateWhatsAppLink();
+    // إخفاء الإشعار المؤقت
+    const notice = document.getElementById('tempNotice');
+    if (notice) notice.style.display = 'none';
+
+    // إخفاء زر الواتس
+    const waBtn = document.getElementById('waButton');
+    if (waBtn) waBtn.style.display = 'none';
+
+    // إظهار قسم الدفع
+    document.getElementById('moyasarSection').style.display = 'block';
+    document.getElementById('paymentMethods').style.display = 'flex';
+
+    // التحقق من تسجيل الدخول
+    if (!_user) {
+      document.getElementById('moyasar-form').innerHTML = `
+        <div style="text-align:center;padding:30px 20px;">
+          <div style="font-size:2rem;margin-bottom:10px;">🔐</div>
+          <p style="margin-bottom:16px;color:rgba(255,255,255,0.85);">
+            لإتمام الاشتراك، سجّل دخولك أولاً
+          </p>
+          <a href="login.html" style="display:inline-block;padding:12px 24px;background:linear-gradient(135deg,#1e6b8a,#2a8aab);color:#fff;border-radius:10px;text-decoration:none;font-weight:800;">
+            تسجيل الدخول →
+          </a>
+        </div>
+      `;
+      return;
+    }
+
+    // 💰 احصل على السعر الديناميكي (بالهلالات)
+    const amountInHalalas = (_pricing.currentPrice || 49) * 100;
+
+    // تهيئة Moyasar Form
+    Moyasar.init({
+      element: '#moyasar-form',
+      amount: amountInHalalas,
+      currency: MOYASAR_CONFIG.currency,
+      description: MOYASAR_CONFIG.description,
+      publishable_api_key: MOYASAR_CONFIG.publishable_key,
+      callback_url: MOYASAR_CONFIG.callback_url,
+      methods: MOYASAR_CONFIG.methods,
+      language: 'ar',
+
+      // البيانات الإضافية (للـ webhook)
+      metadata: {
+        uid: _user.uid,
+        email: _user.email,
+        plan: 'lifetime',
+        product: 'ksa2030_subscription',
+        priceAtPurchase: _pricing.currentPrice
+      },
+
+      // تخصيص المظهر
+      apple_pay: {
+        country: 'SA',
+        label: 'منصة ksa2030',
+        validate_merchant_url: 'https://ksa2030.one/api/applepay/validate'
+      }
+    });
   }
-});
 
-function updateWhatsAppLink() {
-  const msg = `السلام عليكم 👋
+  // ابدأ التفعيل
+  initMoyasar();
 
-تم تحويل مبلغ الاشتراك 💎
-
-📛 الاسم: ${_userName || 'لم أسجّل بعد'}
-📧 الإيميل: ${_userEmail || 'لم أسجّل بعد'}
-🆔 رقم العميل: ${_userId || 'لم أسجّل بعد'}
-💰 المبلغ: 30 ريال
-🏦 البنك: الراجحي
-📅 التاريخ: ${new Date().toLocaleDateString('ar-SA')}
-
-📸 الإيصال مرفق
-
-شكراً لكم 🙏`;
-
-  const link = `https://wa.me/966550522867?text=${encodeURIComponent(msg)}`;
-  document.getElementById('waBtn').href = link;
-}
-</script>
-
-<script>
-// نسخ IBAN
-function copyIBAN() {
-  const iban = 'SA2680000154608010376006';
-  const btn = document.getElementById('copyBtn');
-
-  navigator.clipboard.writeText(iban).then(() => {
-    showToast('✅ تم نسخ الآيبان!');
-    btn.classList.add('copied');
-    btn.innerHTML = '<span>✓</span><span>تم النسخ بنجاح!</span>';
-    setTimeout(() => {
-      btn.classList.remove('copied');
-      btn.innerHTML = '<span>📋</span><span>نسخ رقم الآيبان</span>';
-    }, 2500);
-  }).catch(() => {
-    // fallback للمتصفحات القديمة
-    const textarea = document.createElement('textarea');
-    textarea.value = iban;
-    document.body.appendChild(textarea);
-    textarea.select();
-    document.execCommand('copy');
-    document.body.removeChild(textarea);
-    showToast('✅ تم نسخ الآيبان!');
-  });
-}
-
-function showToast(msg) {
-  const toast = document.getElementById('toast');
-  document.getElementById('toastMsg').textContent = msg;
-  toast.classList.add('show');
-  setTimeout(() => {
-    toast.classList.add('hide');
-    setTimeout(() => {
-      toast.classList.remove('show', 'hide');
-    }, 300);
-  }, 2500);
-}
-</script>
+  // 🎁 Console message للمطور
+  console.log(`
+  ╔════════════════════════════════════════╗
+  ║   💳 pay.html - منصة ksa2030          ║
+  ╠════════════════════════════════════════╣
+  ║   Moyasar Status: ${MOYASAR_CONFIG.enabled ? '✅ ACTIVE' : '⏳ PENDING'}        ║
+  ║   Fallback: WhatsApp Business         ║
+  ╚════════════════════════════════════════╝
+  `);
+  </script>
 
 </body>
 </html>

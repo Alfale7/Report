@@ -55,13 +55,196 @@ const googleProvider = new GoogleAuthProvider();
 
 // ═══ ثوابت الموقع ═══
 export const SITE_CONFIG = {
-  PRICE: 30,
+  PRICE: 49,              // ← السعر الافتراضي (لو فشل تحميل من Firestore)
+  ORIGINAL_PRICE: 99,     // ← السعر المشطوب الافتراضي
   CURRENCY: 'ريال',
   PLAN_TYPE: 'lifetime',
   FREE_DOWNLOADS_LIMIT: 2,
-  WHATSAPP_NUMBER: '966550522867',
+  WHATSAPP_NUMBER: '966552052867',
   WHATSAPP_MESSAGE: 'السلام عليكم، أرغب في الاشتراك بمنصة التقارير'
 };
+
+// ═══════════════════════════════════════════════
+// 💰 نظام التسعير الديناميكي (يقرأ من Firestore)
+// ═══════════════════════════════════════════════
+
+// 🌐 حالة السعر الحالي (cache في الذاكرة)
+let _currentPricing = {
+  currentPrice: SITE_CONFIG.PRICE,
+  originalPrice: SITE_CONFIG.ORIGINAL_PRICE,
+  currency: SITE_CONFIG.CURRENCY,
+  isOfferActive: true,
+  offerLabel: 'عرض محدود',
+  offerEmoji: '🔥',
+  discountPercent: 50,
+  loaded: false
+};
+
+// 📡 المستمعين للتغييرات
+const _pricingListeners = new Set();
+
+/**
+ * احصل على بيانات التسعير الحالية
+ * @returns {Object} كائن التسعير
+ */
+export function getPricing() {
+  return { ..._currentPricing };
+}
+
+/**
+ * احسب نسبة الخصم تلقائياً
+ */
+function calculateDiscount(current, original) {
+  if (!original || original <= current) return 0;
+  return Math.round(((original - current) / original) * 100);
+}
+
+/**
+ * استمع لتغييرات السعر (Real-time)
+ * @param {Function} callback يستقبل بيانات التسعير
+ * @returns {Function} دالة إلغاء الاشتراك
+ */
+export function onPricingChange(callback) {
+  _pricingListeners.add(callback);
+  // أرسل القيمة الحالية فوراً
+  if (_currentPricing.loaded) {
+    callback(_currentPricing);
+  }
+  // دالة إلغاء الاشتراك
+  return () => _pricingListeners.delete(callback);
+}
+
+/**
+ * 🔴 تشغيل المراقبة اللحظية للسعر من Firestore
+ * يستدعى تلقائياً عند تحميل الصفحة
+ */
+function initPricingWatcher() {
+  const pricingRef = doc(db, 'settings', 'pricing');
+
+  onSnapshot(pricingRef, (snap) => {
+    if (snap.exists()) {
+      const data = snap.data();
+      _currentPricing = {
+        currentPrice: Number(data.currentPrice) || SITE_CONFIG.PRICE,
+        originalPrice: Number(data.originalPrice) || SITE_CONFIG.ORIGINAL_PRICE,
+        currency: data.currency || SITE_CONFIG.CURRENCY,
+        isOfferActive: data.isOfferActive !== false,
+        offerLabel: data.offerLabel || 'عرض محدود',
+        offerEmoji: data.offerEmoji || '🔥',
+        discountPercent: calculateDiscount(
+          Number(data.currentPrice),
+          Number(data.originalPrice)
+        ),
+        loaded: true,
+        updatedAt: data.updatedAt
+      };
+    } else {
+      // لا يوجد ملف في Firestore - استخدم الافتراضي
+      _currentPricing = {
+        currentPrice: SITE_CONFIG.PRICE,
+        originalPrice: SITE_CONFIG.ORIGINAL_PRICE,
+        currency: SITE_CONFIG.CURRENCY,
+        isOfferActive: true,
+        offerLabel: 'عرض محدود',
+        offerEmoji: '🔥',
+        discountPercent: calculateDiscount(SITE_CONFIG.PRICE, SITE_CONFIG.ORIGINAL_PRICE),
+        loaded: true
+      };
+    }
+
+    // 📢 أبلغ جميع المستمعين
+    _pricingListeners.forEach(cb => {
+      try { cb(_currentPricing); } catch (e) { console.error(e); }
+    });
+
+    // 🌐 وفّر الوصول الجلوبال
+    window.__PRICING__ = _currentPricing;
+    
+    // 🔥 حدّث DOM elements تلقائياً (data-price-* attributes)
+    updatePriceElements();
+  }, (err) => {
+    console.warn('Pricing watcher error:', err);
+    _currentPricing.loaded = true;
+  });
+}
+
+/**
+ * 🎨 حدّث كل العناصر في الـ DOM اللي عليها data-price-* attribute
+ * استخدام في HTML: <span data-price="current">49</span>
+ */
+function updatePriceElements() {
+  if (typeof document === 'undefined') return;
+
+  // 💰 السعر الحالي
+  document.querySelectorAll('[data-price="current"]').forEach(el => {
+    el.textContent = _currentPricing.currentPrice;
+  });
+
+  // 💸 السعر الأصلي (المشطوب)
+  document.querySelectorAll('[data-price="original"]').forEach(el => {
+    el.textContent = _currentPricing.originalPrice;
+  });
+
+  // 💱 العملة
+  document.querySelectorAll('[data-price="currency"]').forEach(el => {
+    el.textContent = _currentPricing.currency;
+  });
+
+  // 🎁 نسبة الخصم
+  document.querySelectorAll('[data-price="discount"]').forEach(el => {
+    el.textContent = _currentPricing.discountPercent;
+  });
+
+  // 🏷️ نص العرض
+  document.querySelectorAll('[data-price="offer-label"]').forEach(el => {
+    el.textContent = _currentPricing.offerLabel;
+  });
+
+  // 🎯 إخفاء/إظهار العرض
+  document.querySelectorAll('[data-price="offer-wrap"]').forEach(el => {
+    el.style.display = _currentPricing.isOfferActive ? '' : 'none';
+  });
+
+  // 💎 السعر بالهلالات (لـ Moyasar)
+  document.querySelectorAll('[data-price="halalas"]').forEach(el => {
+    el.textContent = _currentPricing.currentPrice * 100;
+  });
+
+  // 💰 جملة السعر الكاملة "49 ريال"
+  document.querySelectorAll('[data-price="full"]').forEach(el => {
+    el.textContent = `${_currentPricing.currentPrice} ${_currentPricing.currency}`;
+  });
+}
+
+/**
+ * 🔧 (للأدمن فقط) حدّث بيانات التسعير في Firestore
+ * @param {Object} pricing الحقول الجديدة
+ * @returns {Promise}
+ */
+export async function updatePricing(pricing) {
+  const user = auth.currentUser;
+  if (!user) throw new Error('يجب تسجيل الدخول');
+
+  const pricingRef = doc(db, 'settings', 'pricing');
+  await setDoc(pricingRef, {
+    currentPrice: Number(pricing.currentPrice),
+    originalPrice: Number(pricing.originalPrice),
+    currency: pricing.currency || 'ريال',
+    isOfferActive: pricing.isOfferActive !== false,
+    offerLabel: pricing.offerLabel || 'عرض محدود',
+    offerEmoji: pricing.offerEmoji || '🔥',
+    updatedAt: serverTimestamp(),
+    updatedBy: user.uid
+  }, { merge: true });
+
+  return true;
+}
+
+// 🚀 ابدأ المراقبة فوراً
+if (typeof window !== 'undefined') {
+  initPricingWatcher();
+}
+
 
 // ═══ المصادقة ═══
 
