@@ -6,7 +6,7 @@
   <title>إتمام الاشتراك · ksa2030</title>
   <meta name="theme-color" content="#050a12">
 
-  <!-- ⚡ Anti-Flash Pricing System -->
+  <!-- ⚡ Anti-Flash Pricing -->
   <style id="priceHideStyle">
     [data-price] { visibility: hidden !important; opacity: 0 !important; }
     html.price-ready [data-price] { visibility: visible !important; opacity: 1 !important; animation: priceReveal 0.3s ease-out; }
@@ -49,9 +49,7 @@
     if (hasCache) {
       if (document.readyState === 'loading') {
         document.addEventListener('DOMContentLoaded', applyPricing);
-      } else {
-        applyPricing();
-      }
+      } else { applyPricing(); }
     } else {
       window.__PRICING_WAITING__ = true;
       setTimeout(function(){ if (window.__PRICING_WAITING__) { window.__PRICING_WAITING__ = false; applyPricing(); } }, 2000);
@@ -60,27 +58,20 @@
   })();
   </script>
 
-  <!-- Favicon -->
-  <link rel="icon" type="image/png" sizes="48x48" href="favicon-48x48.png">
-  <link rel="icon" type="image/png" sizes="32x32" href="favicon-32x32.png">
-  <link rel="apple-touch-icon" sizes="180x180" href="apple-touch-icon.png">
-
   <!-- Fonts -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Aref+Ruqaa:wght@400;700&family=Reem+Kufi:wght@400;500;600;700&family=Tajawal:wght@400;500;700;900&display=swap" rel="stylesheet">
 
-  <!-- 💳 Moyasar Payment Form (يتم تفعيله لما تجي الـ API Keys) -->
+  <!-- Moyasar -->
   <link rel="stylesheet" href="https://cdn.moyasar.com/mpf/1.13.0/moyasar.css" />
   <script src="https://cdn.moyasar.com/mpf/1.13.0/moyasar.js"></script>
 
   <style>
-    /* ═══════════════════════════════════════════════════════
-       🎨 ألوان index.html بالضبط (هوية موحدة)
-       ═══════════════════════════════════════════════════════ */
     :root {
       --bg-deep: #050a12;
       --bg-mid: #0a1620;
+      --bg-card: #0f2942;
       --green: #4caf50;
       --green-dim: #2a9d8f;
       --blue: #3b6db5;
@@ -91,11 +82,12 @@
       --teal-light: #3aa8d0;
       --text-dim: rgba(255, 255, 255, 0.7);
       --text-mute: rgba(255, 255, 255, 0.5);
+      --border: rgba(255, 255, 255, 0.08);
     }
 
     * { margin: 0; padding: 0; box-sizing: border-box; }
     html, body {
-      font-family: 'Tajawal', 'Tahoma', 'Arial', sans-serif;
+      font-family: 'Tajawal', 'Tahoma', sans-serif;
       min-height: 100vh;
       width: 100%;
       overflow-x: hidden;
@@ -104,9 +96,7 @@
       -webkit-font-smoothing: antialiased;
     }
 
-    /* ═══════════════════════════════════════════════════════
-       🌌 الخلفية - نفس index.html
-       ═══════════════════════════════════════════════════════ */
+    /* الخلفية */
     .bg-layer {
       position: fixed;
       inset: 0;
@@ -130,410 +120,560 @@
     .orb {
       position: fixed;
       border-radius: 50%;
-      filter: blur(60px);
+      filter: blur(70px);
       pointer-events: none;
       z-index: 0;
       opacity: 0.5;
       animation: orbDrift 24s ease-in-out infinite;
     }
-    .orb-1 { top: 5%; right: -10%; width: 280px; height: 280px; background: radial-gradient(circle, rgba(76, 175, 80, 0.4), transparent); }
-    .orb-2 { top: 30%; left: -15%; width: 320px; height: 320px; background: radial-gradient(circle, rgba(59, 109, 181, 0.35), transparent); animation-delay: -8s; }
-    .orb-3 { bottom: 10%; right: 30%; width: 240px; height: 240px; background: radial-gradient(circle, rgba(232, 197, 71, 0.25), transparent); animation-delay: -16s; }
+    .orb-1 { top: 5%; right: -10%; width: 320px; height: 320px; background: radial-gradient(circle, rgba(76, 175, 80, 0.4), transparent); }
+    .orb-2 { top: 30%; left: -15%; width: 350px; height: 350px; background: radial-gradient(circle, rgba(59, 109, 181, 0.35), transparent); animation-delay: -8s; }
+    .orb-3 { bottom: 10%; right: 30%; width: 280px; height: 280px; background: radial-gradient(circle, rgba(232, 197, 71, 0.25), transparent); animation-delay: -16s; }
     @keyframes orbDrift {
       0%, 100% { transform: translate(0, 0) scale(1); opacity: 0.5; }
       50% { transform: translate(20px, -25px) scale(1.05); opacity: 0.65; }
     }
 
-    /* ═══════════════════════════════════════════════════════
-       🎯 الحاوية المركزية
-       ═══════════════════════════════════════════════════════ */
-    .wrap {
+    /* ═══════════════════════════════════════════════
+       🎯 شريط علوي (Top Nav)
+       ═══════════════════════════════════════════════ */
+    .top-nav {
+      position: sticky;
+      top: 0;
+      z-index: 50;
+      background: rgba(5, 10, 18, 0.85);
+      backdrop-filter: blur(20px) saturate(180%);
+      -webkit-backdrop-filter: blur(20px) saturate(180%);
+      border-bottom: 1px solid var(--border);
+      padding: 14px 20px;
+    }
+    .top-nav-inner {
+      max-width: 1180px;
+      margin: 0 auto;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+    }
+    .nav-brand {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      text-decoration: none;
+      color: #fff;
       position: relative;
-      z-index: 1;
-      min-height: 100vh;
+    }
+    .nav-brand-mark {
+      width: 38px;
+      height: 38px;
+      border-radius: 11px;
+      background: linear-gradient(135deg, #4caf50 0%, #2a9d8f 50%, #1a7a8a 100%);
       display: flex;
       align-items: center;
       justify-content: center;
-      padding: 24px 14px 40px;
+      font-size: 1.05rem;
+      box-shadow: 0 6px 16px rgba(76, 175, 80, 0.35);
+      position: relative;
+      transition: all 0.3s ease;
+      animation: brandFloat 4s ease-in-out infinite;
+    }
+    .nav-brand-mark::before {
+      content: '';
+      position: absolute;
+      inset: -3px;
+      border-radius: 14px;
+      background: linear-gradient(135deg, #4caf50, #e8c547, #1e6b8a);
+      z-index: -1;
+      opacity: 0;
+      filter: blur(10px);
+      transition: opacity 0.3s ease;
+    }
+    .nav-brand:hover .nav-brand-mark {
+      transform: scale(1.08) rotate(-5deg);
+      box-shadow: 0 10px 28px rgba(76, 175, 80, 0.5);
+    }
+    .nav-brand:hover .nav-brand-mark::before {
+      opacity: 0.6;
+    }
+    @keyframes brandFloat {
+      0%, 100% { transform: translateY(0px); }
+      50% { transform: translateY(-3px); }
+    }
+    .nav-brand-text {
+      font: 800 1.15rem 'Aref Ruqaa', serif;
+      background: linear-gradient(135deg, #fff 0%, #e8c547 50%, #fff 100%);
+      background-size: 200% 100%;
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      animation: shineText 4s ease-in-out infinite;
+    }
+    @keyframes shineText {
+      0%, 100% { background-position: 0% 50%; }
+      50% { background-position: 100% 50%; }
+    }
+    .nav-actions {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .nav-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 8px 14px;
+      background: rgba(255, 255, 255, 0.06);
+      border: 1px solid var(--border);
+      color: var(--text-dim);
+      border-radius: 10px;
+      font: 600 0.82rem 'Tajawal', sans-serif;
+      text-decoration: none;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .nav-btn:hover {
+      background: rgba(255, 255, 255, 0.1);
+      color: #fff;
+      border-color: rgba(255, 255, 255, 0.2);
+    }
+    .nav-btn-close {
+      width: 38px;
+      height: 38px;
+      padding: 0;
+      justify-content: center;
+      font-size: 1.1rem;
     }
 
-    .pay-card {
+    /* ═══════════════════════════════════════════════
+       💎 التخطيط الرئيسي (Split Layout)
+       ═══════════════════════════════════════════════ */
+    .checkout-page {
+      max-width: 1180px;
+      margin: 0 auto;
+      padding: 30px 20px 60px;
       position: relative;
-      width: 100%;
-      max-width: 480px;
+      z-index: 1;
+    }
+
+    .checkout-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 28px;
+      align-items: start;
+    }
+
+    /* ═══ العمود الأيمن: ملخص الطلب ═══ */
+    .order-summary-card {
       background: linear-gradient(145deg, rgba(15, 41, 66, 0.92), rgba(10, 22, 32, 0.85));
       backdrop-filter: blur(28px) saturate(180%);
       -webkit-backdrop-filter: blur(28px) saturate(180%);
       border: 1px solid rgba(232, 197, 71, 0.2);
-      border-radius: 28px;
-      padding: 36px 26px 30px;
+      border-radius: 24px;
+      padding: 28px 26px;
+      position: sticky;
+      top: 90px;
       box-shadow:
-        0 28px 80px rgba(0, 0, 0, 0.6),
-        inset 0 1px 0 rgba(255, 255, 255, 0.08);
+        0 28px 80px rgba(0, 0, 0, 0.5),
+        inset 0 1px 0 rgba(255, 255, 255, 0.06);
     }
 
-    /* شارة "اشتراك مدى الحياة" */
-    .top-pill {
-      position: absolute;
-      top: -16px;
-      left: 50%;
-      transform: translateX(-50%);
+    /* شارة علوية */
+    .premium-badge {
       display: inline-flex;
       align-items: center;
-      gap: 8px;
+      gap: 6px;
       background: linear-gradient(135deg, #e8c547, #d4a657);
       color: #050a12;
-      padding: 8px 22px;
+      padding: 6px 14px;
       border-radius: 99px;
       font: 800 0.72rem 'Reem Kufi', sans-serif;
-      letter-spacing: 1.5px;
-      box-shadow: 0 8px 24px rgba(232, 197, 71, 0.5);
-      white-space: nowrap;
-    }
-    .top-pill::before {
-      content: '💎';
-      font-size: 0.85rem;
+      letter-spacing: 1.2px;
+      margin-bottom: 16px;
+      box-shadow: 0 6px 16px rgba(232, 197, 71, 0.35);
     }
 
-    /* ═══════════════════════════════════════════════════════
-       🎨 Brand Mark
-       ═══════════════════════════════════════════════════════ */
-    .brand {
-      text-align: center;
-      margin-bottom: 22px;
-    }
-    .brand-mark {
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      width: 64px;
-      height: 64px;
-      border-radius: 20px;
-      background: linear-gradient(135deg, #4caf50 0%, #2a9d8f 50%, #1a7a8a 100%);
-      box-shadow:
-        0 12px 32px rgba(76, 175, 80, 0.4),
-        inset 0 1px 0 rgba(255, 255, 255, 0.3);
-      margin-bottom: 14px;
-    }
-    .brand-icon { font-size: 1.7rem; }
-    .brand-name {
-      font: 700 1.6rem 'Aref Ruqaa', serif;
+    .product-title {
+      font: 800 1.4rem 'Aref Ruqaa', serif;
       background: linear-gradient(135deg, #fff 0%, #e8c547 100%);
       -webkit-background-clip: text;
       -webkit-text-fill-color: transparent;
       background-clip: text;
-      letter-spacing: -0.5px;
+      margin-bottom: 6px;
+      line-height: 1.3;
     }
-    .brand-tagline {
-      font: 600 0.7rem 'Reem Kufi', sans-serif;
-      color: #e8c547;
-      letter-spacing: 3px;
-      text-transform: uppercase;
-      opacity: 0.85;
-      margin-top: 3px;
+    .product-subtitle {
+      font: 600 0.88rem 'Tajawal', sans-serif;
+      color: var(--text-dim);
+      margin-bottom: 22px;
     }
 
-    /* ═══════════════════════════════════════════════════════
-       💎 ملخص الاشتراك
-       ═══════════════════════════════════════════════════════ */
-    .order-summary {
-      background: linear-gradient(135deg, rgba(232, 197, 71, 0.1), rgba(30, 107, 138, 0.08));
+    /* السعر الكبير */
+    .price-hero {
+      background: linear-gradient(135deg, rgba(232, 197, 71, 0.1), rgba(30, 107, 138, 0.06));
       border: 1px solid rgba(232, 197, 71, 0.25);
       border-radius: 18px;
-      padding: 18px 20px;
-      margin-bottom: 22px;
+      padding: 22px;
+      margin-bottom: 20px;
+      text-align: center;
       position: relative;
       overflow: hidden;
     }
-    .order-summary::before {
+    .price-hero::before {
       content: '';
       position: absolute;
-      top: 0; right: 0;
-      width: 100px; height: 100px;
-      background: radial-gradient(circle, rgba(232, 197, 71, 0.15), transparent);
+      top: -30px;
+      right: -30px;
+      width: 120px;
+      height: 120px;
+      background: radial-gradient(circle, rgba(232, 197, 71, 0.2), transparent);
       pointer-events: none;
     }
-    .order-row {
-      display: flex;
-      justify-content: space-between;
+    .price-strike-wrap {
+      display: inline-flex;
       align-items: center;
-      margin-bottom: 12px;
-      position: relative;
-      z-index: 1;
+      gap: 10px;
+      margin-bottom: 8px;
     }
-    .order-row:last-of-type { margin-bottom: 0; }
-    .order-label {
-      font: 600 0.85rem 'Tajawal', sans-serif;
-      color: var(--text-dim);
-      display: flex;
-      align-items: center;
-      gap: 8px;
+    .price-strike {
+      font: 700 1rem 'Tajawal', sans-serif;
+      color: rgba(255, 255, 255, 0.4);
+      text-decoration: line-through;
     }
-    .order-value {
-      font: 800 0.95rem 'Tajawal', sans-serif;
+    .discount-pill {
+      background: linear-gradient(135deg, #dc2626, #f59e0b);
       color: #fff;
+      padding: 3px 10px;
+      border-radius: 99px;
+      font: 900 0.7rem 'Reem Kufi', sans-serif;
     }
-    .order-divider {
-      height: 1px;
-      background: linear-gradient(90deg, transparent, rgba(232, 197, 71, 0.3), transparent);
-      margin: 12px 0;
-    }
-    .order-total {
+    .price-main {
       display: flex;
-      justify-content: space-between;
       align-items: baseline;
-      padding-top: 6px;
+      justify-content: center;
+      gap: 8px;
+      margin: 4px 0 8px;
     }
-    .order-total-label {
-      font: 700 0.85rem 'Reem Kufi', sans-serif;
-      color: #e8c547;
-      letter-spacing: 1px;
-    }
-    .order-total-amount {
-      font: 900 1.8rem 'Tajawal', sans-serif;
+    .price-number {
+      font: 900 3.2rem 'Tajawal', sans-serif;
       background: linear-gradient(135deg, #fff 0%, #e8c547 100%);
       -webkit-background-clip: text;
       -webkit-text-fill-color: transparent;
       background-clip: text;
+      line-height: 1;
     }
-    .order-total-currency {
-      font-size: 0.85rem;
+    .price-currency {
+      font: 700 1.1rem 'Tajawal', sans-serif;
       color: var(--text-dim);
-      margin-right: 4px;
     }
-    .original-price {
-      text-decoration: line-through;
-      color: rgba(255, 255, 255, 0.4);
-      font-size: 0.85rem;
-      margin-left: 8px;
-    }
-    .discount-badge {
-      display: inline-block;
-      background: linear-gradient(135deg, #dc2626, #f59e0b);
-      color: #fff;
-      padding: 2px 8px;
-      border-radius: 99px;
-      font: 800 0.65rem 'Reem Kufi', sans-serif;
-      margin-right: 6px;
+    .price-once {
+      font: 600 0.78rem 'Reem Kufi', sans-serif;
+      color: #e8c547;
+      letter-spacing: 1px;
     }
 
-    /* ═══════════════════════════════════════════════════════
-       ✨ المزايا
-       ═══════════════════════════════════════════════════════ */
+    /* قائمة المزايا */
     .features-list {
       list-style: none;
-      margin-bottom: 22px;
+      padding: 0;
     }
-    .feature-item {
+    .feature-row {
       display: flex;
       align-items: center;
-      gap: 10px;
-      padding: 8px 0;
-      font: 600 0.85rem 'Tajawal', sans-serif;
-      color: var(--text-dim);
+      gap: 12px;
+      padding: 12px 0;
+      border-bottom: 1px dashed rgba(255, 255, 255, 0.06);
+      font: 600 0.88rem 'Tajawal', sans-serif;
+      color: rgba(255, 255, 255, 0.92);
     }
-    .feature-item .check {
-      width: 22px;
-      height: 22px;
+    .feature-row:last-child { border-bottom: none; }
+    .feature-check {
+      width: 26px;
+      height: 26px;
       flex-shrink: 0;
       background: linear-gradient(135deg, #4caf50, #2a9d8f);
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #fff;
+      font-size: 0.78rem;
+      font-weight: 900;
+      box-shadow: 0 4px 10px rgba(76, 175, 80, 0.35);
+    }
+
+    /* شارات الثقة */
+    .trust-strip {
+      display: flex;
+      justify-content: space-around;
+      gap: 8px;
+      margin-top: 18px;
+      padding: 12px;
+      background: rgba(76, 175, 80, 0.08);
+      border: 1px solid rgba(76, 175, 80, 0.18);
+      border-radius: 12px;
+    }
+    .trust-item {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 3px;
+      flex: 1;
+      text-align: center;
+    }
+    .trust-item .ic { font-size: 1.1rem; }
+    .trust-item .label {
+      font: 700 0.65rem 'Tajawal', sans-serif;
+      color: #86efac;
+      letter-spacing: 0.3px;
+    }
+
+    /* ═══ العمود الأيسر: قسم الدفع ═══ */
+    .payment-card {
+      background: linear-gradient(145deg, rgba(15, 41, 66, 0.92), rgba(10, 22, 32, 0.85));
+      backdrop-filter: blur(28px) saturate(180%);
+      -webkit-backdrop-filter: blur(28px) saturate(180%);
+      border: 1px solid var(--border);
+      border-radius: 24px;
+      padding: 28px 26px;
+      box-shadow:
+        0 28px 80px rgba(0, 0, 0, 0.5),
+        inset 0 1px 0 rgba(255, 255, 255, 0.06);
+    }
+
+    .payment-header {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 6px;
+    }
+    .payment-header-icon {
+      width: 42px;
+      height: 42px;
+      background: linear-gradient(135deg, #1e6b8a 0%, #2a8aab 50%, #d4a657 100%);
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.2rem;
+      box-shadow: 0 6px 16px rgba(30, 107, 138, 0.4);
+    }
+    .payment-header-text h2 {
+      font: 800 1.15rem 'Reem Kufi', sans-serif;
+      color: #fff;
+      margin-bottom: 2px;
+    }
+    .payment-header-text p {
+      font: 500 0.78rem 'Tajawal', sans-serif;
+      color: var(--text-dim);
+    }
+
+    /* شعارات طرق الدفع */
+    .payment-logos {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      flex-wrap: wrap;
+      margin: 18px 0 22px;
+      padding: 14px;
+      background: rgba(0, 0, 0, 0.2);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+    }
+    .pm-logo {
+      background: #fff;
+      border-radius: 7px;
+      padding: 6px 11px;
+      font: 800 0.72rem 'Tajawal', sans-serif;
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
+      display: inline-flex;
+      align-items: center;
+      gap: 3px;
+      letter-spacing: 0.3px;
+    }
+    .pm-mada { background: linear-gradient(135deg, #000, #1a1a1a); color: #fff; }
+    .pm-visa { color: #1a1f71; }
+    .pm-mc { color: #ea001b; }
+    .pm-stc { background: linear-gradient(135deg, #4b1389, #6b1ec4); color: #fff; }
+
+    /* Moyasar Form - تحسينات شاملة */
+    .mysr-form {
+      min-height: 200px;
+      border-radius: 14px;
+    }
+
+    /* تخصيص فخم لـ Moyasar */
+    .mysr-form input,
+    .mysr-form select,
+    .mysr-form textarea {
+      background: rgba(255, 255, 255, 0.06) !important;
+      border: 1.5px solid rgba(255, 255, 255, 0.12) !important;
+      border-radius: 12px !important;
+      color: #fff !important;
+      padding: 14px 16px !important;
+      font: 600 0.95rem 'Tajawal', sans-serif !important;
+      transition: all 0.25s ease !important;
+    }
+    .mysr-form input:focus,
+    .mysr-form select:focus {
+      background: rgba(255, 255, 255, 0.1) !important;
+      border-color: rgba(232, 197, 71, 0.6) !important;
+      box-shadow: 0 0 0 3px rgba(232, 197, 71, 0.15) !important;
+      outline: none !important;
+    }
+    .mysr-form input::placeholder {
+      color: rgba(255, 255, 255, 0.35) !important;
+    }
+    .mysr-form label {
+      color: rgba(255, 255, 255, 0.85) !important;
+      font: 700 0.85rem 'Tajawal', sans-serif !important;
+      margin-bottom: 6px !important;
+    }
+    .mysr-form button[type="submit"] {
+      background: linear-gradient(135deg, #1e6b8a 0%, #2a8aab 50%, #d4a657 100%) !important;
+      color: #fff !important;
+      border: none !important;
+      border-radius: 13px !important;
+      padding: 16px 22px !important;
+      font: 900 1.05rem 'Tajawal', sans-serif !important;
+      cursor: pointer !important;
+      transition: all 0.25s ease !important;
+      box-shadow: 0 8px 24px rgba(30, 107, 138, 0.45) !important;
+      width: 100% !important;
+    }
+    .mysr-form button[type="submit"]:hover {
+      transform: translateY(-2px) !important;
+      box-shadow: 0 12px 32px rgba(30, 107, 138, 0.6) !important;
+    }
+
+    /* أزرار اختيار طريقة الدفع */
+    .mysr-form .method-selector,
+    .mysr-form [class*="method"] {
+      gap: 10px !important;
+    }
+    .mysr-form [class*="method"] button,
+    .mysr-form input[type="radio"] + label {
+      background: rgba(255, 255, 255, 0.05) !important;
+      border: 1.5px solid rgba(255, 255, 255, 0.1) !important;
+      border-radius: 14px !important;
+      padding: 16px !important;
+      transition: all 0.25s ease !important;
+    }
+    .mysr-form [class*="method"] button:hover,
+    .mysr-form input[type="radio"]:checked + label {
+      background: rgba(232, 197, 71, 0.1) !important;
+      border-color: rgba(232, 197, 71, 0.4) !important;
+    }
+
+    /* رسالة تسجيل الدخول */
+    .login-required {
+      text-align: center;
+      padding: 40px 20px;
+    }
+    .login-required .ic {
+      width: 70px;
+      height: 70px;
+      margin: 0 auto 16px;
+      background: linear-gradient(135deg, rgba(232, 197, 71, 0.15), rgba(212, 166, 87, 0.1));
+      border: 1px solid rgba(232, 197, 71, 0.3);
       border-radius: 50%;
       display: flex;
       align-items: center;
       justify-content: center;
-      color: #fff;
-      font-size: 0.7rem;
-      font-weight: 900;
-      box-shadow: 0 2px 8px rgba(76, 175, 80, 0.4);
+      font-size: 1.8rem;
     }
-
-    /* ═══════════════════════════════════════════════════════
-       💳 Moyasar Form Wrapper
-       ═══════════════════════════════════════════════════════ */
-    .payment-section {
-      background: rgba(0, 0, 0, 0.25);
-      border: 1px solid rgba(255, 255, 255, 0.08);
-      border-radius: 18px;
-      padding: 18px;
+    .login-required h3 {
+      font: 800 1.1rem 'Reem Kufi', sans-serif;
+      color: #fff;
+      margin-bottom: 8px;
+    }
+    .login-required p {
+      font: 600 0.88rem 'Tajawal', sans-serif;
+      color: var(--text-dim);
       margin-bottom: 18px;
     }
-    .payment-title {
-      font: 700 1rem 'Reem Kufi', sans-serif;
-      color: #fff;
-      margin-bottom: 14px;
-      display: flex;
-      align-items: center;
-      gap: 8px;
-    }
-    .payment-title::before {
-      content: '💳';
-      font-size: 1.1rem;
-    }
-
-    /* Moyasar form custom styling */
-    #moyasar-form {
-      min-height: 100px;
-    }
-    .mysr-form {
-      border-radius: 12px !important;
-    }
-
-    /* ═══════════════════════════════════════════════════════
-       🔒 شارات الثقة
-       ═══════════════════════════════════════════════════════ */
-    .trust-badges {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 14px;
-      flex-wrap: wrap;
-      margin: 16px 0;
-      padding: 12px;
-      background: rgba(76, 175, 80, 0.08);
-      border: 1px solid rgba(76, 175, 80, 0.2);
-      border-radius: 14px;
-    }
-    .trust-badge {
-      display: flex;
-      align-items: center;
-      gap: 5px;
-      font: 700 0.72rem 'Tajawal', sans-serif;
-      color: #86efac;
-    }
-    .trust-badge .ic { font-size: 0.9rem; }
-
-    /* ═══════════════════════════════════════════════════════
-       💳 شعارات طرق الدفع
-       ═══════════════════════════════════════════════════════ */
-    .payment-methods {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 8px;
-      flex-wrap: wrap;
-      margin: 14px 0;
-      padding: 10px;
-      background: rgba(255, 255, 255, 0.04);
-      border-radius: 12px;
-    }
-    .pm-icon {
-      background: #fff;
-      border-radius: 6px;
-      padding: 5px 10px;
-      font: 800 0.7rem 'Tajawal', sans-serif;
-      color: #1f1f1f;
-      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
+    .login-btn {
       display: inline-flex;
       align-items: center;
-      gap: 4px;
-    }
-    .pm-icon.visa { color: #1a1f71; }
-    .pm-icon.mc { color: #ea001b; }
-    .pm-icon.mada { background: linear-gradient(135deg, #000, #1a1a1a); color: #fff; }
-    .pm-icon.apple { background: #000; color: #fff; }
-    .pm-icon.stc { background: linear-gradient(135deg, #4b1389, #6b1ec4); color: #fff; }
-
-    /* ═══════════════════════════════════════════════════════
-       🎯 الزر الاحتياطي (واتس - مؤقت حتى الموافقة)
-       ═══════════════════════════════════════════════════════ */
-    .wa-fallback {
-      display: block;
-      width: 100%;
-      padding: 16px 22px;
-      background: linear-gradient(135deg, #25d366 0%, #128c7e 100%);
+      gap: 8px;
+      padding: 12px 26px;
+      background: linear-gradient(135deg, #1e6b8a 0%, #2a8aab 50%, #d4a657 100%);
       color: #fff;
-      border: none;
-      border-radius: 13px;
-      font: 900 1rem 'Tajawal', sans-serif;
-      cursor: pointer;
-      text-align: center;
+      border-radius: 12px;
       text-decoration: none;
-      transition: all 0.25s ease;
-      box-shadow: 0 8px 24px rgba(37, 211, 102, 0.4);
-      margin-top: 10px;
+      font: 800 0.95rem 'Tajawal', sans-serif;
+      box-shadow: 0 8px 22px rgba(30, 107, 138, 0.4);
+      transition: all 0.2s;
     }
-    .wa-fallback:hover {
+    .login-btn:hover {
       transform: translateY(-2px);
-      box-shadow: 0 12px 32px rgba(37, 211, 102, 0.55);
-    }
-    .wa-fallback .ic { font-size: 1.2rem; margin-left: 6px; }
-
-    /* ═══════════════════════════════════════════════════════
-       📢 إشعار مؤقت (حتى تفعيل Moyasar)
-       ═══════════════════════════════════════════════════════ */
-    .notice-banner {
-      background: linear-gradient(135deg, rgba(232, 197, 71, 0.15), rgba(212, 166, 87, 0.1));
-      border: 1px solid rgba(232, 197, 71, 0.35);
-      border-radius: 14px;
-      padding: 14px 16px;
-      margin-bottom: 16px;
-      display: flex;
-      align-items: flex-start;
-      gap: 10px;
-    }
-    .notice-banner .ic {
-      font-size: 1.3rem;
-      flex-shrink: 0;
-      line-height: 1.3;
-    }
-    .notice-banner .text {
-      font: 600 0.85rem 'Tajawal', sans-serif;
-      color: rgba(255, 255, 255, 0.92);
-      line-height: 1.5;
-    }
-    .notice-banner .text b {
-      color: #e8c547;
-      font-weight: 800;
+      box-shadow: 0 12px 28px rgba(30, 107, 138, 0.55);
     }
 
-    /* الفوتر */
-    .pay-footer {
-      text-align: center;
-      margin-top: 22px;
-      padding-top: 18px;
-      border-top: 1px solid rgba(255, 255, 255, 0.06);
-      color: var(--text-mute);
-      font: 500 0.78rem 'Tajawal', sans-serif;
-      line-height: 1.7;
-    }
-    .pay-footer .home-link {
-      color: #3aa8d0;
-      text-decoration: none;
-      font-weight: 700;
-      transition: color 0.2s;
-    }
-    .pay-footer .home-link:hover { color: #e8c547; }
-
-    /* Loading state */
+    /* حالة التحميل */
     .loading-state {
       text-align: center;
-      padding: 40px 20px;
-      color: var(--text-dim);
+      padding: 50px 20px;
     }
     .loading-spinner {
-      width: 40px;
-      height: 40px;
-      margin: 0 auto 14px;
-      border: 3px solid rgba(232, 197, 71, 0.2);
+      width: 50px;
+      height: 50px;
+      margin: 0 auto 16px;
+      border: 4px solid rgba(232, 197, 71, 0.2);
       border-top-color: #e8c547;
       border-radius: 50%;
       animation: spin 0.8s linear infinite;
     }
     @keyframes spin { to { transform: rotate(360deg); } }
+    .loading-text {
+      font: 600 0.92rem 'Tajawal', sans-serif;
+      color: var(--text-dim);
+    }
 
-    /* الموبايل */
-    @media (max-width: 480px) {
-      .wrap { padding: 18px 12px 30px; align-items: flex-start; padding-top: 26px; }
-      .pay-card { padding: 30px 20px 24px; border-radius: 22px; }
-      .brand-mark { width: 56px; height: 56px; border-radius: 18px; margin-bottom: 12px; }
-      .brand-icon { font-size: 1.5rem; }
-      .brand-name { font-size: 1.4rem; }
-      .order-total-amount { font-size: 1.5rem; }
-      .top-pill { font-size: 0.66rem; padding: 7px 16px; }
+    /* الفوتر الأمني */
+    .secure-footer {
+      margin-top: 20px;
+      padding-top: 18px;
+      border-top: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      font: 600 0.78rem 'Tajawal', sans-serif;
+      color: var(--text-mute);
+    }
+    .secure-footer .ic { font-size: 0.95rem; }
+
+    /* ═══════════════════════════════════════════════
+       📱 Responsive - الجوال
+       ═══════════════════════════════════════════════ */
+    @media (max-width: 900px) {
+      .checkout-grid {
+        grid-template-columns: 1fr;
+        gap: 20px;
+      }
+      .order-summary-card {
+        position: relative;
+        top: auto;
+        order: -1;
+      }
+    }
+
+    @media (max-width: 600px) {
+      .top-nav { padding: 12px 14px; }
+      .nav-brand-text { font-size: 1rem; }
+      .nav-btn { padding: 7px 10px; font-size: 0.75rem; }
+      .nav-btn-close { width: 34px; height: 34px; }
+      .checkout-page { padding: 18px 12px 40px; }
+      .order-summary-card, .payment-card { padding: 22px 18px; border-radius: 20px; }
+      .product-title { font-size: 1.2rem; }
+      .price-number { font-size: 2.6rem; }
+      .price-hero { padding: 18px; }
+      .features-list { display: grid; grid-template-columns: 1fr; }
     }
 
     @supports (padding: max(0px)) {
-      .wrap { padding-bottom: max(30px, env(safe-area-inset-bottom)); }
+      .checkout-page { padding-bottom: max(60px, env(safe-area-inset-bottom)); }
     }
   </style>
 </head>
@@ -546,210 +686,173 @@
   <div class="orb orb-2"></div>
   <div class="orb orb-3"></div>
 
-  <div class="wrap">
-    <div class="pay-card">
-
-      <!-- شارة علوية -->
-      <div class="top-pill">اشتراك مدى الحياة</div>
-
-      <!-- Brand -->
-      <div class="brand">
-        <div class="brand-mark">
-          <span class="brand-icon">📚</span>
-        </div>
-        <h1 class="brand-name">ksa2030</h1>
-        <div class="brand-tagline">إتمام الاشتراك</div>
+  <!-- 🎯 الشريط العلوي -->
+  <nav class="top-nav">
+    <div class="top-nav-inner">
+      <a href="index.html" class="nav-brand">
+        <div class="nav-brand-mark">📚</div>
+        <div class="nav-brand-text">ksa2030</div>
+      </a>
+      <div class="nav-actions">
+        <a href="index.html" class="nav-btn">
+          <span>🏠</span>
+          <span>الرئيسية</span>
+        </a>
+        <a href="index.html" class="nav-btn nav-btn-close" title="خروج" aria-label="خروج">✕</a>
       </div>
+    </div>
+  </nav>
 
-      <!-- 💎 ملخص الاشتراك -->
-      <div class="order-summary">
-        <div class="order-row">
-          <span class="order-label">
-            <span>📚</span>
-            <span>منصة التقارير الذكية</span>
-          </span>
-          <span class="order-value">21 تقرير</span>
+  <!-- 💎 صفحة الدفع -->
+  <main class="checkout-page">
+    <div class="checkout-grid">
+
+      <!-- 📋 ملخص الطلب (يمين على الديسكتوب، فوق على الجوال) -->
+      <aside class="order-summary-card">
+        <span class="premium-badge">💎 اشتراك مدى الحياة</span>
+        <h1 class="product-title">منصة التقارير الذكية</h1>
+        <p class="product-subtitle">+21 قالب احترافي معتمد · بدون تجديد</p>
+
+        <!-- السعر -->
+        <div class="price-hero">
+          <div class="price-strike-wrap" data-price="offer-wrap">
+            <span class="price-strike" data-price="original"></span>
+            <span class="discount-pill">-<span data-price="discount"></span>%</span>
+          </div>
+          <div class="price-main">
+            <span class="price-number" data-price="current"></span>
+            <span class="price-currency" data-price="currency">ريال</span>
+          </div>
+          <div class="price-once">دفعة واحدة · بدون تجديد</div>
         </div>
-        <div class="order-row">
-          <span class="order-label">
-            <span>⏱️</span>
-            <span>المدة</span>
-          </span>
-          <span class="order-value">مدى الحياة</span>
+
+        <!-- المزايا -->
+        <ul class="features-list">
+          <li class="feature-row">
+            <span class="feature-check">✓</span>
+            <span>+21 قالب احترافي معتمد</span>
+          </li>
+          <li class="feature-row">
+            <span class="feature-check">✓</span>
+            <span>تحميلات بلا حدود (PDF + صورة)</span>
+          </li>
+          <li class="feature-row">
+            <span class="feature-check">✓</span>
+            <span>تحديثات مجانية مدى الحياة</span>
+          </li>
+          <li class="feature-row">
+            <span class="feature-check">✓</span>
+            <span>دعم فني مباشر</span>
+          </li>
+        </ul>
+
+        <!-- شارات الثقة -->
+        <div class="trust-strip">
+          <div class="trust-item">
+            <span class="ic">🔒</span>
+            <span class="label">آمن</span>
+          </div>
+          <div class="trust-item">
+            <span class="ic">🛡️</span>
+            <span class="label">ضمان 7 أيام</span>
+          </div>
+          <div class="trust-item">
+            <span class="ic">⚡</span>
+            <span class="label">فوري</span>
+          </div>
         </div>
-        <div class="order-row">
-          <span class="order-label">
-            <span>🔄</span>
-            <span>التحديثات</span>
-          </span>
-          <span class="order-value">مجانية ودائمة</span>
+      </aside>
+
+      <!-- 💳 قسم الدفع -->
+      <section class="payment-card">
+        <div class="payment-header">
+          <div class="payment-header-icon">💳</div>
+          <div class="payment-header-text">
+            <h2>إتمام الدفع</h2>
+            <p>ادفع بأمان عبر ميسّر</p>
+          </div>
         </div>
 
-        <div class="order-divider"></div>
-
-        <div class="order-total">
-          <span class="order-total-label">المجموع</span>
-          <span>
-            <span class="discount-badge" data-price="offer-wrap">-<span data-price="discount"></span>%</span>
-            <span class="original-price" data-price="original"></span>
-            <span class="order-total-amount" data-price="current"></span>
-            <span class="order-total-currency" data-price="currency"></span>
-          </span>
+        <!-- شعارات طرق الدفع -->
+        <div class="payment-logos">
+          <span class="pm-logo pm-mada">مدى</span>
+          <span class="pm-logo pm-visa">VISA</span>
+          <span class="pm-logo pm-mc">MC</span>
+          <span class="pm-logo pm-stc">STC Pay</span>
         </div>
-      </div>
 
-      <!-- ✨ المزايا -->
-      <ul class="features-list">
-        <li class="feature-item">
-          <span class="check">✓</span>
-          <span>وصول كامل لجميع التقارير الـ 21</span>
-        </li>
-        <li class="feature-item">
-          <span class="check">✓</span>
-          <span>تنزيل غير محدود (PDF + صورة + مشاركة)</span>
-        </li>
-        <li class="feature-item">
-          <span class="check">✓</span>
-          <span>جميع الإضافات والتحديثات القادمة مجاناً</span>
-        </li>
-        <li class="feature-item">
-          <span class="check">✓</span>
-          <span>دعم فني مباشر عبر الواتساب</span>
-        </li>
-      </ul>
-
-      <!-- 🔒 شارات الثقة -->
-      <div class="trust-badges">
-        <div class="trust-badge"><span class="ic">🔒</span> دفع آمن 100%</div>
-        <div class="trust-badge"><span class="ic">🛡️</span> ضمان استرداد 7 أيام</div>
-        <div class="trust-badge"><span class="ic">⚡</span> تفعيل فوري</div>
-      </div>
-
-      <!-- 💳 طرق الدفع المتاحة -->
-      <div class="payment-methods" id="paymentMethods" style="display:none;">
-        <span class="pm-icon mada">مدى</span>
-        <span class="pm-icon visa">VISA</span>
-        <span class="pm-icon mc">MC</span>
-        <span class="pm-icon stc">STC Pay</span>
-      </div>
-
-      <!-- 💳 Moyasar Payment Form -->
-      <div class="payment-section" id="moyasarSection" style="display:none;">
-        <div class="payment-title">اختر طريقة الدفع</div>
+        <!-- Moyasar Form -->
         <div class="mysr-form" id="moyasar-form">
           <div class="loading-state">
             <div class="loading-spinner"></div>
-            <div>جاري تحميل نموذج الدفع...</div>
+            <div class="loading-text">جاري تحميل بوابة الدفع...</div>
           </div>
         </div>
-      </div>
 
-      <!-- Footer -->
-      <div class="pay-footer">
-        صنع بـ ❤️ على
-        <a href="index.html" class="home-link">ksa2030.one</a>
-      </div>
+        <!-- الفوتر الأمني -->
+        <div class="secure-footer">
+          <span class="ic">🔒</span>
+          <span>دفع آمن مشفّر بمعايير PCI DSS</span>
+        </div>
+      </section>
 
     </div>
-  </div>
+  </main>
 
-  <!-- ═══════════════════════════════════════════════════════
-       📜 JavaScript - تكامل Moyasar (جاهز للتفعيل)
-       ═══════════════════════════════════════════════════════ -->
+  <!-- JavaScript -->
   <script type="module">
   import { onUserChange, onPricingChange, getPricing } from './firebase-config.js?v=4';
 
   // ⚙️ إعدادات Moyasar
-  // ═══════════════════════════════════════════════════════════════
-  // 📋 للتفعيل:
-  //    1. اذهب لـ: https://moyasar.com (سجّل حساب جديد)
-  //    2. Dashboard → Settings → API Keys
-  //    3. انسخ "Publishable Key" (يبدأ بـ pk_test_ أو pk_live_)
-  //    4. ضعه أسفل واجعل enabled = true
-  // ═══════════════════════════════════════════════════════════════
   const MOYASAR_CONFIG = {
-    // 🔥 غيّر إلى true لتفعيل Moyasar Form
     enabled: true,
-
-    // 🔑 الصق الـ Publishable Key هنا:
-    // ⚠️ Test Key للتجربة (آمن للنشر العام):
     publishable_key: 'pk_test_2EWWsFvx4PEsFEkR3DNobKdTARTtFZWFwuQyUPCM',
-    
-    // ✅ Live Key للإنتاج (بعد موافقة ميسّر):
-    // publishable_key: 'pk_live_XXXXXXXXXXXXXXXXX',
-
-    // العملة
     currency: 'SAR',
-
-    // وصف العملية
     description: 'اشتراك مدى الحياة - منصة ksa2030',
-
-    // طرق الدفع المتاحة
-    // 🆕 بعد التحقق من Apple Pay، أضف 'applepay'
-    // 🆕 بعد موافقة تابي/تمارا، أضف 'tabby' و 'tamara'
     methods: ['creditcard', 'stcpay'],
-
-    // ✅ Callback URL (بعد الدفع الناجح)
     callback_url: 'https://ksa2030.one/success.html',
   };
 
-  // ═══ التحقق من حالة المستخدم ═══
   let _user = null;
   let _pricing = getPricing();
   let _moyasarInitialized = false;
 
   onUserChange((data) => {
     _user = data?.user;
-    // 🔥 ابدأ Moyasar فقط بعد ما نعرف حالة المستخدم
     if (!_moyasarInitialized) {
       _moyasarInitialized = true;
       initMoyasar();
     }
   });
 
-  // ═══ مراقبة تغييرات السعر اللحظية ═══
   onPricingChange((pricing) => {
     _pricing = pricing;
-    // لو Moyasar مفعّل والمستخدم مسجّل، أعد التهيئة بالسعر الجديد
-    if (MOYASAR_CONFIG.enabled && _user && document.getElementById('moyasarSection').style.display === 'block') {
+    if (MOYASAR_CONFIG.enabled && _user && document.getElementById('moyasar-form').children.length > 1) {
       initMoyasar();
     }
   });
 
-  // ═══ تفعيل Moyasar ═══
   function initMoyasar() {
-    if (!MOYASAR_CONFIG.enabled) {
-      console.log('⏳ Moyasar غير مفعّل حالياً');
-      return;
-    }
+    if (!MOYASAR_CONFIG.enabled) return;
 
-    // إظهار قسم الدفع
-    document.getElementById('moyasarSection').style.display = 'block';
-    document.getElementById('paymentMethods').style.display = 'flex';
-
-    // التحقق من تسجيل الدخول
     if (!_user) {
       document.getElementById('moyasar-form').innerHTML = `
-        <div style="text-align:center;padding:30px 20px;">
-          <div style="font-size:2rem;margin-bottom:10px;">🔐</div>
-          <p style="margin-bottom:16px;color:rgba(255,255,255,0.85);">
-            لإتمام الاشتراك، سجّل دخولك أولاً
-          </p>
-          <a href="login.html" style="display:inline-block;padding:12px 24px;background:linear-gradient(135deg,#1e6b8a,#2a8aab);color:#fff;border-radius:10px;text-decoration:none;font-weight:800;">
-            تسجيل الدخول →
+        <div class="login-required">
+          <div class="ic">🔐</div>
+          <h3>سجّل دخولك أولاً</h3>
+          <p>لإتمام الاشتراك، يلزم تسجيل الدخول</p>
+          <a href="login.html?next=pay.html" class="login-btn">
+            <span>تسجيل الدخول</span>
+            <span>←</span>
           </a>
         </div>
       `;
       return;
     }
 
-    // 💰 احصل على السعر الديناميكي (بالهلالات)
     const amountInHalalas = (_pricing.currentPrice || 49) * 100;
-
-    // 🧹 امسح حالة التحميل قبل تهيئة Moyasar
     document.getElementById('moyasar-form').innerHTML = '';
 
-    // تهيئة Moyasar Form
     Moyasar.init({
       element: '.mysr-form',
       amount: amountInHalalas,
@@ -759,8 +862,6 @@
       callback_url: MOYASAR_CONFIG.callback_url,
       methods: MOYASAR_CONFIG.methods,
       language: 'ar',
-
-      // البيانات الإضافية (للـ webhook)
       metadata: {
         uid: _user.uid,
         email: _user.email,
@@ -771,8 +872,7 @@
     });
   }
 
-  // ابدأ التفعيل: يستدعى تلقائياً من onUserChange (بعد ما Firebase يتعرّف على المستخدم)
-  // Fallback timeout: لو Firebase ما رد خلال 3 ثواني، شغّل Moyasar (تظهر رسالة "سجّل دخول")
+  // Fallback timeout
   setTimeout(() => {
     if (!_moyasarInitialized) {
       _moyasarInitialized = true;
@@ -780,14 +880,7 @@
     }
   }, 3000);
 
-  // 🎁 Console message للمطور
-  console.log(`
-  ╔════════════════════════════════════════╗
-  ║   💳 pay.html - منصة ksa2030          ║
-  ╠════════════════════════════════════════╣
-  ║   Moyasar Status: ${MOYASAR_CONFIG.enabled ? '✅ ACTIVE' : '⏳ PENDING'}        ║
-  ╚════════════════════════════════════════╝
-  `);
+  console.log('💳 ksa2030 - Moyasar:', MOYASAR_CONFIG.enabled ? 'ACTIVE' : 'PENDING');
   </script>
 
 </body>

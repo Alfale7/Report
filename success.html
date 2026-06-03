@@ -1,0 +1,580 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <title>تم الاشتراك بنجاح · ksa2030</title>
+  <meta name="theme-color" content="#050a12">
+
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Aref+Ruqaa:wght@400;700&family=Reem+Kufi:wght@400;500;600;700&family=Tajawal:wght@400;500;700;900&display=swap" rel="stylesheet">
+
+  <style>
+    :root {
+      --bg-deep: #050a12;
+      --bg-mid: #0a1620;
+      --green: #4caf50;
+      --green-dim: #2a9d8f;
+      --blue: #3b6db5;
+      --gold: #e8c547;
+      --gold-deep: #d4a657;
+      --teal: #1e6b8a;
+      --teal-bright: #2a8aab;
+    }
+
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    html, body {
+      font-family: 'Tajawal', 'Tahoma', sans-serif;
+      min-height: 100vh;
+      width: 100%;
+      overflow-x: hidden;
+      background: var(--bg-deep);
+      color: #fff;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    /* الخلفية */
+    .bg-layer {
+      position: fixed;
+      inset: 0;
+      z-index: 0;
+      background:
+        radial-gradient(ellipse at top right, rgba(76, 175, 80, 0.25) 0%, transparent 50%),
+        radial-gradient(ellipse at top left, rgba(59, 109, 181, 0.2) 0%, transparent 50%),
+        radial-gradient(ellipse at bottom center, rgba(232, 197, 71, 0.15) 0%, transparent 60%),
+        linear-gradient(180deg, #050a12 0%, #0a1620 50%, #050a12 100%);
+    }
+    .bg-grid {
+      position: fixed;
+      inset: 0;
+      z-index: 0;
+      background-image:
+        linear-gradient(rgba(255, 255, 255, 0.02) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255, 255, 255, 0.02) 1px, transparent 1px);
+      background-size: 40px 40px;
+      pointer-events: none;
+    }
+    .orb {
+      position: fixed;
+      border-radius: 50%;
+      filter: blur(60px);
+      pointer-events: none;
+      z-index: 0;
+      animation: orbDrift 20s ease-in-out infinite;
+    }
+    .orb-1 { top: 5%; right: -10%; width: 350px; height: 350px; background: radial-gradient(circle, rgba(76, 175, 80, 0.5), transparent); }
+    .orb-2 { top: 30%; left: -15%; width: 320px; height: 320px; background: radial-gradient(circle, rgba(59, 109, 181, 0.4), transparent); animation-delay: -7s; }
+    .orb-3 { bottom: 10%; right: 30%; width: 280px; height: 280px; background: radial-gradient(circle, rgba(232, 197, 71, 0.35), transparent); animation-delay: -14s; }
+    @keyframes orbDrift {
+      0%, 100% { transform: translate(0, 0) scale(1); opacity: 0.6; }
+      50% { transform: translate(20px, -25px) scale(1.05); opacity: 0.8; }
+    }
+
+    /* الكونفيتي */
+    .confetti-wrap {
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      z-index: 5;
+      overflow: hidden;
+    }
+    .confetti {
+      position: absolute;
+      width: 10px;
+      height: 10px;
+      opacity: 0;
+      animation: confettiFall 3s ease-out forwards;
+    }
+    @keyframes confettiFall {
+      0% { transform: translateY(-100vh) rotate(0deg); opacity: 1; }
+      100% { transform: translateY(120vh) rotate(720deg); opacity: 0; }
+    }
+
+    /* الحاوية */
+    .wrap {
+      position: relative;
+      z-index: 1;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 24px 14px 40px;
+    }
+
+    .success-card {
+      position: relative;
+      width: 100%;
+      max-width: 500px;
+      background: linear-gradient(145deg, rgba(15, 41, 66, 0.92), rgba(10, 22, 32, 0.88));
+      backdrop-filter: blur(28px) saturate(180%);
+      -webkit-backdrop-filter: blur(28px) saturate(180%);
+      border: 1px solid rgba(76, 175, 80, 0.4);
+      border-radius: 28px;
+      padding: 36px 28px 32px;
+      box-shadow:
+        0 28px 80px rgba(0, 0, 0, 0.6),
+        0 0 60px rgba(76, 175, 80, 0.15),
+        inset 0 1px 0 rgba(255, 255, 255, 0.08);
+      text-align: center;
+    }
+
+    /* أيقونة النجاح */
+    .success-icon-wrap {
+      width: 100px;
+      height: 100px;
+      margin: 0 auto 22px;
+      position: relative;
+    }
+    .success-icon {
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(135deg, #4caf50 0%, #2a9d8f 50%, #1a7a8a 100%);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow:
+        0 12px 32px rgba(76, 175, 80, 0.5),
+        inset 0 2px 0 rgba(255, 255, 255, 0.3);
+      animation: iconPop 0.6s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+      transform: scale(0);
+    }
+    @keyframes iconPop {
+      to { transform: scale(1); }
+    }
+    .success-icon svg {
+      width: 50px;
+      height: 50px;
+      stroke: #fff;
+      stroke-width: 4;
+      fill: none;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+    }
+    .success-icon-ring {
+      position: absolute;
+      inset: -8px;
+      border: 2px solid rgba(76, 175, 80, 0.4);
+      border-radius: 50%;
+      animation: ringPulse 2s ease-in-out infinite;
+    }
+    @keyframes ringPulse {
+      0%, 100% { transform: scale(1); opacity: 0.6; }
+      50% { transform: scale(1.15); opacity: 0; }
+    }
+
+    /* العناوين */
+    h1 {
+      font: 800 1.7rem 'Aref Ruqaa', serif;
+      background: linear-gradient(135deg, #fff 0%, #e8c547 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      margin-bottom: 8px;
+      line-height: 1.3;
+    }
+    .subtitle {
+      font: 600 1rem 'Reem Kufi', sans-serif;
+      color: #86efac;
+      margin-bottom: 22px;
+    }
+
+    /* بطاقة الاشتراك */
+    .subscription-box {
+      background: linear-gradient(135deg, rgba(232, 197, 71, 0.12), rgba(30, 107, 138, 0.08));
+      border: 1px solid rgba(232, 197, 71, 0.3);
+      border-radius: 18px;
+      padding: 20px;
+      margin-bottom: 22px;
+      position: relative;
+      overflow: hidden;
+    }
+    .subscription-box::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 120px;
+      height: 120px;
+      background: radial-gradient(circle, rgba(232, 197, 71, 0.2), transparent);
+      pointer-events: none;
+    }
+    .sub-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      background: linear-gradient(135deg, #e8c547, #d4a657);
+      color: #050a12;
+      padding: 6px 14px;
+      border-radius: 99px;
+      font: 800 0.75rem 'Reem Kufi', sans-serif;
+      letter-spacing: 1px;
+      margin-bottom: 12px;
+    }
+    .sub-title {
+      font: 800 1.15rem 'Tajawal', sans-serif;
+      color: #fff;
+      margin-bottom: 4px;
+    }
+    .sub-meta {
+      font: 600 0.85rem 'Tajawal', sans-serif;
+      color: rgba(255, 255, 255, 0.7);
+    }
+
+    /* المزايا */
+    .features {
+      list-style: none;
+      text-align: right;
+      margin-bottom: 24px;
+      padding: 0;
+    }
+    .feature {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 10px 0;
+      font: 600 0.92rem 'Tajawal', sans-serif;
+      color: rgba(255, 255, 255, 0.92);
+      animation: featureSlide 0.5s ease-out forwards;
+      opacity: 0;
+      transform: translateX(20px);
+    }
+    .feature:nth-child(1) { animation-delay: 0.4s; }
+    .feature:nth-child(2) { animation-delay: 0.55s; }
+    .feature:nth-child(3) { animation-delay: 0.7s; }
+    .feature:nth-child(4) { animation-delay: 0.85s; }
+    @keyframes featureSlide {
+      to { opacity: 1; transform: translateX(0); }
+    }
+    .feature .ic {
+      width: 32px;
+      height: 32px;
+      flex-shrink: 0;
+      background: linear-gradient(135deg, #4caf50, #2a9d8f);
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #fff;
+      font-size: 0.85rem;
+      font-weight: 900;
+      box-shadow: 0 4px 12px rgba(76, 175, 80, 0.4);
+    }
+
+    /* الأزرار */
+    .cta-primary {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      width: 100%;
+      padding: 16px 22px;
+      background: linear-gradient(135deg, #1e6b8a 0%, #2a8aab 50%, #d4a657 100%);
+      color: #fff;
+      border: none;
+      border-radius: 13px;
+      font: 900 1.05rem 'Tajawal', sans-serif;
+      cursor: pointer;
+      text-decoration: none;
+      transition: all 0.25s ease;
+      box-shadow: 0 8px 24px rgba(30, 107, 138, 0.45);
+      margin-bottom: 12px;
+    }
+    .cta-primary:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 12px 32px rgba(30, 107, 138, 0.6);
+    }
+    .cta-secondary {
+      display: block;
+      width: 100%;
+      padding: 12px 22px;
+      background: transparent;
+      color: rgba(255, 255, 255, 0.7);
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      border-radius: 12px;
+      font: 600 0.9rem 'Tajawal', sans-serif;
+      cursor: pointer;
+      text-decoration: none;
+      text-align: center;
+      transition: all 0.2s;
+    }
+    .cta-secondary:hover {
+      background: rgba(255, 255, 255, 0.05);
+      border-color: rgba(255, 255, 255, 0.3);
+      color: #fff;
+    }
+
+    /* الفوتر */
+    .pay-footer {
+      text-align: center;
+      margin-top: 22px;
+      padding-top: 18px;
+      border-top: 1px solid rgba(255, 255, 255, 0.06);
+      color: rgba(255, 255, 255, 0.5);
+      font: 500 0.78rem 'Tajawal', sans-serif;
+    }
+    .order-id {
+      display: inline-block;
+      background: rgba(255, 255, 255, 0.04);
+      padding: 3px 10px;
+      border-radius: 6px;
+      font-family: monospace;
+      font-size: 0.72rem;
+      color: rgba(255, 255, 255, 0.6);
+      margin-top: 6px;
+    }
+
+    /* حالة التحميل */
+    .loading-state {
+      text-align: center;
+      padding: 40px 20px;
+    }
+    .loading-spinner {
+      width: 50px;
+      height: 50px;
+      margin: 0 auto 16px;
+      border: 4px solid rgba(232, 197, 71, 0.2);
+      border-top-color: #e8c547;
+      border-radius: 50%;
+      animation: spin 0.8s linear infinite;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+    .loading-text {
+      font: 600 0.95rem 'Tajawal', sans-serif;
+      color: rgba(255, 255, 255, 0.8);
+    }
+
+    /* حالة الخطأ */
+    .error-state {
+      background: rgba(220, 38, 38, 0.1);
+      border: 1px solid rgba(220, 38, 38, 0.3);
+      border-radius: 14px;
+      padding: 16px;
+      text-align: center;
+      margin-bottom: 16px;
+    }
+    .error-state .ic {
+      font-size: 2rem;
+      margin-bottom: 8px;
+    }
+    .error-state .text {
+      color: #fca5a5;
+      font: 600 0.9rem 'Tajawal', sans-serif;
+    }
+
+    @media (max-width: 480px) {
+      .wrap { padding: 18px 12px 30px; align-items: flex-start; padding-top: 28px; }
+      .success-card { padding: 30px 20px 26px; border-radius: 22px; }
+      h1 { font-size: 1.4rem; }
+      .success-icon-wrap { width: 84px; height: 84px; }
+      .success-icon svg { width: 42px; height: 42px; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- الخلفية -->
+  <div class="bg-layer"></div>
+  <div class="bg-grid"></div>
+  <div class="orb orb-1"></div>
+  <div class="orb orb-2"></div>
+  <div class="orb orb-3"></div>
+  <div class="confetti-wrap" id="confettiWrap"></div>
+
+  <div class="wrap">
+    <div class="success-card" id="successCard">
+
+      <!-- حالة التحميل (البداية) -->
+      <div class="loading-state" id="loadingState">
+        <div class="loading-spinner"></div>
+        <div class="loading-text">جاري تفعيل اشتراكك...</div>
+      </div>
+
+      <!-- حالة النجاح (تظهر بعد التفعيل) -->
+      <div id="successContent" style="display:none;">
+        <div class="success-icon-wrap">
+          <div class="success-icon-ring"></div>
+          <div class="success-icon">
+            <svg viewBox="0 0 24 24">
+              <polyline points="20 6 9 17 4 12"></polyline>
+            </svg>
+          </div>
+        </div>
+
+        <h1>🎉 تم تفعيل اشتراكك بنجاح!</h1>
+        <div class="subtitle">مرحباً بك في عائلة ksa2030 💎</div>
+
+        <div class="subscription-box">
+          <span class="sub-badge">💎 اشتراك مدى الحياة</span>
+          <div class="sub-title">منصة التقارير الذكية</div>
+          <div class="sub-meta">وصول كامل · بدون تجديد · تحديثات مجانية</div>
+        </div>
+
+        <ul class="features">
+          <li class="feature">
+            <span class="ic">✓</span>
+            <span>وصول كامل لجميع التقارير الـ 21</span>
+          </li>
+          <li class="feature">
+            <span class="ic">✓</span>
+            <span>تحميلات بلا حدود (PDF + صورة)</span>
+          </li>
+          <li class="feature">
+            <span class="ic">✓</span>
+            <span>جميع التحديثات المستقبلية مجاناً</span>
+          </li>
+          <li class="feature">
+            <span class="ic">✓</span>
+            <span>دعم فني عبر الواتساب</span>
+          </li>
+        </ul>
+
+        <a href="index.html" class="cta-primary">
+          <span>🚀</span>
+          <span>ابدأ الاستخدام الآن</span>
+        </a>
+
+        <a href="profile.html" class="cta-secondary">
+          عرض ملفي الشخصي
+        </a>
+
+        <div class="pay-footer">
+          صنع بـ ❤️ على
+          <a href="index.html" style="color:#3aa8d0;text-decoration:none;font-weight:700;">ksa2030.one</a>
+          <div id="paymentIdDisplay"></div>
+        </div>
+      </div>
+
+      <!-- حالة الخطأ -->
+      <div id="errorContent" style="display:none;">
+        <div class="error-state">
+          <div class="ic">⚠️</div>
+          <div class="text" id="errorMessage">حدث خطأ. تواصل معنا.</div>
+        </div>
+        <a href="index.html" class="cta-secondary">العودة للصفحة الرئيسية</a>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- JavaScript -->
+  <script type="module">
+  import { onUserChange, db } from './firebase-config.js?v=4';
+  import { doc, updateDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+
+  // 🎊 إنشاء الكونفيتي
+  function createConfetti() {
+    const colors = ['#4caf50', '#e8c547', '#3aa8d0', '#d4a657', '#2a9d8f', '#fbbf24'];
+    const wrap = document.getElementById('confettiWrap');
+    for (let i = 0; i < 50; i++) {
+      const c = document.createElement('div');
+      c.className = 'confetti';
+      c.style.left = Math.random() * 100 + '%';
+      c.style.background = colors[Math.floor(Math.random() * colors.length)];
+      c.style.animationDelay = Math.random() * 2 + 's';
+      c.style.animationDuration = (2.5 + Math.random() * 1.5) + 's';
+      c.style.width = (6 + Math.random() * 8) + 'px';
+      c.style.height = c.style.width;
+      c.style.borderRadius = Math.random() > 0.5 ? '50%' : '2px';
+      wrap.appendChild(c);
+    }
+  }
+
+  // عرض حالة الخطأ
+  function showError(message) {
+    document.getElementById('loadingState').style.display = 'none';
+    document.getElementById('errorContent').style.display = 'block';
+    document.getElementById('errorMessage').textContent = message;
+  }
+
+  // عرض حالة النجاح
+  function showSuccess(paymentId) {
+    document.getElementById('loadingState').style.display = 'none';
+    document.getElementById('successContent').style.display = 'block';
+    createConfetti();
+    
+    if (paymentId) {
+      const display = document.getElementById('paymentIdDisplay');
+      if (display) {
+        display.innerHTML = `<div class="order-id">رقم الطلب: ${paymentId.slice(0, 8)}...</div>`;
+      }
+    }
+  }
+
+  // 🔥 تفعيل الاشتراك في Firebase
+  async function activateSubscription(user, paymentId) {
+    try {
+      const userRef = doc(db, 'users', user.uid);
+      await updateDoc(userRef, {
+        isLifetime: true,
+        plan: 'lifetime',
+        lifetimeActivatedAt: serverTimestamp(),
+        paymentId: paymentId || 'unknown',
+        paymentMethod: 'moyasar',
+        updatedAt: serverTimestamp()
+      });
+      console.log('✅ تم تفعيل اشتراك Lifetime');
+      return true;
+    } catch (err) {
+      console.error('❌ فشل التفعيل:', err);
+      throw err;
+    }
+  }
+
+  // 🎯 معالجة العودة من Moyasar
+  async function handlePaymentReturn() {
+    // قراءة بيانات الدفع من URL
+    const params = new URLSearchParams(window.location.search);
+    const paymentId = params.get('id');
+    const status = params.get('status');
+    const message = params.get('message');
+
+    console.log('💳 Payment Return:', { paymentId, status, message });
+
+    // التحقق من حالة الدفع
+    if (status && status !== 'paid' && status !== 'authorized') {
+      showError(`فشل الدفع: ${message || status}`);
+      return;
+    }
+
+    // انتظار تسجيل دخول المستخدم
+    let userResolved = false;
+    onUserChange(async (data) => {
+      if (userResolved) return;
+      userResolved = true;
+
+      const user = data?.user;
+      if (!user) {
+        showError('يرجى تسجيل الدخول لتفعيل اشتراكك');
+        setTimeout(() => {
+          window.location.href = `login.html?next=success.html${window.location.search}`;
+        }, 2000);
+        return;
+      }
+
+      // تفعيل الاشتراك
+      try {
+        await activateSubscription(user, paymentId);
+        showSuccess(paymentId);
+      } catch (err) {
+        showError('حدث خطأ في تفعيل الاشتراك. تواصل معنا.');
+      }
+    });
+
+    // إذا ما تم تحديد الحالة خلال 5 ثواني
+    setTimeout(() => {
+      if (!userResolved) {
+        userResolved = true;
+        showError('انتهت المهلة. جرّب تسجيل الدخول.');
+      }
+    }, 5000);
+  }
+
+  // بدء المعالجة
+  handlePaymentReturn();
+  </script>
+
+</body>
+</html>
