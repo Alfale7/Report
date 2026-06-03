@@ -437,10 +437,13 @@ function showSubscribeGate() {
   const link = 'pay.html';
   const name = _profile?.displayName || (_user.email || '').split('@')[0];
   
-  // 💰 السعر الديناميكي
+  // 💰 السعر الديناميكي مع كل المعلومات
   const pricing = (typeof getPricing === 'function') ? getPricing() : null;
   const price = pricing?.currentPrice || window.__PRICING__?.currentPrice || 49;
   const currency = pricing?.currency || window.__PRICING__?.currency || 'ريال';
+  const originalPrice = pricing?.originalPrice || window.__PRICING__?.originalPrice || 99;
+  const discount = pricing?.discountPercent || window.__PRICING__?.discountPercent || 50;
+  const isOfferActive = pricing?.isOfferActive !== false;
 
   const g = document.createElement('div');
   g.id = 'subscribeGate';
@@ -459,6 +462,9 @@ function showSubscribeGate() {
     #subscribeGate .upt{position:absolute;top:-10px;right:50%;transform:translateX(50%);background:#dc2626;color:#fff;padding:3px 12px;border-radius:99px;font-size:0.7rem;font-weight:900;white-space:nowrap;box-shadow:0 4px 12px rgba(220,38,38,0.4);}
     #subscribeGate .uam{font-family:'Reem Kufi','Tajawal',sans-serif;font-size:3.4rem;font-weight:900;color:#ffc107;line-height:1;}
     #subscribeGate .ucu{font-size:1.15rem;font-weight:800;color:#ffc107;}
+    #subscribeGate .ustrike{font-family:'Tajawal',sans-serif;font-size:1.1rem;font-weight:700;color:rgba(255,255,255,0.4);text-decoration:line-through;margin-bottom:4px;display:inline-block;}
+    #subscribeGate .udisc{display:inline-block;background:linear-gradient(135deg,#dc2626,#f59e0b);color:#fff;padding:3px 10px;border-radius:99px;font-size:0.7rem;font-weight:900;margin-right:8px;box-shadow:0 3px 8px rgba(220,38,38,0.4);animation:sgDiscPulse 2.5s ease-in-out infinite;}
+    @keyframes sgDiscPulse{0%,100%{transform:scale(1) rotate(-2deg);}50%{transform:scale(1.08) rotate(2deg);}}
     #subscribeGate .uo{display:inline-block;background:linear-gradient(135deg,#16a34a,#15803d);color:#fff;padding:5px 16px;border-radius:99px;font-size:0.76rem;font-weight:900;margin-top:6px;}
     #subscribeGate .uct{display:flex;align-items:center;justify-content:center;gap:10px;width:100%;padding:16px;background:linear-gradient(135deg,#25d366,#128c7e);color:#fff;border:none;border-radius:14px;font-family:inherit;font-size:1rem;font-weight:900;text-decoration:none;box-shadow:0 8px 22px rgba(37,211,102,0.45);margin-bottom:10px;box-sizing:border-box;}
     #subscribeGate .ug{font-size:0.76rem;color:rgba(255,255,255,0.7);font-weight:700;margin-bottom:14px;}
@@ -482,6 +488,10 @@ function showSubscribeGate() {
 
     <div class="upb">
       <div class="upt">🔥 عرض إطلاق محدود</div>
+      <div id="sg-offer-wrap" ${isOfferActive ? '' : 'style="display:none;"'} style="margin-top:8px;">
+        <span class="ustrike" id="sg-live-original">${originalPrice}</span>
+        <span class="udisc" id="sg-live-discount">-${discount}%</span>
+      </div>
       <div style="display:flex;align-items:baseline;justify-content:center;gap:5px;margin-top:8px;">
         <span class="uam" id="sg-live-price">${price}</span>
         <span class="ucu" id="sg-live-currency">${currency}</span>
@@ -506,6 +516,10 @@ function showSubscribeGate() {
   onPricingChange((newPricing) => {
     const priceEl = document.getElementById('sg-live-price');
     const curEl = document.getElementById('sg-live-currency');
+    const origEl = document.getElementById('sg-live-original');
+    const discEl = document.getElementById('sg-live-discount');
+    const offerWrap = document.getElementById('sg-offer-wrap');
+    
     if (priceEl && newPricing.currentPrice) {
       priceEl.textContent = newPricing.currentPrice;
       // ✨ تأثير بصري عند التحديث
@@ -519,6 +533,18 @@ function showSubscribeGate() {
     }
     if (curEl && newPricing.currency) {
       curEl.textContent = newPricing.currency;
+    }
+    // 💸 تحديث السعر الأصلي
+    if (origEl && newPricing.originalPrice) {
+      origEl.textContent = newPricing.originalPrice;
+    }
+    // 🎁 تحديث الخصم
+    if (discEl && newPricing.discountPercent !== undefined) {
+      discEl.textContent = '-' + newPricing.discountPercent + '%';
+    }
+    // 🎯 إظهار/إخفاء العرض
+    if (offerWrap) {
+      offerWrap.style.display = newPricing.isOfferActive !== false ? '' : 'none';
     }
   });
 }
@@ -1105,23 +1131,56 @@ window.showPremiumFeatureModal = function(featureName = 'هذه الميزة') {
 
     /* السعر - بنر أنيق صغير */
     #premiumFeatureModal .pfm-price{
-      display:flex;align-items:center;justify-content:space-between;
-      background:linear-gradient(135deg,rgba(212,166,87,0.1),rgba(245,158,11,0.04));
+      display:flex;align-items:center;justify-content:space-between;gap:10px;
+      background:linear-gradient(135deg,rgba(212,166,87,0.12),rgba(245,158,11,0.04));
       border:1px solid rgba(212,166,87,0.3);
       border-radius:12px;padding:11px 14px;margin-bottom:12px;
+      position:relative;overflow:hidden;
     }
-    #premiumFeatureModal .pfm-price-left{display:flex;flex-direction:column;gap:2px;}
+    #premiumFeatureModal .pfm-price::before{
+      content:'';position:absolute;top:-20px;right:-20px;
+      width:80px;height:80px;
+      background:radial-gradient(circle,rgba(232,197,71,0.2),transparent);
+      pointer-events:none;
+    }
+    #premiumFeatureModal .pfm-price-left{display:flex;flex-direction:column;gap:3px;position:relative;z-index:1;}
     #premiumFeatureModal .pfm-price-label{
       font-size:0.65rem;font-weight:700;
       color:rgba(238,244,248,0.55);letter-spacing:0.4px;
     }
+    #premiumFeatureModal .pfm-price-row{
+      display:flex;align-items:baseline;gap:8px;
+    }
+    #premiumFeatureModal .pfm-strike{
+      font-family:'Tajawal',sans-serif;
+      font-size:0.85rem;font-weight:700;
+      color:rgba(238,244,248,0.35);
+      text-decoration:line-through;
+    }
     #premiumFeatureModal .pfm-price-value{
       font-family:'Reem Kufi','Tajawal',sans-serif;
-      font-size:1.4rem;font-weight:900;color:#f0b855;
+      font-size:1.5rem;font-weight:900;color:#f0b855;
       line-height:1;display:flex;align-items:baseline;gap:3px;
     }
     #premiumFeatureModal .pfm-price-value .cur{font-size:0.85rem;font-weight:700;}
     #premiumFeatureModal .pfm-price-right{
+      display:flex;flex-direction:column;align-items:center;gap:5px;
+      position:relative;z-index:1;
+    }
+    #premiumFeatureModal .pfm-discount{
+      background:linear-gradient(135deg,#dc2626,#f59e0b);
+      color:#fff;
+      padding:3px 9px;border-radius:99px;
+      font-size:0.7rem;font-weight:900;
+      font-family:'Reem Kufi',sans-serif;
+      box-shadow:0 3px 8px rgba(220,38,38,0.3);
+      animation:pfmDiscountPulse 2.5s ease-in-out infinite;
+    }
+    @keyframes pfmDiscountPulse {
+      0%,100% { transform:scale(1) rotate(-2deg); }
+      50% { transform:scale(1.08) rotate(2deg); }
+    }
+    #premiumFeatureModal .pfm-once{
       background:rgba(22,163,74,0.15);
       border:1px solid rgba(22,163,74,0.35);
       color:#22c55e;
@@ -1191,12 +1250,18 @@ window.showPremiumFeatureModal = function(featureName = 'هذه الميزة') {
     <div class="pfm-price">
       <div class="pfm-price-left">
         <span class="pfm-price-label">اشتراك مدى الحياة</span>
-        <span class="pfm-price-value">
-          <span id="pfm-live-price">${price}</span>
-          <span class="cur" id="pfm-live-currency">${currency}</span>
-        </span>
+        <div class="pfm-price-row">
+          <span class="pfm-strike" id="pfm-live-original" ${isOfferActive ? '' : 'style="display:none;"'}>${originalPrice}</span>
+          <span class="pfm-price-value">
+            <span id="pfm-live-price">${price}</span>
+            <span class="cur" id="pfm-live-currency">${currency}</span>
+          </span>
+        </div>
       </div>
-      <div class="pfm-price-right">دفعة<br>واحدة</div>
+      <div class="pfm-price-right">
+        <span class="pfm-discount" id="pfm-live-discount" ${isOfferActive ? '' : 'style="display:none;"'}>-${discount}%</span>
+        <span class="pfm-once">دفعة<br>واحدة</span>
+      </div>
     </div>
 
     ${isGuest 
@@ -1222,9 +1287,12 @@ window.showPremiumFeatureModal = function(featureName = 'هذه الميزة') {
   const _liveUnsub = onPricingChange((newPricing) => {
     const priceEl = document.getElementById('pfm-live-price');
     const curEl = document.getElementById('pfm-live-currency');
+    const origEl = document.getElementById('pfm-live-original');
+    const discEl = document.getElementById('pfm-live-discount');
+    
     if (priceEl && newPricing.currentPrice) {
       priceEl.textContent = newPricing.currentPrice;
-      // ✨ إضافة تأثير بصري لطيف عند التحديث
+      // ✨ تأثير بصري عند التحديث
       priceEl.style.transition = 'all 0.3s ease';
       priceEl.style.transform = 'scale(1.15)';
       priceEl.style.color = '#22c55e';
@@ -1235,6 +1303,16 @@ window.showPremiumFeatureModal = function(featureName = 'هذه الميزة') {
     }
     if (curEl && newPricing.currency) {
       curEl.textContent = newPricing.currency;
+    }
+    // 💸 تحديث السعر الأصلي
+    if (origEl && newPricing.originalPrice) {
+      origEl.textContent = newPricing.originalPrice;
+      origEl.style.display = newPricing.isOfferActive ? '' : 'none';
+    }
+    // 🎁 تحديث نسبة الخصم
+    if (discEl && newPricing.discountPercent !== undefined) {
+      discEl.textContent = '-' + newPricing.discountPercent + '%';
+      discEl.style.display = newPricing.isOfferActive ? '' : 'none';
     }
   });
 
