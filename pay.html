@@ -633,10 +633,10 @@
         <span class="pm-icon stc">STC Pay</span>
       </div>
 
-      <!-- 💳 Moyasar Payment Form (يظهر لما يكون مفعّل) -->
+      <!-- 💳 Moyasar Payment Form -->
       <div class="payment-section" id="moyasarSection" style="display:none;">
         <div class="payment-title">اختر طريقة الدفع</div>
-        <div id="moyasar-form">
+        <div class="mysr-form" id="moyasar-form">
           <div class="loading-state">
             <div class="loading-spinner"></div>
             <div>جاري تحميل نموذج الدفع...</div>
@@ -746,9 +746,12 @@
     // 💰 احصل على السعر الديناميكي (بالهلالات)
     const amountInHalalas = (_pricing.currentPrice || 49) * 100;
 
+    // 🧹 امسح حالة التحميل قبل تهيئة Moyasar
+    document.getElementById('moyasar-form').innerHTML = '';
+
     // تهيئة Moyasar Form
     Moyasar.init({
-      element: '#moyasar-form',
+      element: '.mysr-form',
       amount: amountInHalalas,
       currency: MOYASAR_CONFIG.currency,
       description: MOYASAR_CONFIG.description,
