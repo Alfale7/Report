@@ -236,12 +236,17 @@
       color: #fff;
       border-color: rgba(255, 255, 255, 0.2);
     }
-    .nav-btn-close {
-      width: 38px;
-      height: 38px;
-      padding: 0;
-      justify-content: center;
-      font-size: 1.1rem;
+    .nav-btn-logout {
+      background: rgba(220, 38, 38, 0.1) !important;
+      border-color: rgba(220, 38, 38, 0.3) !important;
+      color: #fca5a5 !important;
+      cursor: pointer;
+      font-family: inherit;
+    }
+    .nav-btn-logout:hover {
+      background: rgba(220, 38, 38, 0.18) !important;
+      border-color: rgba(220, 38, 38, 0.5) !important;
+      color: #fff !important;
     }
 
     /* ═══════════════════════════════════════════════
@@ -309,15 +314,21 @@
 
     /* السعر الكبير */
     .price-hero {
-      background: linear-gradient(135deg, rgba(232, 197, 71, 0.1), rgba(30, 107, 138, 0.06));
-      border: 1px solid rgba(232, 197, 71, 0.25);
+      background: linear-gradient(135deg, rgba(232, 197, 71, 0.12), rgba(30, 107, 138, 0.08));
+      border: 1px solid rgba(232, 197, 71, 0.3);
       border-radius: 18px;
       padding: 22px;
       margin-bottom: 20px;
       text-align: center;
       position: relative;
       overflow: hidden;
+      animation: heroEntrance 0.8s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
     }
+    @keyframes heroEntrance {
+      0% { opacity: 0; transform: translateY(20px) scale(0.95); }
+      100% { opacity: 1; transform: translateY(0) scale(1); }
+    }
+    /* وميض ذهبي يمر فوق البنر */
     .price-hero::before {
       content: '';
       position: absolute;
@@ -325,14 +336,40 @@
       right: -30px;
       width: 120px;
       height: 120px;
-      background: radial-gradient(circle, rgba(232, 197, 71, 0.2), transparent);
+      background: radial-gradient(circle, rgba(232, 197, 71, 0.25), transparent);
       pointer-events: none;
+      animation: glowPulse 3s ease-in-out infinite;
+    }
+    @keyframes glowPulse {
+      0%, 100% { opacity: 0.6; transform: scale(1); }
+      50% { opacity: 1; transform: scale(1.15); }
+    }
+    /* خط ضوئي يمر */
+    .price-hero::after {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: -100%;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(90deg, transparent, rgba(232, 197, 71, 0.15), transparent);
+      animation: shimmer 4s infinite;
+      pointer-events: none;
+    }
+    @keyframes shimmer {
+      0% { left: -100%; }
+      50%, 100% { left: 100%; }
     }
     .price-strike-wrap {
       display: inline-flex;
       align-items: center;
       gap: 10px;
       margin-bottom: 8px;
+      animation: fadeSlideDown 0.6s ease-out 0.3s both;
+    }
+    @keyframes fadeSlideDown {
+      from { opacity: 0; transform: translateY(-8px); }
+      to { opacity: 1; transform: translateY(0); }
     }
     .price-strike {
       font: 700 1rem 'Tajawal', sans-serif;
@@ -345,6 +382,12 @@
       padding: 3px 10px;
       border-radius: 99px;
       font: 900 0.7rem 'Reem Kufi', sans-serif;
+      box-shadow: 0 4px 12px rgba(220, 38, 38, 0.4);
+      animation: discountBounce 2.5s ease-in-out infinite;
+    }
+    @keyframes discountBounce {
+      0%, 100% { transform: scale(1) rotate(-2deg); }
+      50% { transform: scale(1.08) rotate(2deg); }
     }
     .price-main {
       display: flex;
@@ -352,14 +395,26 @@
       justify-content: center;
       gap: 8px;
       margin: 4px 0 8px;
+      animation: priceReveal 0.7s cubic-bezier(0.34, 1.56, 0.64, 1) 0.5s both;
+    }
+    @keyframes priceReveal {
+      0% { opacity: 0; transform: scale(0.7); }
+      100% { opacity: 1; transform: scale(1); }
     }
     .price-number {
       font: 900 3.2rem 'Tajawal', sans-serif;
-      background: linear-gradient(135deg, #fff 0%, #e8c547 100%);
+      background: linear-gradient(135deg, #fff 0%, #e8c547 50%, #fff 100%);
+      background-size: 200% 100%;
       -webkit-background-clip: text;
       -webkit-text-fill-color: transparent;
       background-clip: text;
       line-height: 1;
+      animation: priceShine 3s ease-in-out infinite;
+      position: relative;
+    }
+    @keyframes priceShine {
+      0%, 100% { background-position: 0% 50%; }
+      50% { background-position: 100% 50%; }
     }
     .price-currency {
       font: 700 1.1rem 'Tajawal', sans-serif;
@@ -369,6 +424,11 @@
       font: 600 0.78rem 'Reem Kufi', sans-serif;
       color: #e8c547;
       letter-spacing: 1px;
+      animation: fadeSlideUp 0.6s ease-out 0.8s both;
+    }
+    @keyframes fadeSlideUp {
+      from { opacity: 0; transform: translateY(8px); }
+      to { opacity: 1; transform: translateY(0); }
     }
 
     /* قائمة المزايا */
@@ -698,7 +758,10 @@
           <span>🏠</span>
           <span>الرئيسية</span>
         </a>
-        <a href="index.html" class="nav-btn nav-btn-close" title="خروج" aria-label="خروج">✕</a>
+        <button class="nav-btn nav-btn-logout" onclick="handleLogout()" id="logoutBtn" style="display:none;">
+          <span>🚪</span>
+          <span>تسجيل الخروج</span>
+        </button>
       </div>
     </div>
   </nav>
@@ -801,7 +864,18 @@
 
   <!-- JavaScript -->
   <script type="module">
-  import { onUserChange, onPricingChange, getPricing } from './firebase-config.js?v=4';
+  import { onUserChange, onPricingChange, getPricing, logout } from './firebase-config.js?v=4';
+
+  // 🚪 تسجيل الخروج (متاح عالمياً)
+  window.handleLogout = async function() {
+    if (!confirm('هل تريد تسجيل الخروج؟')) return;
+    try {
+      await logout();
+      window.location.href = 'index.html';
+    } catch (err) {
+      alert('حدث خطأ: ' + err.message);
+    }
+  };
 
   // ⚙️ إعدادات Moyasar
   const MOYASAR_CONFIG = {
@@ -819,6 +893,13 @@
 
   onUserChange((data) => {
     _user = data?.user;
+    
+    // 🚪 إظهار زر تسجيل الخروج إذا المستخدم مسجل
+    const logoutBtn = document.getElementById('logoutBtn');
+    if (logoutBtn) {
+      logoutBtn.style.display = _user ? 'inline-flex' : 'none';
+    }
+    
     if (!_moyasarInitialized) {
       _moyasarInitialized = true;
       initMoyasar();
