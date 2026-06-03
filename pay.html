@@ -696,16 +696,22 @@
   // ═══ التحقق من حالة المستخدم ═══
   let _user = null;
   let _pricing = getPricing();
+  let _moyasarInitialized = false;
 
   onUserChange((data) => {
     _user = data?.user;
+    // 🔥 ابدأ Moyasar فقط بعد ما نعرف حالة المستخدم
+    if (!_moyasarInitialized) {
+      _moyasarInitialized = true;
+      initMoyasar();
+    }
   });
 
   // ═══ مراقبة تغييرات السعر اللحظية ═══
   onPricingChange((pricing) => {
     _pricing = pricing;
-    // لو Moyasar مفعّل، أعد التهيئة بالسعر الجديد
-    if (MOYASAR_CONFIG.enabled && document.getElementById('moyasarSection').style.display === 'block') {
+    // لو Moyasar مفعّل والمستخدم مسجّل، أعد التهيئة بالسعر الجديد
+    if (MOYASAR_CONFIG.enabled && _user && document.getElementById('moyasarSection').style.display === 'block') {
       initMoyasar();
     }
   });
@@ -762,8 +768,14 @@
     });
   }
 
-  // ابدأ التفعيل
-  initMoyasar();
+  // ابدأ التفعيل: يستدعى تلقائياً من onUserChange (بعد ما Firebase يتعرّف على المستخدم)
+  // Fallback timeout: لو Firebase ما رد خلال 3 ثواني، شغّل Moyasar (تظهر رسالة "سجّل دخول")
+  setTimeout(() => {
+    if (!_moyasarInitialized) {
+      _moyasarInitialized = true;
+      initMoyasar();
+    }
+  }, 3000);
 
   // 🎁 Console message للمطور
   console.log(`
@@ -771,7 +783,6 @@
   ║   💳 pay.html - منصة ksa2030          ║
   ╠════════════════════════════════════════╣
   ║   Moyasar Status: ${MOYASAR_CONFIG.enabled ? '✅ ACTIVE' : '⏳ PENDING'}        ║
-  ║   Fallback: WhatsApp Business         ║
   ╚════════════════════════════════════════╝
   `);
   </script>
