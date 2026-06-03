@@ -68,17 +68,69 @@ export const SITE_CONFIG = {
 // 💰 نظام التسعير الديناميكي (يقرأ من Firestore)
 // ═══════════════════════════════════════════════
 
-// 🌐 حالة السعر الحالي (cache في الذاكرة)
-let _currentPricing = {
+// 💾 مفتاح الكاش في localStorage
+const PRICING_CACHE_KEY = 'ksa2030_pricing_cache_v1';
+
+// 🚀 استرجاع السعر من الكاش (إن وجد) - فوري قبل ما Firestore يجيب
+function loadCachedPricing() {
+  try {
+    const cached = localStorage.getItem(PRICING_CACHE_KEY);
+    if (cached) {
+      const data = JSON.parse(cached);
+      // ✅ نتحقق من أن الكاش ليس قديماً جداً (7 أيام)
+      const age = Date.now() - (data.cachedAt || 0);
+      if (age < 7 * 24 * 60 * 60 * 1000) {
+        return {
+          currentPrice: Number(data.currentPrice) || SITE_CONFIG.PRICE,
+          originalPrice: Number(data.originalPrice) || SITE_CONFIG.ORIGINAL_PRICE,
+          currency: data.currency || SITE_CONFIG.CURRENCY,
+          isOfferActive: data.isOfferActive !== false,
+          offerLabel: data.offerLabel || 'عرض محدود',
+          offerEmoji: data.offerEmoji || '🔥',
+          discountPercent: calculateDiscount(
+            Number(data.currentPrice),
+            Number(data.originalPrice)
+          ),
+          loaded: true,
+          fromCache: true
+        };
+      }
+    }
+  } catch (e) {
+    console.warn('Failed to load cached pricing:', e);
+  }
+  return null;
+}
+
+// 💾 حفظ السعر في الكاش
+function saveCachedPricing(pricing) {
+  try {
+    localStorage.setItem(PRICING_CACHE_KEY, JSON.stringify({
+      ...pricing,
+      cachedAt: Date.now()
+    }));
+  } catch (e) {
+    console.warn('Failed to cache pricing:', e);
+  }
+}
+
+// 🌐 حالة السعر الحالي (cache في الذاكرة) - يبدأ من الكاش لو موجود!
+let _currentPricing = loadCachedPricing() || {
   currentPrice: SITE_CONFIG.PRICE,
   originalPrice: SITE_CONFIG.ORIGINAL_PRICE,
   currency: SITE_CONFIG.CURRENCY,
   isOfferActive: true,
   offerLabel: 'عرض محدود',
   offerEmoji: '🔥',
-  discountPercent: 50,
-  loaded: false
+  discountPercent: calculateDiscount(SITE_CONFIG.PRICE, SITE_CONFIG.ORIGINAL_PRICE),
+  loaded: true,  // ⚡ نعتبره loaded من الكاش
+  fromCache: false
 };
+
+// 🌐 خلّيه متاح فوراً للعالم الخارجي (قبل أي asynchronous wait)
+if (typeof window !== 'undefined') {
+  window.__PRICING__ = _currentPricing;
+}
 
 // 📡 المستمعين للتغييرات
 const _pricingListeners = new Set();
@@ -136,8 +188,12 @@ function initPricingWatcher() {
           Number(data.originalPrice)
         ),
         loaded: true,
+        fromCache: false,
         updatedAt: data.updatedAt
       };
+      
+      // 💾 احفظ في الكاش للزيارة القادمة (تحميل فوري)
+      saveCachedPricing(_currentPricing);
     } else {
       // لا يوجد ملف في Firestore - استخدم الافتراضي
       _currentPricing = {
@@ -148,7 +204,8 @@ function initPricingWatcher() {
         offerLabel: 'عرض محدود',
         offerEmoji: '🔥',
         discountPercent: calculateDiscount(SITE_CONFIG.PRICE, SITE_CONFIG.ORIGINAL_PRICE),
-        loaded: true
+        loaded: true,
+        fromCache: false
       };
     }
 

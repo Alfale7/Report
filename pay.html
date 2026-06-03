@@ -6,6 +6,41 @@
   <title>إتمام الاشتراك · ksa2030</title>
   <meta name="theme-color" content="#050a12">
 
+  <!-- ⚡ Instant Pricing - من localStorage قبل أي شي -->
+  <script>
+  (function(){
+    try {
+      var cached = localStorage.getItem('ksa2030_pricing_cache_v1');
+      if (cached) {
+        var data = JSON.parse(cached);
+        var age = Date.now() - (data.cachedAt || 0);
+        if (age < 7 * 24 * 60 * 60 * 1000) {
+          window.__PRICING__ = {
+            currentPrice: Number(data.currentPrice) || 49,
+            originalPrice: Number(data.originalPrice) || 99,
+            currency: data.currency || 'ريال',
+            isOfferActive: data.isOfferActive !== false,
+            offerLabel: data.offerLabel || 'عرض محدود',
+            discountPercent: (data.originalPrice > data.currentPrice) ? Math.round(((data.originalPrice - data.currentPrice) / data.originalPrice) * 100) : 0,
+            loaded: true, fromCache: true
+          };
+        }
+      }
+    } catch(e) {}
+    if (!window.__PRICING__) {
+      window.__PRICING__ = { currentPrice: 49, originalPrice: 99, currency: 'ريال', isOfferActive: true, offerLabel: 'عرض محدود', discountPercent: 50, loaded: false };
+    }
+    document.addEventListener('DOMContentLoaded', function(){
+      var p = window.__PRICING__;
+      document.querySelectorAll('[data-price="current"]').forEach(function(el){ el.textContent = p.currentPrice; });
+      document.querySelectorAll('[data-price="original"]').forEach(function(el){ el.textContent = p.originalPrice; });
+      document.querySelectorAll('[data-price="currency"]').forEach(function(el){ el.textContent = p.currency; });
+      document.querySelectorAll('[data-price="discount"]').forEach(function(el){ el.textContent = p.discountPercent; });
+      document.querySelectorAll('[data-price="offer-wrap"]').forEach(function(el){ el.style.display = p.isOfferActive ? '' : 'none'; });
+    });
+  })();
+  </script>
+
   <!-- Favicon -->
   <link rel="icon" type="image/png" sizes="48x48" href="favicon-48x48.png">
   <link rel="icon" type="image/png" sizes="32x32" href="favicon-32x32.png">
