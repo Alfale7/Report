@@ -556,40 +556,53 @@
     .pm-mc { color: #ea001b; }
     .pm-stc { background: linear-gradient(135deg, #4b1389, #6b1ec4); color: #fff; }
 
-    /* Moyasar Form - تحسينات شاملة */
+    /* Moyasar Form - تخصيص فخم */
     .mysr-form {
       min-height: 200px;
       border-radius: 14px;
     }
 
-    /* تخصيص فخم لـ Moyasar */
+    /* ✨ خلفية فاتحة للحقول علشان تبان */
     .mysr-form input,
     .mysr-form select,
-    .mysr-form textarea {
-      background: rgba(255, 255, 255, 0.06) !important;
-      border: 1.5px solid rgba(255, 255, 255, 0.12) !important;
+    .mysr-form textarea,
+    .mysr-form .mysr-input {
+      background: #ffffff !important;
+      border: 1.5px solid rgba(255, 255, 255, 0.25) !important;
       border-radius: 12px !important;
-      color: #fff !important;
+      color: #1a1a22 !important;
       padding: 14px 16px !important;
       font: 600 0.95rem 'Tajawal', sans-serif !important;
       transition: all 0.25s ease !important;
+      width: 100% !important;
     }
     .mysr-form input:focus,
-    .mysr-form select:focus {
-      background: rgba(255, 255, 255, 0.1) !important;
-      border-color: rgba(232, 197, 71, 0.6) !important;
-      box-shadow: 0 0 0 3px rgba(232, 197, 71, 0.15) !important;
+    .mysr-form select:focus,
+    .mysr-form textarea:focus {
+      background: #ffffff !important;
+      border-color: #e8c547 !important;
+      box-shadow: 0 0 0 3px rgba(232, 197, 71, 0.25) !important;
       outline: none !important;
+      color: #1a1a22 !important;
     }
-    .mysr-form input::placeholder {
-      color: rgba(255, 255, 255, 0.35) !important;
+    .mysr-form input::placeholder,
+    .mysr-form textarea::placeholder {
+      color: rgba(0, 0, 0, 0.4) !important;
+      font-weight: 500 !important;
     }
     .mysr-form label {
-      color: rgba(255, 255, 255, 0.85) !important;
-      font: 700 0.85rem 'Tajawal', sans-serif !important;
-      margin-bottom: 6px !important;
+      color: rgba(255, 255, 255, 0.92) !important;
+      font: 700 0.88rem 'Tajawal', sans-serif !important;
+      margin-bottom: 8px !important;
+      display: block !important;
     }
-    .mysr-form button[type="submit"] {
+    .mysr-form .mysr-required {
+      color: #fca5a5 !important;
+      font-size: 0.75rem !important;
+      margin-top: 4px !important;
+    }
+    .mysr-form button[type="submit"],
+    .mysr-form .mysr-submit-btn {
       background: linear-gradient(135deg, #1e6b8a 0%, #2a8aab 50%, #d4a657 100%) !important;
       color: #fff !important;
       border: none !important;
@@ -601,9 +614,24 @@
       box-shadow: 0 8px 24px rgba(30, 107, 138, 0.45) !important;
       width: 100% !important;
     }
-    .mysr-form button[type="submit"]:hover {
+    .mysr-form button[type="submit"]:hover,
+    .mysr-form .mysr-submit-btn:hover {
       transform: translateY(-2px) !important;
       box-shadow: 0 12px 32px rgba(30, 107, 138, 0.6) !important;
+    }
+    /* العناوين الفرعية */
+    .mysr-form h3,
+    .mysr-form .mysr-section-title,
+    .mysr-form legend {
+      color: rgba(255, 255, 255, 0.85) !important;
+      font: 700 1rem 'Reem Kufi', sans-serif !important;
+    }
+    /* النصوص الإرشادية */
+    .mysr-form p,
+    .mysr-form small,
+    .mysr-form .mysr-hint {
+      color: rgba(255, 255, 255, 0.7) !important;
+      font-family: 'Tajawal', sans-serif !important;
     }
 
     /* أزرار اختيار طريقة الدفع */
