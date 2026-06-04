@@ -15,7 +15,11 @@ import {
   incrementDownloadCount,
   listenToMaintenance,
   onPricingChange,
-  getPricing
+  getPricing,
+  logExport,
+  createShare,
+  toggleFavorite,
+  isFavorite
 } from './firebase-config.js';
 
 import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
@@ -757,6 +761,20 @@ function refreshBadge() {
       </span>
       <span>الملف الشخصي</span>
     </a>
+    ${(lifetime||admin)?`
+    <div class="dv"></div>
+    <a href="#" class="mi" onclick="window.shareReport();return false;">
+      <span class="mi-icon">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="18" cy="5" r="3"/>
+          <circle cx="6" cy="12" r="3"/>
+          <circle cx="18" cy="19" r="3"/>
+          <line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/>
+          <line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/>
+        </svg>
+      </span>
+      <span>🔗 مشاركة التقرير</span>
+    </a>`:''}
     ${admin?`
     <a href="admin.html" class="mi adm">
       <span class="mi-icon">
@@ -949,6 +967,291 @@ window.getFirebaseUser = () => _user;
 window.getFirebaseProfile = () => _profile;
 window.isFirebaseLifetime = () => isLifetime(_profile);
 window.isFirebaseAdmin = () => isAdmin(_user);
+
+// ═══════════════════════════════════════════════════════════
+// 📋 تتبّع التصدير في السجل
+// ═══════════════════════════════════════════════════════════
+window.trackExport = async function(options = {}) {
+  if (!_user) return false;
+  
+  try {
+    const data = {
+      type: options.type || _currentPage || 'unknown',
+      title: options.title || document.title || 'تقرير',
+      format: options.format || 'pdf',
+      templateId: options.templateId || _currentPage
+    };
+    
+    const result = await logExport(data);
+    if (result.success) {
+      console.log('✅ تم تسجيل التصدير في السجل');
+      showToast('📋 تم حفظ التقرير في سجلك');
+      return true;
+    }
+  } catch (err) {
+    console.warn('فشل تسجيل التصدير:', err);
+  }
+  return false;
+};
+
+// ═══════════════════════════════════════════════════════════
+// 🔗 إنشاء رابط مشاركة
+// ═══════════════════════════════════════════════════════════
+window.shareReport = async function(options = {}) {
+  if (!_user) {
+    showToast('سجّل دخولك أولاً لمشاركة التقرير', 'error');
+    setTimeout(() => window.location.href = 'login.html', 1500);
+    return null;
+  }
+  
+  // 🔒 فقط للمشتركين Lifetime
+  if (!isLifetime(_profile) && !isAdmin(_user)) {
+    showSubscribeGate();
+    return null;
+  }
+  
+  try {
+    // اجمع البيانات من الحقول إن وجدت
+    const content = options.content || collectReportContent();
+    
+    const data = {
+      type: options.type || _currentPage || 'unknown',
+      title: options.title || document.title || 'تقرير مشارك',
+      content: content
+    };
+    
+    const result = await createShare(data);
+    if (result.success) {
+      // انسخ الرابط للحافظة تلقائياً
+      try {
+        await navigator.clipboard.writeText(result.shareUrl);
+        showShareModal(result.shareUrl);
+      } catch {
+        showShareModal(result.shareUrl);
+      }
+      return result.shareUrl;
+    } else {
+      showToast('فشل إنشاء الرابط: ' + (result.error || ''), 'error');
+    }
+  } catch (err) {
+    showToast('خطأ في إنشاء الرابط', 'error');
+    console.error(err);
+  }
+  return null;
+};
+
+// جمع بيانات التقرير من الحقول (افتراضي)
+function collectReportContent() {
+  const content = {};
+  document.querySelectorAll('input, textarea, select').forEach(el => {
+    if (el.id) content[el.id] = el.value || el.textContent || '';
+  });
+  document.querySelectorAll('[contenteditable="true"]').forEach(el => {
+    if (el.id) content[el.id] = el.innerHTML || '';
+  });
+  return content;
+}
+
+// 🎊 Modal مشاركة فاخر
+function showShareModal(shareUrl) {
+  // أزل القديم لو موجود
+  const old = document.getElementById('shareModal');
+  if (old) old.remove();
+  
+  const modal = document.createElement('div');
+  modal.id = 'shareModal';
+  modal.innerHTML = `
+    <style>
+      #shareModal {
+        position: fixed; inset: 0;
+        background: rgba(5, 10, 18, 0.85);
+        backdrop-filter: blur(20px);
+        -webkit-backdrop-filter: blur(20px);
+        display: flex; align-items: center; justify-content: center;
+        z-index: 10000; padding: 20px;
+        animation: smFadeIn 0.3s ease-out;
+      }
+      @keyframes smFadeIn { from { opacity: 0; } to { opacity: 1; } }
+      #shareModal .sm-card {
+        background: linear-gradient(145deg, rgba(15, 41, 66, 0.98), rgba(10, 22, 32, 0.95));
+        border: 1px solid rgba(232, 197, 71, 0.3);
+        border-radius: 24px;
+        padding: 36px 28px;
+        max-width: 460px; width: 100%;
+        text-align: center;
+        box-shadow: 0 40px 100px rgba(0, 0, 0, 0.7);
+        animation: smPop 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
+        position: relative; overflow: hidden;
+        font-family: 'Tajawal', sans-serif;
+        color: #fff;
+      }
+      @keyframes smPop {
+        from { opacity: 0; transform: scale(0.85); }
+        to { opacity: 1; transform: scale(1); }
+      }
+      #shareModal .sm-card::before {
+        content: ''; position: absolute;
+        top: -50px; left: 50%; transform: translateX(-50%);
+        width: 300px; height: 200px;
+        background: radial-gradient(circle, rgba(232, 197, 71, 0.25), transparent 70%);
+        pointer-events: none;
+      }
+      #shareModal .sm-icon {
+        width: 80px; height: 80px;
+        margin: 0 auto 18px;
+        border-radius: 50%;
+        background: linear-gradient(135deg, #4caf50, #22c55e);
+        display: grid; place-items: center;
+        font-size: 2.2rem;
+        box-shadow: 0 12px 32px rgba(76, 175, 80, 0.5);
+        position: relative; z-index: 1;
+        animation: smIconBounce 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
+      }
+      @keyframes smIconBounce {
+        0% { transform: scale(0); }
+        100% { transform: scale(1); }
+      }
+      #shareModal .sm-title {
+        font: 800 1.4rem 'Aref Ruqaa', serif;
+        background: linear-gradient(135deg, #fff, #e8c547);
+        -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+        background-clip: text;
+        margin-bottom: 6px;
+        position: relative; z-index: 1;
+      }
+      #shareModal .sm-sub {
+        font: 500 0.92rem 'Tajawal', sans-serif;
+        color: rgba(255, 255, 255, 0.65);
+        margin-bottom: 22px;
+        position: relative; z-index: 1;
+      }
+      #shareModal .sm-url-box {
+        background: rgba(255, 255, 255, 0.05);
+        border: 1.5px solid rgba(232, 197, 71, 0.3);
+        border-radius: 12px;
+        padding: 14px 18px;
+        margin-bottom: 20px;
+        font: 600 0.85rem monospace;
+        color: #e8c547;
+        word-break: break-all;
+        text-align: right;
+        direction: ltr;
+        position: relative; z-index: 1;
+      }
+      #shareModal .sm-actions {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 10px;
+        position: relative; z-index: 1;
+      }
+      #shareModal .sm-btn {
+        padding: 13px;
+        border: none; border-radius: 12px;
+        font: 800 0.92rem 'Tajawal', sans-serif;
+        cursor: pointer;
+        font-family: inherit;
+        transition: all 0.25s ease;
+        display: inline-flex; align-items: center; justify-content: center; gap: 6px;
+      }
+      #shareModal .sm-btn.copy {
+        background: linear-gradient(135deg, #1e6b8a, #2a8aab, #d4a657);
+        color: #fff;
+        box-shadow: 0 8px 22px rgba(30, 107, 138, 0.4);
+      }
+      #shareModal .sm-btn.copy:hover { transform: translateY(-2px); }
+      #shareModal .sm-btn.close {
+        background: rgba(255, 255, 255, 0.06);
+        color: rgba(255, 255, 255, 0.7);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+      }
+      #shareModal .sm-btn.close:hover { background: rgba(255, 255, 255, 0.12); color: #fff; }
+      #shareModal .sm-share-buttons {
+        display: flex; gap: 8px; justify-content: center;
+        margin-top: 16px; padding-top: 16px;
+        border-top: 1px solid rgba(255, 255, 255, 0.06);
+        position: relative; z-index: 1;
+      }
+      #shareModal .sm-share-btn {
+        width: 44px; height: 44px;
+        border-radius: 12px;
+        display: grid; place-items: center;
+        font-size: 1.2rem;
+        text-decoration: none;
+        transition: all 0.2s ease;
+        background: rgba(255, 255, 255, 0.06);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+      }
+      #shareModal .sm-share-btn:hover { transform: scale(1.1) translateY(-2px); }
+      #shareModal .sm-share-btn.wa { background: rgba(37, 211, 102, 0.15); border-color: rgba(37, 211, 102, 0.3); }
+      #shareModal .sm-share-btn.tw { background: rgba(29, 161, 242, 0.15); border-color: rgba(29, 161, 242, 0.3); }
+      #shareModal .sm-share-btn.tg { background: rgba(0, 136, 204, 0.15); border-color: rgba(0, 136, 204, 0.3); }
+    </style>
+    <div class="sm-card" onclick="event.stopPropagation()">
+      <div class="sm-icon">🔗</div>
+      <h3 class="sm-title">رابط المشاركة جاهز!</h3>
+      <p class="sm-sub">شارك تقريرك مع زملائك بهذا الرابط</p>
+      <div class="sm-url-box" id="smUrlBox">${shareUrl}</div>
+      <div class="sm-actions">
+        <button class="sm-btn close" onclick="document.getElementById('shareModal').remove()">إغلاق</button>
+        <button class="sm-btn copy" onclick="window._copyShareUrl('${shareUrl}')">📋 نسخ الرابط</button>
+      </div>
+      <div class="sm-share-buttons">
+        <a href="https://wa.me/?text=${encodeURIComponent('شاهد تقريري: ' + shareUrl)}" target="_blank" class="sm-share-btn wa" title="واتساب">💬</a>
+        <a href="https://twitter.com/intent/tweet?text=${encodeURIComponent('شاهد تقريري: ' + shareUrl)}" target="_blank" class="sm-share-btn tw" title="تويتر">𝕏</a>
+        <a href="https://t.me/share/url?url=${encodeURIComponent(shareUrl)}" target="_blank" class="sm-share-btn tg" title="تيليجرام">✈️</a>
+      </div>
+    </div>
+  `;
+  
+  modal.onclick = (e) => {
+    if (e.target.id === 'shareModal') modal.remove();
+  };
+  
+  document.body.appendChild(modal);
+}
+
+window._copyShareUrl = async function(url) {
+  try {
+    await navigator.clipboard.writeText(url);
+    showToast('✅ تم نسخ الرابط!');
+  } catch {
+    // Fallback
+    const ta = document.createElement('textarea');
+    ta.value = url;
+    document.body.appendChild(ta);
+    ta.select();
+    try { document.execCommand('copy'); showToast('✅ تم نسخ الرابط!'); }
+    catch { showToast('فشل النسخ', 'error'); }
+    ta.remove();
+  }
+};
+
+// ═══════════════════════════════════════════════════════════
+// ⭐ إضافة/إزالة من المفضلة (للاستخدام في index.html)
+// ═══════════════════════════════════════════════════════════
+window.toggleFavoriteTemplate = async function(templateId, metadata = {}) {
+  if (!_user) {
+    showToast('سجّل دخولك أولاً', 'error');
+    setTimeout(() => window.location.href = 'login.html', 1500);
+    return null;
+  }
+  
+  try {
+    const result = await toggleFavorite(templateId, metadata);
+    if (result.success) {
+      showToast(result.isFavorite ? '⭐ أضيف للمفضلة' : '💔 أُزيل من المفضلة');
+      return result.isFavorite;
+    }
+  } catch (err) {
+    showToast('خطأ', 'error');
+  }
+  return null;
+};
+
+window.checkFavorite = async function(templateId) {
+  if (!_user) return false;
+  return await isFavorite(templateId);
+};
 
 // 📊 تتبّع التحميلات في Firebase (Real-time)
 window.trackDownload = async function() {
