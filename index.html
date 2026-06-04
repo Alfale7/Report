@@ -8223,9 +8223,9 @@ document.addEventListener('DOMContentLoaded', function(){
 async function injectFavoriteStars() {
   const cards = document.querySelectorAll('.preview-card[data-target]');
   
-  // ⏳ انتظر Firebase يحمّل (بحد أقصى 3 ثواني)
+  // ⏳ انتظر Firebase Auth يخلّص (المتغير _authResolved يصير true في onUserChange)
   let attempts = 0;
-  while (!window.getFirebaseUser && attempts < 30) {
+  while (!window._currentFavUser && !window._favAuthChecked && attempts < 50) {
     await new Promise(r => setTimeout(r, 100));
     attempts++;
   }
@@ -8233,15 +8233,14 @@ async function injectFavoriteStars() {
   // قائمة المفضلة الحالية (لو المستخدم مسجل دخول)
   let userFavorites = new Set();
   try {
-    if (window.getFirebaseUser && window.getFirebaseUser()) {
-      // استورد الدالة من firebase-config
+    if (window._currentFavUser) {
       const { getFavorites } = await import('./firebase-config.js?v=5');
       const result = await getFavorites();
       if (result.success && result.favorites) {
         result.favorites.forEach(f => userFavorites.add(f.templateId));
       }
     }
-  } catch (e) { /* تجاهل لو ما عنده دخول */ }
+  } catch (e) { /* تجاهل */ }
   
   cards.forEach(card => {
     // تجاهل لو فيه زر مسبقاً
@@ -8273,17 +8272,15 @@ async function injectFavoriteStars() {
       e.stopPropagation();
       e.preventDefault();
       
-      // انتظر Firebase يحمل إذا لسا ما حمل
+      // انتظر Auth يخلّص إذا لسا
       let attempts = 0;
-      while (!window.getFirebaseUser && attempts < 20) {
+      while (!window._favAuthChecked && attempts < 30) {
         await new Promise(r => setTimeout(r, 100));
         attempts++;
       }
       
-      const user = window.getFirebaseUser?.();
-      
       // تحقق من تسجيل الدخول
-      if (!user) {
+      if (!window._currentFavUser) {
         showFavLoginModal();
         return;
       }
@@ -8291,15 +8288,17 @@ async function injectFavoriteStars() {
       // toggle
       btn.style.pointerEvents = 'none';
       try {
-        if (window.toggleFavoriteTemplate) {
-          const isFav = await window.toggleFavoriteTemplate(templateId, {
-            title: title,
-            icon: icon,
-            category: catTitle,
-            url: target
-          });
-          btn.classList.toggle('active', isFav);
-          btn.innerHTML = isFav ? '★' : '☆';
+        const { toggleFavorite } = await import('./firebase-config.js?v=5');
+        const result = await toggleFavorite(templateId, {
+          title: title,
+          icon: icon,
+          category: catTitle,
+          url: target
+        });
+        if (result.success) {
+          btn.classList.toggle('active', result.isFavorite);
+          btn.innerHTML = result.isFavorite ? '★' : '☆';
+          showFavToast(result.isFavorite ? '⭐ أضيف للمفضلة' : '💔 أُزيل من المفضلة');
         }
       } catch (err) {
         console.error(err);
@@ -8309,6 +8308,32 @@ async function injectFavoriteStars() {
     
     card.appendChild(btn);
   });
+}
+
+// 🎊 Toast بسيط
+function showFavToast(msg) {
+  const old = document.getElementById('favToast');
+  if (old) old.remove();
+  
+  const t = document.createElement('div');
+  t.id = 'favToast';
+  t.style.cssText = `
+    position:fixed;bottom:30px;left:50%;transform:translateX(-50%);
+    background:linear-gradient(135deg,#1e6b8a,#d4a657);color:#fff;
+    padding:14px 26px;border-radius:14px;
+    font:800 0.92rem 'Tajawal',sans-serif;
+    box-shadow:0 16px 40px rgba(30,107,138,0.5);
+    z-index:9999;
+    animation:favToastIn 0.4s cubic-bezier(0.34,1.56,0.64,1);
+  `;
+  t.textContent = msg;
+  
+  const style = document.createElement('style');
+  style.textContent = `@keyframes favToastIn{from{opacity:0;transform:translateX(-50%) translateY(50px);}to{opacity:1;transform:translateX(-50%) translateY(0);}}`;
+  document.head.appendChild(style);
+  
+  document.body.appendChild(t);
+  setTimeout(() => t.remove(), 2500);
 }
 
 // 🎨 Modal فاخر لطلب تسجيل الدخول
@@ -8563,6 +8588,10 @@ onUserChange((data) => {
   // 🛠️ خزّن المستخدم لفحص الصيانة
   _currentUserForMaintenance = data?.user || null;
   _authResolved = true; // ✅ Auth خلّص الآن
+  
+  // ⭐ خزّن المستخدم للمفضلة (لزر النجمة)
+  window._currentFavUser = data?.user || null;
+  window._favAuthChecked = true;
   
   // نفّذ فحص الصيانة المعلّق
   if (_pendingMaintenanceCheck || _maintenanceShown) {
