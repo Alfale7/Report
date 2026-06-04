@@ -1081,10 +1081,28 @@ function collectReportContent() {
     const text = (el.innerText || el.textContent || '').trim();
     if (text && text.length > 1) {
       const key = el.id || el.dataset?.field || el.dataset?.label || `editable_${++counter}`;
-      // تجاهل النصوص الافتراضية الفارغة جداً
       if (text !== '...' && text !== '-' && text !== '_') {
         content[key] = text;
       }
+    }
+  });
+  
+  // 🖼️ الصور (Data URLs من رفع الملفات)
+  document.querySelectorAll('img').forEach(el => {
+    const src = el.src || '';
+    // فقط الصور اللي بصيغة data URL (المرفوعة من المستخدم)
+    if (src.startsWith('data:image/')) {
+      const key = el.id || el.dataset?.field || el.dataset?.label || `img_${++counter}`;
+      content[key] = src;
+    }
+  });
+  
+  // 🎨 خلفيات CSS بصيغة data URL
+  document.querySelectorAll('[style*="background-image"]').forEach(el => {
+    const bg = el.style.backgroundImage || '';
+    if (bg.includes('data:image/')) {
+      const key = el.id || el.dataset?.field || `bg_${++counter}`;
+      content[key + '__bg'] = bg;
     }
   });
   

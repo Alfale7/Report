@@ -215,6 +215,31 @@ function tryRestoreFromCloud() {
     let restored = 0;
     Object.entries(data.content).forEach(([key, value]) => {
       if (!value) return;
+      
+      // 🎨 استعادة خلفية CSS
+      if (key.endsWith('__bg')) {
+        const realKey = key.replace('__bg', '');
+        let el = document.getElementById(realKey);
+        if (!el) el = document.querySelector(`[data-field="${realKey}"]`);
+        if (el) {
+          el.style.backgroundImage = value;
+          restored++;
+        }
+        return;
+      }
+      
+      // 🖼️ استعادة صورة (Data URL)
+      if (typeof value === 'string' && value.startsWith('data:image/')) {
+        let el = document.getElementById(key);
+        if (!el) el = document.querySelector(`[data-field="${key}"]`);
+        if (el && el.tagName === 'IMG') {
+          el.src = value;
+          restored++;
+        }
+        return;
+      }
+      
+      // 📝 استعادة نص عادي
       let el = document.getElementById(key);
       if (!el) el = document.querySelector(`[name="${key}"]`);
       if (!el) el = document.querySelector(`[data-field="${key}"]`);
