@@ -1440,17 +1440,16 @@ window.openExport = async function(exportId, reportUrl) {
     
     const exportData = result.export;
     
-    // احفظ المحتوى في sessionStorage عشان التقرير يقرأه
-    sessionStorage.setItem('ksa_restore_export', JSON.stringify({
+    // احفظ المحتوى في localStorage (يبقى عبر الصفحات)
+    localStorage.setItem('ksa_restore_export', JSON.stringify({
       type: exportData.type,
       title: exportData.title,
       content: exportData.content || {},
       exportedAt: Date.now()
     }));
     
-    // افتح التقرير في تبويب جديد مع علامة restore
-    window.open(reportUrl + '?restore=1', '_blank');
-    showToast('✅ التقرير جاهز في تبويب جديد');
+    // افتح التقرير في نفس التبويب
+    window.location.href = reportUrl + '?restore=1';
   } catch (err) {
     console.error(err);
     showToast('خطأ في الفتح', 'error');

@@ -1173,7 +1173,7 @@ loadData();
   if (params.get('restore') !== '1') return;
   
   try {
-    const stored = sessionStorage.getItem('ksa_restore_export');
+    const stored = localStorage.getItem('ksa_restore_export');
     if (!stored) return;
     
     const data = JSON.parse(stored);
@@ -1212,8 +1212,8 @@ loadData();
       }, 500);
     }
     
-    // امسح sessionStorage بعد الاستعادة
-    sessionStorage.removeItem('ksa_restore_export');
+    // امسح بعد الاستعادة
+    localStorage.removeItem('ksa_restore_export');
     
     // امسح الـ ?restore=1 من URL
     if (window.history && window.history.replaceState) {
