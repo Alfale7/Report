@@ -1406,7 +1406,14 @@ function renderExports(exports) {
     const date = e.exportedAt?.toDate?.() || e.createdAt?.toDate?.() || new Date();
     const dateStr = date.toLocaleDateString('ar-SA', { year: 'numeric', month: 'long', day: 'numeric' });
     const hasContent = e.content && Object.keys(e.content).length > 0;
-    const reportUrl = (e.templateId || e.type || '') + '.html';
+    
+    // 🛠️ ابني الرابط بشكل صحيح
+    let reportUrl = e.templateId || e.type || '';
+    // امسح أي .html موجود
+    reportUrl = reportUrl.replace(/\.html$/i, '');
+    // أضف .html واحدة
+    reportUrl = reportUrl ? reportUrl + '.html' : 'index.html';
+    
     return `
       <div class="item">
         <div class="item-icon">📋</div>
@@ -1419,7 +1426,7 @@ function renderExports(exports) {
           </div>
         </div>
         <div class="item-actions">
-          ${hasContent ? `<button class="icon-btn primary" onclick="openExport('${e.id}','${escapeHtml(reportUrl)}')" title="فتح التقرير">👁️</button>` : ''}
+          ${hasContent ? `<button class="icon-btn primary" onclick="openExport('${e.id}','${reportUrl}')" title="فتح التقرير">👁️</button>` : ''}
           <button class="icon-btn danger" onclick="deleteExport('${e.id}')" title="حذف">🗑️</button>
         </div>
       </div>`;
@@ -1434,11 +1441,12 @@ window.openExport = async function(exportId, reportUrl) {
     // اجلب التصدير الكامل
     const result = await getExportById(exportId);
     if (!result.success) {
-      showToast('فشل التحميل', 'error');
+      showToast('فشل التحميل: ' + (result.error || ''), 'error');
       return;
     }
     
     const exportData = result.export;
+    console.log('📋 بيانات التصدير:', exportData);
     
     // احفظ المحتوى في localStorage (يبقى عبر الصفحات)
     localStorage.setItem('ksa_restore_export', JSON.stringify({
@@ -1448,11 +1456,20 @@ window.openExport = async function(exportId, reportUrl) {
       exportedAt: Date.now()
     }));
     
+    // 🛠️ تأكد من اسم الملف
+    let finalUrl = reportUrl;
+    if (!finalUrl || finalUrl === '.html') {
+      // fallback لـ type
+      finalUrl = (exportData.type || 'index') + '.html';
+    }
+    
+    console.log('🔗 الذهاب إلى:', finalUrl);
+    
     // افتح التقرير في نفس التبويب
-    window.location.href = reportUrl + '?restore=1';
+    window.location.href = finalUrl + '?restore=1';
   } catch (err) {
-    console.error(err);
-    showToast('خطأ في الفتح', 'error');
+    console.error('خطأ في openExport:', err);
+    showToast('خطأ: ' + err.message, 'error');
   }
 };
 
