@@ -1435,20 +1435,35 @@ function renderExports(exports) {
 
 // 🆕 فتح تقرير محفوظ
 window.openExport = async function(exportId, reportUrl) {
+  // 💎 اعرض شاشة تحميل فوراً
+  const loader = document.createElement('div');
+  loader.style.cssText = `
+    position:fixed;inset:0;background:rgba(5,10,18,0.95);
+    backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);
+    z-index:99999;display:flex;align-items:center;justify-content:center;
+    flex-direction:column;gap:20px;
+  `;
+  loader.innerHTML = `
+    <div style="width:60px;height:60px;border:5px solid rgba(232,197,71,0.2);border-top-color:#e8c547;border-radius:50%;animation:_oe 0.8s linear infinite;"></div>
+    <div style="font:800 1.1rem 'Tajawal',sans-serif;color:#fff;text-align:center;">
+      ⏳ جاري تحميل التقرير...
+    </div>
+    <style>@keyframes _oe{to{transform:rotate(360deg);}}</style>
+  `;
+  document.body.appendChild(loader);
+  
   try {
-    showToast('⏳ جاري تحميل التقرير...');
-    
     // اجلب التصدير الكامل
     const result = await getExportById(exportId);
     if (!result.success) {
+      loader.remove();
       showToast('فشل التحميل: ' + (result.error || ''), 'error');
       return;
     }
     
     const exportData = result.export;
-    console.log('📋 بيانات التصدير:', exportData);
     
-    // احفظ المحتوى في localStorage (يبقى عبر الصفحات)
+    // احفظ المحتوى
     localStorage.setItem('ksa_restore_export', JSON.stringify({
       type: exportData.type,
       title: exportData.title,
@@ -1456,18 +1471,16 @@ window.openExport = async function(exportId, reportUrl) {
       exportedAt: Date.now()
     }));
     
-    // 🛠️ تأكد من اسم الملف
+    // تأكد من اسم الملف
     let finalUrl = reportUrl;
     if (!finalUrl || finalUrl === '.html') {
-      // fallback لـ type
       finalUrl = (exportData.type || 'index') + '.html';
     }
     
-    console.log('🔗 الذهاب إلى:', finalUrl);
-    
-    // افتح التقرير في نفس التبويب
+    // افتح فوراً
     window.location.href = finalUrl + '?restore=1';
   } catch (err) {
+    loader.remove();
     console.error('خطأ في openExport:', err);
     showToast('خطأ: ' + err.message, 'error');
   }
