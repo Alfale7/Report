@@ -1363,28 +1363,45 @@ function animateNum(el, target) {
 }
 
 async function loadAllData() {
-  const [exportsRes, favsRes, sharesRes] = await Promise.all([
-    getExportHistory(), getFavorites(), getUserShares()
-  ]);
+  // 🚀 التحميل التدريجي - كل قسم يظهر فور تحميله
   
-  const exports = exportsRes.exports || [];
-  const favorites = favsRes.favorites || [];
-  const shares = sharesRes.shares || [];
+  // 1️⃣ سجل التصدير - الأهم، يحمّل أولاً
+  getExportHistory().then(exportsRes => {
+    const exports = exportsRes.exports || [];
+    animateNum(document.getElementById('statExports'), exports.length);
+    document.getElementById('exportsCount').textContent = exports.length;
+    renderExports(exports);
+  }).catch(() => {
+    document.getElementById('exportsCount').textContent = '0';
+    renderExports([]);
+  });
   
-  animateNum(document.getElementById('statExports'), exports.length);
-  animateNum(document.getElementById('statFavorites'), favorites.length);
-  animateNum(document.getElementById('statShares'), shares.length);
-  let totalViews = 0;
-  shares.forEach(s => totalViews += (s.views || 0));
-  animateNum(document.getElementById('statViews'), totalViews);
+  // 2️⃣ المفضلة
+  getFavorites().then(favsRes => {
+    const favorites = favsRes.favorites || [];
+    animateNum(document.getElementById('statFavorites'), favorites.length);
+    document.getElementById('favoritesCount').textContent = favorites.length;
+    renderFavorites(favorites);
+  }).catch(() => {
+    document.getElementById('favoritesCount').textContent = '0';
+    renderFavorites([]);
+  });
   
-  document.getElementById('exportsCount').textContent = exports.length;
-  document.getElementById('favoritesCount').textContent = favorites.length;
-  document.getElementById('sharesCount').textContent = shares.length;
-  
-  renderExports(exports);
-  renderFavorites(favorites);
-  renderShares(shares);
+  // 3️⃣ المشاركات
+  getUserShares().then(sharesRes => {
+    const shares = sharesRes.shares || [];
+    animateNum(document.getElementById('statShares'), shares.length);
+    document.getElementById('sharesCount').textContent = shares.length;
+    
+    let totalViews = 0;
+    shares.forEach(s => totalViews += (s.views || 0));
+    animateNum(document.getElementById('statViews'), totalViews);
+    
+    renderShares(shares);
+  }).catch(() => {
+    document.getElementById('sharesCount').textContent = '0';
+    renderShares([]);
+  });
 }
 
 function renderExports(exports) {
@@ -1405,13 +1422,11 @@ function renderExports(exports) {
   c.innerHTML = '<div class="items">' + exports.map(e => {
     const date = e.exportedAt?.toDate?.() || e.createdAt?.toDate?.() || new Date();
     const dateStr = date.toLocaleDateString('ar-SA', { year: 'numeric', month: 'long', day: 'numeric' });
-    const hasContent = e.content && Object.keys(e.content).length > 0;
+    const hasContent = e.hasContent || (e.content && Object.keys(e.content).length > 0);
     
     // 🛠️ ابني الرابط بشكل صحيح
     let reportUrl = e.templateId || e.type || '';
-    // امسح أي .html موجود
     reportUrl = reportUrl.replace(/\.html$/i, '');
-    // أضف .html واحدة
     reportUrl = reportUrl ? reportUrl + '.html' : 'index.html';
     
     return `

@@ -761,7 +761,7 @@ export async function getExportById(exportId) {
 }
 
 /**
- * الحصول على سجل التصدير
+ * الحصول على سجل التصدير (بدون content الضخم)
  */
 export async function getExportHistory(uid = null, limitCount = 50) {
   try {
@@ -774,7 +774,21 @@ export async function getExportHistory(uid = null, limitCount = 50) {
     );
     const snap = await getDocs(q);
     const exports = [];
-    snap.forEach(doc => exports.push({ id: doc.id, ...doc.data() }));
+    snap.forEach(doc => {
+      const data = doc.data();
+      // 🚀 استبعد content الضخم للسرعة (نجلبه فقط عند الفتح)
+      const hasContent = data.content && Object.keys(data.content).length > 0;
+      exports.push({ 
+        id: doc.id, 
+        type: data.type,
+        title: data.title,
+        format: data.format,
+        templateId: data.templateId,
+        exportedAt: data.exportedAt,
+        createdAt: data.createdAt,
+        hasContent: hasContent  // فقط boolean بدل الـ content كله
+      });
+    });
     
     // رتّب يدوياً
     exports.sort((a, b) => {
