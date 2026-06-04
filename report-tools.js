@@ -86,9 +86,11 @@ async function logExport(format = 'pdf') {
   }
   window._lastExportTime = Date.now();
   
-  // انتظر window.trackExport يصير جاهز
+  console.log('📤 محاولة تسجيل تصدير:', format);
+  
+  // انتظر window.trackExport يصير جاهز (حتى 10 ثواني)
   let attempts = 0;
-  while (typeof window.trackExport !== 'function' && attempts < 30) {
+  while (typeof window.trackExport !== 'function' && attempts < 100) {
     await new Promise(r => setTimeout(r, 100));
     attempts++;
   }
@@ -101,12 +103,38 @@ async function logExport(format = 'pdf') {
         format: format
       });
       console.log('✅ تم تسجيل التصدير:', getReportType(), format);
+      
+      // toast بصري للتأكيد
+      showDebugToast('✅ تم حفظ في السجل');
     } catch (e) {
       console.error('❌ فشل تسجيل التصدير:', e);
+      showDebugToast('❌ فشل التسجيل: ' + e.message);
     }
   } else {
-    console.warn('⚠️ window.trackExport غير متاحة بعد');
+    console.warn('⚠️ window.trackExport لم تتوفر بعد 10 ثواني');
+    showDebugToast('⚠️ trackExport غير متاحة');
   }
+}
+
+// toast بصري بسيط للتشخيص
+function showDebugToast(msg) {
+  const t = document.createElement('div');
+  t.style.cssText = `
+    position:fixed;bottom:80px;left:50%;transform:translateX(-50%);
+    background:rgba(15,41,66,0.95);color:#e8c547;
+    padding:12px 22px;border-radius:12px;
+    font:700 0.88rem 'Tajawal',sans-serif;
+    border:1px solid rgba(232,197,71,0.4);
+    box-shadow:0 8px 24px rgba(0,0,0,0.5);
+    z-index:99998;backdrop-filter:blur(10px);
+    animation:_dt 0.3s ease-out;
+  `;
+  t.textContent = msg;
+  const style = document.createElement('style');
+  style.textContent = '@keyframes _dt{from{opacity:0;transform:translateX(-50%) translateY(20px);}to{opacity:1;transform:translateX(-50%) translateY(0);}}';
+  document.head.appendChild(style);
+  document.body.appendChild(t);
+  setTimeout(() => t.remove(), 3000);
 }
 
 // ───────────────────────────────────────────────────────────
