@@ -1015,15 +1015,6 @@ async function exportAsPDFv2(){
     pdf.setProperties({title:'محضر_اجتماع', creator:'ksa2030.one'});
     pdf.save('محضر_اجتماع.pdf');
     showToast('✅ تم حفظ PDF');
-    
-    // 📋 سجّل التصدير في profile
-    if (typeof window.trackExport === 'function') {
-      window.trackExport({
-        type: 'council',
-        title: 'محضر مجلس المعلمين',
-        format: 'pdf'
-      });
-    }
   }catch(e){ console.error(e); showToast('❌ فشل التصدير'); }
   finally{ restoreFromExport(replacements); }
 }
@@ -1056,16 +1047,6 @@ async function shareReport(){
     restoreFromExport(replacements);
     canvas.toBlob(async (blob) => {
       const file = new File([blob], 'محضر_اجتماع.png', { type: 'image/png' });
-      
-      // 📋 سجّل التصدير في profile
-      if (typeof window.trackExport === 'function') {
-        window.trackExport({
-          type: 'council',
-          title: 'محضر مجلس المعلمين',
-          format: 'png'
-        });
-      }
-      
       if (navigator.share && navigator.canShare && navigator.canShare({ files: [file] })) {
         try{
           await navigator.share({ files:[file], title:document.title, text:'🇸🇦 ' + document.title });
@@ -1167,90 +1148,6 @@ document.querySelectorAll('input, textarea').forEach(el => {
 
 loadData();
 
-// 🆕 استعادة التقرير من السحابة (لو جاي من profile.html)
-(function tryRestoreFromCloud(){
-  const params = new URLSearchParams(window.location.search);
-  if (params.get('restore') !== '1') return;
-  
-  try {
-    const stored = localStorage.getItem('ksa_restore_export');
-    if (!stored) {
-      // امسح ?restore=1 إذا ما فيه بيانات
-      if (window.history && window.history.replaceState) {
-        window.history.replaceState({}, '', window.location.pathname);
-      }
-      return;
-    }
-    
-    const data = JSON.parse(stored);
-    if (!data.content) return;
-    
-    // 💎 اعرض شاشة تحميل سريعة
-    const loader = document.createElement('div');
-    loader.id = '_restoreLoader';
-    loader.style.cssText = `
-      position:fixed;inset:0;background:rgba(5,10,18,0.95);
-      backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);
-      z-index:99999;display:flex;align-items:center;justify-content:center;
-      flex-direction:column;gap:20px;
-    `;
-    loader.innerHTML = `
-      <div style="width:60px;height:60px;border:5px solid rgba(232,197,71,0.2);border-top-color:#e8c547;border-radius:50%;animation:_rs 0.8s linear infinite;"></div>
-      <div style="font:800 1.1rem 'Tajawal',sans-serif;color:#fff;text-align:center;">
-        ⏳ جاري استعادة بياناتك...
-      </div>
-      <style>@keyframes _rs{to{transform:rotate(360deg);}}</style>
-    `;
-    document.body.appendChild(loader);
-    
-    // استعد البيانات فوراً
-    let restored = 0;
-    Object.entries(data.content).forEach(([key, value]) => {
-      if (!value) return;
-      
-      let el = document.getElementById(key);
-      if (!el) el = document.querySelector(`[name="${key}"]`);
-      if (!el) el = document.querySelector(`[data-field="${key}"]`);
-      
-      if (el) {
-        if (el.tagName === 'INPUT' || el.tagName === 'TEXTAREA' || el.tagName === 'SELECT') {
-          el.value = value;
-        } else {
-          el.innerText = value;
-        }
-        restored++;
-      }
-    });
-    
-    if (restored > 0) {
-      saveData();
-    }
-    
-    // امسح بعد الاستعادة
-    localStorage.removeItem('ksa_restore_export');
-    
-    // امسح ?restore=1
-    if (window.history && window.history.replaceState) {
-      window.history.replaceState({}, '', window.location.pathname);
-    }
-    
-    // أخفي الـ loader فوراً
-    setTimeout(() => {
-      loader.style.transition = 'opacity 0.4s';
-      loader.style.opacity = '0';
-      setTimeout(() => loader.remove(), 400);
-      
-      if (typeof showToast === 'function' && restored > 0) {
-        showToast(`✅ تمت استعادة ${restored} حقل`);
-      }
-    }, 300);
-  } catch (e) {
-    console.warn('فشلت استعادة التقرير:', e);
-    const loader = document.getElementById('_restoreLoader');
-    if (loader) loader.remove();
-  }
-})();
-
 // ═══════════════════════════════════════════════
 // 🔒 وضع المعاينة - حماية ثلاثية الطبقات
 // (الزائر/Free يشاهد فقط، لا يكتب ولا يحمّل)
@@ -1338,5 +1235,6 @@ loadData();
 
 <!-- 🔥 Firebase Integration -->
 <script type="module" src="report-firebase.js?v=12"></script>
+<script type="module" src="report-tools.js?v=1"></script>
 </body>
 </html>
