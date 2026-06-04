@@ -1167,6 +1167,63 @@ document.querySelectorAll('input, textarea').forEach(el => {
 
 loadData();
 
+// 🆕 استعادة التقرير من السحابة (لو جاي من profile.html)
+(function tryRestoreFromCloud(){
+  const params = new URLSearchParams(window.location.search);
+  if (params.get('restore') !== '1') return;
+  
+  try {
+    const stored = sessionStorage.getItem('ksa_restore_export');
+    if (!stored) return;
+    
+    const data = JSON.parse(stored);
+    if (!data.content) return;
+    
+    // عبّي الحقول
+    let restored = 0;
+    Object.entries(data.content).forEach(([key, value]) => {
+      if (!value) return;
+      
+      // ابحث بالـ ID أولاً
+      let el = document.getElementById(key);
+      
+      // إذا ما لقيتش، ابحث بالـ name
+      if (!el) el = document.querySelector(`[name="${key}"]`);
+      
+      // إذا ما لقيتش، ابحث في contenteditable بالـ data-field
+      if (!el) el = document.querySelector(`[data-field="${key}"]`);
+      
+      if (el) {
+        if (el.tagName === 'INPUT' || el.tagName === 'TEXTAREA' || el.tagName === 'SELECT') {
+          el.value = value;
+        } else {
+          el.innerText = value;
+        }
+        restored++;
+      }
+    });
+    
+    if (restored > 0) {
+      saveData(); // حفظ في localStorage
+      setTimeout(() => {
+        if (typeof showToast === 'function') {
+          showToast(`✅ تمت استعادة ${restored} حقل من السحابة`);
+        }
+      }, 500);
+    }
+    
+    // امسح sessionStorage بعد الاستعادة
+    sessionStorage.removeItem('ksa_restore_export');
+    
+    // امسح الـ ?restore=1 من URL
+    if (window.history && window.history.replaceState) {
+      window.history.replaceState({}, '', window.location.pathname);
+    }
+  } catch (e) {
+    console.warn('فشلت استعادة التقرير:', e);
+  }
+})();
+
 // ═══════════════════════════════════════════════
 // 🔒 وضع المعاينة - حماية ثلاثية الطبقات
 // (الزائر/Free يشاهد فقط، لا يكتب ولا يحمّل)

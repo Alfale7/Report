@@ -975,16 +975,20 @@ window.trackExport = async function(options = {}) {
   if (!_user) return false;
   
   try {
+    // 💎 اجمع المحتوى تلقائياً للاستعادة لاحقاً
+    const content = options.content || collectReportContent();
+    
     const data = {
       type: options.type || _currentPage || 'unknown',
       title: options.title || document.title || 'تقرير',
       format: options.format || 'pdf',
-      templateId: options.templateId || _currentPage
+      templateId: options.templateId || _currentPage,
+      content: content
     };
     
     const result = await logExport(data);
     if (result.success) {
-      console.log('✅ تم تسجيل التصدير في السجل');
+      console.log('✅ تم تسجيل التصدير في السجل مع المحتوى');
       showToast('📋 تم حفظ التقرير في سجلك');
       return true;
     }

@@ -717,7 +717,7 @@ export async function getUserPublishedReports(uid) {
 
 /**
  * حفظ تصدير في السجل
- * @param {Object} data - { type, title, format, templateId }
+ * @param {Object} data - { type, title, format, templateId, content }
  */
 export async function logExport(data) {
   try {
@@ -730,6 +730,7 @@ export async function logExport(data) {
       title: data.title || 'تقرير بدون عنوان',
       format: data.format || 'pdf',            // pdf, png, jpg
       templateId: data.templateId || data.type,
+      content: data.content || {},             // 🆕 محتوى التقرير للاستعادة
       exportedAt: serverTimestamp(),
       createdAt: Timestamp.now()
     };
@@ -738,6 +739,23 @@ export async function logExport(data) {
     return { success: true, exportId: ref.id };
   } catch (error) {
     console.error('logExport:', error);
+    return { success: false, error: error.message };
+  }
+}
+
+/**
+ * 🆕 جلب تصدير واحد بالتفصيل (للاستعادة)
+ */
+export async function getExportById(exportId) {
+  try {
+    const u = auth.currentUser;
+    if (!u) return { success: false, error: 'يلزم تسجيل الدخول' };
+    
+    const snap = await getDoc(doc(db, 'users', u.uid, 'exports', exportId));
+    if (!snap.exists()) return { success: false, error: 'التصدير غير موجود' };
+    
+    return { success: true, export: { id: exportId, ...snap.data() } };
+  } catch (error) {
     return { success: false, error: error.message };
   }
 }

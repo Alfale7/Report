@@ -1267,7 +1267,7 @@ body {
 <script type="module">
 import { 
   onUserChange, logout, getUserProfile, updateUserProfile,
-  getExportHistory, deleteExportLog,
+  getExportHistory, deleteExportLog, getExportById,
   getFavorites, toggleFavorite,
   getUserShares, deleteShare,
   isLifetime
@@ -1405,6 +1405,8 @@ function renderExports(exports) {
   c.innerHTML = '<div class="items">' + exports.map(e => {
     const date = e.exportedAt?.toDate?.() || e.createdAt?.toDate?.() || new Date();
     const dateStr = date.toLocaleDateString('ar-SA', { year: 'numeric', month: 'long', day: 'numeric' });
+    const hasContent = e.content && Object.keys(e.content).length > 0;
+    const reportUrl = (e.templateId || e.type || '') + '.html';
     return `
       <div class="item">
         <div class="item-icon">📋</div>
@@ -1413,14 +1415,47 @@ function renderExports(exports) {
           <div class="item-meta">
             <span>📅 ${dateStr}</span>
             <span class="pill green">${(e.format || 'PDF').toUpperCase()}</span>
+            ${hasContent ? '<span class="pill gold">💾 محفوظ</span>' : ''}
           </div>
         </div>
         <div class="item-actions">
+          ${hasContent ? `<button class="icon-btn primary" onclick="openExport('${e.id}','${escapeHtml(reportUrl)}')" title="فتح التقرير">👁️</button>` : ''}
           <button class="icon-btn danger" onclick="deleteExport('${e.id}')" title="حذف">🗑️</button>
         </div>
       </div>`;
   }).join('') + '</div>';
 }
+
+// 🆕 فتح تقرير محفوظ
+window.openExport = async function(exportId, reportUrl) {
+  try {
+    showToast('⏳ جاري تحميل التقرير...');
+    
+    // اجلب التصدير الكامل
+    const result = await getExportById(exportId);
+    if (!result.success) {
+      showToast('فشل التحميل', 'error');
+      return;
+    }
+    
+    const exportData = result.export;
+    
+    // احفظ المحتوى في sessionStorage عشان التقرير يقرأه
+    sessionStorage.setItem('ksa_restore_export', JSON.stringify({
+      type: exportData.type,
+      title: exportData.title,
+      content: exportData.content || {},
+      exportedAt: Date.now()
+    }));
+    
+    // افتح التقرير في تبويب جديد مع علامة restore
+    window.open(reportUrl + '?restore=1', '_blank');
+    showToast('✅ التقرير جاهز في تبويب جديد');
+  } catch (err) {
+    console.error(err);
+    showToast('خطأ في الفتح', 'error');
+  }
+};
 
 window.deleteExport = async function(id) {
   if (!confirm('هل تريد حذف هذا السجل؟')) return;
