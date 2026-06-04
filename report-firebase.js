@@ -1040,15 +1040,50 @@ window.shareReport = async function(options = {}) {
   return null;
 };
 
-// جمع بيانات التقرير من الحقول (افتراضي)
+// جمع بيانات التقرير من الحقول
 function collectReportContent() {
   const content = {};
-  document.querySelectorAll('input, textarea, select').forEach(el => {
-    if (el.id) content[el.id] = el.value || el.textContent || '';
+  let counter = 0;
+  
+  // Inputs العادية
+  document.querySelectorAll('input[type="text"], input[type="date"], input[type="number"]').forEach(el => {
+    const val = el.value?.trim();
+    if (val) {
+      const key = el.id || el.name || el.placeholder || `field_${++counter}`;
+      content[key] = val;
+    }
   });
+  
+  // Textareas
+  document.querySelectorAll('textarea').forEach(el => {
+    const val = el.value?.trim();
+    if (val) {
+      const key = el.id || el.name || el.placeholder || `text_${++counter}`;
+      content[key] = val;
+    }
+  });
+  
+  // Selects
+  document.querySelectorAll('select').forEach(el => {
+    const val = el.value?.trim();
+    if (val && val !== '--' && val !== '') {
+      const key = el.id || el.name || `select_${++counter}`;
+      content[key] = val;
+    }
+  });
+  
+  // ContentEditable (للحقول داخل DIVs)
   document.querySelectorAll('[contenteditable="true"]').forEach(el => {
-    if (el.id) content[el.id] = el.innerHTML || '';
+    const text = (el.innerText || el.textContent || '').trim();
+    if (text && text.length > 1) {
+      const key = el.id || el.dataset?.field || el.dataset?.label || `editable_${++counter}`;
+      // تجاهل النصوص الافتراضية الفارغة جداً
+      if (text !== '...' && text !== '-' && text !== '_') {
+        content[key] = text;
+      }
+    }
   });
+  
   return content;
 }
 

@@ -752,12 +752,19 @@ export async function getExportHistory(uid = null, limitCount = 50) {
     
     const q = query(
       collection(db, 'users', targetUid, 'exports'),
-      orderBy('exportedAt', 'desc'),
       limit(limitCount)
     );
     const snap = await getDocs(q);
     const exports = [];
     snap.forEach(doc => exports.push({ id: doc.id, ...doc.data() }));
+    
+    // رتّب يدوياً
+    exports.sort((a, b) => {
+      const aTime = a.exportedAt?.toMillis?.() || a.createdAt?.toMillis?.() || 0;
+      const bTime = b.exportedAt?.toMillis?.() || b.createdAt?.toMillis?.() || 0;
+      return bTime - aTime;
+    });
+    
     return { success: true, exports };
   } catch (error) {
     console.error('getExportHistory:', error);
@@ -824,13 +831,17 @@ export async function getFavorites(uid = null) {
     const targetUid = uid || auth.currentUser?.uid;
     if (!targetUid) return { success: false, favorites: [] };
     
-    const q = query(
-      collection(db, 'users', targetUid, 'favorites'),
-      orderBy('addedAt', 'desc')
-    );
+    const q = query(collection(db, 'users', targetUid, 'favorites'));
     const snap = await getDocs(q);
     const favorites = [];
     snap.forEach(doc => favorites.push({ id: doc.id, ...doc.data() }));
+    
+    favorites.sort((a, b) => {
+      const aTime = a.addedAt?.toMillis?.() || 0;
+      const bTime = b.addedAt?.toMillis?.() || 0;
+      return bTime - aTime;
+    });
+    
     return { success: true, favorites };
   } catch (error) {
     return { success: false, favorites: [], error: error.message };
@@ -922,17 +933,26 @@ export async function getUserShares() {
     const u = auth.currentUser;
     if (!u) return { success: false, shares: [] };
     
+    // اطلب بدون orderBy عشان نتجنب مشاكل الحقول الفاضية
     const q = query(
       collection(db, 'shares'),
       where('userId', '==', u.uid),
-      orderBy('createdAt', 'desc'),
       limit(50)
     );
     const snap = await getDocs(q);
     const shares = [];
     snap.forEach(doc => shares.push({ id: doc.id, ...doc.data() }));
+    
+    // رتّب يدوياً بالـ JavaScript
+    shares.sort((a, b) => {
+      const aTime = a.createdAt?.toMillis?.() || 0;
+      const bTime = b.createdAt?.toMillis?.() || 0;
+      return bTime - aTime;
+    });
+    
     return { success: true, shares };
   } catch (error) {
+    console.error('getUserShares:', error);
     return { success: false, shares: [], error: error.message };
   }
 }
