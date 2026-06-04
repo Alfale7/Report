@@ -138,80 +138,66 @@ function showDebugToast(msg) {
 }
 
 // ───────────────────────────────────────────────────────────
-// 5️⃣ مراقبة jsPDF (مع watcher على window.jspdf)
+// 5️⃣ مراقبة أزرار التصدير (الاستراتيجية الجديدة)
 // ───────────────────────────────────────────────────────────
-function hookPdfSave() {
-  let _jspdfValue = undefined;
-  let _hooked = false;
+function hookExportButtons() {
+  // قائمة العناصر التي قد تكون أزرار تصدير
+  const exportKeywords = [
+    'pdf', 'PDF', 'تصدير', 'حفظ', 'تحميل',
+    'export', 'save', 'download', 'image', 'صورة',
+    'png', 'PNG', 'jpg', 'JPG'
+  ];
   
-  function tryHook(jspdfObj) {
-    if (_hooked) return;
-    if (!jspdfObj || !jspdfObj.jsPDF) return;
+  function isExportButton(el) {
+    if (!el || el.tagName !== 'BUTTON' && el.tagName !== 'A') return false;
     
-    const jsPDF = jspdfObj.jsPDF;
-    if (jsPDF.prototype._ksaHooked) return;
+    const text = (el.textContent || '').toLowerCase();
+    const onclick = (el.getAttribute('onclick') || '').toLowerCase();
+    const cls = (el.className || '').toLowerCase();
     
-    const originalSave = jsPDF.prototype.save;
-    jsPDF.prototype._ksaHooked = true;
-    jsPDF.prototype.save = function(...args) {
-      const result = originalSave.apply(this, args);
-      logExport('pdf');
-      return result;
-    };
-    
-    _hooked = true;
-    console.log('🔗 تم ربط jsPDF.save');
+    return exportKeywords.some(kw => 
+      text.includes(kw.toLowerCase()) || 
+      onclick.includes(kw.toLowerCase()) ||
+      cls.includes('pdf') || cls.includes('export') || cls.includes('download')
+    );
   }
   
-  // إذا موجود مسبقاً
-  if (window.jspdf) {
-    tryHook(window.jspdf);
-    if (_hooked) return;
+  function detectFormat(el) {
+    const text = (el.textContent || '').toLowerCase();
+    const onclick = (el.getAttribute('onclick') || '').toLowerCase();
+    
+    if (text.includes('png') || text.includes('صورة') || onclick.includes('image') || onclick.includes('png')) {
+      return 'png';
+    }
+    return 'pdf';
   }
   
-  // استخدم Object.defineProperty لمراقبة التعيين
-  try {
-    Object.defineProperty(window, 'jspdf', {
-      configurable: true,
-      get() { return _jspdfValue; },
-      set(v) {
-        _jspdfValue = v;
-        tryHook(v);
+  // نراقب أي click في الصفحة
+  document.addEventListener('click', function(e) {
+    let target = e.target;
+    
+    // ابحث في الـ ancestors إذا الـ target الفعلي ابنه
+    for (let i = 0; i < 5 && target; i++) {
+      if (isExportButton(target)) {
+        const format = detectFormat(target);
+        console.log('🎯 اُكتشف زر تصدير:', target.textContent?.trim().substring(0, 30), format);
+        
+        // سجّل التصدير بعد ثانية (نعطي للتصدير وقت)
+        setTimeout(() => {
+          logExport(format);
+        }, 1500);
+        
+        return; // اخرج من اللوب
       }
-    });
-  } catch (e) {
-    // fallback: polling
-    const interval = setInterval(() => {
-      if (window.jspdf) {
-        tryHook(window.jspdf);
-        clearInterval(interval);
-      }
-    }, 200);
-    setTimeout(() => clearInterval(interval), 10000);
-  }
+      target = target.parentElement;
+    }
+  }, true); // capture phase
+  
+  console.log('🔗 تم تفعيل مراقبة أزرار التصدير');
 }
 
 // ───────────────────────────────────────────────────────────
-// 6️⃣ مراقبة canvas.toBlob (لتصدير الصور)
-// ───────────────────────────────────────────────────────────
-function hookCanvasExport() {
-  if (HTMLCanvasElement.prototype._ksaHooked) return;
-  HTMLCanvasElement.prototype._ksaHooked = true;
-  
-  const originalToBlob = HTMLCanvasElement.prototype.toBlob;
-  HTMLCanvasElement.prototype.toBlob = function(callback, ...args) {
-    return originalToBlob.call(this, function(blob) {
-      if (blob && blob.size > 50000) { // تجاهل blobs صغيرة (مش تصدير حقيقي)
-        logExport('png');
-      }
-      if (callback) callback(blob);
-    }, ...args);
-  };
-  console.log('🔗 تم ربط canvas.toBlob');
-}
-
-// ───────────────────────────────────────────────────────────
-// 7️⃣ استعادة التقرير من السحابة
+// 6️⃣ استعادة التقرير من السحابة
 // ───────────────────────────────────────────────────────────
 function tryRestoreFromCloud() {
   const params = new URLSearchParams(window.location.search);
@@ -268,17 +254,16 @@ function cleanupUrl() {
 }
 
 // ───────────────────────────────────────────────────────────
-// 8️⃣ التشغيل
+// 7️⃣ التشغيل
 // ───────────────────────────────────────────────────────────
-hookPdfSave();
-hookCanvasExport();
-
 if (document.readyState === 'loading') {
   document.addEventListener('DOMContentLoaded', () => {
+    hookExportButtons();
     setTimeout(tryRestoreFromCloud, 500);
   });
 } else {
+  hookExportButtons();
   setTimeout(tryRestoreFromCloud, 500);
 }
 
-console.log('🛠️ Report Tools loaded for:', getReportType());
+console.log('🛠️ Report Tools v3 loaded for:', getReportType());
