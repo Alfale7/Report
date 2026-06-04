@@ -25,6 +25,8 @@ import {
   setDoc,
   getDoc,
   updateDoc,
+  addDoc,
+  deleteDoc,
   collection,
   query,
   where,
@@ -705,6 +707,246 @@ export async function getUserPublishedReports(uid) {
     return { success: true, reports };
   } catch (error) {
     console.error('getUserPublishedReports:', error);
+    return { success: false, error: error.message };
+  }
+}
+
+// ═══════════════════════════════════════════════════════════
+// 📋 سجل التقارير المُصدّرة (Export History)
+// ═══════════════════════════════════════════════════════════
+
+/**
+ * حفظ تصدير في السجل
+ * @param {Object} data - { type, title, format, templateId }
+ */
+export async function logExport(data) {
+  try {
+    const u = auth.currentUser;
+    if (!u) return { success: false, error: 'يلزم تسجيل الدخول' };
+    
+    const exportData = {
+      userId: u.uid,
+      type: data.type || 'unknown',           // council, enjaz, tasis...
+      title: data.title || 'تقرير بدون عنوان',
+      format: data.format || 'pdf',            // pdf, png, jpg
+      templateId: data.templateId || data.type,
+      exportedAt: serverTimestamp(),
+      createdAt: Timestamp.now()
+    };
+    
+    const ref = await addDoc(collection(db, 'users', u.uid, 'exports'), exportData);
+    return { success: true, exportId: ref.id };
+  } catch (error) {
+    console.error('logExport:', error);
+    return { success: false, error: error.message };
+  }
+}
+
+/**
+ * الحصول على سجل التصدير
+ */
+export async function getExportHistory(uid = null, limitCount = 50) {
+  try {
+    const targetUid = uid || auth.currentUser?.uid;
+    if (!targetUid) return { success: false, error: 'يلزم تسجيل الدخول' };
+    
+    const q = query(
+      collection(db, 'users', targetUid, 'exports'),
+      orderBy('exportedAt', 'desc'),
+      limit(limitCount)
+    );
+    const snap = await getDocs(q);
+    const exports = [];
+    snap.forEach(doc => exports.push({ id: doc.id, ...doc.data() }));
+    return { success: true, exports };
+  } catch (error) {
+    console.error('getExportHistory:', error);
+    return { success: false, error: error.message };
+  }
+}
+
+/**
+ * حذف سجل تصدير
+ */
+export async function deleteExportLog(exportId) {
+  try {
+    const u = auth.currentUser;
+    if (!u) return { success: false, error: 'يلزم تسجيل الدخول' };
+    await deleteDoc(doc(db, 'users', u.uid, 'exports', exportId));
+    return { success: true };
+  } catch (error) {
+    return { success: false, error: error.message };
+  }
+}
+
+// ═══════════════════════════════════════════════════════════
+// ⭐ المفضلة (Favorites)
+// ═══════════════════════════════════════════════════════════
+
+/**
+ * إضافة/إزالة قالب من المفضلة (toggle)
+ */
+export async function toggleFavorite(templateId, metadata = {}) {
+  try {
+    const u = auth.currentUser;
+    if (!u) return { success: false, error: 'يلزم تسجيل الدخول' };
+    
+    const favRef = doc(db, 'users', u.uid, 'favorites', templateId);
+    const snap = await getDoc(favRef);
+    
+    if (snap.exists()) {
+      // محذوف - أحذف
+      await deleteDoc(favRef);
+      return { success: true, isFavorite: false };
+    } else {
+      // إضافة
+      await setDoc(favRef, {
+        templateId,
+        title: metadata.title || templateId,
+        category: metadata.category || 'general',
+        icon: metadata.icon || '📋',
+        url: metadata.url || templateId + '.html',
+        addedAt: serverTimestamp()
+      });
+      return { success: true, isFavorite: true };
+    }
+  } catch (error) {
+    console.error('toggleFavorite:', error);
+    return { success: false, error: error.message };
+  }
+}
+
+/**
+ * الحصول على قائمة المفضلة
+ */
+export async function getFavorites(uid = null) {
+  try {
+    const targetUid = uid || auth.currentUser?.uid;
+    if (!targetUid) return { success: false, favorites: [] };
+    
+    const q = query(
+      collection(db, 'users', targetUid, 'favorites'),
+      orderBy('addedAt', 'desc')
+    );
+    const snap = await getDocs(q);
+    const favorites = [];
+    snap.forEach(doc => favorites.push({ id: doc.id, ...doc.data() }));
+    return { success: true, favorites };
+  } catch (error) {
+    return { success: false, favorites: [], error: error.message };
+  }
+}
+
+/**
+ * التحقق إذا قالب في المفضلة
+ */
+export async function isFavorite(templateId) {
+  try {
+    const u = auth.currentUser;
+    if (!u) return false;
+    const snap = await getDoc(doc(db, 'users', u.uid, 'favorites', templateId));
+    return snap.exists();
+  } catch (error) {
+    return false;
+  }
+}
+
+// ═══════════════════════════════════════════════════════════
+// 🔗 المشاركات (Shared Reports)
+// ═══════════════════════════════════════════════════════════
+
+/**
+ * إنشاء رابط مشاركة لتقرير
+ */
+export async function createShare(data) {
+  try {
+    const u = auth.currentUser;
+    if (!u) return { success: false, error: 'يلزم تسجيل الدخول' };
+    
+    const shareData = {
+      userId: u.uid,
+      type: data.type || 'unknown',
+      title: data.title || 'تقرير مشارك',
+      content: data.content || {},           // بيانات التقرير
+      htmlSnapshot: data.htmlSnapshot || '', // نسخة HTML (اختياري)
+      views: 0,
+      createdAt: serverTimestamp(),
+      expiresAt: data.expiresAt || null      // اختياري
+    };
+    
+    const ref = await addDoc(collection(db, 'shares'), shareData);
+    return { 
+      success: true, 
+      shareId: ref.id,
+      shareUrl: `https://ksa2030.one/view.html?id=${ref.id}`
+    };
+  } catch (error) {
+    console.error('createShare:', error);
+    return { success: false, error: error.message };
+  }
+}
+
+/**
+ * جلب تقرير مشارك
+ */
+export async function getShare(shareId) {
+  try {
+    if (!shareId) return { success: false, error: 'معرّف المشاركة مفقود' };
+    const snap = await getDoc(doc(db, 'shares', shareId));
+    if (!snap.exists()) return { success: false, error: 'التقرير غير موجود' };
+    
+    const data = snap.data();
+    
+    // التحقق من انتهاء الصلاحية
+    if (data.expiresAt && data.expiresAt.toMillis() < Date.now()) {
+      return { success: false, error: 'انتهت صلاحية الرابط' };
+    }
+    
+    // زيادة العدّاد
+    await updateDoc(doc(db, 'shares', shareId), { 
+      views: (data.views || 0) + 1,
+      lastViewedAt: serverTimestamp()
+    });
+    
+    return { success: true, share: { id: shareId, ...data } };
+  } catch (error) {
+    return { success: false, error: error.message };
+  }
+}
+
+/**
+ * جلب مشاركات المستخدم
+ */
+export async function getUserShares() {
+  try {
+    const u = auth.currentUser;
+    if (!u) return { success: false, shares: [] };
+    
+    const q = query(
+      collection(db, 'shares'),
+      where('userId', '==', u.uid),
+      orderBy('createdAt', 'desc'),
+      limit(50)
+    );
+    const snap = await getDocs(q);
+    const shares = [];
+    snap.forEach(doc => shares.push({ id: doc.id, ...doc.data() }));
+    return { success: true, shares };
+  } catch (error) {
+    return { success: false, shares: [], error: error.message };
+  }
+}
+
+/**
+ * حذف مشاركة
+ */
+export async function deleteShare(shareId) {
+  try {
+    const u = auth.currentUser;
+    if (!u) return { success: false, error: 'يلزم تسجيل الدخول' };
+    await deleteDoc(doc(db, 'shares', shareId));
+    return { success: true };
+  } catch (error) {
     return { success: false, error: error.message };
   }
 }
