@@ -884,9 +884,89 @@ background:linear-gradient(135deg,#fff 0%,#a5d6a7 100%);
 background-clip:text;
 letter-spacing:-0.5px;
 }
+
+/* ═══════════════════════════════════════════════════
+   🎬 العناوين الدوارة (Rotating Headlines)
+   ═══════════════════════════════════════════════════ */
+.rotating-title{
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  gap:8px;
+  margin-bottom:14px;
+  -webkit-text-fill-color: initial;
+}
+.rt-label{
+  display:inline-block;
+  font:800 0.8rem 'Reem Kufi','Tajawal',sans-serif;
+  letter-spacing:3px;
+  text-transform:uppercase;
+  background:linear-gradient(135deg, #e8c547, #d4a657);
+  -webkit-background-clip:text;
+  -webkit-text-fill-color:transparent;
+  background-clip:text;
+  padding:6px 16px;
+  border:1px solid rgba(232, 197, 71, 0.3);
+  border-radius:99px;
+  position:relative;
+  animation:rtLabelGlow 3s ease-in-out infinite;
+}
+@keyframes rtLabelGlow{
+  0%,100%{box-shadow:0 0 0 rgba(232, 197, 71, 0);}
+  50%{box-shadow:0 0 20px rgba(232, 197, 71, 0.3);}
+}
+.rt-rotator{
+  position:relative;
+  display:inline-block;
+  min-height:1.4em;
+  width:100%;
+  font-family:'Reem Kufi','Tajawal',sans-serif;
+  font-size:1.85rem;
+  font-weight:700;
+  letter-spacing:-0.3px;
+  line-height:1.4;
+}
+.rt-item{
+  position:absolute;
+  top:0;
+  left:0;
+  right:0;
+  width:100%;
+  text-align:center;
+  background:linear-gradient(135deg, #fff 0%, #e8c547 50%, #fff 100%);
+  background-size:200% 100%;
+  -webkit-background-clip:text;
+  -webkit-text-fill-color:transparent;
+  background-clip:text;
+  opacity:0;
+  transform:translateY(20px) scale(0.95);
+  filter:blur(8px);
+  transition:all 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
+  animation:rtShine 5s ease-in-out infinite;
+}
+.rt-item.active{
+  opacity:1;
+  transform:translateY(0) scale(1);
+  filter:blur(0);
+}
+.rt-item.exiting{
+  opacity:0;
+  transform:translateY(-20px) scale(1.05);
+  filter:blur(8px);
+}
+@keyframes rtShine{
+  0%,100%{background-position:0% 50%;}
+  50%{background-position:100% 50%;}
+}
+
 .app-sub{
 font-size:0.92rem;color:rgba(255,255,255,0.65);line-height:1.6;
-max-width:360px;margin:0 auto 18px;
+max-width:380px;margin:0 auto 18px;
+}
+
+@media (max-width:480px){
+  .rt-rotator{font-size:1.4rem;font-weight:700;}
+  .rt-label{font-size:0.7rem;letter-spacing:2px;}
 }
 
 .trust-row{
@@ -2648,6 +2728,50 @@ transition:transform 0.3s,box-shadow 0.3s;
 cursor:pointer;
 }
 .preview-card:active{transform:scale(0.99);}
+
+/* ⭐ زر المفضلة */
+.fav-star-btn {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  z-index: 20;
+  width: 38px;
+  height: 38px;
+  background: rgba(5, 10, 18, 0.6);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  color: rgba(255, 255, 255, 0.7);
+  border-radius: 50%;
+  cursor: pointer;
+  display: grid;
+  place-items: center;
+  font-size: 1.15rem;
+  transition: all 0.25s cubic-bezier(0.34, 1.56, 0.64, 1);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+}
+.fav-star-btn:hover {
+  transform: scale(1.12) rotate(-8deg);
+  background: rgba(232, 197, 71, 0.18);
+  border-color: rgba(232, 197, 71, 0.45);
+  color: #e8c547;
+}
+.fav-star-btn.active {
+  background: linear-gradient(135deg, #e8c547, #d4a657);
+  color: #050a12;
+  border-color: transparent;
+  box-shadow: 0 6px 18px rgba(232, 197, 71, 0.55);
+  animation: favStarPop 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+@keyframes favStarPop {
+  0% { transform: scale(0.8); }
+  50% { transform: scale(1.25); }
+  100% { transform: scale(1); }
+}
+.fav-star-btn.active:hover {
+  transform: scale(1.12);
+  box-shadow: 0 8px 22px rgba(232, 197, 71, 0.7);
+}
 
 .card-badge{
 position:absolute;top:14px;left:14px;z-index:10;
@@ -5270,7 +5394,14 @@ font-size:0.78rem;text-align:center;margin-top:12px;display:none;
       <div class="app-logo-inner">📋</div>
     </div>
 
-    <h1 class="app-title" data-i18n="appTitle">التقارير الذكية</h1>
+    <h1 class="app-title rotating-title">
+      <span class="rt-label" data-i18n="appLabel">التقارير الذكية</span>
+      <span class="rt-rotator" id="rotatingHeadline">
+        <span class="rt-item active">تقاريرك المدرسية، بسرعة الضوء ⚡</span>
+        <span class="rt-item">تصاميم احترافية، بنقرة واحدة 🎨</span>
+        <span class="rt-item">منصتك التعليمية الذكية 💎</span>
+      </span>
+    </h1>
     <p class="app-sub" data-i18n="appSub">منصة احترافية متكاملة لإعداد وتنزيل تقارير المناسبات المدرسية بتصاميم جاهزة، قابلة للتخصيص، وبجودة عالية ✨</p>
 
     <!-- 💎 بانر السعر الفخم -->
@@ -8048,7 +8179,122 @@ document.addEventListener('DOMContentLoaded', function(){
       if(e.target === upModal) closeUpgradeModal();
     });
   }
+  
+  // 🎬 العناوين الدوارة
+  const rotator = document.getElementById('rotatingHeadline');
+  if (rotator) {
+    const items = rotator.querySelectorAll('.rt-item');
+    let currentIndex = 0;
+    
+    // اضبط ارتفاع المحتوى بناءً على أطول عنوان
+    let maxHeight = 0;
+    items.forEach(item => {
+      item.style.position = 'static';
+      item.style.opacity = '1';
+      const h = item.offsetHeight;
+      if (h > maxHeight) maxHeight = h;
+    });
+    items.forEach(item => {
+      item.style.position = 'absolute';
+      item.style.opacity = '';
+    });
+    rotator.style.minHeight = maxHeight + 'px';
+    
+    // ابدأ التدوير
+    setInterval(() => {
+      const current = items[currentIndex];
+      current.classList.remove('active');
+      current.classList.add('exiting');
+      
+      currentIndex = (currentIndex + 1) % items.length;
+      
+      setTimeout(() => {
+        current.classList.remove('exiting');
+        items[currentIndex].classList.add('active');
+      }, 100);
+    }, 3500);
+  }
+  
+  // ⭐ إضافة أزرار المفضلة لكل البطاقات تلقائياً
+  injectFavoriteStars();
 });
+
+// ⭐ إضافة زر المفضلة لكل preview-card
+async function injectFavoriteStars() {
+  const cards = document.querySelectorAll('.preview-card[data-target]');
+  
+  // قائمة المفضلة الحالية (لو المستخدم مسجل دخول)
+  let userFavorites = new Set();
+  try {
+    if (window.getFirebaseUser && window.getFirebaseUser()) {
+      // استورد الدالة من firebase-config
+      const { getFavorites } = await import('./firebase-config.js?v=5');
+      const result = await getFavorites();
+      if (result.success && result.favorites) {
+        result.favorites.forEach(f => userFavorites.add(f.templateId));
+      }
+    }
+  } catch (e) { /* تجاهل لو ما عنده دخول */ }
+  
+  cards.forEach(card => {
+    // تجاهل لو فيه زر مسبقاً
+    if (card.querySelector('.fav-star-btn')) return;
+    
+    const target = card.getAttribute('data-target');
+    const templateId = target?.replace('.html', '') || '';
+    if (!templateId) return;
+    
+    // اجلب معلومات البطاقة
+    const titleEl = card.querySelector('.card-title');
+    const iconEl = card.querySelector('.card-icon');
+    const title = titleEl?.textContent?.trim() || templateId;
+    const icon = iconEl?.textContent?.trim() || '📋';
+    
+    // فئة البطاقة من القسم
+    const section = card.closest('.cat-section');
+    const catTitle = section?.querySelector('.cat-title span')?.textContent?.trim() || 'عام';
+    
+    // أنشئ الزر
+    const btn = document.createElement('button');
+    btn.className = 'fav-star-btn';
+    if (userFavorites.has(templateId)) btn.classList.add('active');
+    btn.innerHTML = userFavorites.has(templateId) ? '★' : '☆';
+    btn.title = 'إضافة للمفضلة';
+    btn.setAttribute('data-template', templateId);
+    
+    btn.addEventListener('click', async function(e) {
+      e.stopPropagation();
+      e.preventDefault();
+      
+      // تحقق من تسجيل الدخول
+      if (!window.getFirebaseUser || !window.getFirebaseUser()) {
+        alert('سجّل دخولك أولاً لإضافة قوالب للمفضلة');
+        window.location.href = 'login.html?next=index.html';
+        return;
+      }
+      
+      // toggle
+      btn.style.pointerEvents = 'none';
+      try {
+        if (window.toggleFavoriteTemplate) {
+          const isFav = await window.toggleFavoriteTemplate(templateId, {
+            title: title,
+            icon: icon,
+            category: catTitle,
+            url: target
+          });
+          btn.classList.toggle('active', isFav);
+          btn.innerHTML = isFav ? '★' : '☆';
+        }
+      } catch (err) {
+        console.error(err);
+      }
+      btn.style.pointerEvents = '';
+    });
+    
+    card.appendChild(btn);
+  });
+}
 
 function toggleCategory(headerEl){
   const section = headerEl.closest('.cat-section');
