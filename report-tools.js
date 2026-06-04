@@ -1,17 +1,6 @@
 // ═══════════════════════════════════════════════════════════
-// 🛠️ Report Tools - أدوات عامة لكل التقارير
+// 🛠️ Report Tools v2 - أدوات عامة لكل التقارير
 // ksa2030.one - يعمل تلقائياً في كل صفحة تقرير
-// ═══════════════════════════════════════════════════════════
-//
-// كيف يشتغل:
-// 1. يكتشف نوع التقرير من اسم الصفحة (council.html → council)
-// 2. يستعيد البيانات تلقائياً لو ?restore=1
-// 3. يلتقط تصدير PDF/PNG تلقائياً ويحفظه في السجل
-//
-// الاستخدام:
-// <script type="module" src="./report-tools.js"></script>
-// (يضاف لكل ملف تقرير)
-//
 // ═══════════════════════════════════════════════════════════
 
 // ───────────────────────────────────────────────────────────
@@ -20,8 +9,7 @@
 function getReportType() {
   const path = window.location.pathname;
   const filename = path.split('/').pop() || '';
-  const type = filename.replace(/\.html?$/i, '') || 'unknown';
-  return type;
+  return filename.replace(/\.html?$/i, '') || 'unknown';
 }
 
 // ───────────────────────────────────────────────────────────
@@ -88,7 +76,114 @@ function hideLoader() {
 }
 
 // ───────────────────────────────────────────────────────────
-// 4️⃣ استعادة التقرير من السحابة (?restore=1)
+// 4️⃣ تتبع التصدير
+// ───────────────────────────────────────────────────────────
+async function logExport(format = 'pdf') {
+  // امنع تسجيل مزدوج
+  if (window._lastExportTime && (Date.now() - window._lastExportTime < 2000)) {
+    console.log('⏭️ تخطي تسجيل مكرر');
+    return;
+  }
+  window._lastExportTime = Date.now();
+  
+  // انتظر window.trackExport يصير جاهز
+  let attempts = 0;
+  while (typeof window.trackExport !== 'function' && attempts < 30) {
+    await new Promise(r => setTimeout(r, 100));
+    attempts++;
+  }
+  
+  if (typeof window.trackExport === 'function') {
+    try {
+      await window.trackExport({
+        type: getReportType(),
+        title: getReportTitle(),
+        format: format
+      });
+      console.log('✅ تم تسجيل التصدير:', getReportType(), format);
+    } catch (e) {
+      console.error('❌ فشل تسجيل التصدير:', e);
+    }
+  } else {
+    console.warn('⚠️ window.trackExport غير متاحة بعد');
+  }
+}
+
+// ───────────────────────────────────────────────────────────
+// 5️⃣ مراقبة jsPDF (مع watcher على window.jspdf)
+// ───────────────────────────────────────────────────────────
+function hookPdfSave() {
+  let _jspdfValue = undefined;
+  let _hooked = false;
+  
+  function tryHook(jspdfObj) {
+    if (_hooked) return;
+    if (!jspdfObj || !jspdfObj.jsPDF) return;
+    
+    const jsPDF = jspdfObj.jsPDF;
+    if (jsPDF.prototype._ksaHooked) return;
+    
+    const originalSave = jsPDF.prototype.save;
+    jsPDF.prototype._ksaHooked = true;
+    jsPDF.prototype.save = function(...args) {
+      const result = originalSave.apply(this, args);
+      logExport('pdf');
+      return result;
+    };
+    
+    _hooked = true;
+    console.log('🔗 تم ربط jsPDF.save');
+  }
+  
+  // إذا موجود مسبقاً
+  if (window.jspdf) {
+    tryHook(window.jspdf);
+    if (_hooked) return;
+  }
+  
+  // استخدم Object.defineProperty لمراقبة التعيين
+  try {
+    Object.defineProperty(window, 'jspdf', {
+      configurable: true,
+      get() { return _jspdfValue; },
+      set(v) {
+        _jspdfValue = v;
+        tryHook(v);
+      }
+    });
+  } catch (e) {
+    // fallback: polling
+    const interval = setInterval(() => {
+      if (window.jspdf) {
+        tryHook(window.jspdf);
+        clearInterval(interval);
+      }
+    }, 200);
+    setTimeout(() => clearInterval(interval), 10000);
+  }
+}
+
+// ───────────────────────────────────────────────────────────
+// 6️⃣ مراقبة canvas.toBlob (لتصدير الصور)
+// ───────────────────────────────────────────────────────────
+function hookCanvasExport() {
+  if (HTMLCanvasElement.prototype._ksaHooked) return;
+  HTMLCanvasElement.prototype._ksaHooked = true;
+  
+  const originalToBlob = HTMLCanvasElement.prototype.toBlob;
+  HTMLCanvasElement.prototype.toBlob = function(callback, ...args) {
+    return originalToBlob.call(this, function(blob) {
+      if (blob && blob.size > 50000) { // تجاهل blobs صغيرة (مش تصدير حقيقي)
+        logExport('png');
+      }
+      if (callback) callback(blob);
+    }, ...args);
+  };
+  console.log('🔗 تم ربط canvas.toBlob');
+}
+
+// ───────────────────────────────────────────────────────────
+// 7️⃣ استعادة التقرير من السحابة
 // ───────────────────────────────────────────────────────────
 function tryRestoreFromCloud() {
   const params = new URLSearchParams(window.location.search);
@@ -96,28 +191,19 @@ function tryRestoreFromCloud() {
   
   try {
     const stored = localStorage.getItem('ksa_restore_export');
-    if (!stored) {
-      cleanupUrl();
-      return;
-    }
+    if (!stored) { cleanupUrl(); return; }
     
     const data = JSON.parse(stored);
-    if (!data.content) {
-      cleanupUrl();
-      return;
-    }
+    if (!data.content) { cleanupUrl(); return; }
     
-    const loader = showLoader('⏳ جاري استعادة بياناتك...');
+    showLoader('⏳ جاري استعادة بياناتك...');
     
-    // عبّي الحقول
     let restored = 0;
     Object.entries(data.content).forEach(([key, value]) => {
       if (!value) return;
-      
       let el = document.getElementById(key);
       if (!el) el = document.querySelector(`[name="${key}"]`);
       if (!el) el = document.querySelector(`[data-field="${key}"]`);
-      
       if (el) {
         if (el.tagName === 'INPUT' || el.tagName === 'TEXTAREA' || el.tagName === 'SELECT') {
           el.value = value;
@@ -154,105 +240,17 @@ function cleanupUrl() {
 }
 
 // ───────────────────────────────────────────────────────────
-// 5️⃣ التقاط التصدير تلقائياً
+// 8️⃣ التشغيل
 // ───────────────────────────────────────────────────────────
-// نراقب jsPDF.save() ولما يتم تصدير، نسجله
+hookPdfSave();
+hookCanvasExport();
 
-function hookPdfSave() {
-  // انتظر jsPDF يحمل
-  let attempts = 0;
-  const checkInterval = setInterval(() => {
-    attempts++;
-    if (attempts > 40) { // 4 ثواني
-      clearInterval(checkInterval);
-      return;
-    }
-    
-    // ابحث عن jsPDF
-    let jsPDF = null;
-    if (window.jspdf?.jsPDF) jsPDF = window.jspdf.jsPDF;
-    else if (window.jsPDF) jsPDF = window.jsPDF;
-    
-    if (!jsPDF) return;
-    
-    clearInterval(checkInterval);
-    
-    // اربط على prototype.save
-    if (jsPDF.prototype._originalSave) return; // تم بالفعل
-    
-    jsPDF.prototype._originalSave = jsPDF.prototype.save;
-    jsPDF.prototype.save = function(...args) {
-      const result = this._originalSave.apply(this, args);
-      
-      // سجل التصدير
-      setTimeout(() => {
-        if (typeof window.trackExport === 'function') {
-          window.trackExport({
-            type: getReportType(),
-            title: getReportTitle(),
-            format: 'pdf'
-          });
-        }
-      }, 100);
-      
-      return result;
-    };
-    
-    console.log('✅ تم ربط jsPDF.save بـ trackExport');
-  }, 100);
-}
-
-// ───────────────────────────────────────────────────────────
-// 6️⃣ التقاط تصدير الصور (canvas.toBlob/toDataURL)
-// ───────────────────────────────────────────────────────────
-function hookCanvasExport() {
-  // نراقب أي canvas يستخدم toBlob لـ تنزيل صورة
-  const originalToBlob = HTMLCanvasElement.prototype.toBlob;
-  HTMLCanvasElement.prototype.toBlob = function(callback, ...args) {
-    return originalToBlob.call(this, function(blob) {
-      // سجل التصدير
-      if (blob && typeof window.trackExport === 'function') {
-        // تأخير صغير عشان نتفادى التسجيل المضاعف مع PDF
-        setTimeout(() => {
-          // فقط لو ما تم تسجيل PDF في آخر ثانية
-          if (!window._lastPdfExport || (Date.now() - window._lastPdfExport > 2000)) {
-            window.trackExport({
-              type: getReportType(),
-              title: getReportTitle(),
-              format: 'png'
-            });
-          }
-        }, 200);
-      }
-      if (callback) callback(blob);
-    }, ...args);
-  };
-  
-  console.log('✅ تم ربط canvas.toBlob بـ trackExport');
-}
-
-// ───────────────────────────────────────────────────────────
-// 7️⃣ التشغيل التلقائي
-// ───────────────────────────────────────────────────────────
-function init() {
-  // ابدأ مراقبة jsPDF فوراً
-  hookPdfSave();
-  
-  // ابدأ مراقبة canvas
-  hookCanvasExport();
-  
-  // استعد بعد ما الـ DOM يجهز
-  if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', () => {
-      // أعطي 500ms لأي loadData() تخلّص
-      setTimeout(tryRestoreFromCloud, 500);
-    });
-  } else {
+if (document.readyState === 'loading') {
+  document.addEventListener('DOMContentLoaded', () => {
     setTimeout(tryRestoreFromCloud, 500);
-  }
+  });
+} else {
+  setTimeout(tryRestoreFromCloud, 500);
 }
-
-// شغّل
-init();
 
 console.log('🛠️ Report Tools loaded for:', getReportType());
