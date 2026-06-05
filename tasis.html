@@ -1287,19 +1287,31 @@ async function saveExportToCloud(format = 'pdf') {
     
     console.log('📝 حقول مجمّعة:', Object.keys(fields).length);
     
-    // 4️⃣ الصور: نأخذها كما هي بدون ضغط (Firestore يقبل حتى 1MB)
+    // 4️⃣ الصور: نضغط الكبيرة بدل تخطيها
     const images = {};
-    ['p1', 'p2', 'p3'].forEach(id => {
+    for (const id of ['p1', 'p2', 'p3']) {
       const img = document.getElementById(id);
       if (img && img.src && img.src.startsWith('data:image/')) {
-        // فقط الصور أقل من 200KB (تجنب 1MB limit)
-        if (img.src.length < 200000) {
+        const sizeKB = Math.round(img.src.length / 1024);
+        console.log('🖼️', id, 'حجم أصلي:', sizeKB, 'KB');
+        
+        if (img.src.length < 250000) {
+          // صغيرة - نأخذها كما هي
           images[id] = img.src;
+          console.log('  ✅ نسخ مباشر');
         } else {
-          console.log('⚠️ الصورة', id, 'كبيرة (', Math.round(img.src.length/1024), 'KB) - تم تخطيها');
+          // كبيرة - نضغط
+          try {
+            const compressed = await compressImageAsync(img.src, 600, 0.6);
+            const newSizeKB = Math.round(compressed.length / 1024);
+            console.log('  📉 ضغطت إلى:', newSizeKB, 'KB');
+            images[id] = compressed;
+          } catch (err) {
+            console.warn('  ⚠️ فشل الضغط:', err.message);
+          }
         }
       }
-    });
+    }
     
     console.log('🖼️ صور مجمّعة:', Object.keys(images).length);
     
@@ -1341,19 +1353,39 @@ async function saveExportToCloud(format = 'pdf') {
   console.log('💾 ═══════════════════════════════════');
 }
 
-// ضغط الصورة (لتقليل الحجم)
-function compressImage(dataUrl, maxWidth = 800) {
-  return new Promise((resolve) => {
+// ضغط صورة بشكل موثوق (returns Promise<string>)
+function compressImageAsync(dataUrl, maxWidth = 600, quality = 0.6) {
+  return new Promise((resolve, reject) => {
     const img = new Image();
-    img.onload = () => {
-      const canvas = document.createElement('canvas');
-      const ratio = Math.min(1, maxWidth / img.width);
-      canvas.width = img.width * ratio;
-      canvas.height = img.height * ratio;
-      canvas.getContext('2d').drawImage(img, 0, 0, canvas.width, canvas.height);
-      resolve(canvas.toDataURL('image/jpeg', 0.7));
+    
+    img.onload = function() {
+      try {
+        let { width, height } = img;
+        
+        // اضبط الحجم بالنسبة
+        if (width > maxWidth) {
+          height = Math.round(height * (maxWidth / width));
+          width = maxWidth;
+        }
+        
+        const canvas = document.createElement('canvas');
+        canvas.width = width;
+        canvas.height = height;
+        
+        const ctx = canvas.getContext('2d');
+        ctx.fillStyle = '#ffffff'; // خلفية بيضاء (لتجنب الشفافية الأسود)
+        ctx.fillRect(0, 0, width, height);
+        ctx.drawImage(img, 0, 0, width, height);
+        
+        // JPEG أصغر من PNG
+        const result = canvas.toDataURL('image/jpeg', quality);
+        resolve(result);
+      } catch (e) {
+        reject(e);
+      }
     };
-    img.onerror = () => resolve(dataUrl);
+    
+    img.onerror = () => reject(new Error('فشل تحميل الصورة'));
     img.src = dataUrl;
   });
 }
