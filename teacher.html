@@ -1893,9 +1893,15 @@ async function exportAsPDFv2(){
 // ☁️ حفظ في حساب المستخدم (نمط tasis)
 // ═══════════════════════════════════════════════════════
 async function saveToMyProfile() {
+  console.log('💾 ═══ teacher saveToMyProfile started ═══');
+  
   if (typeof closeExportMenu === 'function') closeExportMenu();
   
+  console.log('👤 getFirebaseUser type:', typeof window.getFirebaseUser);
+  console.log('👤 user:', typeof window.getFirebaseUser === 'function' ? window.getFirebaseUser() : 'no function');
+  
   if (typeof window.getFirebaseUser !== 'function' || !window.getFirebaseUser()) {
+    console.warn('⚠️ المستخدم غير مسجل');
     if (typeof showToast === 'function') {
       showToast('⚠️ سجّل دخولك أولاً لحفظ التقرير');
     } else {
@@ -1906,6 +1912,8 @@ async function saveToMyProfile() {
     }, 1500);
     return;
   }
+  
+  console.log('✅ المستخدم مسجل، نبدأ الحفظ');
   
   const loader = document.createElement('div');
   loader.id = '_saveLoader';
@@ -1925,30 +1933,39 @@ async function saveToMyProfile() {
   document.body.appendChild(loader);
   
   try {
+    console.log('☁️ نستدعي saveExportToCloud...');
     await saveExportToCloud('save');
+    console.log('✅ saveExportToCloud انتهى بنجاح');
+    
     loader.style.transition = 'opacity 0.3s';
     loader.style.opacity = '0';
     setTimeout(() => loader.remove(), 300);
     if (typeof showToast === 'function') showToast('✅ تم حفظ التقرير في حسابك');
     else alert('✅ تم حفظ التقرير في حسابك');
   } catch (e) {
-    console.error(e);
+    console.error('❌ خطأ في saveToMyProfile:', e);
+    console.error('❌ المكدّس:', e.stack);
     loader.remove();
-    if (typeof showToast === 'function') showToast('❌ فشل الحفظ');
+    if (typeof showToast === 'function') showToast('❌ فشل الحفظ: ' + (e.message || ''));
     else alert('❌ فشل الحفظ: ' + (e.message || ''));
   }
 }
 
 async function saveExportToCloud(format = 'pdf') {
+  console.log('☁️ saveExportToCloud started, format:', format);
+  
   if (typeof window.trackExport !== 'function') {
+    console.log('⏳ trackExport not ready, waiting...');
     for (let i = 0; i < 100; i++) {
       await new Promise(r => setTimeout(r, 100));
       if (typeof window.trackExport === 'function') break;
     }
     if (typeof window.trackExport !== 'function') {
+      console.error('❌ trackExport never became available');
       throw new Error('Firebase غير جاهز');
     }
   }
+  console.log('✅ trackExport ready');
   
   const fields = {};
   
@@ -1975,6 +1992,8 @@ async function saveExportToCloud(format = 'pdf') {
     }
   });
   
+  console.log('📝 fields collected:', Object.keys(fields).length);
+  
   const images = {};
   const imgs = document.querySelectorAll('img');
   let imgIdx = 0;
@@ -1987,19 +2006,26 @@ async function saveExportToCloud(format = 'pdf') {
         try {
           const compressed = await compressImageAsync(img.src, 600, 0.6);
           images[key] = compressed;
-        } catch (err) { console.warn(err); }
+          console.log('🗜️ compressed', key);
+        } catch (err) { console.warn('compression failed:', err); }
       }
     }
   }
   
-  const content = { ...fields, _images: images };
+  console.log('🖼️ images collected:', Object.keys(images).length);
   
-  await window.trackExport({
+  const content = { ...fields, _images: images };
+  const sizeKB = Math.round(JSON.stringify(content).length / 1024);
+  console.log('📊 size:', sizeKB, 'KB');
+  
+  console.log('📤 calling trackExport...');
+  const result = await window.trackExport({
     type: 'teacher',
     title: 'تقرير المعلم',
     format: format,
     content: content
   });
+  console.log('✅ trackExport returned:', result);
 }
 
 function compressImageAsync(dataUrl, maxWidth = 600, quality = 0.6) {
