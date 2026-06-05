@@ -847,9 +847,14 @@ function saveLocalData() {
       }
     });
     
-    document.querySelectorAll('input[type="text"], textarea').forEach(el => {
-      if (el.value && el.value.trim() && el.id) {
-        data.fields[el.id] = el.value.trim();
+    // 🔥 كل أنواع الـ inputs + textareas + selects
+    document.querySelectorAll('input, textarea, select').forEach(el => {
+      if (el.type === 'file' || el.type === 'button' || el.type === 'submit' || 
+          el.type === 'reset' || el.type === 'checkbox' || el.type === 'radio') return;
+      
+      const val = (el.value || '').toString().trim();
+      if (val && el.id) {
+        data.fields[el.id] = val;
       }
     });
     
@@ -865,7 +870,6 @@ function saveLocalData() {
     console.log('💾 حفظ محلي:', Object.keys(data.fields).length, 'حقل،', Object.keys(data.images).length, 'صورة');
   } catch(e) {
     console.warn('فشل الحفظ المحلي:', e);
-    // لو الـ localStorage ممتلئ، احذف الصور
     if (e.name === 'QuotaExceededError') {
       try {
         const data = JSON.parse(localStorage.getItem(STORAGE_KEY) || '{}');
@@ -935,7 +939,10 @@ document.addEventListener('DOMContentLoaded', () => {
     el.addEventListener('blur', saveLocalData);
   });
   
-  document.querySelectorAll('input[type="text"], textarea').forEach(el => {
+  // 🔥 كل أنواع الـ inputs
+  document.querySelectorAll('input, textarea, select').forEach(el => {
+    if (el.type === 'file' || el.type === 'button' || el.type === 'submit' || 
+        el.type === 'reset' || el.type === 'checkbox' || el.type === 'radio') return;
     el.addEventListener('input', saveLocalData);
     el.addEventListener('change', saveLocalData);
   });
@@ -1276,9 +1283,13 @@ async function saveExportToCloud(format = 'pdf') {
       }
     });
     
-    // inputs and textareas
-    document.querySelectorAll('input[type="text"], input[type="date"], textarea').forEach((el, i) => {
-      const val = (el.value || '').trim();
+    // 🔥 كل أنواع الـ inputs + textareas + selects
+    document.querySelectorAll('input, textarea, select').forEach((el, i) => {
+      // تجاهل الأنواع غير المهمة
+      if (el.type === 'file' || el.type === 'button' || el.type === 'submit' || 
+          el.type === 'reset' || el.type === 'checkbox' || el.type === 'radio') return;
+      
+      const val = (el.value || '').toString().trim();
       if (val) {
         const key = el.id || el.name || `input_${i}`;
         fields[key] = val;
@@ -1286,6 +1297,7 @@ async function saveExportToCloud(format = 'pdf') {
     });
     
     console.log('📝 حقول مجمّعة:', Object.keys(fields).length);
+    console.log('📝 الحقول:', Object.keys(fields).join(', '));
     
     // 4️⃣ الصور: نضغط الكبيرة بدل تخطيها
     const images = {};
