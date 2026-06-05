@@ -547,7 +547,6 @@ transition:all 0.2s;
 
   <!-- 🔥 Firebase Integration (يجب أن يكون قبل أي محتوى) -->
   <script type="module" src="report-firebase.js?v=12"></script>
-<script src="report-tools.js?v=3"></script>
 </head>
 <body>
 
@@ -1098,6 +1097,9 @@ async function shareReport(){
         document.body.removeChild(link);
         showToast('📥 تم التنزيل (المشاركة غير مدعومة)');
       }
+      
+      // 📋 سجّل التصدير في profile
+      saveExportToCloud('png');
     }, 'image/png');
   } catch(e) {
     console.error('Share error:', e);
@@ -1110,6 +1112,189 @@ async function shareReport(){
     document.getElementById(ptId).style.display = 'none';
   });
 }
+
+// ═══════════════════════════════════════════════════════
+// ☁️ حفظ التقرير في السحابة (للسجل + استعادة لاحقة)
+// ═══════════════════════════════════════════════════════
+async function saveExportToCloud(format = 'pdf') {
+  // امنع التكرار خلال 3 ثواني
+  if (window._lastSaved && (Date.now() - window._lastSaved < 3000)) return;
+  window._lastSaved = Date.now();
+  
+  // انتظر window.trackExport يصير جاهز (Firebase)
+  let attempts = 0;
+  while (typeof window.trackExport !== 'function' && attempts < 50) {
+    await new Promise(r => setTimeout(r, 100));
+    attempts++;
+  }
+  
+  if (typeof window.trackExport !== 'function') {
+    console.warn('⚠️ trackExport غير متاحة - سجّل دخولك');
+    return;
+  }
+  
+  try {
+    // 📝 اجمع الحقول النصية
+    const fields = {};
+    document.querySelectorAll('[contenteditable="true"]').forEach(el => {
+      const text = (el.innerText || el.textContent || '').trim();
+      if (text && text !== '...' && text !== '-') {
+        const key = el.id || el.dataset?.field || `txt_${Object.keys(fields).length}`;
+        fields[key] = text;
+      }
+    });
+    
+    document.querySelectorAll('input[type="text"], textarea').forEach(el => {
+      if (el.value && el.value.trim()) {
+        const key = el.id || el.name || `fld_${Object.keys(fields).length}`;
+        fields[key] = el.value.trim();
+      }
+    });
+    
+    // 🖼️ اجمع الصور المرفوعة (i1, i2, i3 → p1, p2, p3)
+    const images = {};
+    ['p1', 'p2', 'p3'].forEach(id => {
+      const img = document.getElementById(id);
+      if (img && img.src && img.src.startsWith('data:image/')) {
+        // اضغط الصورة لو ضخمة
+        images[id] = img.src.length > 200000 
+          ? compressImage(img.src, 800)
+          : img.src;
+      }
+    });
+    
+    // فحص الحجم
+    const content = { ...fields, _images: images };
+    const sizeKB = Math.round(JSON.stringify(content).length / 1024);
+    console.log(`📊 حجم البيانات: ${sizeKB} KB`);
+    
+    if (sizeKB > 900) {
+      console.warn('⚠️ الحجم كبير، نحذف الصور');
+      delete content._images;
+    }
+    
+    await window.trackExport({
+      type: 'tasis',
+      title: 'تقرير يوم التأسيس',
+      format: format,
+      content: content
+    });
+    
+    console.log('✅ تم حفظ التقرير في السحابة');
+    if (typeof showToast === 'function') {
+      showToast('📋 تم حفظ في سجلك');
+    }
+  } catch (e) {
+    console.error('❌ فشل الحفظ السحابي:', e);
+  }
+}
+
+// ضغط الصورة (لتقليل الحجم)
+function compressImage(dataUrl, maxWidth = 800) {
+  return new Promise((resolve) => {
+    const img = new Image();
+    img.onload = () => {
+      const canvas = document.createElement('canvas');
+      const ratio = Math.min(1, maxWidth / img.width);
+      canvas.width = img.width * ratio;
+      canvas.height = img.height * ratio;
+      canvas.getContext('2d').drawImage(img, 0, 0, canvas.width, canvas.height);
+      resolve(canvas.toDataURL('image/jpeg', 0.7));
+    };
+    img.onerror = () => resolve(dataUrl);
+    img.src = dataUrl;
+  });
+}
+
+// ═══════════════════════════════════════════════════════
+// 🔄 استعادة التقرير من السحابة (?restore=1)
+// ═══════════════════════════════════════════════════════
+(function tryRestoreFromCloud(){
+  const params = new URLSearchParams(window.location.search);
+  if (params.get('restore') !== '1') return;
+  
+  try {
+    const stored = localStorage.getItem('ksa_restore_export');
+    if (!stored) {
+      if (window.history) window.history.replaceState({}, '', window.location.pathname);
+      return;
+    }
+    
+    const data = JSON.parse(stored);
+    if (!data.content) return;
+    
+    // اعرض loader
+    const loader = document.createElement('div');
+    loader.id = '_restoreLoader';
+    loader.style.cssText = `
+      position:fixed;inset:0;background:rgba(5,10,18,0.95);
+      backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);
+      z-index:99999;display:flex;align-items:center;justify-content:center;
+      flex-direction:column;gap:20px;
+    `;
+    loader.innerHTML = `
+      <div style="width:60px;height:60px;border:5px solid rgba(232,197,71,0.2);border-top-color:#e8c547;border-radius:50%;animation:_rs 0.8s linear infinite;"></div>
+      <div style="font:800 1.1rem 'Tajawal',sans-serif;color:#fff;">⏳ جاري استعادة بياناتك...</div>
+      <style>@keyframes _rs{to{transform:rotate(360deg);}}</style>
+    `;
+    document.body.appendChild(loader);
+    
+    let restored = 0;
+    
+    // استعد الحقول النصية
+    Object.entries(data.content).forEach(([key, value]) => {
+      if (key === '_images' || !value) return;
+      
+      let el = document.getElementById(key);
+      if (!el) el = document.querySelector(`[name="${key}"]`);
+      if (!el) el = document.querySelector(`[data-field="${key}"]`);
+      
+      if (el) {
+        if (el.tagName === 'INPUT' || el.tagName === 'TEXTAREA') {
+          el.value = value;
+        } else {
+          el.innerText = value;
+        }
+        restored++;
+      }
+    });
+    
+    // استعد الصور (p1, p2, p3)
+    if (data.content._images) {
+      Object.entries(data.content._images).forEach(([id, src]) => {
+        const img = document.getElementById(id);
+        if (img && src) {
+          img.src = src;
+          img.style.display = 'block';
+          
+          // إخفاء label وإظهار placeholder
+          const num = id.replace('p', '');
+          const lbl = document.getElementById('lbl' + num);
+          if (lbl) lbl.style.display = 'none';
+          
+          restored++;
+        }
+      });
+    }
+    
+    localStorage.removeItem('ksa_restore_export');
+    if (window.history) window.history.replaceState({}, '', window.location.pathname);
+    
+    setTimeout(() => {
+      loader.style.transition = 'opacity 0.4s';
+      loader.style.opacity = '0';
+      setTimeout(() => loader.remove(), 400);
+      
+      if (typeof showToast === 'function' && restored > 0) {
+        showToast(`✅ تمت استعادة ${restored} عنصر`);
+      }
+    }, 600);
+  } catch (e) {
+    console.warn('فشلت الاستعادة:', e);
+    const loader = document.getElementById('_restoreLoader');
+    if (loader) loader.remove();
+  }
+})();
 
 function loadJsPDF(){
   return new Promise((resolve, reject) => {
@@ -1294,6 +1479,9 @@ async function exportAsPDFv2(){
     
     // ═══ حفظ ═══
     pdf.save('تقرير_يوم_التأسيس.pdf');
+    
+    // 📋 سجّل التصدير في profile
+    saveExportToCloud('pdf');
     
     if(typeof showToast === 'function'){
       showToast('✅ تم حفظ PDF بنجاح');
