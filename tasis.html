@@ -823,9 +823,123 @@ function preview(input,id){
   r.onload=e=>{
     img.src=e.target.result; img.style.display='block';
     sp.style.display='none';
+    // 💾 احفظ تلقائياً
+    saveLocalData();
   };
   r.readAsDataURL(input.files[0]);
 }
+
+// ═══════════════════════════════════════════════════════
+// 💾 الحفظ التلقائي في localStorage (يحفظ النصوص والصور)
+// ═══════════════════════════════════════════════════════
+const STORAGE_KEY = 'tasis_report_data';
+
+function saveLocalData() {
+  try {
+    const data = { fields: {}, images: {} };
+    
+    // احفظ الحقول النصية
+    document.querySelectorAll('[contenteditable="true"]').forEach(el => {
+      const text = (el.innerText || el.textContent || '').trim();
+      if (text && text !== '...' && text !== '-') {
+        const key = el.id || el.dataset?.field;
+        if (key) data.fields[key] = text;
+      }
+    });
+    
+    document.querySelectorAll('input[type="text"], textarea').forEach(el => {
+      if (el.value && el.value.trim() && el.id) {
+        data.fields[el.id] = el.value.trim();
+      }
+    });
+    
+    // احفظ الصور
+    ['p1', 'p2', 'p3'].forEach(id => {
+      const img = document.getElementById(id);
+      if (img && img.src && img.src.startsWith('data:image/')) {
+        data.images[id] = img.src;
+      }
+    });
+    
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+    console.log('💾 حفظ محلي:', Object.keys(data.fields).length, 'حقل،', Object.keys(data.images).length, 'صورة');
+  } catch(e) {
+    console.warn('فشل الحفظ المحلي:', e);
+    // لو الـ localStorage ممتلئ، احذف الصور
+    if (e.name === 'QuotaExceededError') {
+      try {
+        const data = JSON.parse(localStorage.getItem(STORAGE_KEY) || '{}');
+        delete data.images;
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+      } catch {}
+    }
+  }
+}
+
+function loadLocalData() {
+  try {
+    const stored = localStorage.getItem(STORAGE_KEY);
+    if (!stored) return;
+    
+    const data = JSON.parse(stored);
+    let restored = 0;
+    
+    // استعد النصوص
+    if (data.fields) {
+      Object.entries(data.fields).forEach(([key, value]) => {
+        if (!value) return;
+        const el = document.getElementById(key);
+        if (el) {
+          if (el.tagName === 'INPUT' || el.tagName === 'TEXTAREA') {
+            el.value = value;
+          } else {
+            el.innerText = value;
+          }
+          restored++;
+        }
+      });
+    }
+    
+    // استعد الصور
+    if (data.images) {
+      Object.entries(data.images).forEach(([id, src]) => {
+        const img = document.getElementById(id);
+        if (img && src) {
+          img.src = src;
+          img.style.display = 'block';
+          // إخفاء label
+          const num = id.replace('p', '');
+          const lbl = document.getElementById('lbl' + num);
+          if (lbl) lbl.style.display = 'none';
+          restored++;
+        }
+      });
+    }
+    
+    if (restored > 0) {
+      console.log('✅ تمت استعادة', restored, 'عنصر من المتصفح');
+    }
+  } catch(e) {
+    console.warn('فشل تحميل البيانات المحلية:', e);
+  }
+}
+
+// 📌 فعّل الحفظ التلقائي على كل تعديل
+document.addEventListener('DOMContentLoaded', () => {
+  // حمّل البيانات المحفوظة
+  loadLocalData();
+  
+  // اربط الحفظ على كل تعديل
+  document.querySelectorAll('[contenteditable="true"]').forEach(el => {
+    el.addEventListener('input', saveLocalData);
+    el.addEventListener('blur', saveLocalData);
+  });
+  
+  document.querySelectorAll('input[type="text"], textarea').forEach(el => {
+    el.addEventListener('input', saveLocalData);
+    el.addEventListener('change', saveLocalData);
+  });
+});
 
 function showToast(msg){
   const t=document.getElementById('toast');
@@ -850,6 +964,8 @@ function doClear(){
     document.getElementById('i'+id).value='';
   });
   document.querySelectorAll('.editable').forEach(el=>el.textContent='');
+  // 🗑️ احذف من localStorage
+  try { localStorage.removeItem(STORAGE_KEY); } catch(e) {}
   showToast(I18N[getCurrentLang()].toastCleared);
 }
 
@@ -1117,21 +1233,38 @@ async function shareReport(){
 // ☁️ حفظ التقرير في السحابة (للسجل + استعادة لاحقة)
 // ═══════════════════════════════════════════════════════
 async function saveExportToCloud(format = 'pdf') {
+  console.log('💾 ═══ saveExportToCloud started ═══');
+  console.log('💾 format:', format);
+  console.log('💾 الوقت الحالي:', new Date().toISOString());
+  
   // امنع التكرار خلال 3 ثواني
-  if (window._lastSaved && (Date.now() - window._lastSaved < 3000)) return;
+  if (window._lastSaved && (Date.now() - window._lastSaved < 3000)) {
+    console.log('⏭️ تم تخطي التكرار (آخر حفظ قبل ' + (Date.now() - window._lastSaved) + 'ms)');
+    return;
+  }
   window._lastSaved = Date.now();
   
-  // انتظر window.trackExport يصير جاهز (Firebase)
+  console.log('💾 trackExport متاحة؟', typeof window.trackExport);
+  
+  // انتظر window.trackExport يصير جاهز (Firebase) - حتى 15 ثانية
   let attempts = 0;
-  while (typeof window.trackExport !== 'function' && attempts < 50) {
+  while (typeof window.trackExport !== 'function' && attempts < 150) {
+    if (attempts % 10 === 0) {
+      console.log('⏳ انتظار trackExport... (' + attempts + '/150)');
+    }
     await new Promise(r => setTimeout(r, 100));
     attempts++;
   }
   
   if (typeof window.trackExport !== 'function') {
-    console.warn('⚠️ trackExport غير متاحة - سجّل دخولك');
+    console.warn('⚠️ trackExport ما توفرت بعد 15 ثانية');
+    if (typeof showToast === 'function') {
+      showToast('⚠️ سجّل دخولك لحفظ التقرير');
+    }
     return;
   }
+  
+  console.log('✅ trackExport جاهزة، نبدأ الحفظ');
   
   try {
     // 📝 اجمع الحقول النصية
