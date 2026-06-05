@@ -527,6 +527,35 @@ transition:all 0.2s;
 .export-option .ico.pdf{background:linear-gradient(135deg,#d32f2f,#b71c1c);}
 .export-option .ico.print{background:linear-gradient(135deg,#5a3a8e,#7b5cb2);}
 .export-option .ico.share{background:linear-gradient(135deg,#16a34a,#15803d);}
+.export-option .ico.cloud{background:linear-gradient(135deg,#e8c547,#d4a657);box-shadow:0 4px 12px rgba(232,197,71,0.4);}
+
+/* زر الحفظ في البروفايل - مميّز */
+.export-option.profile-save{
+  background:linear-gradient(135deg, rgba(232,197,71,0.08), rgba(212,166,87,0.04));
+  border:1px solid rgba(232,197,71,0.3);
+  margin:8px 0;
+  position:relative;
+  overflow:hidden;
+}
+.export-option.profile-save::before{
+  content:'';
+  position:absolute;top:0;left:-100%;
+  width:60%;height:100%;
+  background:linear-gradient(120deg, transparent, rgba(232,197,71,0.2), transparent);
+  animation:cloudShimmer 3s infinite;
+}
+@keyframes cloudShimmer{0%{left:-100%;}50%,100%{left:140%;}}
+.export-option.profile-save:hover{
+  background:linear-gradient(135deg, rgba(232,197,71,0.15), rgba(212,166,87,0.08));
+  border-color:rgba(232,197,71,0.5);
+}
+.export-option.profile-save .opt-title{
+  color:#d4a657;
+  font-weight:900;
+}
+.export-option.profile-save .opt-desc{
+  color:#aa8540;
+}
 .export-option .opt-text{flex:1;}
 .export-option .opt-title{font-weight:900; font-size:0.92rem; margin-bottom:2px;}
 .export-option .opt-desc{font-weight:600; font-size:0.74rem; color:rgba(0,0,0,0.55);}
@@ -1299,9 +1328,6 @@ async function shareReport(){
         document.body.removeChild(link);
         showToast('📥 تم التنزيل (المشاركة غير مدعومة)');
       }
-      
-      // 📋 سجّل التصدير في profile (await مهم!)
-      await saveExportToCloud('png');
     }, 'image/png');
   } catch(e) {
     console.error('Share error:', e);
@@ -1313,6 +1339,61 @@ async function shareReport(){
     document.getElementById(inpId).style.display = '';
     document.getElementById(ptId).style.display = 'none';
   });
+}
+
+// ═══════════════════════════════════════════════════════
+// 💎 الحفظ في حساب المستخدم (زر صريح)
+// ═══════════════════════════════════════════════════════
+async function saveToMyProfile() {
+  closeExportMenu();
+  
+  // تحقق من تسجيل الدخول
+  if (typeof window.getFirebaseUser !== 'function' || !window.getFirebaseUser()) {
+    if (typeof showToast === 'function') {
+      showToast('⚠️ سجّل دخولك أولاً لحفظ التقرير في حسابك');
+    }
+    setTimeout(() => {
+      window.location.href = 'login.html?next=tasis.html';
+    }, 1500);
+    return;
+  }
+  
+  // اعرض loader
+  const loader = document.createElement('div');
+  loader.id = '_saveLoader';
+  loader.style.cssText = `
+    position:fixed;inset:0;background:rgba(5,10,18,0.92);
+    backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);
+    z-index:99999;display:flex;align-items:center;justify-content:center;
+    flex-direction:column;gap:20px;
+  `;
+  loader.innerHTML = `
+    <div style="width:60px;height:60px;border:5px solid rgba(232,197,71,0.2);border-top-color:#e8c547;border-radius:50%;animation:_sl 0.8s linear infinite;"></div>
+    <div style="font:800 1.05rem 'Tajawal',sans-serif;color:#fff;text-align:center;padding:0 20px;">
+      ☁️ جاري حفظ التقرير في حسابك...
+    </div>
+    <style>@keyframes _sl{to{transform:rotate(360deg);}}</style>
+  `;
+  document.body.appendChild(loader);
+  
+  try {
+    await saveExportToCloud('save');
+    
+    // أزل الـ loader
+    loader.style.transition = 'opacity 0.3s';
+    loader.style.opacity = '0';
+    setTimeout(() => loader.remove(), 300);
+    
+    if (typeof showToast === 'function') {
+      showToast('✅ تم حفظ التقرير في حسابك');
+    }
+  } catch (e) {
+    console.error(e);
+    loader.remove();
+    if (typeof showToast === 'function') {
+      showToast('❌ فشل الحفظ');
+    }
+  }
 }
 
 // ═══════════════════════════════════════════════════════
@@ -1769,9 +1850,6 @@ async function exportAsPDFv2(){
     // ═══ حفظ ═══
     pdf.save('تقرير_يوم_التأسيس.pdf');
     
-    // 📋 سجّل التصدير في profile (await مهم!)
-    await saveExportToCloud('pdf');
-    
     if(typeof showToast === 'function'){
       showToast('✅ تم حفظ PDF بنجاح');
     }
@@ -1959,6 +2037,14 @@ async function exportAsPDFv2(){
     <span class="opt-text">
       <div class="opt-title">مشاركة</div>
       <div class="opt-desc">شارك التقرير عبر تطبيقاتك</div>
+    </span>
+    <span class="arrow">‹</span>
+  </button>
+  <button class="export-option profile-save" onclick="saveToMyProfile()">
+    <span class="ico cloud">☁️</span>
+    <span class="opt-text">
+      <div class="opt-title">حفظ في حسابي</div>
+      <div class="opt-desc">احفظ التقرير في سجلك للرجوع له لاحقاً</div>
     </span>
     <span class="arrow">‹</span>
   </button>
