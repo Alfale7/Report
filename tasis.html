@@ -569,8 +569,8 @@ transition:all 0.2s;
 
   <div class="sub-header" data-i18n="moeLabel">الإدارة العامة للتعليم</div>
 
-  <div class="title-bar editable" contenteditable="true" data-ph="اكتب عنوان الفعالية..." data-i18n-dataph="phEventTitle"></div>
-  <div class="subtitle-bar editable" contenteditable="true" data-ph="اكتب الفعالية الفرعية أو البرنامج..." data-i18n-dataph="phEventSub"></div>
+  <div class="title-bar editable" id="event-title" contenteditable="true" data-ph="اكتب عنوان الفعالية..." data-i18n-dataph="phEventTitle"></div>
+  <div class="subtitle-bar editable" id="event-subtitle" contenteditable="true" data-ph="اكتب الفعالية الفرعية أو البرنامج..." data-i18n-dataph="phEventSub"></div>
 
   <div class="main-body">
     <div class="photos-col">
@@ -839,11 +839,16 @@ function saveLocalData() {
     const data = { fields: {}, images: {} };
     
     // احفظ الحقول النصية
-    document.querySelectorAll('[contenteditable="true"]').forEach(el => {
+    document.querySelectorAll('[contenteditable="true"]').forEach((el, i) => {
       const text = (el.innerText || el.textContent || '').trim();
       if (text && text !== '...' && text !== '-') {
-        const key = el.id || el.dataset?.field;
-        if (key) data.fields[key] = text;
+        let key = el.id || el.dataset?.field;
+        if (!key && el.className) {
+          const cls = el.className.split(' ').filter(c => c && c !== 'editable').join('-');
+          if (cls) key = 'ce-' + cls;
+        }
+        if (!key) key = `editable_${i}`;
+        data.fields[key] = text;
       }
     });
     
@@ -892,7 +897,15 @@ function loadLocalData() {
     if (data.fields) {
       Object.entries(data.fields).forEach(([key, value]) => {
         if (!value) return;
-        const el = document.getElementById(key);
+        let el = document.getElementById(key);
+        
+        // 🆕 استعد contenteditable بالـ class
+        if (!el && key.startsWith('ce-')) {
+          const className = key.substring(3); // احذف "ce-"
+          el = document.querySelector(`.${className}.editable[contenteditable="true"]`)
+            || document.querySelector(`[contenteditable="true"].${className.split('-')[0]}`);
+        }
+        
         if (el) {
           if (el.tagName === 'INPUT' || el.tagName === 'TEXTAREA') {
             el.value = value;
@@ -1278,7 +1291,14 @@ async function saveExportToCloud(format = 'pdf') {
     document.querySelectorAll('[contenteditable="true"]').forEach((el, i) => {
       const text = (el.innerText || el.textContent || '').trim();
       if (text && text !== '...' && text !== '-') {
-        const key = el.id || `editable_${i}`;
+        // ابحث عن مفتاح فريد بترتيب: id → data-field → className → index
+        let key = el.id || el.dataset?.field;
+        if (!key && el.className) {
+          // استخدم أول class كمفتاح (مثل: title-bar, subtitle-bar)
+          const cls = el.className.split(' ').filter(c => c && c !== 'editable').join('-');
+          if (cls) key = 'ce-' + cls;
+        }
+        if (!key) key = `editable_${i}`;
         fields[key] = text;
       }
     });
@@ -1444,6 +1464,13 @@ function compressImageAsync(dataUrl, maxWidth = 600, quality = 0.6) {
       let el = document.getElementById(key);
       if (!el) el = document.querySelector(`[name="${key}"]`);
       if (!el) el = document.querySelector(`[data-field="${key}"]`);
+      
+      // 🆕 contenteditable بالـ class
+      if (!el && key.startsWith('ce-')) {
+        const className = key.substring(3);
+        el = document.querySelector(`.${className}.editable[contenteditable="true"]`)
+          || document.querySelector(`[contenteditable="true"].${className.split('-')[0]}`);
+      }
       
       if (el) {
         if (el.tagName === 'INPUT' || el.tagName === 'TEXTAREA') {
