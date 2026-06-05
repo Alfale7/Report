@@ -1942,29 +1942,47 @@ body.view-tabs .section.tab-section.tab-active{display:block; animation:fadeInTa
   box-shadow:0 4px 14px rgba(211,47,47,0.35);
 }
 
-/* ☁️ زر حفظ في حسابي - فاخر ذهبي */
+/* ☁️ زر حفظ في حسابي - فاخر ذهبي تحفة */
 .action-btn-cloud{
-  background:linear-gradient(135deg, #e8c547, #d4a657);
-  color:#5d3a00;
-  box-shadow:0 4px 14px rgba(232,197,71,0.4);
+  background:linear-gradient(135deg, #f5d76e 0%, #e8c547 35%, #d4a657 100%) !important;
+  color:#3d2200 !important;
+  box-shadow:
+    0 6px 20px rgba(232,197,71,0.5),
+    0 0 0 1px rgba(255,255,255,0.3) inset,
+    0 -2px 6px rgba(212,166,87,0.4) inset;
   position:relative;
   overflow:hidden;
-  font-weight:900;
+  font-weight:900 !important;
+  text-shadow:0 1px 0 rgba(255,255,255,0.4);
+  border:1px solid rgba(212,166,87,0.5) !important;
 }
 .action-btn-cloud::before{
   content:'';
   position:absolute;
-  top:0;left:-100%;
-  width:60%;height:100%;
-  background:linear-gradient(120deg, transparent, rgba(255,255,255,0.4), transparent);
-  animation:cloudBtnShimmer 3s infinite;
+  top:0;left:-150%;
+  width:80%;height:100%;
+  background:linear-gradient(110deg, transparent 20%, rgba(255,255,255,0.6) 50%, transparent 80%);
+  animation:cloudBtnShimmer 2.5s infinite;
+  pointer-events:none;
 }
-@keyframes cloudBtnShimmer{0%{left:-100%;}50%,100%{left:140%;}}
+.action-btn-cloud::after{
+  content:'';
+  position:absolute;
+  inset:0;
+  background:radial-gradient(ellipse at top, rgba(255,255,255,0.4), transparent 70%);
+  pointer-events:none;
+}
+@keyframes cloudBtnShimmer{0%{left:-150%;}50%,100%{left:150%;}}
 .action-btn-cloud:hover{
   transform:translateY(-2px);
-  box-shadow:0 8px 22px rgba(232,197,71,0.55);
-  background:linear-gradient(135deg, #f0ce4d, #e8c547);
+  box-shadow:
+    0 10px 28px rgba(232,197,71,0.65),
+    0 0 0 1px rgba(255,255,255,0.4) inset,
+    0 -2px 6px rgba(212,166,87,0.5) inset !important;
+  background:linear-gradient(135deg, #ffd966 0%, #f5d76e 35%, #e8c547 100%) !important;
 }
+.action-btn-cloud:active{transform:translateY(0);}
+.action-btn-cloud span{position:relative; z-index:1;}
 
 .action-btn-share{
   background:linear-gradient(135deg, #16a34a, #15803d);
@@ -2406,6 +2424,7 @@ body.view-tabs .section.tab-section.tab-active{display:block; animation:fadeInTa
     break-after: avoid !important;
   }
 }
+
 </style>
 </head>
 <body data-theme="">
@@ -2914,6 +2933,9 @@ body.view-tabs .section.tab-section.tab-active{display:block; animation:fadeInTa
 
   <div class="action-divider"></div>
 
+  <button class="action-btn action-btn-reset" onclick="resetAllData()" title="مسح كل البيانات وتفريغ الملف">
+    <span>🗑️</span><span>تفريغ</span>
+  </button>
   <button class="action-btn action-btn-export" onclick="saveAsImage()">
     <span>🖼️</span><span>صورة</span>
   </button>
@@ -2921,14 +2943,10 @@ body.view-tabs .section.tab-section.tab-active{display:block; animation:fadeInTa
     <span>📄</span><span>PDF</span>
   </button>
   <button class="action-btn action-btn-cloud" onclick="saveToMyProfile()" title="حفظ في حسابي للرجوع له لاحقاً">
-    <span>☁️</span><span>حفظ في حسابي</span>
+    <span>☁️ حفظ في حسابي</span>
   </button>
   <button class="action-btn action-btn-print" onclick="printReport()">
     <span>🖨️</span><span>طباعة</span>
-  </button>
-  <div class="action-divider"></div>
-  <button class="action-btn action-btn-reset" onclick="resetAllData()" title="مسح كل البيانات وتفريغ الملف">
-    <span>🗑️</span><span>تفريغ</span>
   </button>
 </div>
 

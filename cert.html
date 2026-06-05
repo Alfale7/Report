@@ -239,38 +239,47 @@ html,body{font-family:'Tajawal','Tahoma','Arial',sans-serif;background:linear-gr
   .cert-reason{font-size:0.95rem !important;}
 }
 
-/* ☁️ زر الحفظ في حسابي - زر مباشر فاخر */
-.save-profile-btn{
-  display:inline-flex !important;
-  align-items:center;
-  gap:8px;
-  padding:11px 20px;
-  background:linear-gradient(135deg, #e8c547 0%, #d4a657 100%);
-  color:#5d3a00;
-  border:none;
-  border-radius:12px;
-  font-family:'Tajawal','Cairo',sans-serif;
-  font-weight:900;
-  font-size:0.92rem;
-  cursor:pointer;
-  box-shadow:0 8px 22px rgba(232,197,71,0.4);
-  transition:all 0.3s;
+/* ☁️ زر حفظ في حسابي - ذهبي فاخر تحفة */
+.btn-cloud, .action-btn-cloud{
+  background:linear-gradient(135deg, #f5d76e 0%, #e8c547 35%, #d4a657 100%) !important;
+  color:#3d2200 !important;
   position:relative;
   overflow:hidden;
-  margin:0 4px;
+  font-weight:900 !important;
+  text-shadow:0 1px 0 rgba(255,255,255,0.4);
+  box-shadow:
+    0 6px 20px rgba(232,197,71,0.5),
+    0 0 0 1px rgba(255,255,255,0.3) inset,
+    0 -2px 6px rgba(212,166,87,0.4) inset !important;
+  border:1px solid rgba(212,166,87,0.5) !important;
 }
-.save-profile-btn::before{
-  content:'';position:absolute;top:0;left:-100%;width:60%;height:100%;
-  background:linear-gradient(120deg, transparent, rgba(255,255,255,0.4), transparent);
-  animation:saveBtnShimmer 3s infinite;
+.btn-cloud::before, .action-btn-cloud::before{
+  content:'';
+  position:absolute;
+  top:0;left:-150%;
+  width:80%;height:100%;
+  background:linear-gradient(110deg, transparent 20%, rgba(255,255,255,0.6) 50%, transparent 80%);
+  animation:cloudShimmer 2.5s infinite;
+  pointer-events:none;
 }
-@keyframes saveBtnShimmer{0%{left:-100%;}50%,100%{left:140%;}}
-.save-profile-btn:hover{
+.btn-cloud::after, .action-btn-cloud::after{
+  content:'';
+  position:absolute;
+  inset:0;
+  background:radial-gradient(ellipse at top, rgba(255,255,255,0.4), transparent 70%);
+  pointer-events:none;
+}
+@keyframes cloudShimmer{0%{left:-150%;}50%,100%{left:150%;}}
+.btn-cloud:hover, .action-btn-cloud:hover{
   transform:translateY(-2px);
-  box-shadow:0 12px 28px rgba(232,197,71,0.55);
+  box-shadow:
+    0 10px 28px rgba(232,197,71,0.65),
+    0 0 0 1px rgba(255,255,255,0.4) inset,
+    0 -2px 6px rgba(212,166,87,0.5) inset !important;
+  background:linear-gradient(135deg, #ffd966 0%, #f5d76e 35%, #e8c547 100%) !important;
 }
-.save-profile-btn:active{transform:translateY(0);}
-.save-profile-btn .save-icon{font-size:1.15rem;}
+.btn-cloud:active, .action-btn-cloud:active{transform:translateY(0);}
+.btn-cloud span, .action-btn-cloud span{position:relative; z-index:1;}
 
 </style>
 </head>
@@ -381,11 +390,9 @@ html,body{font-family:'Tajawal','Tahoma','Arial',sans-serif;background:linear-gr
       <button class="btn btn-ghost" onclick="resetForm()"><span>🔄</span><span>تفريغ</span></button>
       <button class="btn btn-img" onclick="saveAsImage()"><span>🖼️</span><span>صورة</span></button>
       <button class="btn btn-pdf" onclick="exportAsPDFv2()"><span>📄</span><span>PDF</span></button>
-    <button class="save-profile-btn" onclick="saveToMyProfile()" title="حفظ في حسابي للرجوع له لاحقاً">
-      <span class="save-icon">☁️</span>
-      <span>حفظ في حسابي</span>
+    <button class="btn btn-cloud" onclick="saveToMyProfile()" title="حفظ في حسابي للرجوع له لاحقاً">
+      <span>☁️ حفظ في حسابي</span>
     </button>
-
       <button class="btn btn-share" onclick="shareReport()"><span>📤</span><span>مشاركة</span></button>
       <button class="btn btn-primary" onclick="downloadBulk()"><span>📥</span><span>تحميل الكل (ZIP)</span></button>
     </div>
@@ -1403,23 +1410,13 @@ document.getElementById('cert-seal').innerHTML = MOE_LOGO_HTML;
 
 <!-- 🔥 Firebase Integration -->
 <script type="module" src="report-firebase.js?v=12"></script>
-<script>
 
-// ═══════════════════════════════════════════════════════
-// ☁️ حفظ في حساب المستخدم (نمط tasis)
-// ═══════════════════════════════════════════════════════
+<!-- ☁️ نظام الحفظ في البروفايل -->
+<script>
 async function saveToMyProfile() {
-  if (typeof closeExportMenu === 'function') closeExportMenu();
-  
   if (typeof window.getFirebaseUser !== 'function' || !window.getFirebaseUser()) {
-    if (typeof showToast === 'function') {
-      showToast('⚠️ سجّل دخولك أولاً لحفظ التقرير');
-    } else {
-      alert('⚠️ سجّل دخولك أولاً لحفظ التقرير');
-    }
-    setTimeout(() => {
-      window.location.href = 'login.html?next=cert.html';
-    }, 1500);
+    if (typeof showToast === 'function') showToast('⚠️ سجّل دخولك أولاً');
+    setTimeout(() => { window.location.href = 'login.html?next=cert.html'; }, 1500);
     return;
   }
   
@@ -1442,32 +1439,40 @@ async function saveToMyProfile() {
   
   try {
     await saveExportToCloud('save');
-    loader.style.transition = 'opacity 0.3s';
     loader.style.opacity = '0';
+    loader.style.transition = 'opacity 0.3s';
     setTimeout(() => loader.remove(), 300);
     if (typeof showToast === 'function') showToast('✅ تم حفظ التقرير في حسابك');
-    else alert('✅ تم حفظ التقرير في حسابك');
   } catch (e) {
-    console.error(e);
+    console.error('❌:', e);
     loader.remove();
-    if (typeof showToast === 'function') showToast('❌ فشل الحفظ');
-    else alert('❌ فشل الحفظ: ' + (e.message || ''));
+    if (typeof showToast === 'function') showToast('❌ ' + e.message);
   }
 }
 
-async function saveExportToCloud(format = 'pdf') {
+async function saveExportToCloud(format = 'save') {
   if (typeof window.trackExport !== 'function') {
     for (let i = 0; i < 100; i++) {
       await new Promise(r => setTimeout(r, 100));
       if (typeof window.trackExport === 'function') break;
     }
-    if (typeof window.trackExport !== 'function') {
-      throw new Error('Firebase غير جاهز');
-    }
+    if (typeof window.trackExport !== 'function') throw new Error('Firebase غير جاهز');
   }
   
-  const fields = {};
+  const content = {};
   
+  // كل inputs و textareas
+  document.querySelectorAll('input, textarea, select').forEach((el, i) => {
+    if (el.type === 'file' || el.type === 'button' || el.type === 'submit' || 
+        el.type === 'reset' || el.type === 'checkbox' || el.type === 'radio') return;
+    const val = (el.value || '').toString().trim();
+    if (val) {
+      const key = el.id || el.name || `input_${i}`;
+      content[key] = val;
+    }
+  });
+  
+  // contenteditable
   document.querySelectorAll('[contenteditable="true"]').forEach((el, i) => {
     const text = (el.innerText || el.textContent || '').trim();
     if (text && text !== '...' && text !== '-') {
@@ -1477,46 +1482,56 @@ async function saveExportToCloud(format = 'pdf') {
         if (cls) key = 'ce-' + cls;
       }
       if (!key) key = `editable_${i}`;
-      fields[key] = text;
+      content[key] = text;
     }
   });
   
-  document.querySelectorAll('input, textarea, select').forEach((el, i) => {
-    if (el.type === 'file' || el.type === 'button' || el.type === 'submit' || 
-        el.type === 'reset' || el.type === 'checkbox' || el.type === 'radio') return;
-    const val = (el.value || '').toString().trim();
-    if (val) {
-      const key = el.id || el.name || `input_${i}`;
-      fields[key] = val;
-    }
-  });
-  
-  const images = {};
-  const imgs = document.querySelectorAll('img');
-  let imgIdx = 0;
-  for (const img of imgs) {
-    if (img && img.src && img.src.startsWith('data:image/')) {
-      const key = img.id || `img_${imgIdx++}`;
-      if (img.src.length < 250000) {
-        images[key] = img.src;
-      } else {
-        try {
-          const compressed = await compressImageAsync(img.src, 600, 0.6);
-          images[key] = compressed;
-        } catch (err) { console.warn(err); }
+  // الصور من DOM مباشرة
+  document.querySelectorAll('img').forEach((img, i) => {
+    if (img.src && img.src.startsWith('data:image/')) {
+      let key = img.id;
+      if (!key) {
+        const parent = img.closest('[data-slot]');
+        if (parent) key = '__shahed-' + parent.getAttribute('data-slot');
       }
+      if (!key) key = `img_${i}`;
+      content[key] = img.src;
     }
-  }
+  });
   
-  const content = { ...fields, _images: images };
+  // الثيم
+  const theme = document.body.getAttribute('data-theme');
+  if (theme) content['__theme'] = theme;
   
-  // 🚨 فحص الحجم قبل الإرسال
-  const totalSize = Math.round(JSON.stringify(content).length / 1024);
+  console.log('📊 الحقول:', Object.keys(content).length);
+  
+  let totalSize = Math.round(JSON.stringify(content).length / 1024);
   console.log('📊 الحجم:', totalSize, 'KB');
   
+  // ضغط الصور لو الحجم كبير
   if (totalSize > 900) {
-    console.warn('⚠️ الحجم كبير، نحذف الصور');
-    delete content._images;
+    const passes = [
+      { w: 800, q: 0.7 },
+      { w: 500, q: 0.5 },
+      { w: 350, q: 0.4 },
+      { w: 250, q: 0.3 }
+    ];
+    
+    const imageKeys = Object.keys(content).filter(k => {
+      const v = content[k];
+      return typeof v === 'string' && v.startsWith('data:image/');
+    });
+    
+    for (const pass of passes) {
+      for (const key of imageKeys) {
+        try {
+          content[key] = await compressImageAsync(content[key], pass.w, pass.q);
+        } catch(e) {}
+      }
+      totalSize = Math.round(JSON.stringify(content).length / 1024);
+      console.log(`📉 ${pass.w}px: ${totalSize} KB`);
+      if (totalSize < 900) break;
+    }
   }
   
   const result = await window.trackExport({
@@ -1525,9 +1540,11 @@ async function saveExportToCloud(format = 'pdf') {
     format: format,
     content: content
   });
-  if (result !== true && (!result || !result.success)) {
-    throw new Error('فشل الحفظ في Firebase');
+  
+  if (result === true || (result && result.success === true)) {
+    return true;
   }
+  throw new Error('فشل الحفظ');
 }
 
 function compressImageAsync(dataUrl, maxWidth = 600, quality = 0.6) {
@@ -1578,22 +1595,54 @@ function compressImageAsync(dataUrl, maxWidth = 600, quality = 0.6) {
     `;
     loader.innerHTML = `
       <div style="width:60px;height:60px;border:5px solid rgba(232,197,71,0.2);border-top-color:#e8c547;border-radius:50%;animation:_rs 0.8s linear infinite;"></div>
-      <div style="font:800 1.1rem 'Tajawal',sans-serif;color:#fff;">⏳ جاري استعادة بياناتك...</div>
+      <div style="font:800 1.1rem 'Tajawal',sans-serif;color:#fff;">⏳ جاري الاستعادة...</div>
       <style>@keyframes _rs{to{transform:rotate(360deg);}}</style>
     `;
     document.body.appendChild(loader);
     
     let restored = 0;
-    
     Object.entries(data.content).forEach(([key, value]) => {
-      if (key === '_images' || !value) return;
+      if (!value) return;
+      
+      // الصور
+      if (key.startsWith('__shahed-') || (typeof value === 'string' && value.startsWith('data:image/'))) {
+        const sid = key.replace('__shahed-', '');
+        // جرب data-slot أولاً
+        let slot = document.querySelector(`[data-slot="${sid}"]`);
+        if (slot) {
+          const img = slot.querySelector('img');
+          if (img) {
+            slot.classList.add('has-image');
+            img.src = value;
+            img.style.display = 'block';
+            const ph = slot.querySelector('.shahed-slot-placeholder, .placeholder');
+            if (ph) ph.style.display = 'none';
+            restored++;
+            return;
+          }
+        }
+        // جرب ID
+        const imgEl = document.getElementById(key);
+        if (imgEl && imgEl.tagName === 'IMG') {
+          imgEl.src = value;
+          imgEl.style.display = 'block';
+          restored++;
+          return;
+        }
+      }
+      
+      if (key === '__theme') {
+        document.body.setAttribute('data-theme', value);
+        return;
+      }
+      
+      // الحقول
       let el = document.getElementById(key);
       if (!el) el = document.querySelector(`[name="${key}"]`);
-      if (!el) el = document.querySelector(`[data-field="${key}"]`);
       if (!el && key.startsWith('ce-')) {
-        const className = key.substring(3);
-        el = document.querySelector(`.${className}.editable[contenteditable="true"]`)
-          || document.querySelector(`[contenteditable="true"].${className.split('-')[0]}`);
+        const cls = key.substring(3);
+        el = document.querySelector(`.${cls}.editable[contenteditable="true"]`)
+          || document.querySelector(`[contenteditable="true"].${cls.split('-')[0]}`);
       }
       if (el) {
         if (el.tagName === 'INPUT' || el.tagName === 'TEXTAREA' || el.tagName === 'SELECT') {
@@ -1605,17 +1654,6 @@ function compressImageAsync(dataUrl, maxWidth = 600, quality = 0.6) {
       }
     });
     
-    if (data.content._images) {
-      Object.entries(data.content._images).forEach(([id, src]) => {
-        const img = document.getElementById(id);
-        if (img && src) {
-          img.src = src;
-          img.style.display = 'block';
-          restored++;
-        }
-      });
-    }
-    
     localStorage.removeItem('ksa_restore_export');
     if (window.history) window.history.replaceState({}, '', window.location.pathname);
     
@@ -1626,14 +1664,14 @@ function compressImageAsync(dataUrl, maxWidth = 600, quality = 0.6) {
       if (typeof showToast === 'function' && restored > 0) {
         showToast(`✅ تمت استعادة ${restored} عنصر`);
       }
-    }, 600);
+    }, 500);
   } catch (e) {
-    console.warn('فشلت الاستعادة:', e);
+    console.warn('فشل:', e);
     const loader = document.getElementById('_restoreLoader');
     if (loader) loader.remove();
   }
 })();
-
 </script>
+
 </body>
 </html>

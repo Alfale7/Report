@@ -704,11 +704,78 @@ transition:all 0.2s;
   body{background:#fff !important; padding:0 !important;}
 }
 
+
+/* ☁️ زر حفظ في حسابي - ذهبي فاخر تحفة */
+.btn-cloud, .action-btn-cloud{
+  background:linear-gradient(135deg, #f5d76e 0%, #e8c547 35%, #d4a657 100%) !important;
+  color:#3d2200 !important;
+  position:relative;
+  overflow:hidden;
+  font-weight:900 !important;
+  text-shadow:0 1px 0 rgba(255,255,255,0.4);
+  box-shadow:
+    0 6px 20px rgba(232,197,71,0.5),
+    0 0 0 1px rgba(255,255,255,0.3) inset,
+    0 -2px 6px rgba(212,166,87,0.4) inset !important;
+  border:1px solid rgba(212,166,87,0.5) !important;
+}
+.btn-cloud::before, .action-btn-cloud::before{
+  content:'';
+  position:absolute;
+  top:0;left:-150%;
+  width:80%;height:100%;
+  background:linear-gradient(110deg, transparent 20%, rgba(255,255,255,0.6) 50%, transparent 80%);
+  animation:cloudShimmer 2.5s infinite;
+  pointer-events:none;
+}
+.btn-cloud::after, .action-btn-cloud::after{
+  content:'';
+  position:absolute;
+  inset:0;
+  background:radial-gradient(ellipse at top, rgba(255,255,255,0.4), transparent 70%);
+  pointer-events:none;
+}
+@keyframes cloudShimmer{0%{left:-150%;}50%,100%{left:150%;}}
+.btn-cloud:hover, .action-btn-cloud:hover{
+  transform:translateY(-2px);
+  box-shadow:
+    0 10px 28px rgba(232,197,71,0.65),
+    0 0 0 1px rgba(255,255,255,0.4) inset,
+    0 -2px 6px rgba(212,166,87,0.5) inset !important;
+  background:linear-gradient(135deg, #ffd966 0%, #f5d76e 35%, #e8c547 100%) !important;
+}
+.btn-cloud:active, .action-btn-cloud:active{transform:translateY(0);}
+.btn-cloud span, .action-btn-cloud span{position:relative; z-index:1;}
+
+
+/* ☁️ زر الحفظ داخل قائمة التصدير */
+.export-option .ico.cloud{background:linear-gradient(135deg,#e8c547,#d4a657);box-shadow:0 4px 12px rgba(232,197,71,0.4);}
+.export-option.profile-save{
+  background:linear-gradient(135deg, rgba(232,197,71,0.08), rgba(212,166,87,0.04));
+  border:1px solid rgba(232,197,71,0.3);
+  margin:8px 0;
+  position:relative;
+  overflow:hidden;
+}
+.export-option.profile-save::before{
+  content:'';
+  position:absolute;top:0;left:-100%;
+  width:60%;height:100%;
+  background:linear-gradient(120deg, transparent, rgba(232,197,71,0.2), transparent);
+  animation:cloudShimmerMenu 3s infinite;
+}
+@keyframes cloudShimmerMenu{0%{left:-100%;}50%,100%{left:140%;}}
+.export-option.profile-save:hover{
+  background:linear-gradient(135deg, rgba(232,197,71,0.15), rgba(212,166,87,0.08));
+  border-color:rgba(232,197,71,0.5);
+}
+.export-option.profile-save .opt-title{color:#d4a657;font-weight:900;}
+.export-option.profile-save .opt-desc{color:#aa8540;}
+
 </style>
 
   <!-- 🔥 Firebase Integration (يجب أن يكون قبل أي محتوى) -->
   <script type="module" src="report-firebase.js?v=12"></script>
-<script src="report-tools.js?v=3"></script>
 </head>
 <body>
 
@@ -1693,6 +1760,278 @@ async function exportAsPDFv2(){
     </span>
     <span class="arrow">‹</span>
   </button>
+  <button class="export-option profile-save" onclick="saveToMyProfile()">
+    <span class="ico cloud">☁️</span>
+    <span class="opt-text">
+      <div class="opt-title">حفظ في حسابي</div>
+      <div class="opt-desc">احفظ التقرير في سجلك للرجوع له لاحقاً</div>
+    </span>
+    <span class="arrow">‹</span>
+  </button>
+
   <button class="export-cancel-btn" onclick="closeExportMenu()">إلغاء</button>
-</div></body>
+</div>
+<!-- ☁️ نظام الحفظ في البروفايل -->
+<script>
+async function saveToMyProfile() {
+  if (typeof window.getFirebaseUser !== 'function' || !window.getFirebaseUser()) {
+    if (typeof showToast === 'function') showToast('⚠️ سجّل دخولك أولاً');
+    setTimeout(() => { window.location.href = 'login.html?next=alm2.html'; }, 1500);
+    return;
+  }
+  
+  const loader = document.createElement('div');
+  loader.id = '_saveLoader';
+  loader.style.cssText = `
+    position:fixed;inset:0;background:rgba(5,10,18,0.92);
+    backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);
+    z-index:99999;display:flex;align-items:center;justify-content:center;
+    flex-direction:column;gap:20px;
+  `;
+  loader.innerHTML = `
+    <div style="width:60px;height:60px;border:5px solid rgba(232,197,71,0.2);border-top-color:#e8c547;border-radius:50%;animation:_sl 0.8s linear infinite;"></div>
+    <div style="font:800 1.05rem 'Tajawal',sans-serif;color:#fff;text-align:center;padding:0 20px;">
+      ☁️ جاري حفظ التقرير في حسابك...
+    </div>
+    <style>@keyframes _sl{to{transform:rotate(360deg);}}</style>
+  `;
+  document.body.appendChild(loader);
+  
+  try {
+    await saveExportToCloud('save');
+    loader.style.opacity = '0';
+    loader.style.transition = 'opacity 0.3s';
+    setTimeout(() => loader.remove(), 300);
+    if (typeof showToast === 'function') showToast('✅ تم حفظ التقرير في حسابك');
+  } catch (e) {
+    console.error('❌:', e);
+    loader.remove();
+    if (typeof showToast === 'function') showToast('❌ ' + e.message);
+  }
+}
+
+async function saveExportToCloud(format = 'save') {
+  if (typeof window.trackExport !== 'function') {
+    for (let i = 0; i < 100; i++) {
+      await new Promise(r => setTimeout(r, 100));
+      if (typeof window.trackExport === 'function') break;
+    }
+    if (typeof window.trackExport !== 'function') throw new Error('Firebase غير جاهز');
+  }
+  
+  const content = {};
+  
+  // كل inputs و textareas
+  document.querySelectorAll('input, textarea, select').forEach((el, i) => {
+    if (el.type === 'file' || el.type === 'button' || el.type === 'submit' || 
+        el.type === 'reset' || el.type === 'checkbox' || el.type === 'radio') return;
+    const val = (el.value || '').toString().trim();
+    if (val) {
+      const key = el.id || el.name || `input_${i}`;
+      content[key] = val;
+    }
+  });
+  
+  // contenteditable
+  document.querySelectorAll('[contenteditable="true"]').forEach((el, i) => {
+    const text = (el.innerText || el.textContent || '').trim();
+    if (text && text !== '...' && text !== '-') {
+      let key = el.id || el.dataset?.field;
+      if (!key && el.className) {
+        const cls = el.className.split(' ').filter(c => c && c !== 'editable').join('-');
+        if (cls) key = 'ce-' + cls;
+      }
+      if (!key) key = `editable_${i}`;
+      content[key] = text;
+    }
+  });
+  
+  // الصور من DOM مباشرة
+  document.querySelectorAll('img').forEach((img, i) => {
+    if (img.src && img.src.startsWith('data:image/')) {
+      let key = img.id;
+      if (!key) {
+        const parent = img.closest('[data-slot]');
+        if (parent) key = '__shahed-' + parent.getAttribute('data-slot');
+      }
+      if (!key) key = `img_${i}`;
+      content[key] = img.src;
+    }
+  });
+  
+  // الثيم
+  const theme = document.body.getAttribute('data-theme');
+  if (theme) content['__theme'] = theme;
+  
+  console.log('📊 الحقول:', Object.keys(content).length);
+  
+  let totalSize = Math.round(JSON.stringify(content).length / 1024);
+  console.log('📊 الحجم:', totalSize, 'KB');
+  
+  // ضغط الصور لو الحجم كبير
+  if (totalSize > 900) {
+    const passes = [
+      { w: 800, q: 0.7 },
+      { w: 500, q: 0.5 },
+      { w: 350, q: 0.4 },
+      { w: 250, q: 0.3 }
+    ];
+    
+    const imageKeys = Object.keys(content).filter(k => {
+      const v = content[k];
+      return typeof v === 'string' && v.startsWith('data:image/');
+    });
+    
+    for (const pass of passes) {
+      for (const key of imageKeys) {
+        try {
+          content[key] = await compressImageAsync(content[key], pass.w, pass.q);
+        } catch(e) {}
+      }
+      totalSize = Math.round(JSON.stringify(content).length / 1024);
+      console.log(`📉 ${pass.w}px: ${totalSize} KB`);
+      if (totalSize < 900) break;
+    }
+  }
+  
+  const result = await window.trackExport({
+    type: 'alm2',
+    title: 'تقرير المعلم 2',
+    format: format,
+    content: content
+  });
+  
+  if (result === true || (result && result.success === true)) {
+    return true;
+  }
+  throw new Error('فشل الحفظ');
+}
+
+function compressImageAsync(dataUrl, maxWidth = 600, quality = 0.6) {
+  return new Promise((resolve, reject) => {
+    const img = new Image();
+    img.onload = function() {
+      try {
+        let { width, height } = img;
+        if (width > maxWidth) {
+          height = Math.round(height * (maxWidth / width));
+          width = maxWidth;
+        }
+        const canvas = document.createElement('canvas');
+        canvas.width = width; canvas.height = height;
+        const ctx = canvas.getContext('2d');
+        ctx.fillStyle = '#ffffff';
+        ctx.fillRect(0, 0, width, height);
+        ctx.drawImage(img, 0, 0, width, height);
+        resolve(canvas.toDataURL('image/jpeg', quality));
+      } catch (e) { reject(e); }
+    };
+    img.onerror = () => reject(new Error('فشل تحميل الصورة'));
+    img.src = dataUrl;
+  });
+}
+
+(function tryRestoreFromCloud(){
+  const params = new URLSearchParams(window.location.search);
+  if (params.get('restore') !== '1') return;
+  
+  try {
+    const stored = localStorage.getItem('ksa_restore_export');
+    if (!stored) {
+      if (window.history) window.history.replaceState({}, '', window.location.pathname);
+      return;
+    }
+    
+    const data = JSON.parse(stored);
+    if (!data.content) return;
+    
+    const loader = document.createElement('div');
+    loader.id = '_restoreLoader';
+    loader.style.cssText = `
+      position:fixed;inset:0;background:rgba(5,10,18,0.95);
+      backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);
+      z-index:99999;display:flex;align-items:center;justify-content:center;
+      flex-direction:column;gap:20px;
+    `;
+    loader.innerHTML = `
+      <div style="width:60px;height:60px;border:5px solid rgba(232,197,71,0.2);border-top-color:#e8c547;border-radius:50%;animation:_rs 0.8s linear infinite;"></div>
+      <div style="font:800 1.1rem 'Tajawal',sans-serif;color:#fff;">⏳ جاري الاستعادة...</div>
+      <style>@keyframes _rs{to{transform:rotate(360deg);}}</style>
+    `;
+    document.body.appendChild(loader);
+    
+    let restored = 0;
+    Object.entries(data.content).forEach(([key, value]) => {
+      if (!value) return;
+      
+      // الصور
+      if (key.startsWith('__shahed-') || (typeof value === 'string' && value.startsWith('data:image/'))) {
+        const sid = key.replace('__shahed-', '');
+        // جرب data-slot أولاً
+        let slot = document.querySelector(`[data-slot="${sid}"]`);
+        if (slot) {
+          const img = slot.querySelector('img');
+          if (img) {
+            slot.classList.add('has-image');
+            img.src = value;
+            img.style.display = 'block';
+            const ph = slot.querySelector('.shahed-slot-placeholder, .placeholder');
+            if (ph) ph.style.display = 'none';
+            restored++;
+            return;
+          }
+        }
+        // جرب ID
+        const imgEl = document.getElementById(key);
+        if (imgEl && imgEl.tagName === 'IMG') {
+          imgEl.src = value;
+          imgEl.style.display = 'block';
+          restored++;
+          return;
+        }
+      }
+      
+      if (key === '__theme') {
+        document.body.setAttribute('data-theme', value);
+        return;
+      }
+      
+      // الحقول
+      let el = document.getElementById(key);
+      if (!el) el = document.querySelector(`[name="${key}"]`);
+      if (!el && key.startsWith('ce-')) {
+        const cls = key.substring(3);
+        el = document.querySelector(`.${cls}.editable[contenteditable="true"]`)
+          || document.querySelector(`[contenteditable="true"].${cls.split('-')[0]}`);
+      }
+      if (el) {
+        if (el.tagName === 'INPUT' || el.tagName === 'TEXTAREA' || el.tagName === 'SELECT') {
+          el.value = value;
+        } else {
+          el.innerText = value;
+        }
+        restored++;
+      }
+    });
+    
+    localStorage.removeItem('ksa_restore_export');
+    if (window.history) window.history.replaceState({}, '', window.location.pathname);
+    
+    setTimeout(() => {
+      loader.style.transition = 'opacity 0.4s';
+      loader.style.opacity = '0';
+      setTimeout(() => loader.remove(), 400);
+      if (typeof showToast === 'function' && restored > 0) {
+        showToast(`✅ تمت استعادة ${restored} عنصر`);
+      }
+    }, 500);
+  } catch (e) {
+    console.warn('فشل:', e);
+    const loader = document.getElementById('_restoreLoader');
+    if (loader) loader.remove();
+  }
+})();
+</script>
+
+</body>
 </html>
