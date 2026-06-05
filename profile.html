@@ -1478,13 +1478,63 @@ window.openExport = async function(exportId, reportUrl) {
     
     const exportData = result.export;
     
-    // احفظ المحتوى
-    localStorage.setItem('ksa_restore_export', JSON.stringify({
+    // 🆕 حفظ ذكي مع معالجة امتلاء localStorage
+    const restoreData = JSON.stringify({
       type: exportData.type,
       title: exportData.title,
       content: exportData.content || {},
       exportedAt: Date.now()
-    }));
+    });
+    
+    let saved = false;
+    
+    // المحاولة 1: حفظ مباشر
+    try {
+      localStorage.setItem('ksa_restore_export', restoreData);
+      saved = true;
+    } catch(e) {
+      console.warn('localStorage ممتلئ، نظّف...');
+    }
+    
+    // المحاولة 2: نظّف localStorage ثم احفظ
+    if (!saved) {
+      try {
+        // امسح بيانات التقارير المحلية القديمة (مش حسابك!)
+        const protectedKeys = ['siteLang', 'loggedUser', 'isSubscribed', 'free_downloads_used', 'ksa2030_pricing_cache_v1'];
+        for (let i = localStorage.length - 1; i >= 0; i--) {
+          const k = localStorage.key(i);
+          if (k && !protectedKeys.includes(k) && !k.startsWith('firebase')) {
+            localStorage.removeItem(k);
+          }
+        }
+        localStorage.setItem('ksa_restore_export', restoreData);
+        saved = true;
+        console.log('✅ تم الحفظ بعد التنظيف');
+      } catch(e) {
+        console.warn('لسا ممتلئ، نحذف الصور...');
+      }
+    }
+    
+    // المحاولة 3: امسح localStorage بالكامل (إجراء أخير)
+    if (!saved) {
+      try {
+        const lang = localStorage.getItem('siteLang');
+        const user = localStorage.getItem('loggedUser');
+        const sub = localStorage.getItem('isSubscribed');
+        localStorage.clear();
+        if (lang) localStorage.setItem('siteLang', lang);
+        if (user) localStorage.setItem('loggedUser', user);
+        if (sub) localStorage.setItem('isSubscribed', sub);
+        localStorage.setItem('ksa_restore_export', restoreData);
+        saved = true;
+        console.log('✅ تم الحفظ بعد مسح كامل');
+      } catch(e) {
+        loader.remove();
+        console.error('فشل تماماً:', e);
+        showToast('❌ الذاكرة ممتلئة - أعد تحميل الصفحة', 'error');
+        return;
+      }
+    }
     
     // تأكد من اسم الملف
     let finalUrl = reportUrl;
