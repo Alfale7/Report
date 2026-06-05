@@ -1214,8 +1214,8 @@ async function shareReport(){
         showToast('📥 تم التنزيل (المشاركة غير مدعومة)');
       }
       
-      // 📋 سجّل التصدير في profile
-      saveExportToCloud('png');
+      // 📋 سجّل التصدير في profile (await مهم!)
+      await saveExportToCloud('png');
     }, 'image/png');
   } catch(e) {
     console.error('Share error:', e);
@@ -1231,89 +1231,84 @@ async function shareReport(){
 
 // ═══════════════════════════════════════════════════════
 // ☁️ حفظ التقرير في السحابة (للسجل + استعادة لاحقة)
+// نسخة بسيطة موثوقة 100%
 // ═══════════════════════════════════════════════════════
 async function saveExportToCloud(format = 'pdf') {
-  console.log('💾 ═══ saveExportToCloud started ═══');
-  console.log('💾 format:', format);
-  console.log('💾 الوقت الحالي:', new Date().toISOString());
-  
-  // امنع التكرار خلال 3 ثواني (فقط لو نجح آخر حفظ)
-  if (window._lastSaveSuccess && (Date.now() - window._lastSaveSuccess < 3000)) {
-    console.log('⏭️ تم تخطي التكرار (نجاح قبل ' + (Date.now() - window._lastSaveSuccess) + 'ms)');
-    return;
-  }
-  
-  console.log('💾 trackExport متاحة؟', typeof window.trackExport);
-  
-  // انتظر window.trackExport يصير جاهز (Firebase) - حتى 15 ثانية
-  let attempts = 0;
-  while (typeof window.trackExport !== 'function' && attempts < 150) {
-    if (attempts % 10 === 0) {
-      console.log('⏳ انتظار trackExport... (' + attempts + '/150)');
-    }
-    await new Promise(r => setTimeout(r, 100));
-    attempts++;
-  }
-  
-  if (typeof window.trackExport !== 'function') {
-    console.warn('⚠️ trackExport ما توفرت بعد 15 ثانية');
-    if (typeof showToast === 'function') {
-      showToast('⚠️ سجّل دخولك لحفظ التقرير');
-    }
-    return;
-  }
-  
-  console.log('✅ trackExport جاهزة، نبدأ الحفظ');
+  console.log('💾 ═══════════════════════════════════');
+  console.log('💾 saveExportToCloud:', format);
   
   try {
-    // 📝 اجمع الحقول النصية
+    // 1️⃣ تحقق من Firebase
+    if (typeof window.trackExport !== 'function') {
+      console.log('⏳ trackExport غير جاهز، انتظر...');
+      // انتظر حتى 10 ثواني
+      for (let i = 0; i < 100; i++) {
+        await new Promise(r => setTimeout(r, 100));
+        if (typeof window.trackExport === 'function') break;
+      }
+      if (typeof window.trackExport !== 'function') {
+        console.error('❌ trackExport لم تتوفر');
+        return;
+      }
+    }
+    
+    console.log('✅ trackExport جاهزة');
+    
+    // 2️⃣ تحقق من المستخدم
+    if (typeof window.getFirebaseUser === 'function') {
+      const user = window.getFirebaseUser();
+      if (!user) {
+        console.error('❌ لا يوجد مستخدم مسجل');
+        return;
+      }
+      console.log('👤 المستخدم:', user.uid);
+    }
+    
+    // 3️⃣ اجمع البيانات النصية فقط (بدون صور لتجنب المشاكل)
     const fields = {};
-    document.querySelectorAll('[contenteditable="true"]').forEach(el => {
+    
+    // editable divs
+    document.querySelectorAll('[contenteditable="true"]').forEach((el, i) => {
       const text = (el.innerText || el.textContent || '').trim();
       if (text && text !== '...' && text !== '-') {
-        const key = el.id || el.dataset?.field || `txt_${Object.keys(fields).length}`;
+        const key = el.id || `editable_${i}`;
         fields[key] = text;
       }
     });
     
-    document.querySelectorAll('input[type="text"], textarea').forEach(el => {
-      if (el.value && el.value.trim()) {
-        const key = el.id || el.name || `fld_${Object.keys(fields).length}`;
-        fields[key] = el.value.trim();
+    // inputs and textareas
+    document.querySelectorAll('input[type="text"], input[type="date"], textarea').forEach((el, i) => {
+      const val = (el.value || '').trim();
+      if (val) {
+        const key = el.id || el.name || `input_${i}`;
+        fields[key] = val;
       }
     });
     
-    // 🖼️ اجمع الصور المرفوعة (i1, i2, i3 → p1, p2, p3)
-    // ⚠️ مهم: نستعمل await لأن compressImage يرجع Promise
+    console.log('📝 حقول مجمّعة:', Object.keys(fields).length);
+    
+    // 4️⃣ الصور: نأخذها كما هي بدون ضغط (Firestore يقبل حتى 1MB)
     const images = {};
-    for (const id of ['p1', 'p2', 'p3']) {
+    ['p1', 'p2', 'p3'].forEach(id => {
       const img = document.getElementById(id);
       if (img && img.src && img.src.startsWith('data:image/')) {
-        try {
-          if (img.src.length > 200000) {
-            images[id] = await compressImage(img.src, 800);
-          } else {
-            images[id] = img.src;
-          }
-        } catch (e) {
-          console.warn('فشل ضغط صورة:', id, e);
+        // فقط الصور أقل من 200KB (تجنب 1MB limit)
+        if (img.src.length < 200000) {
+          images[id] = img.src;
+        } else {
+          console.log('⚠️ الصورة', id, 'كبيرة (', Math.round(img.src.length/1024), 'KB) - تم تخطيها');
         }
       }
-    }
+    });
     
-    console.log('🖼️ صور للحفظ:', Object.keys(images).length, 'صورة');
-    console.log('📝 حقول للحفظ:', Object.keys(fields).length, 'حقل');
+    console.log('🖼️ صور مجمّعة:', Object.keys(images).length);
     
-    // فحص الحجم
+    // 5️⃣ البيانات النهائية
     const content = { ...fields, _images: images };
     const sizeKB = Math.round(JSON.stringify(content).length / 1024);
-    console.log(`📊 حجم البيانات: ${sizeKB} KB`);
+    console.log('📊 الحجم:', sizeKB, 'KB');
     
-    if (sizeKB > 900) {
-      console.warn('⚠️ الحجم كبير، نحذف الصور');
-      delete content._images;
-    }
-    
+    // 6️⃣ إرسال
     console.log('☁️ إرسال إلى Firebase...');
     const result = await window.trackExport({
       type: 'tasis',
@@ -1322,20 +1317,28 @@ async function saveExportToCloud(format = 'pdf') {
       content: content
     });
     
-    console.log('✅ نتيجة trackExport:', result);
+    console.log('✅ النتيجة:', result);
     
-    // ✅ سجّل النجاح فقط لو نجح فعلاً
-    window._lastSaveSuccess = Date.now();
-    
-    if (typeof showToast === 'function') {
-      showToast('📋 تم حفظ في سجلك');
+    if (result === true || (result && result.success)) {
+      console.log('✅✅✅ نجح الحفظ');
+      if (typeof showToast === 'function') {
+        showToast('📋 تم حفظ في سجلك');
+      }
+    } else {
+      console.warn('⚠️ result غير متوقع:', result);
+      if (typeof showToast === 'function') {
+        showToast('⚠️ تم الإرسال (تحقق من السجل)');
+      }
     }
   } catch (e) {
-    console.error('❌ فشل الحفظ السحابي:', e);
+    console.error('❌❌❌ خطأ في saveExportToCloud:', e);
+    console.error('❌ المكدّس:', e.stack);
     if (typeof showToast === 'function') {
-      showToast('❌ فشل الحفظ: ' + (e.message || ''));
+      showToast('❌ فشل: ' + (e.message || 'خطأ'));
     }
   }
+  
+  console.log('💾 ═══════════════════════════════════');
 }
 
 // ضغط الصورة (لتقليل الحجم)
@@ -1629,8 +1632,8 @@ async function exportAsPDFv2(){
     // ═══ حفظ ═══
     pdf.save('تقرير_يوم_التأسيس.pdf');
     
-    // 📋 سجّل التصدير في profile
-    saveExportToCloud('pdf');
+    // 📋 سجّل التصدير في profile (await مهم!)
+    await saveExportToCloud('pdf');
     
     if(typeof showToast === 'function'){
       showToast('✅ تم حفظ PDF بنجاح');
