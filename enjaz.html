@@ -2381,6 +2381,40 @@ body.view-tabs .section.tab-section.tab-active{display:block; animation:fadeInTa
     break-after: avoid !important;
   }
 }
+
+/* ☁️ زر الحفظ في حسابي - زر مباشر فاخر */
+.save-profile-btn{
+  display:inline-flex !important;
+  align-items:center;
+  gap:8px;
+  padding:11px 20px;
+  background:linear-gradient(135deg, #e8c547 0%, #d4a657 100%);
+  color:#5d3a00;
+  border:none;
+  border-radius:12px;
+  font-family:'Tajawal','Cairo',sans-serif;
+  font-weight:900;
+  font-size:0.92rem;
+  cursor:pointer;
+  box-shadow:0 8px 22px rgba(232,197,71,0.4);
+  transition:all 0.3s;
+  position:relative;
+  overflow:hidden;
+  margin:0 4px;
+}
+.save-profile-btn::before{
+  content:'';position:absolute;top:0;left:-100%;width:60%;height:100%;
+  background:linear-gradient(120deg, transparent, rgba(255,255,255,0.4), transparent);
+  animation:saveBtnShimmer 3s infinite;
+}
+@keyframes saveBtnShimmer{0%{left:-100%;}50%,100%{left:140%;}}
+.save-profile-btn:hover{
+  transform:translateY(-2px);
+  box-shadow:0 12px 28px rgba(232,197,71,0.55);
+}
+.save-profile-btn:active{transform:translateY(0);}
+.save-profile-btn .save-icon{font-size:1.15rem;}
+
 </style>
 </head>
 <body data-theme="">
@@ -2895,6 +2929,11 @@ body.view-tabs .section.tab-section.tab-active{display:block; animation:fadeInTa
   <button class="action-btn action-btn-pdf" onclick="exportAsPDFv2()">
     <span>📄</span><span>PDF</span>
   </button>
+    <button class="save-profile-btn" onclick="saveToMyProfile()" title="حفظ في حسابي للرجوع له لاحقاً">
+      <span class="save-icon">☁️</span>
+      <span>حفظ في حسابي</span>
+    </button>
+
   <button class="action-btn action-btn-print" onclick="printReport()">
     <span>🖨️</span><span>طباعة</span>
   </button>
@@ -4810,6 +4849,225 @@ window.addEventListener('beforeunload', saveData);
 
 <!-- 🔥 Firebase Integration -->
 <script type="module" src="report-firebase.js?v=12"></script>
-<script src="report-tools.js?v=3"></script>
+<script>
+
+// ═══════════════════════════════════════════════════════
+// ☁️ حفظ في حساب المستخدم (نمط tasis)
+// ═══════════════════════════════════════════════════════
+async function saveToMyProfile() {
+  if (typeof closeExportMenu === 'function') closeExportMenu();
+  
+  if (typeof window.getFirebaseUser !== 'function' || !window.getFirebaseUser()) {
+    if (typeof showToast === 'function') {
+      showToast('⚠️ سجّل دخولك أولاً لحفظ التقرير');
+    } else {
+      alert('⚠️ سجّل دخولك أولاً لحفظ التقرير');
+    }
+    setTimeout(() => {
+      window.location.href = 'login.html?next=enjaz.html';
+    }, 1500);
+    return;
+  }
+  
+  const loader = document.createElement('div');
+  loader.id = '_saveLoader';
+  loader.style.cssText = `
+    position:fixed;inset:0;background:rgba(5,10,18,0.92);
+    backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);
+    z-index:99999;display:flex;align-items:center;justify-content:center;
+    flex-direction:column;gap:20px;
+  `;
+  loader.innerHTML = `
+    <div style="width:60px;height:60px;border:5px solid rgba(232,197,71,0.2);border-top-color:#e8c547;border-radius:50%;animation:_sl 0.8s linear infinite;"></div>
+    <div style="font:800 1.05rem 'Tajawal',sans-serif;color:#fff;text-align:center;padding:0 20px;">
+      ☁️ جاري حفظ التقرير في حسابك...
+    </div>
+    <style>@keyframes _sl{to{transform:rotate(360deg);}}</style>
+  `;
+  document.body.appendChild(loader);
+  
+  try {
+    await saveExportToCloud('save');
+    loader.style.transition = 'opacity 0.3s';
+    loader.style.opacity = '0';
+    setTimeout(() => loader.remove(), 300);
+    if (typeof showToast === 'function') showToast('✅ تم حفظ التقرير في حسابك');
+    else alert('✅ تم حفظ التقرير في حسابك');
+  } catch (e) {
+    console.error(e);
+    loader.remove();
+    if (typeof showToast === 'function') showToast('❌ فشل الحفظ');
+    else alert('❌ فشل الحفظ: ' + (e.message || ''));
+  }
+}
+
+async function saveExportToCloud(format = 'pdf') {
+  if (typeof window.trackExport !== 'function') {
+    for (let i = 0; i < 100; i++) {
+      await new Promise(r => setTimeout(r, 100));
+      if (typeof window.trackExport === 'function') break;
+    }
+    if (typeof window.trackExport !== 'function') {
+      throw new Error('Firebase غير جاهز');
+    }
+  }
+  
+  const fields = {};
+  
+  document.querySelectorAll('[contenteditable="true"]').forEach((el, i) => {
+    const text = (el.innerText || el.textContent || '').trim();
+    if (text && text !== '...' && text !== '-') {
+      let key = el.id || el.dataset?.field;
+      if (!key && el.className) {
+        const cls = el.className.split(' ').filter(c => c && c !== 'editable').join('-');
+        if (cls) key = 'ce-' + cls;
+      }
+      if (!key) key = `editable_${i}`;
+      fields[key] = text;
+    }
+  });
+  
+  document.querySelectorAll('input, textarea, select').forEach((el, i) => {
+    if (el.type === 'file' || el.type === 'button' || el.type === 'submit' || 
+        el.type === 'reset' || el.type === 'checkbox' || el.type === 'radio') return;
+    const val = (el.value || '').toString().trim();
+    if (val) {
+      const key = el.id || el.name || `input_${i}`;
+      fields[key] = val;
+    }
+  });
+  
+  const images = {};
+  const imgs = document.querySelectorAll('img');
+  let imgIdx = 0;
+  for (const img of imgs) {
+    if (img && img.src && img.src.startsWith('data:image/')) {
+      const key = img.id || `img_${imgIdx++}`;
+      if (img.src.length < 250000) {
+        images[key] = img.src;
+      } else {
+        try {
+          const compressed = await compressImageAsync(img.src, 600, 0.6);
+          images[key] = compressed;
+        } catch (err) { console.warn(err); }
+      }
+    }
+  }
+  
+  const content = { ...fields, _images: images };
+  
+  await window.trackExport({
+    type: 'enjaz',
+    title: 'ملف الإنجاز',
+    format: format,
+    content: content
+  });
+}
+
+function compressImageAsync(dataUrl, maxWidth = 600, quality = 0.6) {
+  return new Promise((resolve, reject) => {
+    const img = new Image();
+    img.onload = function() {
+      try {
+        let { width, height } = img;
+        if (width > maxWidth) {
+          height = Math.round(height * (maxWidth / width));
+          width = maxWidth;
+        }
+        const canvas = document.createElement('canvas');
+        canvas.width = width; canvas.height = height;
+        const ctx = canvas.getContext('2d');
+        ctx.fillStyle = '#ffffff';
+        ctx.fillRect(0, 0, width, height);
+        ctx.drawImage(img, 0, 0, width, height);
+        resolve(canvas.toDataURL('image/jpeg', quality));
+      } catch (e) { reject(e); }
+    };
+    img.onerror = () => reject(new Error('فشل تحميل الصورة'));
+    img.src = dataUrl;
+  });
+}
+
+(function tryRestoreFromCloud(){
+  const params = new URLSearchParams(window.location.search);
+  if (params.get('restore') !== '1') return;
+  
+  try {
+    const stored = localStorage.getItem('ksa_restore_export');
+    if (!stored) {
+      if (window.history) window.history.replaceState({}, '', window.location.pathname);
+      return;
+    }
+    
+    const data = JSON.parse(stored);
+    if (!data.content) return;
+    
+    const loader = document.createElement('div');
+    loader.id = '_restoreLoader';
+    loader.style.cssText = `
+      position:fixed;inset:0;background:rgba(5,10,18,0.95);
+      backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);
+      z-index:99999;display:flex;align-items:center;justify-content:center;
+      flex-direction:column;gap:20px;
+    `;
+    loader.innerHTML = `
+      <div style="width:60px;height:60px;border:5px solid rgba(232,197,71,0.2);border-top-color:#e8c547;border-radius:50%;animation:_rs 0.8s linear infinite;"></div>
+      <div style="font:800 1.1rem 'Tajawal',sans-serif;color:#fff;">⏳ جاري استعادة بياناتك...</div>
+      <style>@keyframes _rs{to{transform:rotate(360deg);}}</style>
+    `;
+    document.body.appendChild(loader);
+    
+    let restored = 0;
+    
+    Object.entries(data.content).forEach(([key, value]) => {
+      if (key === '_images' || !value) return;
+      let el = document.getElementById(key);
+      if (!el) el = document.querySelector(`[name="${key}"]`);
+      if (!el) el = document.querySelector(`[data-field="${key}"]`);
+      if (!el && key.startsWith('ce-')) {
+        const className = key.substring(3);
+        el = document.querySelector(`.${className}.editable[contenteditable="true"]`)
+          || document.querySelector(`[contenteditable="true"].${className.split('-')[0]}`);
+      }
+      if (el) {
+        if (el.tagName === 'INPUT' || el.tagName === 'TEXTAREA' || el.tagName === 'SELECT') {
+          el.value = value;
+        } else {
+          el.innerText = value;
+        }
+        restored++;
+      }
+    });
+    
+    if (data.content._images) {
+      Object.entries(data.content._images).forEach(([id, src]) => {
+        const img = document.getElementById(id);
+        if (img && src) {
+          img.src = src;
+          img.style.display = 'block';
+          restored++;
+        }
+      });
+    }
+    
+    localStorage.removeItem('ksa_restore_export');
+    if (window.history) window.history.replaceState({}, '', window.location.pathname);
+    
+    setTimeout(() => {
+      loader.style.transition = 'opacity 0.4s';
+      loader.style.opacity = '0';
+      setTimeout(() => loader.remove(), 400);
+      if (typeof showToast === 'function' && restored > 0) {
+        showToast(`✅ تمت استعادة ${restored} عنصر`);
+      }
+    }, 600);
+  } catch (e) {
+    console.warn('فشلت الاستعادة:', e);
+    const loader = document.getElementById('_restoreLoader');
+    if (loader) loader.remove();
+  }
+})();
+
+</script>
 </body>
 </html>

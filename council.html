@@ -302,7 +302,8 @@ html,body{
   vertical-align:middle;
 }
 .dyn-table tbody tr:nth-child(even) td{background:#f0f1ec;}
-.dyn-table tbody td input{
+.dyn-table tbody td input,
+.dyn-table tbody td textarea{
   width:100%;
   border:none;
   background:transparent;
@@ -311,6 +312,16 @@ html,body{
   color:#072730;
   outline:none;
   padding:3px 4px;
+}
+.dyn-table tbody td textarea{
+  resize:none;
+  overflow:hidden;
+  min-height:24px;
+  line-height:1.5;
+  display:block;
+  word-wrap:break-word;
+  overflow-wrap:break-word;
+  white-space:pre-wrap;
 }
 .dyn-table .row-num{
   font-weight:800;
@@ -547,6 +558,40 @@ html,body{
   .icon-badge .moe-logo-badge{width:40px; max-height:34px;}
 }
 
+
+/* ☁️ زر الحفظ في حسابي - زر مباشر فاخر */
+.save-profile-btn{
+  display:inline-flex !important;
+  align-items:center;
+  gap:8px;
+  padding:11px 20px;
+  background:linear-gradient(135deg, #e8c547 0%, #d4a657 100%);
+  color:#5d3a00;
+  border:none;
+  border-radius:12px;
+  font-family:'Tajawal','Cairo',sans-serif;
+  font-weight:900;
+  font-size:0.92rem;
+  cursor:pointer;
+  box-shadow:0 8px 22px rgba(232,197,71,0.4);
+  transition:all 0.3s;
+  position:relative;
+  overflow:hidden;
+  margin:0 4px;
+}
+.save-profile-btn::before{
+  content:'';position:absolute;top:0;left:-100%;width:60%;height:100%;
+  background:linear-gradient(120deg, transparent, rgba(255,255,255,0.4), transparent);
+  animation:saveBtnShimmer 3s infinite;
+}
+@keyframes saveBtnShimmer{0%{left:-100%;}50%,100%{left:140%;}}
+.save-profile-btn:hover{
+  transform:translateY(-2px);
+  box-shadow:0 12px 28px rgba(232,197,71,0.55);
+}
+.save-profile-btn:active{transform:translateY(0);}
+.save-profile-btn .save-icon{font-size:1.15rem;}
+
 </style>
 </head>
 <body>
@@ -647,9 +692,9 @@ html,body{
           <tr><th>م</th><th>الاسم</th><th>الصفة</th><th>التوقيع</th></tr>
         </thead>
         <tbody>
-          <tr><td class="row-num">1</td><td><input type="text"></td><td><input type="text"></td><td><input type="text"></td></tr>
-          <tr><td class="row-num">2</td><td><input type="text"></td><td><input type="text"></td><td><input type="text"></td></tr>
-          <tr><td class="row-num">3</td><td><input type="text"></td><td><input type="text"></td><td><input type="text"></td></tr>
+          <tr><td class="row-num">1</td><td><textarea rows="1"></textarea></td><td><textarea rows="1"></textarea></td><td><textarea rows="1"></textarea></td></tr>
+          <tr><td class="row-num">2</td><td><textarea rows="1"></textarea></td><td><textarea rows="1"></textarea></td><td><textarea rows="1"></textarea></td></tr>
+          <tr><td class="row-num">3</td><td><textarea rows="1"></textarea></td><td><textarea rows="1"></textarea></td><td><textarea rows="1"></textarea></td></tr>
         </tbody>
       </table>
       <button class="add-row-btn" onclick="addRow('attendance-table', 4)">+ إضافة حاضر</button>
@@ -720,6 +765,11 @@ html,body{
     <button class="btn btn-pdf" onclick="exportAsPDFv2()">
       <span>📄</span><span class="txt">PDF</span>
     </button>
+    <button class="save-profile-btn" onclick="saveToMyProfile()" title="حفظ في حسابي للرجوع له لاحقاً">
+      <span class="save-icon">☁️</span>
+      <span>حفظ في حسابي</span>
+    </button>
+
     <button class="btn btn-share" onclick="shareReport()">
       <span>📤</span><span class="txt">مشاركة</span>
     </button>
@@ -790,7 +840,7 @@ function saveData(){
     const rows = [];
     tb.querySelectorAll('tr').forEach(tr => {
       const cells = [];
-      tr.querySelectorAll('input').forEach(inp => cells.push(inp.value));
+      tr.querySelectorAll('input, textarea').forEach(inp => cells.push(inp.value));
       rows.push(cells);
     });
     data['table_'+ti] = rows;
@@ -815,13 +865,54 @@ function loadData(){
           }
         }
       } else if(k.startsWith('table_')){
-        // restore rows later if needed
+        // 🆕 استعد بيانات الجدول
+        const ti = parseInt(k.split('_')[1]);
+        const tables = document.querySelectorAll('.dyn-table tbody');
+        const tbody = tables[ti];
+        if(!tbody) return;
+        const savedRows = d[k];
+        if(!Array.isArray(savedRows)) return;
+
+        // امسح كل الصفوف الحالية ما عدا الـ template
+        const existingRows = Array.from(tbody.querySelectorAll('tr'));
+        const currentCount = existingRows.length;
+        const neededCount = savedRows.length;
+
+        // أضف صفوف إذا كانت محفوظة أكثر من الموجودة
+        if(neededCount > currentCount){
+          // احسب عدد الخلايا في الصف الأول لمعرفة عدد الأعمدة
+          const firstRow = existingRows[0];
+          const colsCount = firstRow ? firstRow.querySelectorAll('td').length : 4;
+          const tableId = tbody.closest('.dyn-table').id;
+          for(let i = currentCount; i < neededCount; i++){
+            // أضف صف بدون استدعاء saveData
+            const tr = document.createElement('tr');
+            const rowNum = tbody.children.length + 1;
+            let html = `<td class="row-num">${rowNum}</td>`;
+            for(let c = 0; c < colsCount - 2; c++){
+              html += `<td><textarea rows="1"></textarea></td>`;
+            }
+            html += `<td><button class="del-btn" onclick="this.closest('tr').remove(); updateRowNumbers('${tableId}'); saveData();">×</button></td>`;
+            tr.innerHTML = html;
+            tbody.appendChild(tr);
+          }
+        }
+
+        // املأ القيم
+        const allRows = tbody.querySelectorAll('tr');
+        savedRows.forEach((rowData, ri) => {
+          if(!allRows[ri]) return;
+          const fields = allRows[ri].querySelectorAll('input, textarea');
+          rowData.forEach((val, ci) => {
+            if(fields[ci]) fields[ci].value = val;
+          });
+        });
       } else {
         const el = document.getElementById(k);
         if(el) el.value = d[k];
       }
     });
-  } catch(e){}
+  } catch(e){ console.warn('loadData fail', e); }
 }
 
 function doClear(){
@@ -1117,6 +1208,12 @@ function removePhoto(e, n){
 }
 
 // Dynamic table rows
+// Auto-resize helper for table textareas
+function autoResizeTextarea(ta){
+  ta.style.height = 'auto';
+  ta.style.height = (ta.scrollHeight) + 'px';
+}
+
 function addRow(tableId, cols){
   // 🔒 حماية: تحقق من Premium قبل الإضافة
   if (typeof window.checkPremiumFeature === 'function') {
@@ -1127,12 +1224,15 @@ function addRow(tableId, cols){
   const rowNum = tbody.children.length + 1;
   let html = `<td class="row-num">${rowNum}</td>`;
   for(let i = 0; i < cols - 1; i++){
-    html += `<td><input type="text"></td>`;
+    html += `<td><textarea rows="1"></textarea></td>`;
   }
   html += `<td><button class="del-btn" onclick="this.closest('tr').remove(); updateRowNumbers('${tableId}'); saveData();">×</button></td>`;
   tr.innerHTML = html;
   tbody.appendChild(tr);
-  tr.querySelectorAll('input').forEach(inp => inp.addEventListener('input', saveData));
+  tr.querySelectorAll('textarea').forEach(ta => {
+    ta.addEventListener('input', () => { autoResizeTextarea(ta); saveData(); });
+    autoResizeTextarea(ta);
+  });
   saveData();
 }
 function updateRowNumbers(tableId){
@@ -1146,7 +1246,19 @@ document.querySelectorAll('input, textarea').forEach(el => {
   el.addEventListener('input', saveData);
 });
 
+// 🆕 Auto-resize للـ textareas في الجدول (يكبر مع المحتوى تلقائياً)
+document.querySelectorAll('.dyn-table tbody textarea').forEach(ta => {
+  ta.addEventListener('input', () => autoResizeTextarea(ta));
+});
+
 loadData();
+
+// بعد loadData: أعد ضبط ارتفاع كل textareas الجدول لتظهر النصوص الكاملة
+setTimeout(() => {
+  document.querySelectorAll('.dyn-table tbody textarea').forEach(ta => {
+    autoResizeTextarea(ta);
+  });
+}, 100);
 
 // ═══════════════════════════════════════════════
 // 🔒 وضع المعاينة - حماية ثلاثية الطبقات
@@ -1235,6 +1347,225 @@ loadData();
 
 <!-- 🔥 Firebase Integration -->
 <script type="module" src="report-firebase.js?v=12"></script>
-<script src="report-tools.js?v=4"></script>
+<script>
+
+// ═══════════════════════════════════════════════════════
+// ☁️ حفظ في حساب المستخدم (نمط tasis)
+// ═══════════════════════════════════════════════════════
+async function saveToMyProfile() {
+  if (typeof closeExportMenu === 'function') closeExportMenu();
+  
+  if (typeof window.getFirebaseUser !== 'function' || !window.getFirebaseUser()) {
+    if (typeof showToast === 'function') {
+      showToast('⚠️ سجّل دخولك أولاً لحفظ التقرير');
+    } else {
+      alert('⚠️ سجّل دخولك أولاً لحفظ التقرير');
+    }
+    setTimeout(() => {
+      window.location.href = 'login.html?next=council.html';
+    }, 1500);
+    return;
+  }
+  
+  const loader = document.createElement('div');
+  loader.id = '_saveLoader';
+  loader.style.cssText = `
+    position:fixed;inset:0;background:rgba(5,10,18,0.92);
+    backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);
+    z-index:99999;display:flex;align-items:center;justify-content:center;
+    flex-direction:column;gap:20px;
+  `;
+  loader.innerHTML = `
+    <div style="width:60px;height:60px;border:5px solid rgba(232,197,71,0.2);border-top-color:#e8c547;border-radius:50%;animation:_sl 0.8s linear infinite;"></div>
+    <div style="font:800 1.05rem 'Tajawal',sans-serif;color:#fff;text-align:center;padding:0 20px;">
+      ☁️ جاري حفظ التقرير في حسابك...
+    </div>
+    <style>@keyframes _sl{to{transform:rotate(360deg);}}</style>
+  `;
+  document.body.appendChild(loader);
+  
+  try {
+    await saveExportToCloud('save');
+    loader.style.transition = 'opacity 0.3s';
+    loader.style.opacity = '0';
+    setTimeout(() => loader.remove(), 300);
+    if (typeof showToast === 'function') showToast('✅ تم حفظ التقرير في حسابك');
+    else alert('✅ تم حفظ التقرير في حسابك');
+  } catch (e) {
+    console.error(e);
+    loader.remove();
+    if (typeof showToast === 'function') showToast('❌ فشل الحفظ');
+    else alert('❌ فشل الحفظ: ' + (e.message || ''));
+  }
+}
+
+async function saveExportToCloud(format = 'pdf') {
+  if (typeof window.trackExport !== 'function') {
+    for (let i = 0; i < 100; i++) {
+      await new Promise(r => setTimeout(r, 100));
+      if (typeof window.trackExport === 'function') break;
+    }
+    if (typeof window.trackExport !== 'function') {
+      throw new Error('Firebase غير جاهز');
+    }
+  }
+  
+  const fields = {};
+  
+  document.querySelectorAll('[contenteditable="true"]').forEach((el, i) => {
+    const text = (el.innerText || el.textContent || '').trim();
+    if (text && text !== '...' && text !== '-') {
+      let key = el.id || el.dataset?.field;
+      if (!key && el.className) {
+        const cls = el.className.split(' ').filter(c => c && c !== 'editable').join('-');
+        if (cls) key = 'ce-' + cls;
+      }
+      if (!key) key = `editable_${i}`;
+      fields[key] = text;
+    }
+  });
+  
+  document.querySelectorAll('input, textarea, select').forEach((el, i) => {
+    if (el.type === 'file' || el.type === 'button' || el.type === 'submit' || 
+        el.type === 'reset' || el.type === 'checkbox' || el.type === 'radio') return;
+    const val = (el.value || '').toString().trim();
+    if (val) {
+      const key = el.id || el.name || `input_${i}`;
+      fields[key] = val;
+    }
+  });
+  
+  const images = {};
+  const imgs = document.querySelectorAll('img');
+  let imgIdx = 0;
+  for (const img of imgs) {
+    if (img && img.src && img.src.startsWith('data:image/')) {
+      const key = img.id || `img_${imgIdx++}`;
+      if (img.src.length < 250000) {
+        images[key] = img.src;
+      } else {
+        try {
+          const compressed = await compressImageAsync(img.src, 600, 0.6);
+          images[key] = compressed;
+        } catch (err) { console.warn(err); }
+      }
+    }
+  }
+  
+  const content = { ...fields, _images: images };
+  
+  await window.trackExport({
+    type: 'council',
+    title: 'محضر مجلس المعلمين',
+    format: format,
+    content: content
+  });
+}
+
+function compressImageAsync(dataUrl, maxWidth = 600, quality = 0.6) {
+  return new Promise((resolve, reject) => {
+    const img = new Image();
+    img.onload = function() {
+      try {
+        let { width, height } = img;
+        if (width > maxWidth) {
+          height = Math.round(height * (maxWidth / width));
+          width = maxWidth;
+        }
+        const canvas = document.createElement('canvas');
+        canvas.width = width; canvas.height = height;
+        const ctx = canvas.getContext('2d');
+        ctx.fillStyle = '#ffffff';
+        ctx.fillRect(0, 0, width, height);
+        ctx.drawImage(img, 0, 0, width, height);
+        resolve(canvas.toDataURL('image/jpeg', quality));
+      } catch (e) { reject(e); }
+    };
+    img.onerror = () => reject(new Error('فشل تحميل الصورة'));
+    img.src = dataUrl;
+  });
+}
+
+(function tryRestoreFromCloud(){
+  const params = new URLSearchParams(window.location.search);
+  if (params.get('restore') !== '1') return;
+  
+  try {
+    const stored = localStorage.getItem('ksa_restore_export');
+    if (!stored) {
+      if (window.history) window.history.replaceState({}, '', window.location.pathname);
+      return;
+    }
+    
+    const data = JSON.parse(stored);
+    if (!data.content) return;
+    
+    const loader = document.createElement('div');
+    loader.id = '_restoreLoader';
+    loader.style.cssText = `
+      position:fixed;inset:0;background:rgba(5,10,18,0.95);
+      backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);
+      z-index:99999;display:flex;align-items:center;justify-content:center;
+      flex-direction:column;gap:20px;
+    `;
+    loader.innerHTML = `
+      <div style="width:60px;height:60px;border:5px solid rgba(232,197,71,0.2);border-top-color:#e8c547;border-radius:50%;animation:_rs 0.8s linear infinite;"></div>
+      <div style="font:800 1.1rem 'Tajawal',sans-serif;color:#fff;">⏳ جاري استعادة بياناتك...</div>
+      <style>@keyframes _rs{to{transform:rotate(360deg);}}</style>
+    `;
+    document.body.appendChild(loader);
+    
+    let restored = 0;
+    
+    Object.entries(data.content).forEach(([key, value]) => {
+      if (key === '_images' || !value) return;
+      let el = document.getElementById(key);
+      if (!el) el = document.querySelector(`[name="${key}"]`);
+      if (!el) el = document.querySelector(`[data-field="${key}"]`);
+      if (!el && key.startsWith('ce-')) {
+        const className = key.substring(3);
+        el = document.querySelector(`.${className}.editable[contenteditable="true"]`)
+          || document.querySelector(`[contenteditable="true"].${className.split('-')[0]}`);
+      }
+      if (el) {
+        if (el.tagName === 'INPUT' || el.tagName === 'TEXTAREA' || el.tagName === 'SELECT') {
+          el.value = value;
+        } else {
+          el.innerText = value;
+        }
+        restored++;
+      }
+    });
+    
+    if (data.content._images) {
+      Object.entries(data.content._images).forEach(([id, src]) => {
+        const img = document.getElementById(id);
+        if (img && src) {
+          img.src = src;
+          img.style.display = 'block';
+          restored++;
+        }
+      });
+    }
+    
+    localStorage.removeItem('ksa_restore_export');
+    if (window.history) window.history.replaceState({}, '', window.location.pathname);
+    
+    setTimeout(() => {
+      loader.style.transition = 'opacity 0.4s';
+      loader.style.opacity = '0';
+      setTimeout(() => loader.remove(), 400);
+      if (typeof showToast === 'function' && restored > 0) {
+        showToast(`✅ تمت استعادة ${restored} عنصر`);
+      }
+    }, 600);
+  } catch (e) {
+    console.warn('فشلت الاستعادة:', e);
+    const loader = document.getElementById('_restoreLoader');
+    if (loader) loader.remove();
+  }
+})();
+
+</script>
 </body>
 </html>
