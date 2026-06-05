@@ -4966,34 +4966,45 @@ async function saveExportToCloud(format = 'save') {
   let totalSize = Math.round(JSON.stringify(content).length / 1024);
   console.log('📊 الحجم الإجمالي:', totalSize, 'KB');
   
-  // 7️⃣ ضغط إضافي لو الحجم >900KB
-  if (totalSize > 900) {
-    console.warn('⚠️ الحجم كبير، نضغط أكثر...');
+  // 7️⃣ ضغط متكرر لو الحجم >900KB (بدون حذف!)
+  let attempts = 0;
+  while (totalSize > 900 && attempts < 3) {
+    attempts++;
+    console.warn(`⚠️ الحجم كبير (${totalSize}KB)، ضغط دور ${attempts}...`);
+    
+    // كل دور: ضغط أعنف
+    const widthPerAttempt = [500, 350, 250][attempts - 1];
+    const qualityPerAttempt = [0.5, 0.35, 0.25][attempts - 1];
     
     const imageKeys = Object.keys(content).filter(k => k === '__photo' || k.startsWith('__shahed'));
     for (const key of imageKeys) {
       if (content[key] && content[key].startsWith('data:image/')) {
         try {
-          content[key] = await compressImageAsync(content[key], 400, 0.4);
+          content[key] = await compressImageAsync(content[key], widthPerAttempt, qualityPerAttempt);
         } catch(e) { console.warn('فشل ضغط', key); }
       }
     }
     
     totalSize = Math.round(JSON.stringify(content).length / 1024);
-    console.log('📉 بعد الضغط الأعنف:', totalSize, 'KB');
+    console.log(`📉 بعد الضغط دور ${attempts}:`, totalSize, 'KB (${widthPerAttempt}px, ${qualityPerAttempt})');
+  }
+  
+  // 8️⃣ كحل أخير لو ما زال كبير: احذف الصور الأكبر
+  if (totalSize > 950) {
+    console.error('⚠️ لسا كبير جداً حتى بعد الضغط الأعنف!');
+    const imgKeys = Object.keys(content)
+      .filter(k => k === '__photo' || k.startsWith('__shahed'))
+      .sort((a, b) => (content[b] || '').length - (content[a] || '').length);
     
-    // لو لسا كبير، احذف الأكبر
-    if (totalSize > 950) {
-      console.warn('⚠️ لسا كبير، نحذف الصور الكبيرة');
-      const sorted = imageKeys.filter(k => content[k]).sort((a,b) => content[b].length - content[a].length);
-      for (const k of sorted) {
-        delete content[k];
-        if (Math.round(JSON.stringify(content).length / 1024) < 900) break;
-      }
+    for (const k of imgKeys) {
+      delete content[k];
       totalSize = Math.round(JSON.stringify(content).length / 1024);
-      console.log('📉 الحجم النهائي:', totalSize, 'KB');
+      console.log(`🗑️ حذف ${k}، الحجم: ${totalSize}KB`);
+      if (totalSize < 900) break;
     }
   }
+  
+  console.log('📊 الحجم النهائي:', totalSize, 'KB');
   
   // 8️⃣ الإرسال
   console.log('📤 إرسال إلى Firebase...');
