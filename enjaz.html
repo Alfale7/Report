@@ -3517,8 +3517,41 @@ function saveData(){
     const img = slot.querySelector('img');
     if(img && img.src) data['__shahed-' + sid] = img.src;
   });
-  try { localStorage.setItem(STORAGE_KEY, JSON.stringify(data)); }
-  catch(e) { console.warn('Storage full'); }
+  
+  // 🆕 حفظ ذكي مع معالجة امتلاء localStorage
+  try {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+  } catch(e) {
+    console.warn('⚠️ localStorage ممتلئ! نظّف أولاً...');
+    // امسح المفاتيح القديمة غير المهمة
+    const protectedKeys = [STORAGE_KEY, 'siteLang', 'loggedUser', 'isSubscribed', 'free_downloads_used', 'ksa_restore_export', 'ksa2030_pricing_cache_v1'];
+    for(let i = localStorage.length - 1; i >= 0; i--){
+      const k = localStorage.key(i);
+      if(k && !protectedKeys.includes(k) && !k.startsWith('firebase')){
+        localStorage.removeItem(k);
+      }
+    }
+    
+    try {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+      console.log('✅ تم الحفظ بعد التنظيف');
+    } catch(e2) {
+      console.warn('⚠️ لسا ممتلئ، نحذف الصور القديمة');
+      // احذف الصور القديمة من البيانات (مش من DOM)
+      const dataNoImages = {...data};
+      for(const k of Object.keys(dataNoImages)){
+        if(k === '__photo' || k.startsWith('__shahed-')){
+          delete dataNoImages[k];
+        }
+      }
+      try {
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(dataNoImages));
+        console.warn('⚠️ حُفظت النصوص فقط - الصور لم تُحفظ محلياً');
+      } catch(e3) {
+        console.error('❌ فشل الحفظ نهائياً');
+      }
+    }
+  }
 }
 
 let saveTimer;
@@ -3575,11 +3608,35 @@ document.getElementById('photoInput').addEventListener('change', e => {
   const file = e.target.files[0];
   if(!file) return;
   const reader = new FileReader();
-  reader.onload = ev => {
-    document.getElementById('photoImg').src = ev.target.result;
-    document.getElementById('photoImg').style.display = 'block';
-    document.getElementById('photoPlaceholder').style.display = 'none';
-    scheduleSave();
+  reader.onload = function(ev){
+    const showPhoto = function(src){
+      document.getElementById('photoImg').src = src;
+      document.getElementById('photoImg').style.display = 'block';
+      const ph = document.getElementById('photoPlaceholder');
+      if(ph) ph.style.display = 'none';
+      scheduleSave();
+    };
+    
+    if(ev.target.result.length > 300000){
+      const tempImg = new Image();
+      tempImg.onload = function(){
+        const canvas = document.createElement('canvas');
+        let w = tempImg.width, h = tempImg.height;
+        if(w > 1000){ h = Math.round(h * 1000 / w); w = 1000; }
+        canvas.width = w; canvas.height = h;
+        const ctx = canvas.getContext('2d');
+        ctx.fillStyle = '#ffffff';
+        ctx.fillRect(0, 0, w, h);
+        ctx.drawImage(tempImg, 0, 0, w, h);
+        const compressed = canvas.toDataURL('image/jpeg', 0.75);
+        console.log('🗜️ ضُغطت الصورة الشخصية:', Math.round(ev.target.result.length/1024), '→', Math.round(compressed.length/1024), 'KB');
+        showPhoto(compressed);
+      };
+      tempImg.onerror = () => showPhoto(ev.target.result);
+      tempImg.src = ev.target.result;
+    } else {
+      showPhoto(ev.target.result);
+    }
   };
   reader.readAsDataURL(file);
 });
@@ -3591,14 +3648,41 @@ function loadShahedImg(input, sid){
   const file = input.files[0];
   if(!file) return;
   const reader = new FileReader();
-  reader.onload = ev => {
+  reader.onload = function(ev){
     const slot = document.querySelector(`[data-slot="${sid}"]`);
-    slot.classList.add('has-image');
+    if(!slot) return;
     const img = slot.querySelector('img');
-    img.src = ev.target.result;
-    img.style.display = 'block';
-    slot.querySelector('.shahed-slot-placeholder').style.display = 'none';
-    scheduleSave();
+    
+    // 🆕 اضغط الصورة قبل العرض والحفظ (تجنب امتلاء localStorage)
+    const showImg = function(src){
+      slot.classList.add('has-image');
+      img.src = src;
+      img.style.display = 'block';
+      slot.querySelector('.shahed-slot-placeholder').style.display = 'none';
+      scheduleSave();
+    };
+    
+    if(ev.target.result.length > 300000) {
+      // صورة كبيرة - اضغطها
+      const tempImg = new Image();
+      tempImg.onload = function(){
+        const canvas = document.createElement('canvas');
+        let w = tempImg.width, h = tempImg.height;
+        if(w > 1000){ h = Math.round(h * 1000 / w); w = 1000; }
+        canvas.width = w; canvas.height = h;
+        const ctx = canvas.getContext('2d');
+        ctx.fillStyle = '#ffffff';
+        ctx.fillRect(0, 0, w, h);
+        ctx.drawImage(tempImg, 0, 0, w, h);
+        const compressed = canvas.toDataURL('image/jpeg', 0.75);
+        console.log('🗜️ ضُغطت صورة شاهد', sid, ':', Math.round(ev.target.result.length/1024), '→', Math.round(compressed.length/1024), 'KB');
+        showImg(compressed);
+      };
+      tempImg.onerror = () => showImg(ev.target.result);
+      tempImg.src = ev.target.result;
+    } else {
+      showImg(ev.target.result);
+    }
   };
   reader.readAsDataURL(file);
 }
@@ -4889,7 +4973,7 @@ async function saveExportToCloud(format = 'save') {
   console.log('☁️ ═══════════════════════════════');
   console.log('☁️ saveExportToCloud started');
   
-  // انتظر trackExport
+  // 1️⃣ تأكد من Firebase
   if (typeof window.trackExport !== 'function') {
     console.log('⏳ انتظار trackExport...');
     for (let i = 0; i < 100; i++) {
@@ -4902,113 +4986,106 @@ async function saveExportToCloud(format = 'save') {
   }
   console.log('✅ trackExport جاهز');
   
-  // اجمع البيانات
+  // 2️⃣ اجمع البيانات النصية مباشرة من DOM
   const content = {};
   
-  // 1️⃣ كل الحقول data-key
+  // كل الحقول data-key
   document.querySelectorAll('[data-key]').forEach(el => {
     if (el.value) content[el.getAttribute('data-key')] = el.value;
   });
   
-  // 2️⃣ الحقول الرئيسية
+  // الحقول الرئيسية
   ['moe-admin','moe-office','moe-school-name','teacherName','coverTitle','subject','stage','school','year'].forEach(id => {
     const el = document.getElementById(id);
     if (el && el.value) content[id] = el.value;
   });
   
-  // 3️⃣ الثيم
+  // الثيم
   const theme = document.body.getAttribute('data-theme');
   if (theme) content['__theme'] = theme;
   
   console.log('📝 حقول نصية:', Object.keys(content).length);
   
-  // 4️⃣ الصورة الشخصية
-  let photoCount = 0;
+  // 3️⃣ 🔥 الصور: من الـ DOM مباشرة (مش من localStorage)
+  
+  // الصورة الشخصية
   const photoImg = document.getElementById('photoImg');
   if (photoImg && photoImg.src && photoImg.src.startsWith('data:image/')) {
-    console.log('📸 الصورة الشخصية:', Math.round(photoImg.src.length / 1024), 'KB');
-    try {
-      const compressed = photoImg.src.length > 250000 
-        ? await compressImageAsync(photoImg.src, 600, 0.6)
-        : photoImg.src;
-      content['__photo'] = compressed;
-      photoCount++;
-    } catch(e) {
-      console.warn('فشل ضغط الصورة الشخصية:', e);
-    }
+    content['__photo'] = photoImg.src;
+    console.log('📸 صورة شخصية:', Math.round(photoImg.src.length / 1024), 'KB');
   }
   
-  // 5️⃣ صور الشواهد
+  // صور الشواهد - من الـ DOM (نتأكد إن كل صورة لها sid فريد)
   const shahedSlots = document.querySelectorAll('.shahed-slot.has-image');
-  console.log('🖼️ سلوتات الشواهد:', shahedSlots.length);
+  console.log('🔍 ═══════════════════════════════');
+  console.log('🔍 إجمالي .shahed-slot.has-image في DOM:', shahedSlots.length);
+  console.log('🔍 إجمالي كل .shahed-slot في DOM:', document.querySelectorAll('.shahed-slot').length);
+  console.log('🔍 إجمالي كل <img> في DOM:', document.querySelectorAll('img').length);
   
-  for (const slot of shahedSlots) {
+  // اطبع كل img بـ data:image
+  const allDataImages = Array.from(document.querySelectorAll('img')).filter(img => img.src && img.src.startsWith('data:image/'));
+  console.log('🔍 صور Data URL في DOM:', allDataImages.length);
+  allDataImages.forEach((img, i) => {
+    const parent = img.closest('.shahed-slot');
+    const sid = parent ? parent.getAttribute('data-slot') : 'unknown';
+    console.log(`  [${i}] sid=${sid}, size=${Math.round(img.src.length/1024)}KB`);
+  });
+  console.log('🔍 ═══════════════════════════════');
+  
+  shahedSlots.forEach((slot, idx) => {
     const sid = slot.getAttribute('data-slot');
     const img = slot.querySelector('img');
-    if (img && img.src && img.src.startsWith('data:image/')) {
-      try {
-        const srcLen = img.src.length;
-        console.log('  📷 شاهد', sid, ':', Math.round(srcLen/1024), 'KB');
-        const compressed = srcLen > 250000 
-          ? await compressImageAsync(img.src, 600, 0.6)
-          : img.src;
-        content['__shahed-' + sid] = compressed;
-        photoCount++;
-      } catch(e) {
-        console.warn('فشل ضغط شاهد', sid);
-      }
+    if (sid && img && img.src && img.src.startsWith('data:image/')) {
+      content['__shahed-' + sid] = img.src;
+      console.log(`  📷 [${idx}] ${sid}: ${Math.round(img.src.length / 1024)} KB`);
     }
-  }
+  });
   
-  console.log('🖼️ صور مجمّعة:', photoCount);
+  const imageKeys = Object.keys(content).filter(k => k === '__photo' || k.startsWith('__shahed'));
+  console.log('🖼️ مجموع الصور:', imageKeys.length);
   
-  // 6️⃣ فحص الحجم
+  // 4️⃣ فحص الحجم
   let totalSize = Math.round(JSON.stringify(content).length / 1024);
-  console.log('📊 الحجم الإجمالي:', totalSize, 'KB');
+  console.log('📊 الحجم الإجمالي قبل الضغط:', totalSize, 'KB');
   
-  // 7️⃣ ضغط متكرر لو الحجم >900KB (بدون حذف!)
-  let attempts = 0;
-  while (totalSize > 900 && attempts < 3) {
-    attempts++;
-    console.warn(`⚠️ الحجم كبير (${totalSize}KB)، ضغط دور ${attempts}...`);
+  // 5️⃣ ضغط الصور إذا كبير
+  if (totalSize > 900) {
+    console.warn('⚠️ الحجم كبير، نضغط...');
     
-    // كل دور: ضغط أعنف
-    const widthPerAttempt = [500, 350, 250][attempts - 1];
-    const qualityPerAttempt = [0.5, 0.35, 0.25][attempts - 1];
+    // دورات ضغط متدرجة
+    const passes = [
+      { w: 800, q: 0.7 },
+      { w: 500, q: 0.5 },
+      { w: 350, q: 0.4 },
+      { w: 250, q: 0.3 }
+    ];
     
-    const imageKeys = Object.keys(content).filter(k => k === '__photo' || k.startsWith('__shahed'));
-    for (const key of imageKeys) {
-      if (content[key] && content[key].startsWith('data:image/')) {
-        try {
-          content[key] = await compressImageAsync(content[key], widthPerAttempt, qualityPerAttempt);
-        } catch(e) { console.warn('فشل ضغط', key); }
+    for (const pass of passes) {
+      for (const key of imageKeys) {
+        const val = content[key];
+        if (val && typeof val === 'string' && val.startsWith('data:image/')) {
+          try {
+            content[key] = await compressImageAsync(val, pass.w, pass.q);
+          } catch(e) {
+            console.warn(`فشل ضغط ${key}:`, e);
+          }
+        }
       }
-    }
-    
-    totalSize = Math.round(JSON.stringify(content).length / 1024);
-    console.log(`📉 بعد الضغط دور ${attempts}:`, totalSize, 'KB (${widthPerAttempt}px, ${qualityPerAttempt})');
-  }
-  
-  // 8️⃣ كحل أخير لو ما زال كبير: احذف الصور الأكبر
-  if (totalSize > 950) {
-    console.error('⚠️ لسا كبير جداً حتى بعد الضغط الأعنف!');
-    const imgKeys = Object.keys(content)
-      .filter(k => k === '__photo' || k.startsWith('__shahed'))
-      .sort((a, b) => (content[b] || '').length - (content[a] || '').length);
-    
-    for (const k of imgKeys) {
-      delete content[k];
+      
       totalSize = Math.round(JSON.stringify(content).length / 1024);
-      console.log(`🗑️ حذف ${k}، الحجم: ${totalSize}KB`);
+      console.log(`📉 بعد ضغط ${pass.w}px @${pass.q}: ${totalSize} KB`);
+      
       if (totalSize < 900) break;
     }
   }
   
+  // 6️⃣ تحقق إن الصور موجودة
+  const finalImageCount = Object.keys(content).filter(k => k === '__photo' || k.startsWith('__shahed')).length;
+  console.log('✅ عدد الصور النهائي:', finalImageCount);
   console.log('📊 الحجم النهائي:', totalSize, 'KB');
   
-  // 8️⃣ الإرسال
+  // 7️⃣ الإرسال
   console.log('📤 إرسال إلى Firebase...');
-  console.log('📊 الحقول النهائية:', Object.keys(content).length);
   
   let result;
   try {
@@ -5020,18 +5097,12 @@ async function saveExportToCloud(format = 'save') {
     });
     console.log('✅ trackExport رجع:', result);
   } catch (err) {
-    console.error('❌ trackExport رمى خطأ:', err);
+    console.error('❌ خطأ trackExport:', err);
     throw new Error('خطأ Firebase: ' + (err.message || err));
   }
   
-  // 9️⃣ تحقق من النتيجة
-  if (result === true) {
+  if (result === true || (result && result.success === true)) {
     console.log('✅✅ النجاح');
-    return true;
-  }
-  
-  if (result && result.success === true) {
-    console.log('✅✅ النجاح (object)');
     return true;
   }
   
