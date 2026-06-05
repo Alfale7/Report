@@ -4886,10 +4886,12 @@ async function saveToMyProfile() {
 }
 
 async function saveExportToCloud(format = 'save') {
-  console.log('☁️ saveExportToCloud');
+  console.log('☁️ ═══════════════════════════════');
+  console.log('☁️ saveExportToCloud started');
   
   // انتظر trackExport
   if (typeof window.trackExport !== 'function') {
+    console.log('⏳ انتظار trackExport...');
     for (let i = 0; i < 100; i++) {
       await new Promise(r => setTimeout(r, 100));
       if (typeof window.trackExport === 'function') break;
@@ -4898,107 +4900,132 @@ async function saveExportToCloud(format = 'save') {
       throw new Error('Firebase غير جاهز - حدّث الصفحة');
     }
   }
+  console.log('✅ trackExport جاهز');
   
-  // 🎯 enjaz يستخدم saveData() المحلية - ناخذ المحتوى من نفس الطريقة
-  // اجمع البيانات بنفس الطريقة المستخدمة في saveData
+  // اجمع البيانات
   const content = {};
   
-  // كل الحقول data-key
+  // 1️⃣ كل الحقول data-key
   document.querySelectorAll('[data-key]').forEach(el => {
     if (el.value) content[el.getAttribute('data-key')] = el.value;
   });
   
-  // الحقول الرئيسية (moe-band + غلاف)
+  // 2️⃣ الحقول الرئيسية
   ['moe-admin','moe-office','moe-school-name','teacherName','coverTitle','subject','stage','school','year'].forEach(id => {
     const el = document.getElementById(id);
     if (el && el.value) content[id] = el.value;
   });
   
-  // الثيم
+  // 3️⃣ الثيم
   const theme = document.body.getAttribute('data-theme');
   if (theme) content['__theme'] = theme;
   
-  // الجداول الديناميكية
-  try { content['__tables'] = localStorage.getItem(STORAGE_KEY) ? JSON.parse(localStorage.getItem(STORAGE_KEY))['__tables'] : null; } catch(e) {}
-  try { content['__customSlots'] = localStorage.getItem(STORAGE_KEY) ? JSON.parse(localStorage.getItem(STORAGE_KEY))['__customSlots'] : null; } catch(e) {}
+  console.log('📝 حقول نصية:', Object.keys(content).length);
   
-  console.log('📝 حقول مجمّعة:', Object.keys(content).length);
-  
-  // الصور
-  const images = {};
-  
-  // 1. الصورة الشخصية
+  // 4️⃣ الصورة الشخصية
+  let photoCount = 0;
   const photoImg = document.getElementById('photoImg');
   if (photoImg && photoImg.src && photoImg.src.startsWith('data:image/')) {
-    images['__photo'] = photoImg.src.length > 250000 
-      ? await compressImageAsync(photoImg.src, 600, 0.6)
-      : photoImg.src;
+    console.log('📸 الصورة الشخصية:', Math.round(photoImg.src.length / 1024), 'KB');
+    try {
+      const compressed = photoImg.src.length > 250000 
+        ? await compressImageAsync(photoImg.src, 600, 0.6)
+        : photoImg.src;
+      content['__photo'] = compressed;
+      photoCount++;
+    } catch(e) {
+      console.warn('فشل ضغط الصورة الشخصية:', e);
+    }
   }
   
-  // 2. صور الشواهد
-  document.querySelectorAll('.shahed-slot.has-image').forEach(slot => {
+  // 5️⃣ صور الشواهد
+  const shahedSlots = document.querySelectorAll('.shahed-slot.has-image');
+  console.log('🖼️ سلوتات الشواهد:', shahedSlots.length);
+  
+  for (const slot of shahedSlots) {
     const sid = slot.getAttribute('data-slot');
     const img = slot.querySelector('img');
     if (img && img.src && img.src.startsWith('data:image/')) {
-      images['__shahed-' + sid] = img.src;
-    }
-  });
-  
-  // اضغط الصور الكبيرة
-  for (const key of Object.keys(images)) {
-    if (key === '__photo') continue; // تم ضغطها
-    if (images[key].length > 250000) {
       try {
-        images[key] = await compressImageAsync(images[key], 600, 0.6);
-      } catch(e) { console.warn('فشل ضغط', key); }
+        const srcLen = img.src.length;
+        console.log('  📷 شاهد', sid, ':', Math.round(srcLen/1024), 'KB');
+        const compressed = srcLen > 250000 
+          ? await compressImageAsync(img.src, 600, 0.6)
+          : img.src;
+        content['__shahed-' + sid] = compressed;
+        photoCount++;
+      } catch(e) {
+        console.warn('فشل ضغط شاهد', sid);
+      }
     }
   }
   
-  console.log('🖼️ صور:', Object.keys(images).length);
+  console.log('🖼️ صور مجمّعة:', photoCount);
   
-  // اضف الصور للمحتوى
-  Object.entries(images).forEach(([k, v]) => content[k] = v);
+  // 6️⃣ فحص الحجم
+  let totalSize = Math.round(JSON.stringify(content).length / 1024);
+  console.log('📊 الحجم الإجمالي:', totalSize, 'KB');
   
-  // فحص الحجم
-  const totalSize = Math.round(JSON.stringify(content).length / 1024);
-  console.log('📊 الحجم:', totalSize, 'KB');
-  
+  // 7️⃣ ضغط إضافي لو الحجم >900KB
   if (totalSize > 900) {
-    console.warn('⚠️ الحجم كبير، ضغط أعنف...');
-    // اضغط الصور أكثر
-    for (const key of Object.keys(content)) {
-      if (key.startsWith('__shahed') || key === '__photo') {
+    console.warn('⚠️ الحجم كبير، نضغط أكثر...');
+    
+    const imageKeys = Object.keys(content).filter(k => k === '__photo' || k.startsWith('__shahed'));
+    for (const key of imageKeys) {
+      if (content[key] && content[key].startsWith('data:image/')) {
         try {
           content[key] = await compressImageAsync(content[key], 400, 0.4);
-        } catch(e) {}
+        } catch(e) { console.warn('فشل ضغط', key); }
       }
     }
-    const newSize = Math.round(JSON.stringify(content).length / 1024);
-    console.log('📉 الحجم الجديد:', newSize, 'KB');
     
-    // لو لسا كبير، احذف الصور الأكبر
-    if (newSize > 950) {
-      const imgKeys = Object.keys(content).filter(k => k.startsWith('__shahed') || k === '__photo');
-      imgKeys.sort((a, b) => (content[b] || '').length - (content[a] || '').length);
-      for (const k of imgKeys) {
+    totalSize = Math.round(JSON.stringify(content).length / 1024);
+    console.log('📉 بعد الضغط الأعنف:', totalSize, 'KB');
+    
+    // لو لسا كبير، احذف الأكبر
+    if (totalSize > 950) {
+      console.warn('⚠️ لسا كبير، نحذف الصور الكبيرة');
+      const sorted = imageKeys.filter(k => content[k]).sort((a,b) => content[b].length - content[a].length);
+      for (const k of sorted) {
         delete content[k];
         if (Math.round(JSON.stringify(content).length / 1024) < 900) break;
       }
+      totalSize = Math.round(JSON.stringify(content).length / 1024);
+      console.log('📉 الحجم النهائي:', totalSize, 'KB');
     }
   }
   
-  console.log('📤 إرسال...');
-  const result = await window.trackExport({
-    type: 'enjaz',
-    title: 'ملف الإنجاز',
-    format: format,
-    content: content
-  });
+  // 8️⃣ الإرسال
+  console.log('📤 إرسال إلى Firebase...');
+  console.log('📊 الحقول النهائية:', Object.keys(content).length);
   
-  console.log('✅ النتيجة:', result);
-  if (result !== true && (!result || !result.success)) {
-    throw new Error('فشل الحفظ في Firebase');
+  let result;
+  try {
+    result = await window.trackExport({
+      type: 'enjaz',
+      title: 'ملف الإنجاز',
+      format: format,
+      content: content
+    });
+    console.log('✅ trackExport رجع:', result);
+  } catch (err) {
+    console.error('❌ trackExport رمى خطأ:', err);
+    throw new Error('خطأ Firebase: ' + (err.message || err));
   }
+  
+  // 9️⃣ تحقق من النتيجة
+  if (result === true) {
+    console.log('✅✅ النجاح');
+    return true;
+  }
+  
+  if (result && result.success === true) {
+    console.log('✅✅ النجاح (object)');
+    return true;
+  }
+  
+  console.error('❌ النتيجة غير متوقعة:', result);
+  throw new Error('فشل الحفظ - النتيجة: ' + JSON.stringify(result));
 }
 
 // ضغط الصور
