@@ -2019,6 +2019,20 @@ async function saveExportToCloud(format = 'pdf') {
   console.log('📊 size:', sizeKB, 'KB');
   
   console.log('📤 calling trackExport...');
+  console.log('📊 fields:', Object.keys(fields));
+  console.log('📊 images keys:', Object.keys(images));
+  
+  // 🚨 فحص الحجم المسبق
+  const totalSize = Math.round(JSON.stringify(content).length / 1024);
+  console.log('📊 إجمالي الحجم قبل الإرسال:', totalSize, 'KB');
+  
+  if (totalSize > 900) {
+    console.warn('⚠️ الحجم كبير جداً (' + totalSize + 'KB)، نحذف الصور');
+    delete content._images;
+    const newSize = Math.round(JSON.stringify(content).length / 1024);
+    console.log('📉 بعد حذف الصور:', newSize, 'KB');
+  }
+  
   const result = await window.trackExport({
     type: 'teacher',
     title: 'تقرير المعلم',
@@ -2026,6 +2040,11 @@ async function saveExportToCloud(format = 'pdf') {
     content: content
   });
   console.log('✅ trackExport returned:', result);
+  
+  // ✅ تحقق من النتيجة الفعلية
+  if (result !== true && (!result || !result.success)) {
+    throw new Error('trackExport فشل - تحقق من Console');
+  }
 }
 
 function compressImageAsync(dataUrl, maxWidth = 600, quality = 0.6) {
