@@ -1152,16 +1152,25 @@ async function saveExportToCloud(format = 'pdf') {
     });
     
     // 🖼️ اجمع الصور المرفوعة (i1, i2, i3 → p1, p2, p3)
+    // ⚠️ مهم: نستعمل await لأن compressImage يرجع Promise
     const images = {};
-    ['p1', 'p2', 'p3'].forEach(id => {
+    for (const id of ['p1', 'p2', 'p3']) {
       const img = document.getElementById(id);
       if (img && img.src && img.src.startsWith('data:image/')) {
-        // اضغط الصورة لو ضخمة
-        images[id] = img.src.length > 200000 
-          ? compressImage(img.src, 800)
-          : img.src;
+        try {
+          if (img.src.length > 200000) {
+            images[id] = await compressImage(img.src, 800);
+          } else {
+            images[id] = img.src;
+          }
+        } catch (e) {
+          console.warn('فشل ضغط صورة:', id, e);
+        }
       }
-    });
+    }
+    
+    console.log('🖼️ صور للحفظ:', Object.keys(images).length, 'صورة');
+    console.log('📝 حقول للحفظ:', Object.keys(fields).length, 'حقل');
     
     // فحص الحجم
     const content = { ...fields, _images: images };
@@ -1173,19 +1182,24 @@ async function saveExportToCloud(format = 'pdf') {
       delete content._images;
     }
     
-    await window.trackExport({
+    console.log('☁️ إرسال إلى Firebase...');
+    const result = await window.trackExport({
       type: 'tasis',
       title: 'تقرير يوم التأسيس',
       format: format,
       content: content
     });
     
-    console.log('✅ تم حفظ التقرير في السحابة');
+    console.log('✅ نتيجة trackExport:', result);
+    
     if (typeof showToast === 'function') {
       showToast('📋 تم حفظ في سجلك');
     }
   } catch (e) {
     console.error('❌ فشل الحفظ السحابي:', e);
+    if (typeof showToast === 'function') {
+      showToast('❌ فشل الحفظ: ' + (e.message || ''));
+    }
   }
 }
 
