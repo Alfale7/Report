@@ -3,166 +3,321 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>تواصل معنا · منصة التقارير الذكية</title>
-<link href="https://fonts.googleapis.com/css2?family=Reem+Kufi:wght@400;600;700&family=Tajawal:wght@400;500;700;900&display=swap" rel="stylesheet">
+<title>تواصل معنا - ksa2030.one</title>
+<meta name="description" content="تواصل مع منصة ksa2030.one - واتساب، بريد، نموذج شكاوى. متاحون 24/7 لخدمتكم.">
+<link rel="icon" type="image/png" href="favicon.png">
+<link href="https://fonts.googleapis.com/css2?family=Aref+Ruqaa:wght@700&family=Reem+Kufi:wght@400;500;600;700&family=Tajawal:wght@400;500;700;900&display=swap" rel="stylesheet">
 <style>
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+
 body{
-  font-family:'Tajawal','Cairo',sans-serif;
-  background:linear-gradient(135deg,#0a3447,#1e6b8a);
+  font-family:'Tajawal',sans-serif;
+  background:
+    radial-gradient(ellipse at 20% 10%, rgba(76,175,80,0.15) 0%, transparent 40%),
+    radial-gradient(ellipse at 80% 90%, rgba(59,109,181,0.12) 0%, transparent 40%),
+    radial-gradient(ellipse at 50% 50%, rgba(232,197,71,0.05) 0%, transparent 50%),
+    linear-gradient(180deg, #050a12 0%, #0a1620 50%, #050a12 100%);
   min-height:100vh;
   color:#fff;
-  padding:20px 14px 40px;
+  padding:20px 14px 60px;
+  position:relative;
+  overflow-x:hidden;
 }
-.container{max-width:520px;margin:0 auto;}
+
+body::before{
+  content:"";
+  position:fixed;inset:0;
+  background-image:
+    linear-gradient(rgba(255,255,255,0.025) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255,255,255,0.025) 1px, transparent 1px);
+  background-size:40px 40px;
+  pointer-events:none;
+  z-index:0;
+}
+
+.container{
+  max-width:560px;
+  margin:0 auto;
+  position:relative;
+  z-index:1;
+}
+
 .back{
   display:inline-flex;
   align-items:center;
-  gap:6px;
+  gap:8px;
   color:#fff;
   text-decoration:none;
-  font-weight:900;
-  font-size:0.86rem;
+  font-weight:800;
+  font-size:0.88rem;
   margin-bottom:20px;
-  padding:8px 14px;
-  background:rgba(255,255,255,0.1);
+  padding:10px 18px;
+  background:rgba(255,255,255,0.08);
+  border:1px solid rgba(255,255,255,0.12);
   border-radius:99px;
+  backdrop-filter:blur(20px);
+  -webkit-backdrop-filter:blur(20px);
+  transition:all 0.3s;
 }
-.card{
-  background:#fff;
-  color:#1a3a4e;
-  border-radius:24px;
-  padding:34px 26px 28px;
-  box-shadow:0 24px 60px rgba(0,0,0,0.3);
+.back:hover{
+  background:rgba(255,255,255,0.14);
+  transform:translateX(-3px);
+}
+
+.header-card{
+  background:linear-gradient(145deg, rgba(15,41,66,0.7), rgba(10,22,32,0.6));
+  border:1px solid rgba(232,197,71,0.2);
+  border-radius:28px;
+  padding:38px 28px 30px;
+  text-align:center;
+  margin-bottom:18px;
+  backdrop-filter:blur(20px);
+  -webkit-backdrop-filter:blur(20px);
   position:relative;
   overflow:hidden;
-  text-align:center;
 }
-.card::before{
+.header-card::before{
   content:"";
   position:absolute;
-  top:0;left:0;right:0;
-  height:5px;
-  background:linear-gradient(90deg,#d4a657,#25d366,#d4a657);
+  top:-50px;
+  left:50%;
+  transform:translateX(-50%);
+  width:300px;
+  height:200px;
+  background:radial-gradient(circle, rgba(232,197,71,0.18), transparent 70%);
+  pointer-events:none;
 }
-.icon{
-  width:80px;height:80px;
-  background:linear-gradient(135deg,#25d366,#128c7e);
-  border-radius:22px;
+
+.icon-wrap{
+  width:88px;height:88px;
+  background:linear-gradient(135deg, #1e6b8a 0%, #2a8aab 50%, #d4a657 100%);
+  border-radius:24px;
   display:flex;align-items:center;justify-content:center;
-  font-size:2.6rem;
+  font-size:2.8rem;
   margin:0 auto 18px;
-  box-shadow:0 14px 32px rgba(37,211,102,0.4);
+  box-shadow:0 16px 40px rgba(232,197,71,0.3);
+  position:relative;
+  z-index:1;
+  animation:iconFloat 4s ease-in-out infinite;
 }
+@keyframes iconFloat{0%,100%{transform:translateY(0);}50%{transform:translateY(-6px);}}
+
 h1{
-  font-family:'Reem Kufi',sans-serif;
-  font-size:1.7rem;
+  font-family:'Aref Ruqaa',serif;
+  font-size:1.9rem;
   margin-bottom:8px;
-  color:#1a3a4e;
+  background:linear-gradient(135deg, #fff 0%, #e8c547 100%);
+  -webkit-background-clip:text;
+  -webkit-text-fill-color:transparent;
+  background-clip:text;
+  position:relative;
+  z-index:1;
 }
+
 .subtitle{
-  color:#5a7080;
-  font-size:0.92rem;
-  font-weight:700;
-  margin-bottom:24px;
+  color:rgba(255,255,255,0.75);
+  font-size:0.96rem;
+  font-weight:500;
   line-height:1.7;
+  position:relative;
+  z-index:1;
 }
+
+.methods-section{
+  background:linear-gradient(145deg, rgba(15,41,66,0.55), rgba(10,22,32,0.45));
+  border:1px solid rgba(255,255,255,0.1);
+  border-radius:24px;
+  padding:22px 18px;
+  margin-bottom:18px;
+  backdrop-filter:blur(20px);
+  -webkit-backdrop-filter:blur(20px);
+}
+
+.section-title{
+  font-family:'Reem Kufi',sans-serif;
+  font-size:1rem;
+  font-weight:700;
+  color:#e8c547;
+  margin-bottom:14px;
+  padding-right:6px;
+  display:flex;
+  align-items:center;
+  gap:8px;
+}
+
 .method{
   display:flex;
   align-items:center;
   gap:14px;
-  background:#f8fafc;
-  border:1.5px solid #e2e8f0;
-  border-radius:16px;
+  background:rgba(255,255,255,0.04);
+  border:1px solid rgba(255,255,255,0.08);
+  border-radius:18px;
   padding:16px 18px;
-  margin-bottom:12px;
+  margin-bottom:10px;
   text-decoration:none;
   color:inherit;
-  transition:all 0.25s;
-  text-align:right;
+  transition:all 0.3s;
 }
 .method:hover{
-  border-color:#1e6b8a;
-  transform:translateY(-3px);
-  box-shadow:0 12px 28px rgba(30,107,138,0.18);
+  background:rgba(255,255,255,0.08);
+  border-color:rgba(232,197,71,0.4);
+  transform:translateX(-4px);
 }
+.method:last-child{margin-bottom:0;}
+
 .method.whatsapp{
-  background:linear-gradient(135deg,rgba(37,211,102,0.08),rgba(18,140,126,0.04));
+  background:linear-gradient(135deg, rgba(37,211,102,0.12), rgba(18,140,126,0.06));
   border-color:rgba(37,211,102,0.3);
 }
 .method.whatsapp:hover{border-color:#25d366;}
+
+.method.email{
+  background:linear-gradient(135deg, rgba(30,107,138,0.12), rgba(42,138,171,0.06));
+  border-color:rgba(30,107,138,0.3);
+}
+.method.email:hover{border-color:#2a8aab;}
+
 .m-icon{
-  width:54px;
-  height:54px;
+  width:52px;
+  height:52px;
   border-radius:14px;
   display:flex;
   align-items:center;
   justify-content:center;
-  font-size:1.6rem;
+  font-size:1.5rem;
   color:#fff;
   flex-shrink:0;
-  box-shadow:0 6px 16px rgba(0,0,0,0.15);
+  box-shadow:0 6px 18px rgba(0,0,0,0.3);
 }
+
 .m-info{flex:1;min-width:0;}
 .m-label{
-  font-size:0.74rem;
-  color:#5a7080;
-  font-weight:800;
+  font-size:0.78rem;
+  color:rgba(255,255,255,0.6);
+  font-weight:700;
   margin-bottom:3px;
 }
 .m-value{
-  font-size:1rem;
+  font-size:1.02rem;
   font-weight:900;
-  color:#1a3a4e;
+  color:#fff;
   word-break:break-all;
 }
 .m-arrow{
-  color:#94a3b8;
+  color:rgba(255,255,255,0.4);
   font-size:1.4rem;
   font-weight:900;
 }
 
-.hours{
-  background:linear-gradient(135deg,#f0fdf4,#dcfce7);
-  border:1.5px solid #16a34a;
-  border-radius:14px;
-  padding:14px;
-  margin-top:18px;
-  text-align:center;
+.hours-card{
+  background:linear-gradient(145deg, rgba(232,197,71,0.1), rgba(212,166,87,0.04));
+  border:1px solid rgba(232,197,71,0.3);
+  border-radius:18px;
+  padding:18px;
+  margin-bottom:18px;
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:14px;
 }
-.hours-title{
-  font-size:0.86rem;
+
+.hour-item{
+  text-align:center;
+  padding:10px;
+  background:rgba(255,255,255,0.05);
+  border-radius:12px;
+}
+.hour-icon{font-size:1.6rem;margin-bottom:6px;display:block;}
+.hour-title{
+  font-size:0.82rem;
   font-weight:900;
-  color:#15803d;
+  color:#e8c547;
   margin-bottom:4px;
 }
-.hours-text{
-  font-size:0.78rem;
-  color:#16a34a;
-  font-weight:700;
+.hour-text{
+  font-size:0.76rem;
+  color:rgba(255,255,255,0.7);
+  font-weight:600;
+  line-height:1.5;
 }
 
-.faq-link{
+.sla-card{
+  background:linear-gradient(145deg, rgba(15,41,66,0.55), rgba(10,22,32,0.45));
+  border:1px solid rgba(255,255,255,0.1);
+  border-radius:24px;
+  padding:22px;
+  margin-bottom:18px;
+  backdrop-filter:blur(20px);
+  -webkit-backdrop-filter:blur(20px);
+}
+
+.sla-grid{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:10px;
   margin-top:14px;
-  background:#fef3c7;
-  border:1.5px solid #f59e0b;
+}
+
+.sla-item{
+  background:rgba(255,255,255,0.04);
+  border:1px solid rgba(255,255,255,0.06);
   border-radius:14px;
-  padding:13px;
+  padding:14px;
   text-align:center;
 }
-.faq-link a{
-  color:#92400e;
-  font-weight:900;
-  font-size:0.84rem;
-  text-decoration:none;
+.sla-emoji{font-size:1.8rem;margin-bottom:4px;}
+.sla-label{
+  font-size:0.74rem;
+  font-weight:700;
+  color:rgba(255,255,255,0.6);
+  margin-bottom:4px;
 }
-.faq-link a:hover{text-decoration:underline;}
+.sla-value{
+  font-size:1rem;
+  font-weight:900;
+  color:#e8c547;
+}
+
+.quick-links{
+  background:linear-gradient(145deg, rgba(15,41,66,0.55), rgba(10,22,32,0.45));
+  border:1px solid rgba(255,255,255,0.1);
+  border-radius:24px;
+  padding:18px;
+  backdrop-filter:blur(20px);
+  -webkit-backdrop-filter:blur(20px);
+}
+
+.link-grid{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:8px;
+  margin-top:12px;
+}
+
+.quick-link{
+  padding:12px 10px;
+  background:rgba(255,255,255,0.04);
+  border:1px solid rgba(255,255,255,0.08);
+  border-radius:12px;
+  text-align:center;
+  text-decoration:none;
+  color:#fff;
+  font-size:0.82rem;
+  font-weight:700;
+  transition:all 0.3s;
+}
+.quick-link:hover{
+  background:rgba(232,197,71,0.1);
+  border-color:rgba(232,197,71,0.3);
+  color:#e8c547;
+}
 
 @media (max-width:480px){
-  .card{padding:28px 20px 22px;}
-  h1{font-size:1.4rem;}
-  .m-value{font-size:0.92rem;}
-  .m-icon{width:48px;height:48px;font-size:1.4rem;}
+  h1{font-size:1.5rem;}
+  .header-card{padding:30px 20px 26px;}
+  .m-value{font-size:0.94rem;}
+  .m-icon{width:46px;height:46px;font-size:1.3rem;}
+  .hours-card{grid-template-columns:1fr;}
+  .sla-grid{grid-template-columns:1fr;}
 }
 </style>
 </head>
@@ -171,21 +326,37 @@ h1{
 <div class="container">
   <a href="index.html" class="back">← الرجوع للرئيسية</a>
 
-  <div class="card">
-    <div class="icon">💬</div>
+  <div class="header-card">
+    <div class="icon-wrap">💬</div>
     <h1>تواصل معنا</h1>
-    <p class="subtitle">نسعدنا تواصلك معنا!<br>اختر الطريقة الأنسب لك</p>
+    <p class="subtitle">
+      نسعد بتواصلك في أي وقت<br>
+      اختر الطريقة الأنسب لك من القنوات الرسمية أدناه
+    </p>
+  </div>
 
-    <a href="https://wa.me/966550522867?text=السلام%20عليكم،%20لدي%20استفسار" target="_blank" rel="noopener" class="method whatsapp">
-      <div class="m-icon" style="background:linear-gradient(135deg,#25d366,#128c7e);">💬</div>
+  <div class="methods-section">
+    <div class="section-title">📞 قنوات التواصل الرسمية</div>
+
+    <a href="tel:+966552052867" class="method">
+      <div class="m-icon" style="background:linear-gradient(135deg,#d4a657,#e8c547);">📱</div>
       <div class="m-info">
-        <div class="m-label">واتساب (الأسرع)</div>
-        <div class="m-value" dir="ltr">+966 55 052 2867</div>
+        <div class="m-label">رقم الهاتف للتواصل</div>
+        <div class="m-value" dir="ltr">+966 55 205 2867</div>
       </div>
       <div class="m-arrow">‹</div>
     </a>
 
-    <a href="mailto:admin@ksa2030.one" class="method">
+    <a href="https://wa.me/966552052867?text=السلام%20عليكم،%20لدي%20استفسار%20بخصوص%20منصة%20ksa2030" target="_blank" rel="noopener" class="method whatsapp">
+      <div class="m-icon" style="background:linear-gradient(135deg,#25d366,#128c7e);">💬</div>
+      <div class="m-info">
+        <div class="m-label">واتساب (المحادثة الفورية)</div>
+        <div class="m-value" dir="ltr">+966 55 205 2867</div>
+      </div>
+      <div class="m-arrow">‹</div>
+    </a>
+
+    <a href="mailto:admin@ksa2030.one?subject=استفسار%20بخصوص%20منصة%20ksa2030" class="method email">
       <div class="m-icon" style="background:linear-gradient(135deg,#1e6b8a,#2a8aab);">📧</div>
       <div class="m-info">
         <div class="m-label">البريد الإلكتروني</div>
@@ -194,15 +365,66 @@ h1{
       <div class="m-arrow">‹</div>
     </a>
 
-    <div class="hours">
-      <div class="hours-title">⏰ ساعات العمل</div>
-      <div class="hours-text">متاحين 24/7 · الردود خلال ساعات النهار (8 ص - 11 م)</div>
-    </div>
+    <a href="https://wa.me/966552052867?text=أود%20تقديم%20شكوى%20بخصوص:" target="_blank" rel="noopener" class="method" style="background:linear-gradient(135deg, rgba(220,38,38,0.1), rgba(185,28,28,0.04));border-color:rgba(220,38,38,0.3);">
+      <div class="m-icon" style="background:linear-gradient(135deg,#dc2626,#b91c1c);">📝</div>
+      <div class="m-info">
+        <div class="m-label">تقديم شكوى</div>
+        <div class="m-value">عبر الواتساب أو البريد</div>
+      </div>
+      <div class="m-arrow">‹</div>
+    </a>
+  </div>
 
-    <div class="faq-link">
-      <a href="faq.html">❓ الأسئلة الشائعة - ربما تجد إجابتك هنا</a>
+  <div class="hours-card">
+    <div class="hour-item">
+      <span class="hour-icon">⏰</span>
+      <div class="hour-title">ساعات العمل</div>
+      <div class="hour-text">يومياً<br>8 صباحاً - 11 مساءً</div>
+    </div>
+    <div class="hour-item">
+      <span class="hour-icon">🌐</span>
+      <div class="hour-title">المنصة</div>
+      <div class="hour-text">متاحة<br>24 ساعة / 7 أيام</div>
     </div>
   </div>
+
+  <div class="sla-card">
+    <div class="section-title">⚡ مدة الرد ومعالجة الطلبات</div>
+    
+    <div class="sla-grid">
+      <div class="sla-item">
+        <div class="sla-emoji">💨</div>
+        <div class="sla-label">الاستفسارات</div>
+        <div class="sla-value">خلال 24 ساعة</div>
+      </div>
+      <div class="sla-item">
+        <div class="sla-emoji">📋</div>
+        <div class="sla-label">الشكاوى</div>
+        <div class="sla-value">خلال 48 ساعة</div>
+      </div>
+      <div class="sla-item">
+        <div class="sla-emoji">✅</div>
+        <div class="sla-label">معالجة الشكوى</div>
+        <div class="sla-value">3-5 أيام عمل</div>
+      </div>
+      <div class="sla-item">
+        <div class="sla-emoji">💳</div>
+        <div class="sla-label">طلبات الاسترداد</div>
+        <div class="sla-value">7-14 يوم</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="quick-links">
+    <div class="section-title">🔗 روابط مهمة</div>
+    <div class="link-grid">
+      <a href="terms.html" class="quick-link">📋 الشروط والأحكام</a>
+      <a href="privacy.html" class="quick-link">🔒 سياسة الخصوصية</a>
+      <a href="faq.html" class="quick-link">❓ الأسئلة الشائعة</a>
+      <a href="index.html" class="quick-link">🏠 الرئيسية</a>
+    </div>
+  </div>
+
 </div>
 
 </body>
