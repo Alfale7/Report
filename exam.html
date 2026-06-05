@@ -2443,12 +2443,24 @@ async function saveExportToCloud(format = 'pdf') {
   
   const content = { ...fields, _images: images };
   
-  await window.trackExport({
+  // 🚨 فحص الحجم قبل الإرسال
+  const totalSize = Math.round(JSON.stringify(content).length / 1024);
+  console.log('📊 الحجم:', totalSize, 'KB');
+  
+  if (totalSize > 900) {
+    console.warn('⚠️ الحجم كبير، نحذف الصور');
+    delete content._images;
+  }
+  
+  const result = await window.trackExport({
     type: 'exam',
     title: 'تقرير الاختبار',
     format: format,
     content: content
   });
+  if (result !== true && (!result || !result.success)) {
+    throw new Error('فشل الحفظ في Firebase');
+  }
 }
 
 function compressImageAsync(dataUrl, maxWidth = 600, quality = 0.6) {
