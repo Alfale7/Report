@@ -722,23 +722,39 @@ export async function getUserPublishedReports(uid) {
 export async function logExport(data) {
   try {
     const u = auth.currentUser;
-    if (!u) return { success: false, error: 'يلزم تسجيل الدخول' };
+    if (!u) {
+      console.error('logExport: لا يوجد مستخدم مسجل');
+      return { success: false, error: 'يلزم تسجيل الدخول' };
+    }
     
     const exportData = {
       userId: u.uid,
-      type: data.type || 'unknown',           // council, enjaz, tasis...
+      type: data.type || 'unknown',
       title: data.title || 'تقرير بدون عنوان',
-      format: data.format || 'pdf',            // pdf, png, jpg
+      format: data.format || 'pdf',
       templateId: data.templateId || data.type,
-      content: data.content || {},             // 🆕 محتوى التقرير للاستعادة
+      content: data.content || {},
       exportedAt: serverTimestamp(),
       createdAt: Timestamp.now()
     };
     
+    // فحص الحجم قبل الإرسال
+    const sizeKB = Math.round(JSON.stringify(exportData).length / 1024);
+    console.log('📤 logExport: إرسال', sizeKB, 'KB إلى Firestore');
+    
+    if (sizeKB > 1000) {
+      console.error('❌ الحجم >1MB، Firestore سيرفض!');
+      // احذف content بالكامل
+      exportData.content = { __too_large__: true, __size_kb__: sizeKB };
+      const newSize = Math.round(JSON.stringify(exportData).length / 1024);
+      console.log('📉 بعد الحذف:', newSize, 'KB');
+    }
+    
     const ref = await addDoc(collection(db, 'users', u.uid, 'exports'), exportData);
+    console.log('✅ logExport نجح:', ref.id);
     return { success: true, exportId: ref.id };
   } catch (error) {
-    console.error('logExport:', error);
+    console.error('❌ logExport فشل:', error.code, '|', error.message);
     return { success: false, error: error.message };
   }
 }

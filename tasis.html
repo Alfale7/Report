@@ -1237,12 +1237,11 @@ async function saveExportToCloud(format = 'pdf') {
   console.log('💾 format:', format);
   console.log('💾 الوقت الحالي:', new Date().toISOString());
   
-  // امنع التكرار خلال 3 ثواني
-  if (window._lastSaved && (Date.now() - window._lastSaved < 3000)) {
-    console.log('⏭️ تم تخطي التكرار (آخر حفظ قبل ' + (Date.now() - window._lastSaved) + 'ms)');
+  // امنع التكرار خلال 3 ثواني (فقط لو نجح آخر حفظ)
+  if (window._lastSaveSuccess && (Date.now() - window._lastSaveSuccess < 3000)) {
+    console.log('⏭️ تم تخطي التكرار (نجاح قبل ' + (Date.now() - window._lastSaveSuccess) + 'ms)');
     return;
   }
-  window._lastSaved = Date.now();
   
   console.log('💾 trackExport متاحة؟', typeof window.trackExport);
   
@@ -1324,6 +1323,9 @@ async function saveExportToCloud(format = 'pdf') {
     });
     
     console.log('✅ نتيجة trackExport:', result);
+    
+    // ✅ سجّل النجاح فقط لو نجح فعلاً
+    window._lastSaveSuccess = Date.now();
     
     if (typeof showToast === 'function') {
       showToast('📋 تم حفظ في سجلك');
