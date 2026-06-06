@@ -1262,3 +1262,82 @@ setTimeout(() => {
   // ملاحظة: التتبع للمشتركين Free يتم من خلال beforeprint مرة واحدة فقط
   // لو احتجنا تتبع، نعمله من saveAsImage/savePDF بدلاً من الطباعة
 }, 1000);
+
+// ═══════════════════════════════════════════════════════════
+// ☁️ window.trackExport - حفظ التقرير في حساب المستخدم
+// ═══════════════════════════════════════════════════════════
+window.trackExport = async function(data) {
+  console.log('📤 trackExport called:', { type: data?.type, format: data?.format });
+  
+  if (!_user) {
+    console.error('❌ trackExport: لا يوجد مستخدم مسجل');
+    throw new Error('سجّل دخولك أولاً');
+  }
+  
+  try {
+    const { collection, addDoc, serverTimestamp } = await import("https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js");
+    
+    const sizeKB = Math.round(JSON.stringify(data.content || {}).length / 1024);
+    console.log('📊 trackExport: حجم البيانات', sizeKB, 'KB');
+    
+    const exportData = {
+      type: data.type || 'unknown',
+      title: data.title || 'تقرير',
+      format: data.format || 'save',
+      content: data.content || {},
+      sizeKB: sizeKB,
+      createdAt: serverTimestamp(),
+      page: _currentPage
+    };
+    
+    const exportsRef = collection(db, 'users', _user.uid, 'exports');
+    const ref = await addDoc(exportsRef, exportData);
+    
+    console.log('✅ trackExport نجح:', ref.id);
+    return true;
+    
+  } catch (error) {
+    console.error('❌ trackExport فشل:', error.code, '|', error.message);
+    throw error;
+  }
+};
+
+// ═══════════════════════════════════════════════════════════
+// 📤 window.shareReport - مشاركة التقرير عبر رابط
+// ═══════════════════════════════════════════════════════════
+window.shareReport = async function(data) {
+  console.log('📤 shareReport called:', { type: data?.type });
+  
+  if (!_user) {
+    console.error('❌ shareReport: لا يوجد مستخدم مسجل');
+    throw new Error('سجّل دخولك أولاً');
+  }
+  
+  try {
+    const { collection, addDoc, serverTimestamp } = await import("https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js");
+    
+    const shareData = {
+      ownerUid: _user.uid,
+      ownerName: _profile?.displayName || (_user.email || '').split('@')[0] || 'مستخدم',
+      type: data.type || 'unknown',
+      title: data.title || 'تقرير',
+      content: data.content || {},
+      createdAt: serverTimestamp(),
+      views: 0
+    };
+    
+    const sharesRef = collection(db, 'shares');
+    const ref = await addDoc(sharesRef, shareData);
+    
+    const shareUrl = `${window.location.origin}/view.html?r=${ref.id}`;
+    console.log('✅ shareReport نجح:', shareUrl);
+    
+    return { success: true, url: shareUrl, id: ref.id };
+    
+  } catch (error) {
+    console.error('❌ shareReport فشل:', error.code, '|', error.message);
+    throw error;
+  }
+};
+
+console.log('✅ window.trackExport و window.shareReport جاهزتان');
