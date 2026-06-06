@@ -2062,19 +2062,45 @@ margin-top:3px;font-weight:700;
 @keyframes rvSpin{to{transform:rotate(360deg);}}
 
 .rv-real-grid{
-  display:grid;
-  grid-template-columns:repeat(auto-fill, minmax(280px, 1fr));
-  gap:16px;
+  /* Legacy - باقي للتوافق فقط */
+  display:none;
+}
+
+/* ═══════════════════════════════════════════════════════════ */
+/* 🎬 Slider فاخر للتقييمات - عالمي وسلس                          */
+/* ═══════════════════════════════════════════════════════════ */
+.rv-slider-wrap{
+  position:relative;
+  max-width:100%;
   margin-bottom:24px;
 }
 
+/* الـ Slider نفسه - scroll أفقي سلس */
+.rv-slider{
+  display:flex;
+  gap:16px;
+  overflow-x:auto;
+  overflow-y:visible;
+  scroll-snap-type:x mandatory;
+  scroll-behavior:smooth;
+  -webkit-overflow-scrolling:touch;
+  padding:8px 4px 20px;
+  /* إخفاء scrollbar */
+  scrollbar-width:none;
+  -ms-overflow-style:none;
+}
+.rv-slider::-webkit-scrollbar{display:none;}
+
+/* كرت التقييم في الـ slider */
 .rv-real-card{
+  flex:0 0 320px;
+  scroll-snap-align:start;
   background:
     radial-gradient(circle at 0% 0%, rgba(232,197,71,0.08) 0%, transparent 50%),
     linear-gradient(145deg, #0d1a2e 0%, #142841 100%);
   border:1.5px solid rgba(232,197,71,0.25);
   border-radius:18px;
-  padding:20px;
+  padding:22px;
   position:relative;
   overflow:hidden;
   isolation:isolate;
@@ -2094,6 +2120,74 @@ margin-top:3px;font-weight:700;
     inset 0 1px 0 rgba(232,197,71,0.3);
 }
 
+/* أزرار التنقل - يمين ويسار */
+.rv-nav-btn{
+  position:absolute;
+  top:50%;
+  transform:translateY(-50%);
+  width:44px;height:44px;
+  border-radius:50%;
+  background:linear-gradient(135deg, #d4a657 0%, #e8c547 50%, #d4a657 100%);
+  color:#3d2200;
+  border:1.5px solid rgba(255,255,255,0.3);
+  font-size:1.6rem;
+  font-weight:900;
+  cursor:pointer;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  z-index:10;
+  transition:all 0.25s ease;
+  box-shadow:
+    0 10px 24px rgba(212,166,87,0.5),
+    inset 0 1px 0 rgba(255,255,255,0.35),
+    inset 0 -2px 4px rgba(180,130,40,0.3);
+  padding-bottom:3px;
+}
+.rv-nav-btn:hover:not(:disabled){
+  transform:translateY(-50%) scale(1.1);
+  background:linear-gradient(135deg, #e8c547 0%, #f5d76e 50%, #e8c547 100%);
+  box-shadow:
+    0 14px 32px rgba(212,166,87,0.65),
+    inset 0 1px 0 rgba(255,255,255,0.45);
+}
+.rv-nav-btn:active{transform:translateY(-50%) scale(0.95);}
+.rv-nav-btn:disabled{
+  opacity:0.35;
+  cursor:not-allowed;
+  filter:grayscale(0.3);
+}
+
+.rv-nav-prev{right:-8px;}
+.rv-nav-next{left:-8px;}
+
+/* النقاط (dots) */
+.rv-dots{
+  display:flex;
+  justify-content:center;
+  gap:8px;
+  margin-top:14px;
+}
+.rv-dot{
+  width:9px;height:9px;
+  border-radius:50%;
+  background:rgba(255,255,255,0.25);
+  border:none;
+  cursor:pointer;
+  padding:0;
+  transition:all 0.3s ease;
+}
+.rv-dot.active{
+  width:28px;
+  border-radius:99px;
+  background:linear-gradient(90deg, #d4a657, #e8c547);
+  box-shadow:0 2px 8px rgba(232,197,71,0.4);
+}
+.rv-dot:hover:not(.active){
+  background:rgba(255,255,255,0.45);
+}
+
+/* محتوى الكرت */
 .rv-real-head{
   display:flex;
   align-items:center;
@@ -2146,11 +2240,32 @@ margin-top:3px;font-weight:700;
   color:rgba(255,255,255,0.85);
   font-weight:600;
   line-height:1.7;
+  /* limit text to 5 lines */
+  display:-webkit-box;
+  -webkit-line-clamp:5;
+  -webkit-box-orient:vertical;
+  overflow:hidden;
 }
 
+/* Tablet */
+@media (max-width:768px){
+  .rv-nav-prev{right:-6px;}
+  .rv-nav-next{left:-6px;}
+  .rv-nav-btn{width:40px;height:40px;font-size:1.4rem;}
+}
+
+/* Mobile */
 @media (max-width:600px){
-  .rv-real-grid{grid-template-columns:1fr;}
-  .rv-real-card{padding:18px;}
+  .rv-real-card{
+    flex:0 0 calc(100% - 32px);
+    padding:18px;
+  }
+  .rv-slider{
+    gap:12px;
+    padding:6px 16px 18px;
+  }
+  /* إخفاء الأزرار في الموبايل - نعتمد على swipe */
+  .rv-nav-btn{display:none;}
 }
 
 /* ملخص التقييمات */
@@ -6879,8 +6994,13 @@ font-size:0.78rem;text-align:center;margin-top:12px;display:none;
         <p>جاري تحميل التقييمات...</p>
       </div>
       
-      <!-- شبكة التقييمات (تتعبأ JS) -->
-      <div class="rv-real-grid" id="rvRealGrid" style="display:none;"></div>
+      <!-- شبكة التقييمات (تتعبأ JS) - Slider أفقي فاخر -->
+      <div class="rv-slider-wrap" id="rvSliderWrap" style="display:none;">
+        <button class="rv-nav-btn rv-nav-prev" id="rvNavPrev" aria-label="السابق">›</button>
+        <button class="rv-nav-btn rv-nav-next" id="rvNavNext" aria-label="التالي">‹</button>
+        <div class="rv-slider" id="rvRealGrid"></div>
+        <div class="rv-dots" id="rvDots"></div>
+      </div>
       
       <!-- صندوق فارغ - يظهر لو ما فيه تقييمات -->
       <div class="rv-empty-box" id="reviewsEmptyBox" style="display:none;">
@@ -8764,6 +8884,7 @@ import {
 // ═══ جلب التقييمات المعتمدة ═══
 async function loadApprovedReviews(){
   const loading = document.getElementById('rvLoading');
+  const sliderWrap = document.getElementById('rvSliderWrap');
   const grid = document.getElementById('rvRealGrid');
   const emptyBox = document.getElementById('reviewsEmptyBox');
   
@@ -8799,13 +8920,103 @@ async function loadApprovedReviews(){
     });
     
     grid.innerHTML = reviews.map(r => renderReviewCard(r)).join('');
-    grid.style.display = 'grid';
+    if (sliderWrap) sliderWrap.style.display = 'block';
+    
+    // فعّل السلايدر
+    setupReviewsSlider(reviews.length);
     
   } catch(error) {
     console.error('فشل جلب التقييمات:', error);
     loading.style.display = 'none';
     emptyBox.style.display = 'block';
   }
+}
+
+// ═══ منطق السلايدر ═══
+function setupReviewsSlider(count){
+  const slider = document.getElementById('rvRealGrid');
+  const prevBtn = document.getElementById('rvNavPrev');
+  const nextBtn = document.getElementById('rvNavNext');
+  const dotsContainer = document.getElementById('rvDots');
+  
+  if (!slider || count === 0) return;
+  
+  // عدد النقاط (Dots) = عدد التقييمات
+  if (dotsContainer) {
+    dotsContainer.innerHTML = Array.from({length: count}, (_, i) =>
+      `<button class="rv-dot ${i === 0 ? 'active' : ''}" data-idx="${i}" aria-label="تقييم ${i+1}"></button>`
+    ).join('');
+  }
+  
+  const dots = dotsContainer ? Array.from(dotsContainer.querySelectorAll('.rv-dot')) : [];
+  
+  // اضغط نقطة → الانتقال للكرت المقابل
+  dots.forEach((dot, i) => {
+    dot.addEventListener('click', () => {
+      const cards = slider.querySelectorAll('.rv-real-card');
+      if (cards[i]) {
+        cards[i].scrollIntoView({behavior:'smooth', block:'nearest', inline:'start'});
+      }
+    });
+  });
+  
+  // متابعة التمرير لتحديث النقطة النشطة وحالة الأزرار
+  function updateActiveState(){
+    const cards = slider.querySelectorAll('.rv-real-card');
+    if (!cards.length) return;
+    
+    // اوجد الكرت الأقرب لبداية الـ slider (RTL: يمين)
+    const sliderRect = slider.getBoundingClientRect();
+    let closestIdx = 0;
+    let closestDist = Infinity;
+    
+    cards.forEach((card, i) => {
+      const cardRect = card.getBoundingClientRect();
+      // في RTL، نقيس المسافة من اليمين
+      const dist = Math.abs(cardRect.right - sliderRect.right);
+      if (dist < closestDist) {
+        closestDist = dist;
+        closestIdx = i;
+      }
+    });
+    
+    // تحديث النقاط
+    dots.forEach((d, i) => d.classList.toggle('active', i === closestIdx));
+    
+    // تحديث الأزرار
+    if (prevBtn) prevBtn.disabled = closestIdx === 0;
+    if (nextBtn) nextBtn.disabled = closestIdx === count - 1;
+  }
+  
+  slider.addEventListener('scroll', () => {
+    requestAnimationFrame(updateActiveState);
+  }, {passive: true});
+  
+  // أزرار التنقل
+  if (prevBtn) {
+    prevBtn.addEventListener('click', () => {
+      const cards = slider.querySelectorAll('.rv-real-card');
+      const activeDot = dotsContainer.querySelector('.rv-dot.active');
+      const currentIdx = activeDot ? parseInt(activeDot.dataset.idx) : 0;
+      if (currentIdx > 0 && cards[currentIdx - 1]) {
+        cards[currentIdx - 1].scrollIntoView({behavior:'smooth', block:'nearest', inline:'start'});
+      }
+    });
+  }
+  
+  if (nextBtn) {
+    nextBtn.addEventListener('click', () => {
+      const cards = slider.querySelectorAll('.rv-real-card');
+      const activeDot = dotsContainer.querySelector('.rv-dot.active');
+      const currentIdx = activeDot ? parseInt(activeDot.dataset.idx) : 0;
+      if (currentIdx < count - 1 && cards[currentIdx + 1]) {
+        cards[currentIdx + 1].scrollIntoView({behavior:'smooth', block:'nearest', inline:'start'});
+      }
+    });
+  }
+  
+  // تحديث أولي
+  updateActiveState();
 }
 
 function renderReviewCard(r){
