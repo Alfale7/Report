@@ -207,31 +207,76 @@ body {
 
 .hero-card {
   position: relative;
-  background: linear-gradient(135deg, rgba(15, 41, 66, 0.85), rgba(10, 22, 32, 0.75));
+  background: 
+    radial-gradient(circle at 15% 0%, rgba(232,197,71,0.18) 0%, transparent 50%),
+    radial-gradient(circle at 85% 100%, rgba(30,107,138,0.22) 0%, transparent 60%),
+    linear-gradient(145deg, #0a1828 0%, #122a3f 35%, #0d1f2e 65%, #0a1828 100%);
   backdrop-filter: blur(40px) saturate(180%);
   -webkit-backdrop-filter: blur(40px) saturate(180%);
-  border: 1px solid rgba(232, 197, 71, 0.18);
+  border: 1.5px solid rgba(232, 197, 71, 0.4);
   border-radius: var(--radius-xl);
   padding: 40px 36px;
   overflow: hidden;
-  box-shadow: var(--shadow-lg);
+  isolation: isolate;
+  box-shadow: 
+    0 30px 80px rgba(0,0,0,0.6),
+    0 12px 32px rgba(0,0,0,0.4),
+    0 0 50px rgba(232,197,71,0.15),
+    inset 0 2px 0 rgba(255,255,255,0.08),
+    inset 0 1px 0 rgba(232,197,71,0.35),
+    inset 0 -3px 12px rgba(0,0,0,0.4);
+  animation: heroBorderGlow 3s ease-in-out infinite;
+}
+@keyframes heroBorderGlow {
+  0%, 100% {
+    box-shadow: 
+      0 30px 80px rgba(0,0,0,0.6),
+      0 12px 32px rgba(0,0,0,0.4),
+      0 0 50px rgba(232,197,71,0.15),
+      inset 0 2px 0 rgba(255,255,255,0.08),
+      inset 0 1px 0 rgba(232,197,71,0.35),
+      inset 0 -3px 12px rgba(0,0,0,0.4);
+  }
+  50% {
+    box-shadow: 
+      0 30px 80px rgba(0,0,0,0.6),
+      0 12px 32px rgba(0,0,0,0.4),
+      0 0 70px rgba(232,197,71,0.3),
+      inset 0 2px 0 rgba(255,255,255,0.12),
+      inset 0 1px 0 rgba(245,215,110,0.5),
+      inset 0 -3px 12px rgba(0,0,0,0.4);
+  }
 }
 
 .hero-card::before {
   content: '';
   position: absolute;
-  top: 0; left: 0; right: 0;
-  height: 1px;
-  background: linear-gradient(90deg, transparent, rgba(232, 197, 71, 0.5), transparent);
+  inset: 0;
+  background:
+    radial-gradient(2px 2px at 12% 18%, rgba(255,255,255,0.7), transparent),
+    radial-gradient(1.5px 1.5px at 78% 12%, rgba(232,197,71,0.9), transparent),
+    radial-gradient(1px 1px at 32% 75%, rgba(255,255,255,0.5), transparent),
+    radial-gradient(2px 2px at 88% 68%, rgba(232,197,71,0.7), transparent),
+    radial-gradient(1px 1px at 22% 45%, rgba(255,255,255,0.5), transparent),
+    radial-gradient(1.5px 1.5px at 62% 88%, rgba(232,197,71,0.6), transparent),
+    radial-gradient(1px 1px at 92% 32%, rgba(255,255,255,0.6), transparent);
+  animation: heroTwinkle 4s ease-in-out infinite;
+  pointer-events: none;
+  z-index: 1;
+}
+@keyframes heroTwinkle {
+  0%, 100% { opacity: 0.4; }
+  50% { opacity: 1; }
 }
 
 .hero-glow {
   position: absolute;
   top: -50%; right: -20%;
   width: 600px; height: 600px;
-  background: radial-gradient(circle, rgba(232, 197, 71, 0.18), transparent 60%);
+  background: radial-gradient(circle, rgba(232, 197, 71, 0.25), transparent 60%);
   pointer-events: none;
   animation: heroGlow 5s ease-in-out infinite;
+  z-index: 1;
 }
 @keyframes heroGlow {
   0%, 100% { opacity: 0.5; transform: scale(1); }
@@ -240,15 +285,28 @@ body {
 
 .hero-shimmer {
   position: absolute;
-  top: 0; left: -100%;
-  width: 100%; height: 100%;
-  background: linear-gradient(110deg, transparent 35%, rgba(255, 255, 255, 0.05) 50%, transparent 65%);
-  animation: heroShimmer 6s infinite;
+  top: 0; left: -150%;
+  width: 60%; height: 100%;
+  background: linear-gradient(
+    110deg,
+    transparent 30%,
+    rgba(255,255,255,0.05) 42%,
+    rgba(232,197,71,0.3) 47%,
+    rgba(255,255,255,0.7) 50%,
+    rgba(232,197,71,0.3) 53%,
+    rgba(255,255,255,0.05) 58%,
+    transparent 70%
+  );
+  transform: skewX(-22deg);
+  animation: heroShimmer 6s ease-in-out infinite;
   pointer-events: none;
+  z-index: 2;
 }
 @keyframes heroShimmer {
-  0% { left: -100%; }
-  60%, 100% { left: 100%; }
+  0%, 100% { left: -150%; opacity: 0; }
+  10% { opacity: 1; }
+  45% { left: 200%; opacity: 0; }
+  50%, 100% { left: 200%; }
 }
 
 .hero-content {
@@ -426,83 +484,168 @@ body {
    ═══════════════════════════════════════════════════════ */
 .stats {
   display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  gap: 16px;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 18px;
   margin-bottom: 36px;
 }
 .stat {
   position: relative;
-  background: var(--bg-elevated);
+  background: 
+    radial-gradient(circle at 0% 0%, rgba(232,197,71,0.06) 0%, transparent 50%),
+    radial-gradient(circle at 100% 100%, var(--accent-soft, rgba(30,107,138,0.08)) 0%, transparent 50%),
+    linear-gradient(145deg, #0d1a2e 0%, #142841 50%, #0d1a2e 100%);
   backdrop-filter: blur(20px) saturate(180%);
   -webkit-backdrop-filter: blur(20px) saturate(180%);
-  border: 1px solid var(--border-light);
+  border: 1.5px solid rgba(232,197,71,0.25);
   border-radius: var(--radius-lg);
-  padding: 22px 20px;
+  padding: 26px 22px;
   overflow: hidden;
   cursor: default;
-  transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+  transition: all 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
   opacity: 0;
-  animation: statEnter 0.6s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+  animation: statEnter 0.7s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+  box-shadow:
+    0 10px 32px rgba(0,0,0,0.45),
+    0 0 0 1px rgba(232,197,71,0.1),
+    inset 0 1px 0 rgba(255,255,255,0.06),
+    inset 0 -1px 0 rgba(0,0,0,0.2);
+  isolation: isolate;
 }
 .stat:nth-child(1) { animation-delay: 0.2s; }
-.stat:nth-child(2) { animation-delay: 0.3s; }
-.stat:nth-child(3) { animation-delay: 0.4s; }
-.stat:nth-child(4) { animation-delay: 0.5s; }
+.stat:nth-child(2) { animation-delay: 0.35s; }
 @keyframes statEnter {
-  from { opacity: 0; transform: translateY(20px) scale(0.95); }
+  from { opacity: 0; transform: translateY(24px) scale(0.92); }
   to { opacity: 1; transform: translateY(0) scale(1); }
 }
+
+/* ✨ نقاط لمعان زخرفية */
 .stat::before {
   content: '';
   position: absolute;
   inset: 0;
-  border-radius: var(--radius-lg);
-  padding: 1px;
-  background: linear-gradient(135deg, transparent, var(--accent, var(--gold)) 50%, transparent);
-  -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
-  -webkit-mask-composite: xor;
-  mask-composite: exclude;
-  opacity: 0;
-  transition: opacity 0.3s ease;
+  background:
+    radial-gradient(1.5px 1.5px at 18% 28%, rgba(232,197,71,0.7), transparent),
+    radial-gradient(1px 1px at 75% 22%, rgba(255,255,255,0.5), transparent),
+    radial-gradient(1.5px 1.5px at 65% 75%, rgba(232,197,71,0.5), transparent),
+    radial-gradient(1px 1px at 30% 65%, rgba(255,255,255,0.4), transparent);
+  animation: statTwinkle 4s ease-in-out infinite;
+  pointer-events: none;
+  z-index: 1;
 }
+@keyframes statTwinkle {
+  0%, 100% { opacity: 0.4; }
+  50% { opacity: 1; }
+}
+
+/* ⚡ لمعة ذهبية تمر */
+.stat::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -150%;
+  width: 60%;
+  height: 100%;
+  background: linear-gradient(
+    110deg,
+    transparent 30%,
+    rgba(232,197,71,0.15) 45%,
+    rgba(245,215,110,0.4) 50%,
+    rgba(232,197,71,0.15) 55%,
+    transparent 70%
+  );
+  transform: skewX(-20deg);
+  animation: statShimmer 7s ease-in-out infinite;
+  pointer-events: none;
+  z-index: 1;
+}
+@keyframes statShimmer {
+  0%, 100% { left: -150%; opacity: 0; }
+  10% { opacity: 1; }
+  45% { left: 200%; opacity: 0; }
+  50%, 100% { left: 200%; }
+}
+
+/* تأكد إن المحتوى فوق الزخارف */
+.stat > * { position: relative; z-index: 2; }
+
 .stat:hover {
-  transform: translateY(-6px);
-  background: rgba(15, 41, 66, 0.95);
+  transform: translateY(-8px) scale(1.02);
+  border-color: rgba(232,197,71,0.55);
+  box-shadow:
+    0 18px 50px rgba(0,0,0,0.55),
+    0 0 0 1.5px rgba(232,197,71,0.4),
+    0 0 40px rgba(232,197,71,0.2),
+    inset 0 1px 0 rgba(255,255,255,0.1),
+    inset 0 -1px 0 rgba(0,0,0,0.2);
 }
-.stat:hover::before { opacity: 1; }
 
 .stat-icon {
-  width: 48px; height: 48px;
-  border-radius: 14px;
+  width: 56px; height: 56px;
+  border-radius: 16px;
   display: grid; place-items: center;
-  font-size: 1.4rem;
-  margin-bottom: 14px;
+  font-size: 1.6rem;
+  margin-bottom: 16px;
   position: relative;
-  transition: transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+  transition: transform 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,0.2),
+    inset 0 -2px 4px rgba(0,0,0,0.2);
 }
-.stat:hover .stat-icon { transform: scale(1.1) rotate(-5deg); }
-.stat[data-color="teal"] { --accent: var(--teal-light); }
-.stat[data-color="teal"] .stat-icon { background: linear-gradient(135deg, #1e6b8a, #2a8aab); box-shadow: 0 8px 20px rgba(30, 107, 138, 0.4); }
-.stat[data-color="gold"] { --accent: var(--gold); }
-.stat[data-color="gold"] .stat-icon { background: linear-gradient(135deg, #e8c547, #d4a657); box-shadow: 0 8px 20px rgba(232, 197, 71, 0.4); }
-.stat[data-color="green"] { --accent: var(--green); }
-.stat[data-color="green"] .stat-icon { background: linear-gradient(135deg, #4caf50, #2a9d8f); box-shadow: 0 8px 20px rgba(76, 175, 80, 0.4); }
-.stat[data-color="purple"] { --accent: var(--purple); }
-.stat[data-color="purple"] .stat-icon { background: linear-gradient(135deg, #8b5cf6, #6d28d9); box-shadow: 0 8px 20px rgba(139, 92, 246, 0.4); }
+.stat-icon::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  background: radial-gradient(circle at 30% 20%, rgba(255,255,255,0.4), transparent 60%);
+  pointer-events: none;
+}
+.stat:hover .stat-icon { 
+  transform: scale(1.15) rotate(-8deg);
+}
+
+.stat[data-color="teal"] { --accent: var(--teal-light); --accent-soft: rgba(30,107,138,0.12); }
+.stat[data-color="teal"] .stat-icon { 
+  background: linear-gradient(135deg, #2a8aab 0%, #1e6b8a 50%, #155975 100%); 
+  box-shadow: 
+    0 10px 24px rgba(30, 107, 138, 0.5),
+    inset 0 1px 0 rgba(255,255,255,0.25),
+    inset 0 -2px 4px rgba(0,0,0,0.25);
+}
+.stat[data-color="purple"] { --accent: var(--purple); --accent-soft: rgba(139,92,246,0.12); }
+.stat[data-color="purple"] .stat-icon { 
+  background: linear-gradient(135deg, #a78bfa 0%, #8b5cf6 50%, #6d28d9 100%); 
+  box-shadow: 
+    0 10px 24px rgba(139, 92, 246, 0.5),
+    inset 0 1px 0 rgba(255,255,255,0.25),
+    inset 0 -2px 4px rgba(0,0,0,0.25);
+}
 
 .stat-num {
-  font: 900 2.2rem 'Reem Kufi', sans-serif;
-  background: linear-gradient(135deg, #fff, #e8c547);
+  font: 900 2.6rem 'Reem Kufi', sans-serif;
+  background: linear-gradient(
+    135deg,
+    #fff5d6 0%,
+    #f5d76e 30%,
+    #e8c547 60%,
+    #d4a657 100%
+  );
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
   line-height: 1;
-  margin-bottom: 4px;
+  margin-bottom: 6px;
   display: inline-block;
+  filter: drop-shadow(0 4px 12px rgba(232,197,71,0.4));
+  animation: numGlow 3s ease-in-out infinite;
+}
+@keyframes numGlow {
+  0%, 100% { filter: drop-shadow(0 4px 12px rgba(232,197,71,0.4)); }
+  50% { filter: drop-shadow(0 4px 18px rgba(232,197,71,0.65)); }
 }
 .stat-label {
-  font: 600 0.82rem 'Tajawal', sans-serif;
-  color: var(--text-tertiary);
+  font: 700 0.92rem 'Tajawal', sans-serif;
+  color: rgba(255,255,255,0.75);
+  letter-spacing: 0.3px;
 }
 .stat-trend {
   position: absolute;
@@ -525,15 +668,20 @@ body {
 .tabs {
   position: relative;
   display: grid;
-  grid-template-columns: 1fr 1fr 1fr;
+  grid-template-columns: 1fr;
   gap: 4px;
   padding: 6px;
-  background: var(--bg-elevated);
+  background: 
+    radial-gradient(circle at 50% 0%, rgba(232,197,71,0.08) 0%, transparent 60%),
+    linear-gradient(145deg, #0d1a2e, #122a3f);
   backdrop-filter: blur(20px) saturate(180%);
   -webkit-backdrop-filter: blur(20px) saturate(180%);
-  border: 1px solid var(--border-light);
+  border: 1.5px solid rgba(232,197,71,0.25);
   border-radius: var(--radius-md);
   overflow: hidden;
+  box-shadow:
+    0 8px 24px rgba(0,0,0,0.35),
+    inset 0 1px 0 rgba(255,255,255,0.06);
 }
 
 .tab {
@@ -597,13 +745,21 @@ body {
 }
 
 .panel-card {
-  background: var(--bg-elevated);
+  background: 
+    radial-gradient(circle at 100% 0%, rgba(232,197,71,0.06) 0%, transparent 50%),
+    radial-gradient(circle at 0% 100%, rgba(30,107,138,0.10) 0%, transparent 60%),
+    linear-gradient(145deg, #0d1a2e 0%, #122a3f 50%, #0d1a2e 100%);
   backdrop-filter: blur(40px) saturate(180%);
   -webkit-backdrop-filter: blur(40px) saturate(180%);
-  border: 1px solid var(--border-light);
+  border: 1.5px solid rgba(232,197,71,0.28);
   border-radius: var(--radius-xl);
   padding: 32px;
-  box-shadow: var(--shadow-md);
+  box-shadow:
+    0 20px 56px rgba(0,0,0,0.5),
+    0 8px 24px rgba(0,0,0,0.35),
+    0 0 30px rgba(232,197,71,0.08),
+    inset 0 1px 0 rgba(255,255,255,0.06),
+    inset 0 1px 0 rgba(232,197,71,0.2);
   position: relative;
   overflow: hidden;
 }
@@ -611,8 +767,15 @@ body {
   content: '';
   position: absolute;
   top: 0; left: 0; right: 0;
-  height: 1px;
-  background: linear-gradient(90deg, transparent, var(--border-strong), transparent);
+  height: 2px;
+  background: linear-gradient(
+    90deg, 
+    transparent, 
+    rgba(232,197,71,0.7) 30%, 
+    rgba(245,215,110,0.9) 50%, 
+    rgba(232,197,71,0.7) 70%, 
+    transparent
+  );
 }
 
 .panel-head {
@@ -620,12 +783,24 @@ body {
   margin-bottom: 24px;
 }
 .panel-head-icon {
-  width: 44px; height: 44px;
-  border-radius: 13px;
+  width: 48px; height: 48px;
+  border-radius: 14px;
   display: grid; place-items: center;
-  font-size: 1.3rem;
-  background: linear-gradient(135deg, var(--teal), var(--gold-deep));
-  box-shadow: 0 8px 20px rgba(30, 107, 138, 0.35);
+  font-size: 1.4rem;
+  background: linear-gradient(135deg, #f5d76e 0%, #e8c547 50%, #d4a657 100%);
+  box-shadow: 
+    0 10px 24px rgba(232, 197, 71, 0.45),
+    inset 0 1px 0 rgba(255,255,255,0.4),
+    inset 0 -2px 4px rgba(180,130,40,0.3);
+  position: relative;
+}
+.panel-head-icon::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  background: radial-gradient(circle at 30% 20%, rgba(255,255,255,0.5), transparent 60%);
+  pointer-events: none;
 }
 .panel-head-text { flex: 1; }
 .panel-title {
@@ -1159,16 +1334,6 @@ body {
       <div class="stat-num" id="statExports">0</div>
       <div class="stat-label">تقارير مُصدّرة</div>
     </div>
-    <div class="stat" data-color="gold">
-      <div class="stat-icon">⭐</div>
-      <div class="stat-num" id="statFavorites">0</div>
-      <div class="stat-label">قوالب مفضلة</div>
-    </div>
-    <div class="stat" data-color="green">
-      <div class="stat-icon">🔗</div>
-      <div class="stat-num" id="statShares">0</div>
-      <div class="stat-label">روابط مشاركة</div>
-    </div>
     <div class="stat" data-color="purple">
       <div class="stat-icon">👁️</div>
       <div class="stat-num" id="statViews">0</div>
@@ -1183,16 +1348,6 @@ body {
         <span>📋</span>
         <span class="tab-text">التصدير</span>
         <span class="count" id="exportsCount">0</span>
-      </button>
-      <button class="tab" onclick="switchTab('favorites')" data-tab="favorites">
-        <span>⭐</span>
-        <span class="tab-text">المفضلة</span>
-        <span class="count" id="favoritesCount">0</span>
-      </button>
-      <button class="tab" onclick="switchTab('shares')" data-tab="shares">
-        <span>🔗</span>
-        <span class="tab-text">المشاركات</span>
-        <span class="count" id="sharesCount">0</span>
       </button>
     </div>
   </div>
@@ -1214,36 +1369,9 @@ body {
   </div>
 
   <!-- ⭐ Favorites Panel -->
-  <div class="panel" id="panel-favorites">
-    <div class="panel-card">
-      <div class="panel-head">
-        <div class="panel-head-icon">⭐</div>
-        <div class="panel-head-text">
-          <div class="panel-title">قوالبك المفضلة</div>
-          <div class="panel-subtitle">القوالب التي أضفتها لمفضلتك للوصول السريع</div>
-        </div>
-      </div>
-      <div id="favoritesContent">
-        <div class="loading"><div class="spinner"></div></div>
-      </div>
-    </div>
-  </div>
+  <!-- ⭐ Favorites Panel -->
 
   <!-- 🔗 Shares Panel -->
-  <div class="panel" id="panel-shares">
-    <div class="panel-card">
-      <div class="panel-head">
-        <div class="panel-head-icon">🔗</div>
-        <div class="panel-head-text">
-          <div class="panel-title">روابط المشاركة</div>
-          <div class="panel-subtitle">التقارير التي شاركتها مع زملائك برابط</div>
-        </div>
-      </div>
-      <div id="sharesContent">
-        <div class="loading"><div class="spinner"></div></div>
-      </div>
-    </div>
-  </div>
 
 </main>
 
@@ -1268,8 +1396,6 @@ body {
 import { 
   onUserChange, logout, getUserProfile, updateUserProfile,
   getExportHistory, deleteExportLog, getExportById,
-  getFavorites, toggleFavorite,
-  getUserShares, deleteShare,
   isLifetime
 } from './firebase-config.js?v=5';
 
@@ -1374,33 +1500,6 @@ async function loadAllData() {
   }).catch(() => {
     document.getElementById('exportsCount').textContent = '0';
     renderExports([]);
-  });
-  
-  // 2️⃣ المفضلة
-  getFavorites().then(favsRes => {
-    const favorites = favsRes.favorites || [];
-    animateNum(document.getElementById('statFavorites'), favorites.length);
-    document.getElementById('favoritesCount').textContent = favorites.length;
-    renderFavorites(favorites);
-  }).catch(() => {
-    document.getElementById('favoritesCount').textContent = '0';
-    renderFavorites([]);
-  });
-  
-  // 3️⃣ المشاركات
-  getUserShares().then(sharesRes => {
-    const shares = sharesRes.shares || [];
-    animateNum(document.getElementById('statShares'), shares.length);
-    document.getElementById('sharesCount').textContent = shares.length;
-    
-    let totalViews = 0;
-    shares.forEach(s => totalViews += (s.views || 0));
-    animateNum(document.getElementById('statViews'), totalViews);
-    
-    renderShares(shares);
-  }).catch(() => {
-    document.getElementById('sharesCount').textContent = '0';
-    renderShares([]);
   });
 }
 
@@ -1556,87 +1655,6 @@ window.deleteExport = async function(id) {
   const r = await deleteExportLog(id);
   if (r.success) { showToast('🗑️ تم الحذف'); loadAllData(); }
   else showToast('فشل الحذف', 'error');
-};
-
-function renderFavorites(favorites) {
-  const c = document.getElementById('favoritesContent');
-  if (!favorites.length) {
-    c.innerHTML = `
-      <div class="empty">
-        <div class="empty-icon">⭐</div>
-        <div class="empty-title">ما عندك قوالب مفضلة بعد</div>
-        <div class="empty-text">اضغط ⭐ على أي قالب في الصفحة الرئيسية لإضافته للوصول السريع</div>
-        <a href="index.html" class="empty-cta">
-          <span>🎨</span>
-          <span>تصفح القوالب</span>
-        </a>
-      </div>`;
-    return;
-  }
-  c.innerHTML = '<div class="fav-grid">' + favorites.map(f => `
-    <a href="${escapeHtml(f.url)}" class="fav-card">
-      <button class="fav-remove" onclick="event.preventDefault();removeFavorite('${escapeHtml(f.templateId)}')" title="إزالة">✕</button>
-      <div class="fav-card-icon">${escapeHtml(f.icon || '📋')}</div>
-      <div class="fav-card-title">${escapeHtml(f.title)}</div>
-      <div class="fav-card-meta">${escapeHtml(f.category || 'عام')}</div>
-    </a>
-  `).join('') + '</div>';
-}
-
-window.removeFavorite = async function(templateId) {
-  const r = await toggleFavorite(templateId);
-  if (r.success) { showToast('💔 تم إزالة من المفضلة'); loadAllData(); }
-  else showToast('فشل', 'error');
-};
-
-function renderShares(shares) {
-  const c = document.getElementById('sharesContent');
-  if (!shares.length) {
-    c.innerHTML = `
-      <div class="empty">
-        <div class="empty-icon">🔗</div>
-        <div class="empty-title">ما عندك مشاركات بعد</div>
-        <div class="empty-text">شارك تقاريرك مع زملائك عبر رابط، وسيظهرون هنا مع عدد المشاهدات</div>
-        <a href="index.html" class="empty-cta">
-          <span>📤</span>
-          <span>أنشئ تقرير</span>
-        </a>
-      </div>`;
-    return;
-  }
-  c.innerHTML = '<div class="items">' + shares.map(s => {
-    const date = s.createdAt?.toDate?.() || new Date();
-    const dateStr = date.toLocaleDateString('ar-SA');
-    const shareUrl = `https://ksa2030.one/view.html?id=${s.id}`;
-    return `
-      <div class="item">
-        <div class="item-icon">🔗</div>
-        <div class="item-info">
-          <div class="item-title">${escapeHtml(s.title)}</div>
-          <div class="item-meta">
-            <span>📅 ${dateStr}</span>
-            <span class="pill blue">👁️ ${s.views || 0} مشاهدة</span>
-          </div>
-        </div>
-        <div class="item-actions">
-          <button class="icon-btn primary" onclick="copyShare('${shareUrl}')" title="نسخ">📋</button>
-          <a href="${shareUrl}" target="_blank" class="icon-btn" title="عرض">👁️</a>
-          <button class="icon-btn danger" onclick="removeShare('${s.id}')" title="حذف">🗑️</button>
-        </div>
-      </div>`;
-  }).join('') + '</div>';
-}
-
-window.copyShare = async function(url) {
-  try { await navigator.clipboard.writeText(url); showToast('✅ تم نسخ الرابط!'); }
-  catch { showToast('فشل النسخ', 'error'); }
-};
-
-window.removeShare = async function(id) {
-  if (!confirm('حذف المشاركة؟ سيتعذّر الوصول للرابط.')) return;
-  const r = await deleteShare(id);
-  if (r.success) { showToast('🗑️ تم حذف المشاركة'); loadAllData(); }
-  else showToast('فشل', 'error');
 };
 
 function escapeHtml(s) {
