@@ -1811,6 +1811,237 @@ body{
   .pp-header{flex-direction:column;align-items:stretch;}
   .pp-status{align-self:flex-start;}
 }
+
+/* ═══════════════════════════════════════════════════════════ */
+/* ⭐ قسم إدارة التقييمات                                          */
+/* ═══════════════════════════════════════════════════════════ */
+.reviews-panel{
+  background:linear-gradient(135deg, rgba(15,41,66,0.95), rgba(10,22,32,0.90));
+  border:1.5px solid rgba(232,197,71,0.3);
+  border-radius:20px;
+  padding:24px;
+  margin-bottom:24px;
+  position:relative;
+  overflow:hidden;
+  box-shadow:0 16px 40px rgba(0,0,0,0.4);
+}
+.reviews-panel::before{
+  content:"";
+  position:absolute;
+  top:0;left:0;right:0;
+  height:2px;
+  background:linear-gradient(90deg, transparent, rgba(232,197,71,0.7), transparent);
+}
+
+.rv-panel-header{
+  display:flex;
+  align-items:center;
+  gap:14px;
+  margin-bottom:20px;
+  padding-bottom:18px;
+  border-bottom:1px solid rgba(255,255,255,0.08);
+}
+.rv-panel-icon{
+  width:48px;height:48px;
+  background:linear-gradient(135deg, #f5d76e, #e8c547, #d4a657);
+  border-radius:14px;
+  display:flex;align-items:center;justify-content:center;
+  font-size:1.5rem;
+  box-shadow:0 8px 20px rgba(232,197,71,0.4);
+}
+.rv-panel-title{
+  font-family:'Reem Kufi',sans-serif;
+  font-size:1.15rem;
+  font-weight:900;
+  color:#fff;
+  margin-bottom:2px;
+}
+.rv-panel-sub{
+  font-size:0.82rem;
+  color:rgba(255,255,255,0.6);
+  font-weight:600;
+}
+
+/* Stats Grid */
+.rv-stats-grid{
+  display:grid;
+  grid-template-columns:repeat(3, 1fr);
+  gap:10px;
+  margin-bottom:18px;
+}
+.rv-stat-card{
+  background:rgba(0,0,0,0.25);
+  border:1px solid rgba(255,255,255,0.06);
+  border-radius:12px;
+  padding:14px;
+  text-align:center;
+  transition:all 0.25s;
+}
+.rv-stat-card.pending{border-color:rgba(245,158,11,0.4);}
+.rv-stat-card.approved{border-color:rgba(34,197,94,0.4);}
+.rv-stat-card.rejected{border-color:rgba(220,38,38,0.4);}
+.rv-stat-num{
+  font-family:'Reem Kufi',sans-serif;
+  font-size:1.7rem;
+  font-weight:900;
+  background:linear-gradient(135deg,#fff,#e8c547);
+  -webkit-background-clip:text;
+  -webkit-text-fill-color:transparent;
+  background-clip:text;
+  line-height:1;
+}
+.rv-stat-label{
+  font-size:0.74rem;
+  color:rgba(255,255,255,0.65);
+  font-weight:700;
+  margin-top:4px;
+}
+
+/* Tabs */
+.rv-tabs{
+  display:grid;
+  grid-template-columns:repeat(3, 1fr);
+  gap:4px;
+  background:rgba(0,0,0,0.3);
+  border-radius:12px;
+  padding:4px;
+  margin-bottom:18px;
+}
+.rv-tab{
+  background:transparent;
+  border:none;
+  color:rgba(255,255,255,0.55);
+  padding:10px 6px;
+  border-radius:9px;
+  cursor:pointer;
+  font-family:inherit;
+  font-size:0.82rem;
+  font-weight:800;
+  transition:all 0.25s;
+}
+.rv-tab:hover{background:rgba(255,255,255,0.04);color:#fff;}
+.rv-tab.active{
+  background:linear-gradient(135deg, #d4a657, #e8c547);
+  color:#3d2200;
+  text-shadow:0 1px 0 rgba(255,255,255,0.3);
+  box-shadow:0 4px 10px rgba(212,166,87,0.3);
+}
+
+/* Reviews List */
+.rv-items-list{display:flex;flex-direction:column;gap:12px;}
+
+.rv-item{
+  background:rgba(0,0,0,0.25);
+  border:1px solid rgba(255,255,255,0.06);
+  border-radius:14px;
+  padding:16px;
+}
+.rv-item.pending{border-color:rgba(245,158,11,0.35);}
+.rv-item.approved{border-color:rgba(34,197,94,0.35);}
+.rv-item.rejected{border-color:rgba(220,38,38,0.35);opacity:0.7;}
+
+.rv-item-head{
+  display:flex;
+  justify-content:space-between;
+  gap:10px;
+  margin-bottom:10px;
+  flex-wrap:wrap;
+}
+.rv-item-author-info{flex:1;min-width:0;}
+.rv-item-name{
+  font-family:'Reem Kufi',sans-serif;
+  font-size:0.96rem;
+  font-weight:900;
+  color:#fff;
+  margin-bottom:3px;
+}
+.rv-item-meta{
+  font-size:0.72rem;
+  color:rgba(255,255,255,0.5);
+  font-weight:700;
+  line-height:1.5;
+}
+.rv-item-stars{
+  font-size:0.92rem;
+  letter-spacing:1px;
+  text-align:left;
+}
+.rv-item-status{
+  display:inline-block;
+  padding:3px 9px;
+  border-radius:99px;
+  font-size:0.68rem;
+  font-weight:900;
+  margin-top:4px;
+}
+.rv-item-status.pending{background:rgba(245,158,11,0.18);color:#fbbf24;border:1px solid rgba(245,158,11,0.35);}
+.rv-item-status.approved{background:rgba(34,197,94,0.18);color:#86efac;border:1px solid rgba(34,197,94,0.35);}
+.rv-item-status.rejected{background:rgba(220,38,38,0.18);color:#fca5a5;border:1px solid rgba(220,38,38,0.35);}
+
+.rv-item-text{
+  background:rgba(0,0,0,0.3);
+  border-radius:10px;
+  padding:12px;
+  font-size:0.86rem;
+  color:rgba(255,255,255,0.88);
+  font-weight:600;
+  line-height:1.7;
+  margin-bottom:12px;
+}
+
+.rv-item-actions{
+  display:flex;
+  gap:8px;
+  flex-wrap:wrap;
+}
+.rv-action-btn{
+  flex:1;
+  min-width:80px;
+  padding:9px 12px;
+  border:none;
+  border-radius:9px;
+  font-family:inherit;
+  font-size:0.8rem;
+  font-weight:900;
+  cursor:pointer;
+  transition:all 0.2s;
+  color:#fff;
+}
+.rv-action-btn.approve{background:linear-gradient(135deg,#22c55e,#16a34a);}
+.rv-action-btn.reject{background:linear-gradient(135deg,#f59e0b,#d97706);}
+.rv-action-btn.delete{background:linear-gradient(135deg,#dc2626,#991b1b);}
+.rv-action-btn:hover{transform:translateY(-2px);opacity:0.95;}
+
+.rv-empty-msg{
+  text-align:center;
+  padding:40px 20px;
+  color:rgba(255,255,255,0.5);
+  font-weight:700;
+}
+.rv-empty-msg-icon{font-size:2.5rem;margin-bottom:10px;}
+
+.rv-loader{
+  text-align:center;
+  padding:30px 20px;
+}
+.rv-loader-spin{
+  width:36px;height:36px;
+  border:3px solid rgba(232,197,71,0.2);
+  border-top-color:#e8c547;
+  border-radius:50%;
+  margin:0 auto 10px;
+  animation:rvLoaderSpin 0.8s linear infinite;
+}
+@keyframes rvLoaderSpin{to{transform:rotate(360deg);}}
+
+@media (max-width:600px){
+  .reviews-panel{padding:18px;border-radius:16px;}
+  .rv-stats-grid{grid-template-columns:1fr;}
+  .rv-stat-num{font-size:1.5rem;}
+  .rv-tab{font-size:0.74rem;padding:9px 4px;}
+  .rv-action-btn{font-size:0.74rem;padding:8px 10px;}
+}
+
 </style>
 </head>
 <body>
@@ -2271,6 +2502,52 @@ body{
 
     <!-- ════════════════════════════════════════════════ -->
 
+    <!-- ════════════════════════════════════════════════ -->
+    <!-- ⭐ إدارة التقييمات                                  -->
+    <!-- ════════════════════════════════════════════════ -->
+    <div class="reviews-panel">
+      <div class="rv-panel-header">
+        <div class="rv-panel-icon">⭐</div>
+        <div>
+          <h3 class="rv-panel-title">إدارة التقييمات</h3>
+          <p class="rv-panel-sub">راجع التقييمات الواردة من المشتركين قبل نشرها</p>
+        </div>
+      </div>
+
+      <!-- Stats -->
+      <div class="rv-stats-grid">
+        <div class="rv-stat-card pending">
+          <div class="rv-stat-num" id="rvStatPending">0</div>
+          <div class="rv-stat-label">⏳ قيد المراجعة</div>
+        </div>
+        <div class="rv-stat-card approved">
+          <div class="rv-stat-num" id="rvStatApproved">0</div>
+          <div class="rv-stat-label">✅ منشورة</div>
+        </div>
+        <div class="rv-stat-card rejected">
+          <div class="rv-stat-num" id="rvStatRejected">0</div>
+          <div class="rv-stat-label">🚫 مرفوضة</div>
+        </div>
+      </div>
+
+      <!-- Tabs -->
+      <div class="rv-tabs">
+        <button class="rv-tab active" onclick="switchReviewsTab(this,'pending')">⏳ قيد المراجعة</button>
+        <button class="rv-tab" onclick="switchReviewsTab(this,'approved')">✅ منشورة</button>
+        <button class="rv-tab" onclick="switchReviewsTab(this,'rejected')">🚫 مرفوضة</button>
+      </div>
+
+      <!-- List -->
+      <div id="rvReviewsList">
+        <div class="rv-loader">
+          <div class="rv-loader-spin"></div>
+          <p style="color:rgba(255,255,255,0.6);font-weight:700;">جاري التحميل...</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- ════════════════════════════════════════════════ -->
+
     <div class="search-bar">
       <input type="text" id="searchInput" placeholder="🔍 ابحث بالإيميل أو الجوال أو 🆔 معرّف العميل..." onkeyup="if(event.key==='Enter')handleSearch()">
       <button onclick="handleSearch()">بحث</button>
@@ -2330,7 +2607,7 @@ import {
   db
 } from './firebase-config.js?v=4';
 
-import { doc, updateDoc, deleteDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+import { doc, updateDoc, deleteDoc, collection, query, where, orderBy, getDocs, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
 // قائمة UIDs الإداريين (نفس اللي في firebase-config)
 const ADMIN_UIDS_LOCAL = ['bKJ4YdvOEkRCPJ8qMqEyDJsM3ua2'];
@@ -3227,6 +3504,185 @@ window.savePricing = async function() {
 
 // تحديث المعاينة الأولية
 setTimeout(updatePreview, 100);
+
+// ═══════════════════════════════════════════════════════════
+// ⭐ إدارة التقييمات
+// ═══════════════════════════════════════════════════════════
+let _rvCurrentFilter = 'pending';
+
+async function loadReviewsStats(){
+  try {
+    const reviewsRef = collection(db, 'reviews');
+    const [pending, approved, rejected] = await Promise.all([
+      getDocs(query(reviewsRef, where('status','==','pending'))),
+      getDocs(query(reviewsRef, where('status','==','approved'))),
+      getDocs(query(reviewsRef, where('status','==','rejected')))
+    ]);
+    
+    document.getElementById('rvStatPending').textContent = pending.size;
+    document.getElementById('rvStatApproved').textContent = approved.size;
+    document.getElementById('rvStatRejected').textContent = rejected.size;
+  } catch(e) {
+    console.error('فشل جلب إحصائيات التقييمات:', e);
+  }
+}
+
+async function loadReviewsList(status){
+  const container = document.getElementById('rvReviewsList');
+  container.innerHTML = '<div class="rv-loader"><div class="rv-loader-spin"></div><p style="color:rgba(255,255,255,0.6);font-weight:700;">جاري التحميل...</p></div>';
+  
+  try {
+    const reviewsRef = collection(db, 'reviews');
+    const q = query(
+      reviewsRef,
+      where('status','==',status),
+      orderBy('createdAt','desc')
+    );
+    
+    const snap = await getDocs(q);
+    
+    if (snap.empty) {
+      const emptyMsg = {
+        pending: 'لا توجد تقييمات قيد المراجعة',
+        approved: 'لا توجد تقييمات منشورة',
+        rejected: 'لا توجد تقييمات مرفوضة'
+      }[status];
+      
+      container.innerHTML = `
+        <div class="rv-empty-msg">
+          <div class="rv-empty-msg-icon">📭</div>
+          <p>${emptyMsg}</p>
+        </div>`;
+      return;
+    }
+    
+    const reviews = [];
+    snap.forEach(d => reviews.push({ id: d.id, ...d.data() }));
+    
+    container.innerHTML = '<div class="rv-items-list">' + 
+      reviews.map(r => renderReviewItem(r)).join('') + '</div>';
+    
+  } catch(error) {
+    console.error('فشل جلب التقييمات:', error);
+    container.innerHTML = '<div class="rv-empty-msg"><div class="rv-empty-msg-icon">⚠️</div><p>حدث خطأ، حاول مرة أخرى</p></div>';
+  }
+}
+
+function renderReviewItem(r){
+  const name = rvEscapeHtml(r.displayName || 'مشترك');
+  const region = r.region ? rvEscapeHtml(r.region) : '';
+  const email = rvEscapeHtml(r.userEmail || '');
+  const text = rvEscapeHtml(r.text || '');
+  const rating = parseInt(r.rating) || 0;
+  const stars = '⭐'.repeat(rating) + '☆'.repeat(5 - rating);
+  
+  let dateStr = '';
+  if (r.createdAt?.toDate) {
+    dateStr = r.createdAt.toDate().toLocaleString('ar-SA', {
+      year:'numeric', month:'long', day:'numeric',
+      hour:'2-digit', minute:'2-digit'
+    });
+  }
+  
+  const status = r.status || 'pending';
+  const statusLabels = {
+    pending: '⏳ قيد المراجعة',
+    approved: '✅ منشور',
+    rejected: '🚫 مرفوض'
+  };
+  
+  let actions = '';
+  if (status === 'pending') {
+    actions = `
+      <button class="rv-action-btn approve" onclick="updateReviewStatus('${r.id}','approved')">✅ نشر</button>
+      <button class="rv-action-btn reject" onclick="updateReviewStatus('${r.id}','rejected')">🚫 رفض</button>
+      <button class="rv-action-btn delete" onclick="deleteReviewItem('${r.id}')">🗑️ حذف</button>
+    `;
+  } else if (status === 'approved') {
+    actions = `
+      <button class="rv-action-btn reject" onclick="updateReviewStatus('${r.id}','rejected')">🚫 إلغاء النشر</button>
+      <button class="rv-action-btn delete" onclick="deleteReviewItem('${r.id}')">🗑️ حذف</button>
+    `;
+  } else {
+    actions = `
+      <button class="rv-action-btn approve" onclick="updateReviewStatus('${r.id}','approved')">✅ نشر</button>
+      <button class="rv-action-btn delete" onclick="deleteReviewItem('${r.id}')">🗑️ حذف</button>
+    `;
+  }
+  
+  return `
+    <div class="rv-item ${status}">
+      <div class="rv-item-head">
+        <div class="rv-item-author-info">
+          <div class="rv-item-name">${name}</div>
+          <div class="rv-item-meta">
+            ${region ? region + ' · ' : ''}${dateStr}<br>
+            ${email}
+          </div>
+        </div>
+        <div style="text-align:left;">
+          <div class="rv-item-stars">${stars}</div>
+          <span class="rv-item-status ${status}">${statusLabels[status]}</span>
+        </div>
+      </div>
+      <div class="rv-item-text">${text}</div>
+      <div class="rv-item-actions">${actions}</div>
+    </div>
+  `;
+}
+
+function rvEscapeHtml(s){
+  if (!s) return '';
+  return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;');
+}
+
+window.switchReviewsTab = function(btn, status){
+  document.querySelectorAll('.rv-tab').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  _rvCurrentFilter = status;
+  loadReviewsList(status);
+};
+
+window.updateReviewStatus = async function(id, newStatus){
+  const labels = { approved: 'النشر', rejected: 'الرفض' };
+  if (!confirm(`تأكيد ${labels[newStatus]}؟`)) return;
+  
+  try {
+    await updateDoc(doc(db, 'reviews', id), {
+      status: newStatus,
+      reviewedBy: currentUser?.uid || '',
+      reviewedAt: serverTimestamp()
+    });
+    alert(`✅ تم ${labels[newStatus]}`);
+    await loadReviewsStats();
+    await loadReviewsList(_rvCurrentFilter);
+  } catch(e) {
+    console.error(e);
+    alert('❌ فشلت العملية: ' + (e.message || ''));
+  }
+};
+
+window.deleteReviewItem = async function(id){
+  if (!confirm('حذف التقييم نهائياً؟ لا يمكن التراجع.')) return;
+  
+  try {
+    await deleteDoc(doc(db, 'reviews', id));
+    alert('🗑️ تم الحذف');
+    await loadReviewsStats();
+    await loadReviewsList(_rvCurrentFilter);
+  } catch(e) {
+    console.error(e);
+    alert('❌ فشل الحذف: ' + (e.message || ''));
+  }
+};
+
+// تحميل التقييمات عند بدء الصفحة (بعد تحقق الأدمن)
+setTimeout(() => {
+  if (currentUser) {
+    loadReviewsStats();
+    loadReviewsList('pending');
+  }
+}, 1500);
 
 </script>
 
