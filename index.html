@@ -2044,6 +2044,115 @@ margin-top:3px;font-weight:700;
   .rv-add-btn,.rv-cta-btn{padding:12px 22px;font-size:0.9rem;}
 }
 
+/* ═══ شبكة التقييمات الحقيقية ═══ */
+.rv-loading{
+  text-align:center;
+  padding:40px 20px;
+  color:rgba(255,255,255,0.6);
+  font-weight:700;
+}
+.rv-spinner{
+  width:42px;height:42px;
+  border:3px solid rgba(232,197,71,0.2);
+  border-top-color:#e8c547;
+  border-radius:50%;
+  margin:0 auto 14px;
+  animation:rvSpin 0.8s linear infinite;
+}
+@keyframes rvSpin{to{transform:rotate(360deg);}}
+
+.rv-real-grid{
+  display:grid;
+  grid-template-columns:repeat(auto-fill, minmax(280px, 1fr));
+  gap:16px;
+  margin-bottom:24px;
+}
+
+.rv-real-card{
+  background:
+    radial-gradient(circle at 0% 0%, rgba(232,197,71,0.08) 0%, transparent 50%),
+    linear-gradient(145deg, #0d1a2e 0%, #142841 100%);
+  border:1.5px solid rgba(232,197,71,0.25);
+  border-radius:18px;
+  padding:20px;
+  position:relative;
+  overflow:hidden;
+  isolation:isolate;
+  box-shadow:
+    0 12px 32px rgba(0,0,0,0.45),
+    inset 0 1px 0 rgba(255,255,255,0.06),
+    inset 0 1px 0 rgba(232,197,71,0.15);
+  transition:all 0.3s ease;
+}
+.rv-real-card:hover{
+  transform:translateY(-4px);
+  border-color:rgba(232,197,71,0.5);
+  box-shadow:
+    0 16px 40px rgba(0,0,0,0.55),
+    0 0 24px rgba(232,197,71,0.15),
+    inset 0 1px 0 rgba(255,255,255,0.08),
+    inset 0 1px 0 rgba(232,197,71,0.3);
+}
+
+.rv-real-head{
+  display:flex;
+  align-items:center;
+  gap:12px;
+  margin-bottom:12px;
+}
+
+.rv-real-avatar{
+  width:46px;height:46px;
+  border-radius:50%;
+  background:linear-gradient(135deg, #f5d76e 0%, #e8c547 50%, #d4a657 100%);
+  display:flex;align-items:center;justify-content:center;
+  font-size:1.3rem;
+  font-weight:900;
+  color:#3d2200;
+  flex-shrink:0;
+  box-shadow:0 6px 14px rgba(232,197,71,0.4);
+}
+
+.rv-real-info{flex:1;min-width:0;}
+.rv-real-name{
+  font-family:'Reem Kufi','Tajawal',sans-serif;
+  font-size:0.96rem;
+  font-weight:900;
+  color:#fff;
+  margin-bottom:2px;
+  display:flex;
+  align-items:center;
+  gap:5px;
+}
+.rv-real-verified{
+  color:#22c55e;
+  font-size:0.85rem;
+}
+.rv-real-meta{
+  font-size:0.74rem;
+  color:rgba(255,255,255,0.55);
+  font-weight:700;
+}
+
+.rv-real-stars{
+  display:flex;
+  gap:2px;
+  margin-bottom:10px;
+  font-size:0.9rem;
+}
+
+.rv-real-text{
+  font-size:0.88rem;
+  color:rgba(255,255,255,0.85);
+  font-weight:600;
+  line-height:1.7;
+}
+
+@media (max-width:600px){
+  .rv-real-grid{grid-template-columns:1fr;}
+  .rv-real-card{padding:18px;}
+}
+
 /* ملخص التقييمات */
 .rv-summary{
   background:#fff;
@@ -6761,26 +6870,41 @@ font-size:0.78rem;text-align:center;margin-top:12px;display:none;
       <p class="rv-sub">شارك تجربتك مع المنصة وساعد زملاءك المعلمين</p>
     </div>
 
-    <!-- صندوق رئيسي: للمشتركين زر إضافة - للزائر دعوة للاشتراك -->
-    <div class="rv-empty-box" id="reviewsEmptyBox">
-      <div class="rv-empty-icon">💬</div>
-      <h3 class="rv-empty-title">كن أول من يقيّم المنصة</h3>
-      <p class="rv-empty-text">
-        نحن نؤمن بالشفافية - لا نعرض تقييمات وهمية.<br>
-        التقييمات الحقيقية من مشتركينا ستظهر هنا قريباً.
-      </p>
+    <!-- صندوق التقييمات الحقيقية - يتعبأ من Firebase -->
+    <div id="reviewsContainer">
       
-      <!-- زر يظهر للمشتركين فقط -->
-      <a href="login.html" class="rv-add-btn" id="rvAddBtn" style="display:none;">
-        <span class="rv-add-ic">⭐</span>
-        <span>أضف تقييمك</span>
-      </a>
+      <!-- حالة التحميل (يخفي بعد التحميل) -->
+      <div class="rv-loading" id="rvLoading">
+        <div class="rv-spinner"></div>
+        <p>جاري تحميل التقييمات...</p>
+      </div>
       
-      <!-- رسالة للزائر -->
-      <a href="pay.html" class="rv-cta-btn" id="rvCtaBtn">
-        <span class="rv-add-ic">💎</span>
-        <span>اشترك وكن أول مقيّم</span>
-      </a>
+      <!-- شبكة التقييمات (تتعبأ JS) -->
+      <div class="rv-real-grid" id="rvRealGrid" style="display:none;"></div>
+      
+      <!-- صندوق فارغ - يظهر لو ما فيه تقييمات -->
+      <div class="rv-empty-box" id="reviewsEmptyBox" style="display:none;">
+        <div class="rv-empty-icon">💬</div>
+        <h3 class="rv-empty-title">كن أول من يقيّم المنصة</h3>
+        <p class="rv-empty-text">
+          نحن نؤمن بالشفافية - لا نعرض تقييمات وهمية.<br>
+          التقييمات الحقيقية من مشتركينا ستظهر هنا قريباً.
+        </p>
+      </div>
+      
+      <!-- زر الإضافة - للمشتركين فقط -->
+      <div class="rv-actions" style="text-align:center; margin-top:24px;">
+        <a href="write-review.html" class="rv-add-btn" id="rvAddBtn" style="display:none;">
+          <span class="rv-add-ic">⭐</span>
+          <span>أضف تقييمك</span>
+        </a>
+        
+        <a href="pay.html" class="rv-cta-btn" id="rvCtaBtn">
+          <span class="rv-add-ic">💎</span>
+          <span>اشترك وكن أول مقيّم</span>
+        </a>
+      </div>
+      
     </div>
 
   </section>
@@ -8625,40 +8749,143 @@ if (reviewsSlider) {
 function scrollToTop(){
   window.scrollTo({ top: 0, behavior: 'smooth' });
 }
+</script>
 
-// ═══════════════════════════════════════════════════════════
-// ⭐ إظهار/إخفاء أزرار التقييم حسب حالة المستخدم
-// ═══════════════════════════════════════════════════════════
-(function setupReviewButtons(){
-  // ننتظر Firebase ليحدد حالة المستخدم
-  let checks = 0;
-  const interval = setInterval(() => {
-    checks++;
-    if (checks > 30) { clearInterval(interval); return; } // 30 محاولة كحد أقصى
+<!-- ═══════════════════════════════════════════════════════════ -->
+<!-- ⭐ نظام التقييمات الحقيقية - من Firebase                       -->
+<!-- ═══════════════════════════════════════════════════════════ -->
+<script type="module">
+import { auth, db, isLifetime } from './firebase-config.js?v=5';
+import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+import { 
+  collection, query, where, orderBy, limit, getDocs, getDoc, doc
+} from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+
+// ═══ جلب التقييمات المعتمدة ═══
+async function loadApprovedReviews(){
+  const loading = document.getElementById('rvLoading');
+  const grid = document.getElementById('rvRealGrid');
+  const emptyBox = document.getElementById('reviewsEmptyBox');
+  
+  if (!loading || !grid || !emptyBox) return;
+  
+  try {
+    const reviewsRef = collection(db, 'reviews');
+    const q = query(
+      reviewsRef,
+      where('status', '==', 'approved'),
+      orderBy('createdAt', 'desc'),
+      limit(12)
+    );
     
-    const addBtn = document.getElementById('rvAddBtn');
-    const ctaBtn = document.getElementById('rvCtaBtn');
-    if (!addBtn || !ctaBtn) return;
+    const snap = await getDocs(q);
+    loading.style.display = 'none';
     
-    // نتحقق من حالة المستخدم
-    const isLoggedIn = !!window._fbUser;
-    const isLifetime = window._fbProfile?.plan === 'lifetime' || window._fbProfile?.subscriptionType === 'lifetime';
+    if (snap.empty) {
+      // ما فيه تقييمات → اعرض الصندوق الفارغ
+      emptyBox.style.display = 'block';
+      return;
+    }
     
-    if (isLoggedIn && isLifetime) {
-      // مشترك → أظهر زر إضافة تقييم
+    // فيه تقييمات → اعرضها
+    const reviews = [];
+    snap.forEach(d => reviews.push({ id: d.id, ...d.data() }));
+    
+    grid.innerHTML = reviews.map(r => renderReviewCard(r)).join('');
+    grid.style.display = 'grid';
+    
+  } catch(error) {
+    console.error('فشل جلب التقييمات:', error);
+    loading.style.display = 'none';
+    emptyBox.style.display = 'block';
+  }
+}
+
+function renderReviewCard(r){
+  const name = escapeHtml(r.displayName || 'مشترك');
+  const region = r.region ? escapeHtml(r.region) : '';
+  const text = escapeHtml(r.text || '');
+  const rating = parseInt(r.rating) || 5;
+  const initial = name.charAt(0);
+  const stars = '⭐'.repeat(rating) + '☆'.repeat(5 - rating);
+  
+  // تاريخ نسبي
+  let dateStr = '';
+  if (r.createdAt?.toDate) {
+    const date = r.createdAt.toDate();
+    const days = Math.floor((Date.now() - date.getTime()) / (1000*60*60*24));
+    if (days < 1) dateStr = 'اليوم';
+    else if (days === 1) dateStr = 'قبل يوم';
+    else if (days < 7) dateStr = `قبل ${days} أيام`;
+    else if (days < 30) dateStr = `قبل ${Math.floor(days/7)} أسابيع`;
+    else dateStr = date.toLocaleDateString('ar-SA', { year:'numeric', month:'long' });
+  }
+  
+  const meta = [region, dateStr].filter(x => x).join(' · ');
+  
+  return `
+    <div class="rv-real-card">
+      <div class="rv-real-head">
+        <div class="rv-real-avatar">${initial}</div>
+        <div class="rv-real-info">
+          <div class="rv-real-name">
+            ${name}
+            <span class="rv-real-verified" title="مشترك موثّق">✓</span>
+          </div>
+          ${meta ? `<div class="rv-real-meta">${meta}</div>` : ''}
+        </div>
+      </div>
+      <div class="rv-real-stars">${stars}</div>
+      <p class="rv-real-text">${text}</p>
+    </div>
+  `;
+}
+
+function escapeHtml(s){
+  if (!s) return '';
+  return String(s)
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#39;');
+}
+
+// ═══ إظهار/إخفاء أزرار حسب حالة المستخدم ═══
+onAuthStateChanged(auth, async (user) => {
+  const addBtn = document.getElementById('rvAddBtn');
+  const ctaBtn = document.getElementById('rvCtaBtn');
+  if (!addBtn || !ctaBtn) return;
+  
+  if (!user) {
+    // زائر → اظهار زر الاشتراك
+    addBtn.style.display = 'none';
+    ctaBtn.style.display = 'inline-flex';
+    return;
+  }
+  
+  // مسجل دخول → نتحقق من النوع
+  try {
+    const profRef = doc(db, 'users', user.uid);
+    const profSnap = await getDoc(profRef);
+    const profile = profSnap.exists() ? profSnap.data() : null;
+    
+    if (isLifetime(profile)) {
+      // مشترك → زر إضافة
       addBtn.style.display = 'inline-flex';
       ctaBtn.style.display = 'none';
-      addBtn.href = 'profile.html'; // يمكن لاحقاً نوجهه لصفحة كتابة تقييم
-      clearInterval(interval);
-    } else if (isLoggedIn) {
-      // مسجل لكن Free → أظهر زر الاشتراك
+    } else {
+      // Free → زر الاشتراك
       addBtn.style.display = 'none';
       ctaBtn.style.display = 'inline-flex';
-      clearInterval(interval);
     }
-    // إذا زائر، يبقى زر الاشتراك ظاهر (الافتراضي)
-  }, 500);
-})();
+  } catch(e) {
+    console.error('فشل التحقق من حالة المستخدم:', e);
+  }
+});
+
+// ═══ تشغيل عند فتح الصفحة ═══
+loadApprovedReviews();
 </script>
 
 </body>

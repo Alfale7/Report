@@ -1,0 +1,502 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>إدارة التقييمات · لوحة المشرف</title>
+<link rel="icon" type="image/png" href="favicon.png">
+<link href="https://fonts.googleapis.com/css2?family=Reem+Kufi:wght@400;600;700&family=Tajawal:wght@400;500;700;900&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+
+body{
+  font-family:'Tajawal','Cairo',sans-serif;
+  background:
+    radial-gradient(ellipse at 20% 10%, rgba(232,197,71,0.1) 0%, transparent 40%),
+    linear-gradient(180deg, #050a12 0%, #0a1620 100%);
+  min-height:100vh;
+  color:#fff;
+  padding:20px 14px 60px;
+}
+
+.container{max-width:1000px;margin:0 auto;}
+
+.back{
+  display:inline-flex;
+  align-items:center;
+  gap:8px;
+  color:#fff;
+  text-decoration:none;
+  font-weight:800;
+  font-size:0.88rem;
+  margin-bottom:20px;
+  padding:10px 18px;
+  background:rgba(255,255,255,0.08);
+  border:1px solid rgba(255,255,255,0.12);
+  border-radius:99px;
+  backdrop-filter:blur(20px);
+}
+
+.header{
+  background:linear-gradient(145deg, #0a1828, #122a3f);
+  border:1.5px solid rgba(232,197,71,0.3);
+  border-radius:20px;
+  padding:24px;
+  margin-bottom:20px;
+  text-align:center;
+}
+h1{
+  font-family:'Reem Kufi',sans-serif;
+  font-size:1.6rem;
+  font-weight:900;
+  background:linear-gradient(135deg, #fff, #e8c547);
+  -webkit-background-clip:text;
+  -webkit-text-fill-color:transparent;
+  margin-bottom:6px;
+}
+.header-sub{color:rgba(255,255,255,0.7);font-size:0.92rem;font-weight:600;}
+
+/* Stats */
+.stats-grid{
+  display:grid;
+  grid-template-columns:repeat(3, 1fr);
+  gap:12px;
+  margin-bottom:20px;
+}
+.stat-card{
+  background:linear-gradient(145deg, rgba(15,41,66,0.85), rgba(10,22,32,0.75));
+  border:1px solid rgba(232,197,71,0.25);
+  border-radius:14px;
+  padding:18px 16px;
+  text-align:center;
+}
+.stat-card.pending{border-color:rgba(245,158,11,0.4);}
+.stat-card.approved{border-color:rgba(34,197,94,0.4);}
+.stat-card.rejected{border-color:rgba(220,38,38,0.4);}
+.stat-num{
+  font-family:'Reem Kufi',sans-serif;
+  font-size:2rem;
+  font-weight:900;
+  background:linear-gradient(135deg,#fff,#e8c547);
+  -webkit-background-clip:text;
+  -webkit-text-fill-color:transparent;
+  line-height:1;
+}
+.stat-label{
+  font-size:0.82rem;
+  color:rgba(255,255,255,0.7);
+  font-weight:700;
+  margin-top:6px;
+}
+
+/* Tabs */
+.tabs{
+  display:grid;
+  grid-template-columns:repeat(3, 1fr);
+  gap:6px;
+  background:rgba(15,41,66,0.85);
+  border:1px solid rgba(255,255,255,0.1);
+  border-radius:14px;
+  padding:6px;
+  margin-bottom:20px;
+}
+.tab{
+  background:transparent;
+  border:none;
+  color:rgba(255,255,255,0.6);
+  padding:12px 8px;
+  border-radius:10px;
+  cursor:pointer;
+  font-family:inherit;
+  font-size:0.88rem;
+  font-weight:800;
+  transition:all 0.25s;
+}
+.tab:hover{background:rgba(255,255,255,0.05);color:#fff;}
+.tab.active{
+  background:linear-gradient(135deg, #d4a657, #e8c547);
+  color:#3d2200;
+  text-shadow:0 1px 0 rgba(255,255,255,0.3);
+}
+
+/* Reviews List */
+.reviews-list{display:flex;flex-direction:column;gap:14px;}
+
+.review-item{
+  background:linear-gradient(145deg, #0d1a2e, #122a3f);
+  border:1.5px solid rgba(255,255,255,0.08);
+  border-radius:16px;
+  padding:20px;
+}
+.review-item.pending{border-color:rgba(245,158,11,0.35);}
+.review-item.approved{border-color:rgba(34,197,94,0.35);}
+.review-item.rejected{border-color:rgba(220,38,38,0.35);opacity:0.7;}
+
+.review-head{
+  display:flex;
+  justify-content:space-between;
+  align-items:flex-start;
+  margin-bottom:12px;
+  gap:12px;
+  flex-wrap:wrap;
+}
+
+.review-author{flex:1;}
+.review-name{
+  font-family:'Reem Kufi',sans-serif;
+  font-size:1.05rem;
+  font-weight:900;
+  color:#fff;
+  margin-bottom:3px;
+}
+.review-meta{
+  font-size:0.78rem;
+  color:rgba(255,255,255,0.55);
+  font-weight:700;
+}
+
+.review-stars{
+  font-size:1rem;
+  letter-spacing:2px;
+}
+
+.review-text{
+  background:rgba(0,0,0,0.25);
+  border-radius:10px;
+  padding:14px;
+  font-size:0.92rem;
+  color:rgba(255,255,255,0.9);
+  font-weight:600;
+  line-height:1.7;
+  margin-bottom:14px;
+}
+
+.review-actions{
+  display:flex;
+  gap:8px;
+  flex-wrap:wrap;
+}
+
+.action-btn{
+  flex:1;
+  min-width:90px;
+  padding:10px 14px;
+  border:none;
+  border-radius:10px;
+  font-family:inherit;
+  font-size:0.84rem;
+  font-weight:900;
+  cursor:pointer;
+  transition:all 0.2s;
+}
+.action-btn.approve{background:linear-gradient(135deg,#22c55e,#16a34a);color:#fff;}
+.action-btn.reject{background:linear-gradient(135deg,#f59e0b,#d97706);color:#fff;}
+.action-btn.delete{background:linear-gradient(135deg,#dc2626,#991b1b);color:#fff;}
+.action-btn:hover{transform:translateY(-2px);}
+
+.status-badge{
+  display:inline-block;
+  padding:4px 10px;
+  border-radius:99px;
+  font-size:0.72rem;
+  font-weight:900;
+}
+.status-badge.pending{background:rgba(245,158,11,0.2);color:#fbbf24;border:1px solid rgba(245,158,11,0.4);}
+.status-badge.approved{background:rgba(34,197,94,0.2);color:#86efac;border:1px solid rgba(34,197,94,0.4);}
+.status-badge.rejected{background:rgba(220,38,38,0.2);color:#fca5a5;border:1px solid rgba(220,38,38,0.4);}
+
+/* Empty/Loading */
+.empty,.loading{
+  text-align:center;
+  padding:60px 20px;
+  color:rgba(255,255,255,0.55);
+}
+.empty-icon{font-size:3rem;margin-bottom:14px;}
+.spinner{
+  width:48px;height:48px;
+  border:3px solid rgba(232,197,71,0.2);
+  border-top-color:#e8c547;
+  border-radius:50%;
+  margin:0 auto 14px;
+  animation:spin 0.8s linear infinite;
+}
+@keyframes spin{to{transform:rotate(360deg);}}
+
+/* Toast */
+.toast{
+  position:fixed;
+  bottom:30px;left:50%;
+  transform:translateX(-50%) translateY(80px);
+  background:linear-gradient(135deg,#16a34a,#15803d);
+  color:#fff;padding:14px 24px;
+  border-radius:14px;
+  font-weight:900;
+  z-index:9999;opacity:0;
+  transition:all 0.3s;
+  pointer-events:none;
+  box-shadow:0 14px 36px rgba(22,163,74,0.4);
+}
+.toast.show{opacity:1;transform:translateX(-50%) translateY(0);}
+.toast.error{background:linear-gradient(135deg,#dc2626,#991b1b);box-shadow:0 14px 36px rgba(220,38,38,0.4);}
+
+@media (max-width:600px){
+  .stats-grid{grid-template-columns:1fr;}
+  .stat-num{font-size:1.6rem;}
+}
+</style>
+</head>
+<body>
+
+<div class="container">
+  <a href="admin.html" class="back">← لوحة المشرف</a>
+
+  <div class="header">
+    <h1>⭐ إدارة التقييمات</h1>
+    <p class="header-sub">راجع التقييمات الواردة من المشتركين قبل نشرها</p>
+  </div>
+
+  <!-- Stats -->
+  <div class="stats-grid">
+    <div class="stat-card pending">
+      <div class="stat-num" id="statPending">0</div>
+      <div class="stat-label">⏳ قيد المراجعة</div>
+    </div>
+    <div class="stat-card approved">
+      <div class="stat-num" id="statApproved">0</div>
+      <div class="stat-label">✅ منشورة</div>
+    </div>
+    <div class="stat-card rejected">
+      <div class="stat-num" id="statRejected">0</div>
+      <div class="stat-label">🚫 مرفوضة</div>
+    </div>
+  </div>
+
+  <!-- Tabs -->
+  <div class="tabs">
+    <button class="tab active" onclick="switchTab(this,'pending')">⏳ قيد المراجعة</button>
+    <button class="tab" onclick="switchTab(this,'approved')">✅ منشورة</button>
+    <button class="tab" onclick="switchTab(this,'rejected')">🚫 مرفوضة</button>
+  </div>
+
+  <!-- Reviews Container -->
+  <div id="reviewsContainer">
+    <div class="loading">
+      <div class="spinner"></div>
+      <p>جاري التحميل...</p>
+    </div>
+  </div>
+</div>
+
+<!-- Toast -->
+<div class="toast" id="toast"></div>
+
+<script type="module">
+import { auth, db, isAdmin } from './firebase-config.js?v=5';
+import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+import { 
+  collection, query, where, orderBy, getDocs, doc, updateDoc, deleteDoc, serverTimestamp 
+} from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+
+let _user = null;
+let _currentFilter = 'pending';
+
+const $ = id => document.getElementById(id);
+
+function showToast(msg, type='success'){
+  const t = $('toast');
+  t.textContent = msg;
+  t.className = 'toast show' + (type === 'error' ? ' error' : '');
+  setTimeout(() => t.classList.remove('show'), 3000);
+}
+
+// ═══ تحقق Admin ═══
+onAuthStateChanged(auth, async (user) => {
+  if (!user) {
+    window.location.href = 'login.html?next=admin-reviews.html';
+    return;
+  }
+  
+  if (!isAdmin(user)) {
+    document.body.innerHTML = '<div style="text-align:center;padding:80px 20px;color:#fff;"><div style="font-size:4rem;margin-bottom:20px;">🚫</div><h1>غير مصرح</h1><p style="opacity:0.7;margin-top:10px;">هذه الصفحة للمشرفين فقط</p><a href="index.html" style="color:#e8c547;margin-top:20px;display:inline-block;">العودة للرئيسية</a></div>';
+    return;
+  }
+  
+  _user = user;
+  await loadStats();
+  await loadReviews(_currentFilter);
+});
+
+// ═══ تبديل الـ Tab ═══
+window.switchTab = function(btn, status){
+  document.querySelectorAll('.tab').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  _currentFilter = status;
+  loadReviews(status);
+};
+
+// ═══ جلب الإحصائيات ═══
+async function loadStats(){
+  try {
+    const reviewsRef = collection(db, 'reviews');
+    
+    const [pending, approved, rejected] = await Promise.all([
+      getDocs(query(reviewsRef, where('status','==','pending'))),
+      getDocs(query(reviewsRef, where('status','==','approved'))),
+      getDocs(query(reviewsRef, where('status','==','rejected')))
+    ]);
+    
+    $('statPending').textContent = pending.size;
+    $('statApproved').textContent = approved.size;
+    $('statRejected').textContent = rejected.size;
+  } catch(e) {
+    console.error('فشل جلب الإحصائيات:', e);
+  }
+}
+
+// ═══ جلب التقييمات ═══
+async function loadReviews(status){
+  const container = $('reviewsContainer');
+  container.innerHTML = '<div class="loading"><div class="spinner"></div><p>جاري التحميل...</p></div>';
+  
+  try {
+    const reviewsRef = collection(db, 'reviews');
+    const q = query(
+      reviewsRef,
+      where('status','==',status),
+      orderBy('createdAt','desc')
+    );
+    
+    const snap = await getDocs(q);
+    
+    if (snap.empty) {
+      const emptyMsg = {
+        pending: 'لا توجد تقييمات قيد المراجعة حالياً',
+        approved: 'لا توجد تقييمات منشورة بعد',
+        rejected: 'لا توجد تقييمات مرفوضة'
+      }[status];
+      
+      container.innerHTML = `
+        <div class="empty">
+          <div class="empty-icon">📭</div>
+          <p>${emptyMsg}</p>
+        </div>`;
+      return;
+    }
+    
+    const reviews = [];
+    snap.forEach(d => reviews.push({ id: d.id, ...d.data() }));
+    
+    container.innerHTML = '<div class="reviews-list">' + 
+      reviews.map(r => renderReview(r)).join('') + '</div>';
+    
+  } catch(error) {
+    console.error('فشل جلب التقييمات:', error);
+    container.innerHTML = '<div class="empty"><div class="empty-icon">⚠️</div><p>حدث خطأ، حاول مرة أخرى</p></div>';
+  }
+}
+
+function renderReview(r){
+  const name = escapeHtml(r.displayName || 'مشترك');
+  const region = r.region ? escapeHtml(r.region) : '';
+  const email = escapeHtml(r.userEmail || '');
+  const text = escapeHtml(r.text || '');
+  const rating = parseInt(r.rating) || 0;
+  const stars = '⭐'.repeat(rating) + '☆'.repeat(5 - rating);
+  
+  let dateStr = '';
+  if (r.createdAt?.toDate) {
+    dateStr = r.createdAt.toDate().toLocaleString('ar-SA', {
+      year:'numeric', month:'long', day:'numeric',
+      hour:'2-digit', minute:'2-digit'
+    });
+  }
+  
+  const status = r.status || 'pending';
+  const statusLabels = {
+    pending: '⏳ قيد المراجعة',
+    approved: '✅ منشور',
+    rejected: '🚫 مرفوض'
+  };
+  
+  let actions = '';
+  if (status === 'pending') {
+    actions = `
+      <button class="action-btn approve" onclick="updateStatus('${r.id}','approved')">✅ نشر</button>
+      <button class="action-btn reject" onclick="updateStatus('${r.id}','rejected')">🚫 رفض</button>
+      <button class="action-btn delete" onclick="deleteReview('${r.id}')">🗑️ حذف</button>
+    `;
+  } else if (status === 'approved') {
+    actions = `
+      <button class="action-btn reject" onclick="updateStatus('${r.id}','rejected')">🚫 إلغاء النشر</button>
+      <button class="action-btn delete" onclick="deleteReview('${r.id}')">🗑️ حذف</button>
+    `;
+  } else {
+    actions = `
+      <button class="action-btn approve" onclick="updateStatus('${r.id}','approved')">✅ نشر</button>
+      <button class="action-btn delete" onclick="deleteReview('${r.id}')">🗑️ حذف</button>
+    `;
+  }
+  
+  return `
+    <div class="review-item ${status}">
+      <div class="review-head">
+        <div class="review-author">
+          <div class="review-name">${name}</div>
+          <div class="review-meta">
+            ${region ? region + ' · ' : ''}${dateStr}<br>
+            ${email}
+          </div>
+        </div>
+        <div style="text-align:left;">
+          <div class="review-stars">${stars}</div>
+          <span class="status-badge ${status}">${statusLabels[status]}</span>
+        </div>
+      </div>
+      <div class="review-text">${text}</div>
+      <div class="review-actions">${actions}</div>
+    </div>
+  `;
+}
+
+function escapeHtml(s){
+  if (!s) return '';
+  return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;');
+}
+
+// ═══ Actions ═══
+window.updateStatus = async function(id, newStatus){
+  const labels = { approved: 'النشر', rejected: 'الرفض' };
+  if (!confirm(`تأكيد ${labels[newStatus]}؟`)) return;
+  
+  try {
+    await updateDoc(doc(db, 'reviews', id), {
+      status: newStatus,
+      reviewedBy: _user.uid,
+      reviewedAt: serverTimestamp()
+    });
+    showToast(`✅ تم ${labels[newStatus]}`);
+    await loadStats();
+    await loadReviews(_currentFilter);
+  } catch(e) {
+    console.error(e);
+    showToast('❌ فشلت العملية', 'error');
+  }
+};
+
+window.deleteReview = async function(id){
+  if (!confirm('حذف التقييم نهائياً؟ لا يمكن التراجع.')) return;
+  
+  try {
+    await deleteDoc(doc(db, 'reviews', id));
+    showToast('🗑️ تم الحذف');
+    await loadStats();
+    await loadReviews(_currentFilter);
+  } catch(e) {
+    console.error(e);
+    showToast('❌ فشل الحذف', 'error');
+  }
+};
+</script>
+
+</body>
+</html>
