@@ -1488,7 +1488,7 @@ function closeExportMenu(){
 }
 
 function exportAsImage(){
-  toggleExportMenu();
+  closeExportMenu();
   setTimeout(() => { saveImg(); }, 200);
 }
 
@@ -1502,9 +1502,7 @@ function printReport(){
 // 📤 مشاركة التقرير (Web Share API)
 // ═══════════════════════════════════════════════
 function shareReport(){
-  // 🆕 alert فوري للتأكد أن الزر يستجيب (للتشخيص)
-  alert('تم الضغط على المشاركة');
-  toggleExportMenu();
+  closeExportMenu();
   setTimeout(() => { _doShareReport(); }, 200);
 }
 
