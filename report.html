@@ -1501,15 +1501,25 @@ function printReport(){
 // 📤 مشاركة التقرير (Web Share API)
 // ═══════════════════════════════════════════════
 async function shareReport(){
-  closeExportMenu();
+  // 🆕 إغلاق القائمة بعد إعطاء feedback (مش قبل)
+  // 🆕 toast فوري حتى يعرف المستخدم أن الزر استجاب
+  if(typeof showToast === 'function') showToast('⏳ جاري تحضير المشاركة...');
 
   // 🔥 فحص Firebase أولاً
   if (typeof window.checkDownloadAccess === 'function') {
-    const allowed = await window.checkDownloadAccess();
-    if (!allowed) return;
+    try {
+      const allowed = await window.checkDownloadAccess();
+      if (!allowed) {
+        closeExportMenu();
+        return;
+      }
+    } catch(fbErr) {
+      console.error('Firebase check error:', fbErr);
+      // نكمل بدون حماية لو فشل الفحص (نفس سلوك saveImg)
+    }
   }
 
-  if(typeof showToast === 'function') showToast('⏳ جاري تحضير المشاركة...');
+  closeExportMenu();
 
   try {
     // استخدم نفس آلية saveAsImage لكن للمشاركة بدل التنزيل
@@ -1547,37 +1557,73 @@ async function shareReport(){
     // إرجاع الأزرار
     hiddenStates.forEach(({el, prev}) => { el.style.display = prev; });
 
+    // 🆕 تحقق من نجاح إنشاء الكانفس
+    if(!canvas){
+      if(typeof showToast === 'function') showToast('❌ فشل إنشاء الصورة');
+      return;
+    }
+
     canvas.toBlob(async (blob) => {
+      // 🆕 تحقق من blob - أحياناً يفشل بصمت على iOS
+      if(!blob){
+        if(typeof showToast === 'function') showToast('❌ فشل إنشاء الملف - حاول مرة أخرى');
+        return;
+      }
+
       const file = new File([blob], 'تقرير_الادارة_العامة.png', { type: 'image/png' });
 
-      if (navigator.share && navigator.canShare && navigator.canShare({ files: [file] })) {
+      // 🆕 فحص دعم navigator.share مع canShare (تخطّى canShare لو مش متاح - iOS قديم)
+      const canShareFiles = navigator.share && (
+        !navigator.canShare ||
+        navigator.canShare({ files: [file] })
+      );
+
+      if (canShareFiles) {
         try {
+          // 🆕 نص بدون emoji في البداية (يسبب فشل على iOS)
           await navigator.share({
             files: [file],
-            title: document.title,
-            text: '🇸🇦 ' + document.title
+            title: 'تقرير الإدارة العامة للتعليم',
+            text: 'تقرير الإدارة العامة للتعليم'
           });
           if(typeof showToast === 'function') showToast('✅ تم المشاركة');
         } catch(err) {
-          if (err.name !== 'AbortError') {
-            console.error('Share error:', err);
+          // المستخدم ألغى المشاركة - مش خطأ حقيقي
+          if (err.name === 'AbortError') return;
+          console.error('Share error:', err);
+          // 🆕 fallback: لو فشل navigator.share نحاول التنزيل
+          try {
+            const link = document.createElement('a');
+            link.download = 'تقرير_الادارة_العامة.png';
+            link.href = URL.createObjectURL(blob);
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+            setTimeout(() => URL.revokeObjectURL(link.href), 1000);
+            if(typeof showToast === 'function') showToast('📥 تم التنزيل (المشاركة غير مدعومة)');
+          } catch(dlErr) {
             if(typeof showToast === 'function') showToast('❌ فشل المشاركة');
           }
         }
       } else {
-        // Fallback: تنزيل
-        const link = document.createElement('a');
-        link.download = 'تقرير_الادارة_العامة.png';
-        link.href = URL.createObjectURL(blob);
-        document.body.appendChild(link);
-        link.click();
-        document.body.removeChild(link);
-        if(typeof showToast === 'function') showToast('📥 تم التنزيل');
+        // Fallback: تنزيل مباشر (لـ Desktop ومتصفحات قديمة)
+        try {
+          const link = document.createElement('a');
+          link.download = 'تقرير_الادارة_العامة.png';
+          link.href = URL.createObjectURL(blob);
+          document.body.appendChild(link);
+          link.click();
+          document.body.removeChild(link);
+          setTimeout(() => URL.revokeObjectURL(link.href), 1000);
+          if(typeof showToast === 'function') showToast('📥 تم التنزيل');
+        } catch(dlErr) {
+          if(typeof showToast === 'function') showToast('❌ فشل التنزيل');
+        }
       }
     }, 'image/png');
   } catch(e) {
     console.error('Share error:', e);
-    if(typeof showToast === 'function') showToast('❌ فشل التصدير');
+    if(typeof showToast === 'function') showToast('❌ فشل التصدير: ' + (e.message || ''));
   }
 }
 
