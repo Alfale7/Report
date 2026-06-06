@@ -4,101 +4,6 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 
-<!-- ⚡ Anti-Flash Pricing System - بدون وميض حتى للزائر الجديد -->
-<style id="priceHideStyle">
-  /* 🙈 إخفاء كل أسعار للحظة حتى نتأكد من القيمة الصحيحة */
-  [data-price] {
-    visibility: hidden !important;
-    /* احتياط: حتى لو visibility ما اشتغل، النص مدفون بعيد */
-    opacity: 0 !important;
-  }
-  /* لو الـ JS فشل تماماً، بعد 3 ثواني نظهر الافتراضي (يطبّق من JS) */
-  html.price-ready [data-price] {
-    visibility: visible !important;
-    opacity: 1 !important;
-    animation: priceReveal 0.3s ease-out;
-  }
-  @keyframes priceReveal {
-    from { opacity: 0; transform: translateY(2px); }
-    to { opacity: 1; transform: translateY(0); }
-  }
-</style>
-
-<script>
-(function(){
-  var hasCache = false;
-  
-  // 🔍 محاولة قراءة الكاش
-  try {
-    var cached = localStorage.getItem('ksa2030_pricing_cache_v1');
-    if (cached) {
-      var data = JSON.parse(cached);
-      var age = Date.now() - (data.cachedAt || 0);
-      if (age < 7 * 24 * 60 * 60 * 1000) {
-        window.__PRICING__ = {
-          currentPrice: Number(data.currentPrice) || 49,
-          originalPrice: Number(data.originalPrice) || 99,
-          currency: data.currency || 'ريال',
-          isOfferActive: data.isOfferActive !== false,
-          offerLabel: data.offerLabel || 'عرض محدود',
-          discountPercent: (data.originalPrice > data.currentPrice) ? Math.round(((data.originalPrice - data.currentPrice) / data.originalPrice) * 100) : 0,
-          loaded: true,
-          fromCache: true
-        };
-        hasCache = true;
-      }
-    }
-  } catch(e) {}
-  
-  // افتراضي لو الكاش فاشل
-  if (!window.__PRICING__) {
-    window.__PRICING__ = {
-      currentPrice: 49, originalPrice: 99, currency: 'ريال',
-      isOfferActive: true, offerLabel: 'عرض محدود', discountPercent: 50,
-      loaded: false
-    };
-  }
-  
-  // 🎨 دالة تطبيق السعر على الـ DOM
-  function applyPricing(){
-    var p = window.__PRICING__;
-    document.querySelectorAll('[data-price="current"]').forEach(function(el){ el.textContent = p.currentPrice; });
-    document.querySelectorAll('[data-price="original"]').forEach(function(el){ el.textContent = p.originalPrice; });
-    document.querySelectorAll('[data-price="currency"]').forEach(function(el){ el.textContent = p.currency; });
-    document.querySelectorAll('[data-price="discount"]').forEach(function(el){ el.textContent = p.discountPercent; });
-    document.querySelectorAll('[data-price="offer-label"]').forEach(function(el){ el.textContent = p.offerLabel; });
-    document.querySelectorAll('[data-price="offer-wrap"]').forEach(function(el){ el.style.display = p.isOfferActive ? '' : 'none'; });
-    document.querySelectorAll('[data-price="full"]').forEach(function(el){ el.textContent = p.currentPrice + ' ' + p.currency; });
-    document.querySelectorAll('[data-price="halalas"]').forEach(function(el){ el.textContent = p.currentPrice * 100; });
-    // ✨ كشف الأسعار
-    document.documentElement.classList.add('price-ready');
-  }
-  
-  // 🚀 لو فيه كاش → اعرض فوراً
-  if (hasCache) {
-    if (document.readyState === 'loading') {
-      document.addEventListener('DOMContentLoaded', applyPricing);
-    } else {
-      applyPricing();
-    }
-  } else {
-    // 🚫 ما فيه كاش → ننتظر Firestore (بحد أقصى 2 ثانية)
-    window.__PRICING_WAITING__ = true;
-    
-    // Timeout أمان: لو Firestore تأخر >2s، اعرض الافتراضي
-    setTimeout(function(){
-      if (window.__PRICING_WAITING__) {
-        window.__PRICING_WAITING__ = false;
-        applyPricing();
-      }
-    }, 2000);
-    
-    // 📡 استمع لما السعر يجي من Firestore
-    window.__APPLY_PRICING_FN__ = applyPricing;
-  }
-})();
-</script>
-
 <title>التقارير الذكية | ksa2030 — منصة احترافية لتقارير المدرسة</title>
 
 <!-- ═══ SEO Meta Tags ═══ -->
@@ -429,87 +334,60 @@ flex-wrap:wrap;
 }
 @keyframes pulseBadge{0%{opacity:0.55;transform:scale(1);}100%{opacity:0;transform:scale(1.25);}}
 
-/* ═══ بطاقة السعر الفخمة - تصميم عالمي ═══ */
+/* ═══ بطاقة السعر الفخمة ═══ */
 .hero-price-card{
   position:relative;
-  max-width:400px;
+  max-width:380px;
   margin:22px auto 18px;
-  background:linear-gradient(145deg, rgba(15, 41, 66, 0.95), rgba(10, 22, 32, 0.92));
-  backdrop-filter:blur(30px) saturate(180%);
-  -webkit-backdrop-filter:blur(30px) saturate(180%);
-  border:1px solid rgba(232, 197, 71, 0.3);
-  border-radius:28px;
-  padding:24px 22px 22px;
+  background:linear-gradient(145deg,#fff,#fafbfc);
+  border-radius:24px;
+  padding:22px 20px 20px;
   box-shadow:
-    0 30px 70px rgba(0, 0, 0, 0.5),
-    0 0 60px rgba(232, 197, 71, 0.12),
-    inset 0 1px 0 rgba(255, 255, 255, 0.08);
+    0 22px 50px rgba(0,0,0,0.35),
+    0 0 0 1px rgba(212,166,87,0.4),
+    inset 0 1px 0 rgba(255,255,255,0.9);
   overflow:hidden;
   text-align:right;
-  animation:hpcCardEntrance 0.8s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
 }
-@keyframes hpcCardEntrance{
-  0%{opacity:0;transform:translateY(30px) scale(0.92);}
-  100%{opacity:1;transform:translateY(0) scale(1);}
-}
-/* توهج ذهبي ينبض في الزاوية */
 .hero-price-card::before{
   content:"";
   position:absolute;
-  top:-40px;
-  right:-40px;
-  width:180px;
-  height:180px;
-  background:radial-gradient(circle, rgba(232, 197, 71, 0.25), transparent 70%);
+  top:-60%;
+  left:-20%;
+  width:140%;
+  height:60%;
+  background:radial-gradient(ellipse,rgba(244,214,144,0.25),transparent 60%);
   pointer-events:none;
-  animation:hpcGlowPulse 3.5s ease-in-out infinite;
 }
-@keyframes hpcGlowPulse{
-  0%,100%{opacity:0.5;transform:scale(1);}
-  50%{opacity:0.9;transform:scale(1.15);}
-}
-/* وميض ذهبي يمر */
 .hero-price-card::after{
-  content:"";
+  content:"💎";
   position:absolute;
-  top:0;
-  left:-100%;
-  width:100%;
-  height:100%;
-  background:linear-gradient(90deg, transparent, rgba(232, 197, 71, 0.08), transparent);
-  animation:hpcShimmer 5s infinite;
+  bottom:-30px;
+  left:-30px;
+  font-size:8rem;
+  opacity:0.05;
   pointer-events:none;
-}
-@keyframes hpcShimmer{
-  0%{left:-100%;}
-  50%,100%{left:100%;}
+  transform:rotate(-15deg);
 }
 
 .hpc-top{
   display:flex;
   justify-content:center;
-  margin-bottom:16px;
-  position:relative;
-  z-index:1;
+  margin-bottom:14px;
 }
 .hpc-badge{
   display:inline-flex;
   align-items:center;
   gap:6px;
-  padding:7px 16px;
-  background:linear-gradient(135deg, #e8c547 0%, #d4a657 100%);
-  color:#050a12;
+  padding:6px 14px;
+  background:linear-gradient(135deg,#1e6b8a,#2a8aab);
+  color:#fff;
   border-radius:99px;
   font-family:'Reem Kufi','Tajawal',sans-serif;
   font-size:0.78rem;
   font-weight:900;
-  letter-spacing:0.8px;
-  box-shadow:0 8px 22px rgba(232, 197, 71, 0.4);
-  animation:hpcBadgeFloat 3s ease-in-out infinite;
-}
-@keyframes hpcBadgeFloat{
-  0%,100%{transform:translateY(0);}
-  50%{transform:translateY(-3px);}
+  letter-spacing:0.3px;
+  box-shadow:0 6px 16px rgba(30,107,138,0.35);
 }
 
 .hpc-price-row{
@@ -517,32 +395,25 @@ flex-wrap:wrap;
   align-items:center;
   justify-content:center;
   gap:18px;
-  margin-bottom:20px;
+  margin-bottom:18px;
   position:relative;
-  z-index:1;
 }
 .hpc-old{
   text-align:center;
-  opacity:0.7;
-  animation:hpcFadeIn 0.6s ease-out 0.3s both;
-}
-@keyframes hpcFadeIn{
-  from{opacity:0;transform:translateY(-5px);}
-  to{opacity:0.7;transform:translateY(0);}
+  opacity:0.65;
 }
 .hpc-old > span:first-child{
   display:block;
-  font-size:0.68rem;
-  color:rgba(255, 255, 255, 0.5);
+  font-size:0.65rem;
+  color:#5a7080;
   font-weight:700;
-  margin-bottom:3px;
-  letter-spacing:0.5px;
+  margin-bottom:2px;
 }
 .hpc-strike{
   font-family:'Reem Kufi','Tajawal',sans-serif;
   font-size:1.5rem;
   font-weight:900;
-  color:rgba(255, 255, 255, 0.4);
+  color:#94a3b8;
   position:relative;
   display:inline-block;
 }
@@ -556,95 +427,67 @@ flex-wrap:wrap;
   background:#dc2626;
   transform:rotate(-12deg);
   border-radius:2px;
-  box-shadow:0 0 8px rgba(220, 38, 38, 0.5);
 }
 .hpc-now{
   text-align:center;
   position:relative;
-  animation:hpcPriceReveal 0.7s cubic-bezier(0.34, 1.56, 0.64, 1) 0.5s both;
-}
-@keyframes hpcPriceReveal{
-  0%{opacity:0;transform:scale(0.7);}
-  100%{opacity:1;transform:scale(1);}
 }
 .hpc-amount{
   display:flex;
   align-items:baseline;
   justify-content:center;
-  gap:5px;
+  gap:4px;
   line-height:1;
 }
 .hpc-num{
   font-family:'Reem Kufi','Tajawal',sans-serif;
-  font-size:3.8rem;
+  font-size:3.6rem;
   font-weight:900;
-  background:linear-gradient(135deg, #fff 0%, #e8c547 50%, #fff 100%);
-  background-size:200% 100%;
+  color:#1e6b8a;
+  background:linear-gradient(135deg,#1e6b8a,#2a8aab,#d4a657);
   -webkit-background-clip:text;
   -webkit-text-fill-color:transparent;
   background-clip:text;
-  filter:drop-shadow(0 6px 20px rgba(232, 197, 71, 0.3));
-  animation:hpcNumShine 4s ease-in-out infinite;
-}
-@keyframes hpcNumShine{
-  0%,100%{background-position:0% 50%;}
-  50%{background-position:100% 50%;}
+  filter:drop-shadow(0 4px 8px rgba(30,107,138,0.2));
 }
 .hpc-cur{
   font-family:'Reem Kufi','Tajawal',sans-serif;
-  font-size:1.2rem;
+  font-size:1.15rem;
   font-weight:900;
-  color:#e8c547;
+  color:#1e6b8a;
 }
 .hpc-once{
-  display:inline-block;
-  font-size:0.72rem;
-  background:linear-gradient(135deg, rgba(76, 175, 80, 0.2), rgba(34, 197, 94, 0.15));
-  color:#86efac;
-  font-weight:800;
-  padding:4px 12px;
-  border-radius:99px;
-  margin-top:6px;
-  letter-spacing:0.3px;
-  border:1px solid rgba(76, 175, 80, 0.3);
+  font-size:0.7rem;
+  color:#16a34a;
+  font-weight:900;
+  margin-top:2px;
+  letter-spacing:0.2px;
 }
 
 .hpc-features{
   display:grid;
   grid-template-columns:1fr 1fr;
-  gap:10px 14px;
-  margin-bottom:18px;
-  padding:14px 16px;
-  background:rgba(255, 255, 255, 0.03);
-  border:1px solid rgba(255, 255, 255, 0.06);
-  border-radius:16px;
-  position:relative;
-  z-index:1;
+  gap:8px 12px;
+  margin-bottom:16px;
+  padding:12px 14px;
+  background:rgba(30,107,138,0.04);
+  border:1px solid rgba(30,107,138,0.1);
+  border-radius:14px;
 }
 .hpc-feat{
   display:flex;
   align-items:center;
-  gap:7px;
-  font-size:0.78rem;
+  gap:6px;
+  font-size:0.74rem;
   font-weight:700;
-  color:rgba(255, 255, 255, 0.92);
+  color:#1a3a4e;
   line-height:1.3;
-  animation:hpcFeatSlide 0.5s ease-out forwards;
-  opacity:0;
-  transform:translateX(15px);
-}
-.hpc-feat:nth-child(1){animation-delay:0.6s;}
-.hpc-feat:nth-child(2){animation-delay:0.7s;}
-.hpc-feat:nth-child(3){animation-delay:0.8s;}
-.hpc-feat:nth-child(4){animation-delay:0.9s;}
-@keyframes hpcFeatSlide{
-  to{opacity:1;transform:translateX(0);}
 }
 .hpc-tick{
   flex-shrink:0;
-  width:20px;
-  height:20px;
-  background:linear-gradient(135deg, #4caf50, #2a9d8f);
+  width:18px;
+  height:18px;
+  background:linear-gradient(135deg,#16a34a,#15803d);
   color:#fff;
   border-radius:50%;
   display:flex;
@@ -652,7 +495,6 @@ flex-wrap:wrap;
   justify-content:center;
   font-size:0.7rem;
   font-weight:900;
-  box-shadow:0 3px 10px rgba(76, 175, 80, 0.4);
 }
 
 .hpc-cta{
@@ -661,25 +503,19 @@ flex-wrap:wrap;
   justify-content:center;
   gap:10px;
   width:100%;
-  padding:16px 20px;
-  background:linear-gradient(135deg, #1e6b8a 0%, #2a8aab 50%, #d4a657 100%);
+  padding:14px 18px;
+  background:linear-gradient(135deg,#25d366,#128c7e);
   color:#fff;
   border:none;
   border-radius:14px;
   font-family:'Reem Kufi','Tajawal',sans-serif;
-  font-size:1rem;
+  font-size:0.95rem;
   font-weight:900;
   cursor:pointer;
-  box-shadow:0 10px 28px rgba(30, 107, 138, 0.5);
-  transition:all 0.3s ease;
+  box-shadow:0 8px 22px rgba(37,211,102,0.45);
+  transition:all 0.2s;
   position:relative;
   overflow:hidden;
-  z-index:1;
-  animation:hpcCtaPulse 2.5s ease-in-out infinite;
-}
-@keyframes hpcCtaPulse{
-  0%,100%{box-shadow:0 10px 28px rgba(30, 107, 138, 0.5);}
-  50%{box-shadow:0 12px 36px rgba(232, 197, 71, 0.5);}
 }
 .hpc-cta::before{
   content:"";
@@ -687,48 +523,29 @@ flex-wrap:wrap;
   top:0;left:-100%;
   width:60%;
   height:100%;
-  background:linear-gradient(120deg, transparent, rgba(255, 255, 255, 0.4), transparent);
+  background:linear-gradient(120deg,transparent,rgba(255,255,255,0.35),transparent);
   animation:shimmer 2.8s infinite;
 }
 @keyframes shimmer{0%{left:-100%;}50%,100%{left:140%;}}
-.hpc-cta:hover{
-  transform:translateY(-3px);
-  box-shadow:0 15px 38px rgba(30, 107, 138, 0.65);
-}
+.hpc-cta:hover{transform:translateY(-2px);box-shadow:0 12px 28px rgba(37,211,102,0.55);}
 .hpc-cta:active{transform:scale(0.97);}
-.hpc-cta-ic{
-  font-size:1.3rem;
-  flex-shrink:0;
-  animation:hpcIconRotate 4s ease-in-out infinite;
-}
-@keyframes hpcIconRotate{
-  0%,100%{transform:rotate(0deg);}
-  25%{transform:rotate(-8deg);}
-  75%{transform:rotate(8deg);}
-}
+.hpc-cta-ic{font-size:1.2rem;flex-shrink:0;}
 .hpc-arrow{
   font-weight:900;
-  font-size:1.2rem;
-  transition:transform 0.3s ease;
+  transition:transform 0.2s;
   flex-shrink:0;
 }
-.hpc-cta:hover .hpc-arrow{transform:translateX(-6px);}
+.hpc-cta:hover .hpc-arrow{transform:translateX(-4px);}
 
 .hpc-trust{
   display:flex;
   align-items:center;
   justify-content:center;
-  gap:7px;
-  margin-top:14px;
-  font-size:0.74rem;
-  color:rgba(255, 255, 255, 0.7);
+  gap:6px;
+  margin-top:10px;
+  font-size:0.7rem;
+  color:#5a7080;
   font-weight:700;
-  padding:8px 14px;
-  background:rgba(76, 175, 80, 0.08);
-  border:1px solid rgba(76, 175, 80, 0.2);
-  border-radius:99px;
-  position:relative;
-  z-index:1;
 }
 
 /* ═══ Social Proof Strip ═══ */
@@ -884,89 +701,9 @@ background:linear-gradient(135deg,#fff 0%,#a5d6a7 100%);
 background-clip:text;
 letter-spacing:-0.5px;
 }
-
-/* ═══════════════════════════════════════════════════
-   🎬 العناوين الدوارة (Rotating Headlines)
-   ═══════════════════════════════════════════════════ */
-.rotating-title{
-  display:flex;
-  flex-direction:column;
-  align-items:center;
-  gap:8px;
-  margin-bottom:14px;
-  -webkit-text-fill-color: initial;
-}
-.rt-label{
-  display:inline-block;
-  font:800 0.8rem 'Reem Kufi','Tajawal',sans-serif;
-  letter-spacing:3px;
-  text-transform:uppercase;
-  background:linear-gradient(135deg, #e8c547, #d4a657);
-  -webkit-background-clip:text;
-  -webkit-text-fill-color:transparent;
-  background-clip:text;
-  padding:6px 16px;
-  border:1px solid rgba(232, 197, 71, 0.3);
-  border-radius:99px;
-  position:relative;
-  animation:rtLabelGlow 3s ease-in-out infinite;
-}
-@keyframes rtLabelGlow{
-  0%,100%{box-shadow:0 0 0 rgba(232, 197, 71, 0);}
-  50%{box-shadow:0 0 20px rgba(232, 197, 71, 0.3);}
-}
-.rt-rotator{
-  position:relative;
-  display:inline-block;
-  min-height:1.4em;
-  width:100%;
-  font-family:'Reem Kufi','Tajawal',sans-serif;
-  font-size:1.85rem;
-  font-weight:700;
-  letter-spacing:-0.3px;
-  line-height:1.4;
-}
-.rt-item{
-  position:absolute;
-  top:0;
-  left:0;
-  right:0;
-  width:100%;
-  text-align:center;
-  background:linear-gradient(135deg, #fff 0%, #e8c547 50%, #fff 100%);
-  background-size:200% 100%;
-  -webkit-background-clip:text;
-  -webkit-text-fill-color:transparent;
-  background-clip:text;
-  opacity:0;
-  transform:translateY(20px) scale(0.95);
-  filter:blur(8px);
-  transition:all 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
-  animation:rtShine 5s ease-in-out infinite;
-}
-.rt-item.active{
-  opacity:1;
-  transform:translateY(0) scale(1);
-  filter:blur(0);
-}
-.rt-item.exiting{
-  opacity:0;
-  transform:translateY(-20px) scale(1.05);
-  filter:blur(8px);
-}
-@keyframes rtShine{
-  0%,100%{background-position:0% 50%;}
-  50%{background-position:100% 50%;}
-}
-
 .app-sub{
 font-size:0.92rem;color:rgba(255,255,255,0.65);line-height:1.6;
-max-width:380px;margin:0 auto 18px;
-}
-
-@media (max-width:480px){
-  .rt-rotator{font-size:1.4rem;font-weight:700;}
-  .rt-label{font-size:0.7rem;letter-spacing:2px;}
+max-width:360px;margin:0 auto 18px;
 }
 
 .trust-row{
@@ -2728,50 +2465,6 @@ transition:transform 0.3s,box-shadow 0.3s;
 cursor:pointer;
 }
 .preview-card:active{transform:scale(0.99);}
-
-/* ⭐ زر المفضلة */
-.fav-star-btn {
-  position: absolute;
-  top: 12px;
-  right: 12px;
-  z-index: 20;
-  width: 38px;
-  height: 38px;
-  background: rgba(5, 10, 18, 0.6);
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
-  border: 1px solid rgba(255, 255, 255, 0.18);
-  color: rgba(255, 255, 255, 0.7);
-  border-radius: 50%;
-  cursor: pointer;
-  display: grid;
-  place-items: center;
-  font-size: 1.15rem;
-  transition: all 0.25s cubic-bezier(0.34, 1.56, 0.64, 1);
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
-}
-.fav-star-btn:hover {
-  transform: scale(1.12) rotate(-8deg);
-  background: rgba(232, 197, 71, 0.18);
-  border-color: rgba(232, 197, 71, 0.45);
-  color: #e8c547;
-}
-.fav-star-btn.active {
-  background: linear-gradient(135deg, #e8c547, #d4a657);
-  color: #050a12;
-  border-color: transparent;
-  box-shadow: 0 6px 18px rgba(232, 197, 71, 0.55);
-  animation: favStarPop 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
-}
-@keyframes favStarPop {
-  0% { transform: scale(0.8); }
-  50% { transform: scale(1.25); }
-  100% { transform: scale(1); }
-}
-.fav-star-btn.active:hover {
-  transform: scale(1.12);
-  box-shadow: 0 8px 22px rgba(232, 197, 71, 0.7);
-}
 
 .card-badge{
 position:absolute;top:14px;left:14px;z-index:10;
@@ -5394,14 +5087,7 @@ font-size:0.78rem;text-align:center;margin-top:12px;display:none;
       <div class="app-logo-inner">📋</div>
     </div>
 
-    <h1 class="app-title rotating-title">
-      <span class="rt-label" data-i18n="appLabel">التقارير الذكية</span>
-      <span class="rt-rotator" id="rotatingHeadline">
-        <span class="rt-item active">تقاريرك المدرسية، بسرعة الضوء ⚡</span>
-        <span class="rt-item">تصاميم احترافية، بنقرة واحدة 🎨</span>
-        <span class="rt-item">منصتك التعليمية الذكية 💎</span>
-      </span>
-    </h1>
+    <h1 class="app-title" data-i18n="appTitle">التقارير الذكية</h1>
     <p class="app-sub" data-i18n="appSub">منصة احترافية متكاملة لإعداد وتنزيل تقارير المناسبات المدرسية بتصاميم جاهزة، قابلة للتخصيص، وبجودة عالية ✨</p>
 
     <!-- 💎 بانر السعر الفخم -->
@@ -5414,14 +5100,14 @@ font-size:0.78rem;text-align:center;margin-top:12px;display:none;
       </div>
 
       <div class="hpc-price-row">
-        <div class="hpc-old" data-price="offer-wrap">
+        <div class="hpc-old">
           <span data-i18n="hpcOldLabel">السعر الأصلي</span>
-          <span class="hpc-strike" data-price="original"></span>
+          <span class="hpc-strike">99</span>
         </div>
         <div class="hpc-now">
           <div class="hpc-amount">
-            <span class="hpc-num" data-price="current"></span>
-            <span class="hpc-cur" data-price="currency" data-i18n="hpcCur"></span>
+            <span class="hpc-num">30</span>
+            <span class="hpc-cur" data-i18n="hpcCur">ريال</span>
           </div>
           <div class="hpc-once" data-i18n="hpcOnce">دفعة واحدة فقط</div>
         </div>
@@ -5446,11 +5132,11 @@ font-size:0.78rem;text-align:center;margin-top:12px;display:none;
         </div>
       </div>
 
-      <a href="pay.html" class="hpc-cta" style="text-decoration:none;display:flex;">
-        <span class="hpc-cta-ic">💳</span>
-        <span data-i18n="hpcCta">اشترك الآن</span>
+      <button class="hpc-cta" onclick="openSubscribeWhatsApp()">
+        <span class="hpc-cta-ic">📱</span>
+        <span data-i18n="hpcCta">اشترك الآن عبر WhatsApp</span>
         <span class="hpc-arrow">←</span>
-      </a>
+      </button>
 
       <div class="hpc-trust">
         <span>🛡️</span>
@@ -6834,7 +6520,7 @@ font-size:0.78rem;text-align:center;margin-top:12px;display:none;
           <span class="rv-stars">⭐⭐⭐⭐⭐</span>
           <span class="rv-product">🎉 قالب التأسيس</span>
         </div>
-        <p class="rv-text">والله شي مرتب وفخم! دفعت 49 ريال وقالب التأسيس لحاله يستاهلها. شغل احترافي وأسعار مناسبة جداً.</p>
+        <p class="rv-text">والله شي مرتب وفخم! دفعت 30 ريال وقالب التأسيس لحاله يستاهلها. شغل احترافي وأسعار مناسبة جداً.</p>
         <div class="rv-footer">
           <button class="rv-helpful">👍 مفيد <span class="rv-count">(38)</span></button>
           <span class="rv-purchase">💳 شراء موثّق</span>
@@ -6888,7 +6574,7 @@ font-size:0.78rem;text-align:center;margin-top:12px;display:none;
           <span class="rv-stars">⭐⭐⭐⭐⭐</span>
           <span class="rv-product">💎 اشتراك مدى الحياة</span>
         </div>
-        <p class="rv-text">صراحة مودّتها للمعلمات في المدرسة وكلهم اشتركوا 🌹 49 ريال مدى الحياة عرض ما يفوت. التحديثات مستمرة والخدمة ممتازة.</p>
+        <p class="rv-text">صراحة مودّتها للمعلمات في المدرسة وكلهم اشتركوا 🌹 30 ريال مدى الحياة عرض ما يفوت. التحديثات مستمرة والخدمة ممتازة.</p>
         <div class="rv-footer">
           <button class="rv-helpful">👍 مفيد <span class="rv-count">(73)</span></button>
           <span class="rv-purchase">💳 شراء موثّق</span>
@@ -7063,6 +6749,7 @@ font-size:0.78rem;text-align:center;margin-top:12px;display:none;
         <ul class="footer-list">
           <li><a href="privacy.html">🛡️ سياسة الخصوصية</a></li>
           <li><a href="terms.html">📜 الشروط والأحكام</a></li>
+          <li><a href="refund.html">💰 سياسة الاسترجاع</a></li>
         </ul>
       </div>
 
@@ -7210,7 +6897,7 @@ font-size:0.78rem;text-align:center;margin-top:12px;display:none;
           <span data-i18n="priceLine1">النسخة الذهبية مدى الحياة</span>
         </div>
         <div class="price-line-2">
-          <span data-i18n="priceLine2Pre">بـ</span> <span class="price-num" data-price="current"></span> <span data-i18n="priceLine2Post">ريال فقط!</span>
+          <span data-i18n="priceLine2Pre">بـ</span> <span class="price-num">30</span> <span data-i18n="priceLine2Post">ريال فقط!</span>
         </div>
       </div>
 
@@ -7279,13 +6966,13 @@ font-size:0.78rem;text-align:center;margin-top:12px;display:none;
     </div>
 
     <div class="upgrade-price-block">
-      <div class="upgrade-price-old" data-price="offer-wrap">
-        <span class="price-strike"><span data-price="original"></span> <span data-price="currency" data-i18n="upCurrency">ريال</span></span>
-        <span class="discount-badge">خصم <span data-price="discount"></span>%</span>
+      <div class="upgrade-price-old">
+        <span class="price-strike">59 <span data-i18n="upCurrency">ريال</span></span>
+        <span class="discount-badge" data-i18n="upDiscount">خصم 17%</span>
       </div>
       <div class="upgrade-price-new">
-        <span class="price-amount" data-price="current"></span>
-        <span class="price-currency" data-price="currency" data-i18n="upCurrency">ريال</span>
+        <span class="price-amount">49</span>
+        <span class="price-currency" data-i18n="upCurrency">ريال</span>
       </div>
       <div class="upgrade-price-note" data-i18n="upPriceNote">دفعة واحدة · مدى الحياة</div>
     </div>
@@ -7301,8 +6988,8 @@ font-size:0.78rem;text-align:center;margin-top:12px;display:none;
     </div>
 
     <a href="pay.html" class="upgrade-cta-btn">
-      <span class="wa-icon">💳</span>
-      <span data-i18n="upCtaWa">اشترك الآن</span>
+      <span class="wa-icon">📱</span>
+      <span data-i18n="upCtaWa">اشترك عبر الواتساب الآن</span>
     </a>
 
     <button class="upgrade-later" onclick="closeUpgradeModal()">
@@ -7348,7 +7035,7 @@ const I18N = {
     hpcFeat2: "تحميلات بلا حدود",
     hpcFeat3: "تحديثات مدى الحياة",
     hpcFeat4: "بدون عمولات إضافية",
-    hpcCta: "اشترك الآن",
+    hpcCta: "اشترك الآن - 30 ريال",
     hpcTrust: "ضمان استرداد كامل خلال 7 أيام",
     spsCount: "انضم لأكثر من 500 معلم اشتركوا",
     appSub: "منصة احترافية متكاملة لإعداد وتنزيل تقارير المناسبات المدرسية بتصاميم جاهزة، قابلة للتخصيص، وبجودة عالية ✨",
@@ -7513,7 +7200,7 @@ const I18N = {
     upPriceNote: "دفعة واحدة · مدى الحياة",
     upSocial: "انضم لأكثر من 500+ معلم اشتركوا هذا الشهر",
     upGuarantee: "ضمان استرداد كامل خلال 7 أيام",
-    upCtaWa: "اشترك الآن",
+    upCtaWa: "اشترك عبر الواتساب الآن",
     upLater: "ربما لاحقاً",
     snapMoE: "وزارة التعليم",
     snapTasisTitle: "يوم التأسيس",
@@ -7630,7 +7317,7 @@ const I18N = {
     hpcFeat2: "Unlimited downloads",
     hpcFeat3: "Lifetime updates",
     hpcFeat4: "No extra fees",
-    hpcCta: "Subscribe Now",
+    hpcCta: "Subscribe Now - 30 SAR",
     hpcTrust: "Full refund guarantee within 7 days",
     spsCount: "Join 500+ teachers",
     appSub: "A professional all-in-one platform for creating and downloading school event reports with ready-made, customizable designs and premium quality ✨",
@@ -7795,7 +7482,7 @@ const I18N = {
     upPriceNote: "One-time payment · Lifetime",
     upSocial: "Join 500+ teachers who subscribed this month",
     upGuarantee: "Full 7-day money-back guarantee",
-    upCtaWa: "Subscribe Now",
+    upCtaWa: "Subscribe via WhatsApp Now",
     upLater: "Maybe later",
     snapMoE: "Ministry of Education",
     snapTasisTitle: "Founding Day",
@@ -8001,14 +7688,11 @@ function openLogin(){
 }
 
 function openSubscribeWhatsApp(){
-  const phone = '966552052867';
-  // 💰 اقرأ السعر من النظام الديناميكي
-  const price = (window.__PRICING__ && window.__PRICING__.currentPrice) || 49;
-  const currency = (window.__PRICING__ && window.__PRICING__.currency) || 'ريال';
+  const phone = '966550522867';
   const msg = encodeURIComponent(
     'السلام عليكم 🌟\n\n' +
     'أرغب في الاشتراك بمنصة التقارير المدرسية\n' +
-    `العرض: ${price} ${currency} (مدى الحياة) 💎\n\n` +
+    'العرض: 30 ريال (مدى الحياة) 💎\n\n' +
     'المصدر: ksa2030.one'
   );
   window.open(`https://wa.me/${phone}?text=${msg}`, '_blank');
@@ -8179,285 +7863,7 @@ document.addEventListener('DOMContentLoaded', function(){
       if(e.target === upModal) closeUpgradeModal();
     });
   }
-  
-  // 🎬 العناوين الدوارة
-  const rotator = document.getElementById('rotatingHeadline');
-  if (rotator) {
-    const items = rotator.querySelectorAll('.rt-item');
-    let currentIndex = 0;
-    
-    // اضبط ارتفاع المحتوى بناءً على أطول عنوان
-    let maxHeight = 0;
-    items.forEach(item => {
-      item.style.position = 'static';
-      item.style.opacity = '1';
-      const h = item.offsetHeight;
-      if (h > maxHeight) maxHeight = h;
-    });
-    items.forEach(item => {
-      item.style.position = 'absolute';
-      item.style.opacity = '';
-    });
-    rotator.style.minHeight = maxHeight + 'px';
-    
-    // ابدأ التدوير
-    setInterval(() => {
-      const current = items[currentIndex];
-      current.classList.remove('active');
-      current.classList.add('exiting');
-      
-      currentIndex = (currentIndex + 1) % items.length;
-      
-      setTimeout(() => {
-        current.classList.remove('exiting');
-        items[currentIndex].classList.add('active');
-      }, 100);
-    }, 3500);
-  }
-  
-  // ⭐ إضافة أزرار المفضلة لكل البطاقات تلقائياً
-  injectFavoriteStars();
 });
-
-// ⭐ إضافة زر المفضلة لكل preview-card
-async function injectFavoriteStars() {
-  const cards = document.querySelectorAll('.preview-card[data-target]');
-  
-  // ⏳ انتظر Firebase Auth يخلّص (المتغير _authResolved يصير true في onUserChange)
-  let attempts = 0;
-  while (!window._currentFavUser && !window._favAuthChecked && attempts < 50) {
-    await new Promise(r => setTimeout(r, 100));
-    attempts++;
-  }
-  
-  // قائمة المفضلة الحالية (لو المستخدم مسجل دخول)
-  let userFavorites = new Set();
-  try {
-    if (window._currentFavUser) {
-      const { getFavorites } = await import('./firebase-config.js?v=5');
-      const result = await getFavorites();
-      if (result.success && result.favorites) {
-        result.favorites.forEach(f => userFavorites.add(f.templateId));
-      }
-    }
-  } catch (e) { /* تجاهل */ }
-  
-  cards.forEach(card => {
-    // تجاهل لو فيه زر مسبقاً
-    if (card.querySelector('.fav-star-btn')) return;
-    
-    const target = card.getAttribute('data-target');
-    const templateId = target?.replace('.html', '') || '';
-    if (!templateId) return;
-    
-    // اجلب معلومات البطاقة
-    const titleEl = card.querySelector('.card-title');
-    const iconEl = card.querySelector('.card-icon');
-    const title = titleEl?.textContent?.trim() || templateId;
-    const icon = iconEl?.textContent?.trim() || '📋';
-    
-    // فئة البطاقة من القسم
-    const section = card.closest('.cat-section');
-    const catTitle = section?.querySelector('.cat-title span')?.textContent?.trim() || 'عام';
-    
-    // أنشئ الزر
-    const btn = document.createElement('button');
-    btn.className = 'fav-star-btn';
-    if (userFavorites.has(templateId)) btn.classList.add('active');
-    btn.innerHTML = userFavorites.has(templateId) ? '★' : '☆';
-    btn.title = 'إضافة للمفضلة';
-    btn.setAttribute('data-template', templateId);
-    
-    btn.addEventListener('click', async function(e) {
-      e.stopPropagation();
-      e.preventDefault();
-      
-      // انتظر Auth يخلّص إذا لسا
-      let attempts = 0;
-      while (!window._favAuthChecked && attempts < 30) {
-        await new Promise(r => setTimeout(r, 100));
-        attempts++;
-      }
-      
-      // تحقق من تسجيل الدخول
-      if (!window._currentFavUser) {
-        showFavLoginModal();
-        return;
-      }
-      
-      // toggle
-      btn.style.pointerEvents = 'none';
-      try {
-        const { toggleFavorite } = await import('./firebase-config.js?v=5');
-        const result = await toggleFavorite(templateId, {
-          title: title,
-          icon: icon,
-          category: catTitle,
-          url: target
-        });
-        if (result.success) {
-          btn.classList.toggle('active', result.isFavorite);
-          btn.innerHTML = result.isFavorite ? '★' : '☆';
-          showFavToast(result.isFavorite ? '⭐ أضيف للمفضلة' : '💔 أُزيل من المفضلة');
-        }
-      } catch (err) {
-        console.error(err);
-      }
-      btn.style.pointerEvents = '';
-    });
-    
-    card.appendChild(btn);
-  });
-}
-
-// 🎊 Toast بسيط
-function showFavToast(msg) {
-  const old = document.getElementById('favToast');
-  if (old) old.remove();
-  
-  const t = document.createElement('div');
-  t.id = 'favToast';
-  t.style.cssText = `
-    position:fixed;bottom:30px;left:50%;transform:translateX(-50%);
-    background:linear-gradient(135deg,#1e6b8a,#d4a657);color:#fff;
-    padding:14px 26px;border-radius:14px;
-    font:800 0.92rem 'Tajawal',sans-serif;
-    box-shadow:0 16px 40px rgba(30,107,138,0.5);
-    z-index:9999;
-    animation:favToastIn 0.4s cubic-bezier(0.34,1.56,0.64,1);
-  `;
-  t.textContent = msg;
-  
-  const style = document.createElement('style');
-  style.textContent = `@keyframes favToastIn{from{opacity:0;transform:translateX(-50%) translateY(50px);}to{opacity:1;transform:translateX(-50%) translateY(0);}}`;
-  document.head.appendChild(style);
-  
-  document.body.appendChild(t);
-  setTimeout(() => t.remove(), 2500);
-}
-
-// 🎨 Modal فاخر لطلب تسجيل الدخول
-function showFavLoginModal() {
-  const existing = document.getElementById('favLoginModal');
-  if (existing) existing.remove();
-  
-  const modal = document.createElement('div');
-  modal.id = 'favLoginModal';
-  modal.innerHTML = `
-    <style>
-      #favLoginModal {
-        position: fixed; inset: 0;
-        background: rgba(5, 10, 18, 0.85);
-        backdrop-filter: blur(20px);
-        -webkit-backdrop-filter: blur(20px);
-        display: flex; align-items: center; justify-content: center;
-        z-index: 10000; padding: 20px;
-        animation: fmFadeIn 0.3s ease-out;
-      }
-      @keyframes fmFadeIn { from { opacity: 0; } to { opacity: 1; } }
-      #favLoginModal .fm-card {
-        background: linear-gradient(145deg, rgba(15, 41, 66, 0.98), rgba(10, 22, 32, 0.95));
-        border: 1px solid rgba(232, 197, 71, 0.3);
-        border-radius: 24px;
-        padding: 36px 28px 30px;
-        max-width: 420px; width: 100%;
-        text-align: center;
-        box-shadow: 0 40px 100px rgba(0, 0, 0, 0.7);
-        animation: fmPop 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
-        position: relative; overflow: hidden;
-        font-family: 'Tajawal', sans-serif;
-        color: #fff;
-      }
-      @keyframes fmPop {
-        from { opacity: 0; transform: scale(0.85); }
-        to { opacity: 1; transform: scale(1); }
-      }
-      #favLoginModal .fm-card::before {
-        content: ''; position: absolute;
-        top: -50px; left: 50%; transform: translateX(-50%);
-        width: 300px; height: 200px;
-        background: radial-gradient(circle, rgba(232, 197, 71, 0.25), transparent 70%);
-        pointer-events: none;
-      }
-      #favLoginModal .fm-icon {
-        width: 80px; height: 80px;
-        margin: 0 auto 18px;
-        border-radius: 50%;
-        background: linear-gradient(135deg, #e8c547, #d4a657);
-        display: grid; place-items: center;
-        font-size: 2.2rem;
-        box-shadow: 0 12px 32px rgba(232, 197, 71, 0.5);
-        position: relative; z-index: 1;
-        animation: fmIconBounce 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
-      }
-      @keyframes fmIconBounce {
-        0% { transform: scale(0) rotate(-45deg); }
-        100% { transform: scale(1) rotate(0); }
-      }
-      #favLoginModal .fm-title {
-        font: 800 1.4rem 'Aref Ruqaa', serif;
-        background: linear-gradient(135deg, #fff, #e8c547);
-        -webkit-background-clip: text; -webkit-text-fill-color: transparent;
-        background-clip: text;
-        margin-bottom: 8px;
-        position: relative; z-index: 1;
-      }
-      #favLoginModal .fm-sub {
-        font: 500 0.95rem 'Tajawal', sans-serif;
-        color: rgba(255, 255, 255, 0.7);
-        line-height: 1.6;
-        margin-bottom: 24px;
-        position: relative; z-index: 1;
-      }
-      #favLoginModal .fm-actions {
-        display: grid;
-        grid-template-columns: 1fr 1fr;
-        gap: 10px;
-        position: relative; z-index: 1;
-      }
-      #favLoginModal .fm-btn {
-        padding: 14px;
-        border: none; border-radius: 12px;
-        font: 800 0.95rem 'Tajawal', sans-serif;
-        cursor: pointer;
-        font-family: inherit;
-        transition: all 0.25s ease;
-        display: inline-flex; align-items: center; justify-content: center; gap: 6px;
-        text-decoration: none;
-      }
-      #favLoginModal .fm-btn.login {
-        background: linear-gradient(135deg, #1e6b8a, #2a8aab, #d4a657);
-        color: #fff;
-        box-shadow: 0 8px 22px rgba(30, 107, 138, 0.4);
-      }
-      #favLoginModal .fm-btn.login:hover { transform: translateY(-2px); }
-      #favLoginModal .fm-btn.cancel {
-        background: rgba(255, 255, 255, 0.06);
-        color: rgba(255, 255, 255, 0.7);
-        border: 1px solid rgba(255, 255, 255, 0.1);
-      }
-      #favLoginModal .fm-btn.cancel:hover { background: rgba(255, 255, 255, 0.12); color: #fff; }
-    </style>
-    <div class="fm-card" onclick="event.stopPropagation()">
-      <div class="fm-icon">⭐</div>
-      <h3 class="fm-title">سجّل دخولك أولاً</h3>
-      <p class="fm-sub">لإضافة القوالب لمفضلتك، يلزم تسجيل الدخول لحسابك</p>
-      <div class="fm-actions">
-        <button class="fm-btn cancel" onclick="document.getElementById('favLoginModal').remove()">إلغاء</button>
-        <a href="login.html?next=index.html" class="fm-btn login">
-          <span>🔑</span>
-          <span>تسجيل دخول</span>
-        </a>
-      </div>
-    </div>
-  `;
-  
-  modal.onclick = function(e) {
-    if (e.target.id === 'favLoginModal') modal.remove();
-  };
-  
-  document.body.appendChild(modal);
-}
 
 function toggleCategory(headerEl){
   const section = headerEl.closest('.cat-section');
@@ -8483,7 +7889,7 @@ document.getElementById('loginModal').addEventListener('click', function(e){
 
 <!-- ═══ Firebase Integration ═══ -->
 <script type="module">
-import { onUserChange, logout, isLifetime, isAdmin, SITE_CONFIG, db, listenToOffer, listenToMaintenance, onPricingChange } from './firebase-config.js?v=4';
+import { onUserChange, logout, isLifetime, isAdmin, SITE_CONFIG, db, listenToOffer, listenToMaintenance } from './firebase-config.js';
 import { doc, onSnapshot, updateDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
 // ═══════════════════════════════════════════════════════
@@ -8588,10 +7994,6 @@ onUserChange((data) => {
   // 🛠️ خزّن المستخدم لفحص الصيانة
   _currentUserForMaintenance = data?.user || null;
   _authResolved = true; // ✅ Auth خلّص الآن
-  
-  // ⭐ خزّن المستخدم للمفضلة (لزر النجمة)
-  window._currentFavUser = data?.user || null;
-  window._favAuthChecked = true;
   
   // نفّذ فحص الصيانة المعلّق
   if (_pendingMaintenanceCheck || _maintenanceShown) {
