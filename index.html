@@ -339,13 +339,15 @@ flex-wrap:wrap;
   position:relative;
   max-width:380px;
   margin:22px auto 18px;
-  background:linear-gradient(145deg,#fff,#fafbfc);
+  background:linear-gradient(145deg, #0a1a2e 0%, #1a3a4e 50%, #0f2a3f 100%);
   border-radius:24px;
-  padding:22px 20px 20px;
+  padding:24px 22px 22px;
   box-shadow:
-    0 22px 50px rgba(0,0,0,0.35),
-    0 0 0 1px rgba(212,166,87,0.4),
-    inset 0 1px 0 rgba(255,255,255,0.9);
+    0 25px 60px rgba(0,0,0,0.5),
+    0 0 0 1px rgba(212,166,87,0.5),
+    0 0 30px rgba(212,166,87,0.15),
+    inset 0 1px 0 rgba(232,197,71,0.3),
+    inset 0 -2px 8px rgba(0,0,0,0.3);
   overflow:hidden;
   text-align:right;
 }
@@ -356,8 +358,9 @@ flex-wrap:wrap;
   left:-20%;
   width:140%;
   height:60%;
-  background:radial-gradient(ellipse,rgba(244,214,144,0.25),transparent 60%);
+  background:radial-gradient(ellipse, rgba(232,197,71,0.25), transparent 60%);
   pointer-events:none;
+  z-index:0;
 }
 .hero-price-card::after{
   content:"💎";
@@ -365,9 +368,41 @@ flex-wrap:wrap;
   bottom:-30px;
   left:-30px;
   font-size:8rem;
-  opacity:0.05;
+  opacity:0.06;
   pointer-events:none;
   transform:rotate(-15deg);
+  color:#d4a657;
+}
+.hero-price-card > *{position:relative;z-index:1;}
+
+/* ⚡ لمعة برق تحفة تمر على البنر كله */
+.hero-price-card::before{
+  content:"";
+  position:absolute;
+  top:0;
+  left:-200%;
+  width:80%;
+  height:100%;
+  background:linear-gradient(
+    100deg,
+    transparent 30%,
+    rgba(255,255,255,0.04) 42%,
+    rgba(232,197,71,0.35) 48%,
+    rgba(255,255,255,0.55) 50%,
+    rgba(232,197,71,0.35) 52%,
+    rgba(255,255,255,0.04) 58%,
+    transparent 70%
+  );
+  transform:skewX(-20deg);
+  animation:cardLightning 4.5s ease-in-out infinite;
+  pointer-events:none;
+  z-index:2;
+}
+@keyframes cardLightning{
+  0%, 100%{left:-200%;}
+  45%{left:-200%;}
+  55%{left:200%;}
+  100%{left:200%;}
 }
 
 .hpc-top{
@@ -379,15 +414,18 @@ flex-wrap:wrap;
   display:inline-flex;
   align-items:center;
   gap:6px;
-  padding:6px 14px;
-  background:linear-gradient(135deg,#1e6b8a,#2a8aab);
-  color:#fff;
+  padding:7px 16px;
+  background:linear-gradient(135deg, #d4a657 0%, #e8c547 50%, #d4a657 100%);
+  color:#3d2200;
   border-radius:99px;
   font-family:'Reem Kufi','Tajawal',sans-serif;
   font-size:0.78rem;
   font-weight:900;
   letter-spacing:0.3px;
-  box-shadow:0 6px 16px rgba(30,107,138,0.35);
+  text-shadow:0 1px 0 rgba(255,255,255,0.3);
+  box-shadow:
+    0 6px 16px rgba(212,166,87,0.4),
+    0 0 0 1px rgba(255,255,255,0.3) inset;
 }
 
 .hpc-price-row{
@@ -400,12 +438,12 @@ flex-wrap:wrap;
 }
 .hpc-old{
   text-align:center;
-  opacity:0.65;
+  opacity:0.7;
 }
 .hpc-old > span:first-child{
   display:block;
   font-size:0.65rem;
-  color:#5a7080;
+  color:#94a3b8;
   font-weight:700;
   margin-bottom:2px;
 }
@@ -424,9 +462,10 @@ flex-wrap:wrap;
   left:-3px;
   right:-3px;
   height:2.5px;
-  background:#dc2626;
+  background:#ef4444;
   transform:rotate(-12deg);
   border-radius:2px;
+  box-shadow:0 0 8px rgba(239,68,68,0.5);
 }
 .hpc-now{
   text-align:center;
@@ -441,61 +480,79 @@ flex-wrap:wrap;
 }
 .hpc-num{
   font-family:'Reem Kufi','Tajawal',sans-serif;
-  font-size:3.6rem;
+  font-size:3.8rem;
   font-weight:900;
-  color:#1e6b8a;
-  background:linear-gradient(135deg,#1e6b8a,#2a8aab,#d4a657);
+  color:#e8c547;
+  background:linear-gradient(135deg, #f5d76e 0%, #e8c547 50%, #d4a657 100%);
   -webkit-background-clip:text;
   -webkit-text-fill-color:transparent;
   background-clip:text;
-  filter:drop-shadow(0 4px 8px rgba(30,107,138,0.2));
+  filter:drop-shadow(0 4px 12px rgba(232,197,71,0.4));
+  text-shadow:0 0 30px rgba(232,197,71,0.3);
 }
 .hpc-cur{
   font-family:'Reem Kufi','Tajawal',sans-serif;
-  font-size:1.15rem;
+  font-size:1.2rem;
   font-weight:900;
-  color:#1e6b8a;
+  color:#e8c547;
 }
 .hpc-once{
-  font-size:0.7rem;
-  color:#16a34a;
+  font-size:0.72rem;
+  color:#86efac;
   font-weight:900;
-  margin-top:2px;
+  margin-top:3px;
   letter-spacing:0.2px;
+  text-shadow:0 0 8px rgba(134,239,172,0.4);
 }
 
 .hpc-features{
   display:grid;
   grid-template-columns:1fr 1fr;
-  gap:8px 12px;
-  margin-bottom:16px;
-  padding:12px 14px;
-  background:rgba(30,107,138,0.04);
-  border:1px solid rgba(30,107,138,0.1);
+  gap:10px 14px;
+  margin-bottom:18px;
+  padding:14px 16px;
+  background:linear-gradient(135deg, rgba(232,197,71,0.08), rgba(212,166,87,0.04));
+  border:1px solid rgba(232,197,71,0.25);
   border-radius:14px;
+  box-shadow:
+    inset 0 1px 0 rgba(232,197,71,0.1),
+    inset 0 -1px 0 rgba(0,0,0,0.2);
 }
 .hpc-feat{
   display:flex;
   align-items:center;
-  gap:6px;
-  font-size:0.74rem;
+  gap:7px;
+  font-size:0.76rem;
   font-weight:700;
-  color:#1a3a4e;
+  color:#f1f5f9;
   line-height:1.3;
 }
 .hpc-tick{
   flex-shrink:0;
-  width:18px;
-  height:18px;
-  background:linear-gradient(135deg,#16a34a,#15803d);
-  color:#fff;
+  width:19px;
+  height:19px;
+  background:linear-gradient(135deg, #d4a657, #e8c547);
+  color:#3d2200;
   border-radius:50%;
   display:flex;
   align-items:center;
   justify-content:center;
-  font-size:0.7rem;
+  font-size:0.72rem;
   font-weight:900;
+  box-shadow:0 2px 6px rgba(232,197,71,0.4);
 }
+
+.hpc-trust{
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  gap:6px;
+  margin-top:12px;
+  font-size:0.74rem;
+  color:#94a3b8;
+  font-weight:700;
+}
+.hpc-trust span:first-child{filter:drop-shadow(0 0 6px rgba(134,239,172,0.4));}
 
 .hpc-cta{
   display:flex;
@@ -503,50 +560,62 @@ flex-wrap:wrap;
   justify-content:center;
   gap:10px;
   width:100%;
-  padding:14px 18px;
-  background:linear-gradient(135deg,#25d366,#128c7e);
-  color:#fff;
+  padding:16px 18px;
+  background:linear-gradient(135deg,#d4a657 0%,#e8c547 40%,#d4a657 100%);
+  color:#3d2200;
   border:none;
   border-radius:14px;
   font-family:'Reem Kufi','Tajawal',sans-serif;
-  font-size:0.95rem;
+  font-size:1rem;
   font-weight:900;
   cursor:pointer;
-  box-shadow:0 8px 22px rgba(37,211,102,0.45);
-  transition:all 0.2s;
+  text-decoration:none;
+  text-shadow:0 1px 0 rgba(255,255,255,0.4);
+  box-shadow:
+    0 10px 28px rgba(212,166,87,0.5),
+    0 0 0 1px rgba(255,255,255,0.3) inset,
+    0 -3px 8px rgba(180,130,40,0.4) inset;
+  transition:all 0.25s ease;
   position:relative;
   overflow:hidden;
 }
 .hpc-cta::before{
   content:"";
   position:absolute;
-  top:0;left:-100%;
-  width:60%;
+  top:0;left:-150%;
+  width:80%;
   height:100%;
-  background:linear-gradient(120deg,transparent,rgba(255,255,255,0.35),transparent);
+  background:linear-gradient(110deg,transparent 20%,rgba(255,255,255,0.6) 50%,transparent 80%);
   animation:shimmer 2.8s infinite;
+  pointer-events:none;
 }
-@keyframes shimmer{0%{left:-100%;}50%,100%{left:140%;}}
-.hpc-cta:hover{transform:translateY(-2px);box-shadow:0 12px 28px rgba(37,211,102,0.55);}
+.hpc-cta::after{
+  content:"";
+  position:absolute;
+  inset:0;
+  background:radial-gradient(ellipse at top,rgba(255,255,255,0.4),transparent 70%);
+  pointer-events:none;
+}
+@keyframes shimmer{0%{left:-150%;}50%,100%{left:150%;}}
+.hpc-cta:hover{
+  transform:translateY(-3px);
+  box-shadow:
+    0 14px 36px rgba(212,166,87,0.65),
+    0 0 0 1px rgba(255,255,255,0.4) inset,
+    0 -3px 8px rgba(180,130,40,0.5) inset;
+  background:linear-gradient(135deg,#e8c547 0%,#f5d76e 40%,#e8c547 100%);
+}
 .hpc-cta:active{transform:scale(0.97);}
-.hpc-cta-ic{font-size:1.2rem;flex-shrink:0;}
+.hpc-cta-ic{font-size:1.3rem;flex-shrink:0;position:relative;z-index:1;}
+.hpc-cta > span{position:relative;z-index:1;}
 .hpc-arrow{
   font-weight:900;
-  transition:transform 0.2s;
+  transition:transform 0.25s;
   flex-shrink:0;
+  position:relative;
+  z-index:1;
 }
-.hpc-cta:hover .hpc-arrow{transform:translateX(-4px);}
-
-.hpc-trust{
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  gap:6px;
-  margin-top:10px;
-  font-size:0.7rem;
-  color:#5a7080;
-  font-weight:700;
-}
+.hpc-cta:hover .hpc-arrow{transform:translateX(-6px);}
 
 /* ═══ Social Proof Strip ═══ */
 .social-proof-strip{
@@ -5106,7 +5175,7 @@ font-size:0.78rem;text-align:center;margin-top:12px;display:none;
         </div>
         <div class="hpc-now">
           <div class="hpc-amount">
-            <span class="hpc-num">30</span>
+            <span class="hpc-num">49</span>
             <span class="hpc-cur" data-i18n="hpcCur">ريال</span>
           </div>
           <div class="hpc-once" data-i18n="hpcOnce">دفعة واحدة فقط</div>
@@ -5116,7 +5185,7 @@ font-size:0.78rem;text-align:center;margin-top:12px;display:none;
       <div class="hpc-features">
         <div class="hpc-feat">
           <span class="hpc-tick">✓</span>
-          <span data-i18n="hpcFeat1">+15 قالب احترافي</span>
+          <span data-i18n="hpcFeat1">+21 قالب احترافي</span>
         </div>
         <div class="hpc-feat">
           <span class="hpc-tick">✓</span>
@@ -5132,11 +5201,11 @@ font-size:0.78rem;text-align:center;margin-top:12px;display:none;
         </div>
       </div>
 
-      <button class="hpc-cta" onclick="openSubscribeWhatsApp()">
-        <span class="hpc-cta-ic">📱</span>
-        <span data-i18n="hpcCta">اشترك الآن عبر WhatsApp</span>
+      <a href="pay.html" class="hpc-cta">
+        <span class="hpc-cta-ic">💳</span>
+        <span data-i18n="hpcCta">اشترك الآن - 49 ريال</span>
         <span class="hpc-arrow">←</span>
-      </button>
+      </a>
 
       <div class="hpc-trust">
         <span>🛡️</span>
@@ -6520,7 +6589,7 @@ font-size:0.78rem;text-align:center;margin-top:12px;display:none;
           <span class="rv-stars">⭐⭐⭐⭐⭐</span>
           <span class="rv-product">🎉 قالب التأسيس</span>
         </div>
-        <p class="rv-text">والله شي مرتب وفخم! دفعت 30 ريال وقالب التأسيس لحاله يستاهلها. شغل احترافي وأسعار مناسبة جداً.</p>
+        <p class="rv-text">والله شي مرتب وفخم! دفعت 49 ريال وقالب التأسيس لحاله يستاهلها. شغل احترافي وأسعار مناسبة جداً.</p>
         <div class="rv-footer">
           <button class="rv-helpful">👍 مفيد <span class="rv-count">(38)</span></button>
           <span class="rv-purchase">💳 شراء موثّق</span>
@@ -6574,7 +6643,7 @@ font-size:0.78rem;text-align:center;margin-top:12px;display:none;
           <span class="rv-stars">⭐⭐⭐⭐⭐</span>
           <span class="rv-product">💎 اشتراك مدى الحياة</span>
         </div>
-        <p class="rv-text">صراحة مودّتها للمعلمات في المدرسة وكلهم اشتركوا 🌹 30 ريال مدى الحياة عرض ما يفوت. التحديثات مستمرة والخدمة ممتازة.</p>
+        <p class="rv-text">صراحة مودّتها للمعلمات في المدرسة وكلهم اشتركوا 🌹 49 ريال مدى الحياة عرض ما يفوت. التحديثات مستمرة والخدمة ممتازة.</p>
         <div class="rv-footer">
           <button class="rv-helpful">👍 مفيد <span class="rv-count">(73)</span></button>
           <span class="rv-purchase">💳 شراء موثّق</span>
@@ -6813,7 +6882,7 @@ font-size:0.78rem;text-align:center;margin-top:12px;display:none;
       <div class="benefit-item">
         <div class="benefit-icon">📋</div>
         <div class="benefit-text">
-          <strong>+15 قالب احترافي</strong>
+          <strong>+21 قالب احترافي</strong>
           <span>كلها متاحة الآن</span>
         </div>
       </div>
@@ -6897,15 +6966,13 @@ font-size:0.78rem;text-align:center;margin-top:12px;display:none;
           <span data-i18n="priceLine1">النسخة الذهبية مدى الحياة</span>
         </div>
         <div class="price-line-2">
-          <span data-i18n="priceLine2Pre">بـ</span> <span class="price-num">30</span> <span data-i18n="priceLine2Post">ريال فقط!</span>
+          <span data-i18n="priceLine2Pre">بـ</span> <span class="price-num">49</span> <span data-i18n="priceLine2Post">ريال فقط!</span>
         </div>
       </div>
 
       <a href="pay.html" class="promo-wa-btn">
-        <svg class="wa-icon" viewBox="0 0 24 24" fill="currentColor">
-          <path d="M.057 24l1.687-6.163c-1.041-1.804-1.588-3.849-1.587-5.946.003-6.556 5.338-11.891 11.893-11.891 3.181.001 6.167 1.24 8.413 3.488 2.245 2.248 3.481 5.236 3.48 8.414-.003 6.557-5.338 11.892-11.893 11.892-1.99-.001-3.951-.5-5.688-1.448l-6.305 1.654zm6.597-3.807c1.676.995 3.276 1.591 5.392 1.592 5.448 0 9.886-4.434 9.889-9.885.002-5.462-4.415-9.89-9.881-9.892-5.452 0-9.887 4.434-9.889 9.884-.001 2.225.651 3.891 1.746 5.634l-.999 3.648 3.742-.981zm11.387-5.464c-.074-.124-.272-.198-.57-.347-.297-.149-1.758-.868-2.031-.967-.272-.099-.47-.149-.669.149-.198.297-.768.967-.941 1.165-.173.198-.347.223-.644.074-.297-.149-1.255-.462-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.297-.347.446-.521.151-.172.2-.296.3-.495.099-.198.05-.372-.025-.521-.075-.148-.669-1.611-.916-2.206-.242-.579-.487-.501-.669-.51l-.57-.01c-.198 0-.52.074-.792.372s-1.04 1.016-1.04 2.479 1.065 2.876 1.213 3.074c.149.198 2.095 3.2 5.076 4.487.709.306 1.263.489 1.694.626.712.226 1.36.194 1.872.118.571-.085 1.758-.719 2.006-1.413.248-.695.248-1.29.173-1.414z"/>
-        </svg>
-        <span data-i18n="promoWaBtn">تواصل معنا عبر الواتساب لتفعيل حسابك 💬</span>
+        <span style="font-size:1.4em;">💳</span>
+        <span data-i18n="promoWaBtn">اشترك الآن - 49 ريال</span>
       </a>
     </div>
 
@@ -6961,7 +7028,7 @@ font-size:0.78rem;text-align:center;margin-top:12px;display:none;
       </div>
       <div class="upgrade-feature">
         <span class="up-check">✅</span>
-        <span data-i18n="upFeat5">دعم فني عبر الواتساب</span>
+        <span data-i18n="upFeat5">دعم فني مباشر</span>
       </div>
     </div>
 
@@ -6988,8 +7055,8 @@ font-size:0.78rem;text-align:center;margin-top:12px;display:none;
     </div>
 
     <a href="pay.html" class="upgrade-cta-btn">
-      <span class="wa-icon">📱</span>
-      <span data-i18n="upCtaWa">اشترك عبر الواتساب الآن</span>
+      <span class="wa-icon">💳</span>
+      <span data-i18n="upCtaWa">اشترك الآن - 49 ريال</span>
     </a>
 
     <button class="upgrade-later" onclick="closeUpgradeModal()">
@@ -7031,11 +7098,11 @@ const I18N = {
     hpcOldLabel: "السعر الأصلي",
     hpcOnce: "دفعة واحدة · بدون تجديد",
     hpcCur: "ريال",
-    hpcFeat1: "+15 قالب احترافي",
+    hpcFeat1: "+21 قالب احترافي",
     hpcFeat2: "تحميلات بلا حدود",
     hpcFeat3: "تحديثات مدى الحياة",
     hpcFeat4: "بدون عمولات إضافية",
-    hpcCta: "اشترك الآن - 30 ريال",
+    hpcCta: "اشترك الآن - 49 ريال",
     hpcTrust: "ضمان استرداد كامل خلال 7 أيام",
     spsCount: "انضم لأكثر من 500 معلم اشتركوا",
     appSub: "منصة احترافية متكاملة لإعداد وتنزيل تقارير المناسبات المدرسية بتصاميم جاهزة، قابلة للتخصيص، وبجودة عالية ✨",
@@ -7194,13 +7261,13 @@ const I18N = {
     upFeat2: "تحميلات بلا حدود",
     upFeat3: "كل الألوان والثيمات",
     upFeat4: "تحديثات مدى الحياة",
-    upFeat5: "دعم فني عبر الواتساب",
+    upFeat5: "دعم فني مباشر",
     upCurrency: "ريال",
     upDiscount: "خصم 17%",
     upPriceNote: "دفعة واحدة · مدى الحياة",
     upSocial: "انضم لأكثر من 500+ معلم اشتركوا هذا الشهر",
     upGuarantee: "ضمان استرداد كامل خلال 7 أيام",
-    upCtaWa: "اشترك عبر الواتساب الآن",
+    upCtaWa: "اشترك الآن - 49 ريال",
     upLater: "ربما لاحقاً",
     snapMoE: "وزارة التعليم",
     snapTasisTitle: "يوم التأسيس",
@@ -7277,7 +7344,7 @@ const I18N = {
     priceLine1: "النسخة الذهبية مدى الحياة",
     priceLine2Pre: "بـ",
     priceLine2Post: "ريال فقط!",
-    promoWaBtn: "تواصل معنا عبر الواتساب لتفعيل حسابك 💬",
+    promoWaBtn: "اشترك الآن - 49 ريال",
     haveAccount: "إذا عندك حساب بالفعل",
     formPhone: "رقم الجوال",
     formPassword: "الرقم السري",
@@ -7313,11 +7380,11 @@ const I18N = {
     hpcOldLabel: "Original Price",
     hpcOnce: "One-time payment · No renewal",
     hpcCur: "SAR",
-    hpcFeat1: "+15 Pro templates",
+    hpcFeat1: "+21 Pro templates",
     hpcFeat2: "Unlimited downloads",
     hpcFeat3: "Lifetime updates",
     hpcFeat4: "No extra fees",
-    hpcCta: "Subscribe Now - 30 SAR",
+    hpcCta: "Subscribe Now - 49 SAR",
     hpcTrust: "Full refund guarantee within 7 days",
     spsCount: "Join 500+ teachers",
     appSub: "A professional all-in-one platform for creating and downloading school event reports with ready-made, customizable designs and premium quality ✨",
@@ -7476,13 +7543,13 @@ const I18N = {
     upFeat2: "Unlimited downloads",
     upFeat3: "All colors and themes",
     upFeat4: "Lifetime updates",
-    upFeat5: "WhatsApp support",
+    upFeat5: "Direct technical support",
     upCurrency: "SAR",
     upDiscount: "17% OFF",
     upPriceNote: "One-time payment · Lifetime",
     upSocial: "Join 500+ teachers who subscribed this month",
     upGuarantee: "Full 7-day money-back guarantee",
-    upCtaWa: "Subscribe via WhatsApp Now",
+    upCtaWa: "Subscribe Now - 49 SAR",
     upLater: "Maybe later",
     snapMoE: "Ministry of Education",
     snapTasisTitle: "Founding Day",
@@ -7559,7 +7626,7 @@ const I18N = {
     priceLine1: "Lifetime Gold Edition",
     priceLine2Pre: "Only",
     priceLine2Post: "SAR!",
-    promoWaBtn: "Contact us on WhatsApp to activate 💬",
+    promoWaBtn: "Subscribe Now - 49 SAR",
     haveAccount: "If you already have an account",
     formPhone: "Mobile Number",
     formPassword: "Password",
@@ -7692,7 +7759,7 @@ function openSubscribeWhatsApp(){
   const msg = encodeURIComponent(
     'السلام عليكم 🌟\n\n' +
     'أرغب في الاشتراك بمنصة التقارير المدرسية\n' +
-    'العرض: 30 ريال (مدى الحياة) 💎\n\n' +
+    'العرض: 49 ريال (مدى الحياة) 💎\n\n' +
     'المصدر: ksa2030.one'
   );
   window.open(`https://wa.me/${phone}?text=${msg}`, '_blank');
