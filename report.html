@@ -1501,10 +1501,9 @@ function printReport(){
 // ═══════════════════════════════════════════════
 // 📤 مشاركة التقرير (Web Share API)
 // ═══════════════════════════════════════════════
-// نتبع نفس نمط exportAsImage اللي شغّال:
-// 1. toggleExportMenu أولاً
-// 2. setTimeout ثم تنفيذ المنطق
 function shareReport(){
+  // 🆕 alert فوري للتأكد أن الزر يستجيب (للتشخيص)
+  alert('تم الضغط على المشاركة');
   toggleExportMenu();
   setTimeout(() => { _doShareReport(); }, 200);
 }
