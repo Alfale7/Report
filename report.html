@@ -1494,32 +1494,35 @@ function exportAsImage(){
 
 function printReport(){
   // ⚠️ تم استبدالها بـ shareReport - محتفظ بها للتوافق
-  shareReport();
+  // نستدعي _doShareReport مباشرة بدون toggle القائمة
+  _doShareReport();
 }
 
 // ═══════════════════════════════════════════════
 // 📤 مشاركة التقرير (Web Share API)
 // ═══════════════════════════════════════════════
-async function shareReport(){
-  // 🆕 إغلاق القائمة بعد إعطاء feedback (مش قبل)
+// نتبع نفس نمط exportAsImage اللي شغّال:
+// 1. toggleExportMenu أولاً
+// 2. setTimeout ثم تنفيذ المنطق
+function shareReport(){
+  toggleExportMenu();
+  setTimeout(() => { _doShareReport(); }, 200);
+}
+
+async function _doShareReport(){
   // 🆕 toast فوري حتى يعرف المستخدم أن الزر استجاب
   if(typeof showToast === 'function') showToast('⏳ جاري تحضير المشاركة...');
 
-  // 🔥 فحص Firebase أولاً
+  // 🔥 فحص Firebase (نفس نمط saveImg)
   if (typeof window.checkDownloadAccess === 'function') {
     try {
       const allowed = await window.checkDownloadAccess();
-      if (!allowed) {
-        closeExportMenu();
-        return;
-      }
+      if (!allowed) return;
     } catch(fbErr) {
       console.error('Firebase check error:', fbErr);
       // نكمل بدون حماية لو فشل الفحص (نفس سلوك saveImg)
     }
   }
-
-  closeExportMenu();
 
   try {
     // استخدم نفس آلية saveAsImage لكن للمشاركة بدل التنزيل
