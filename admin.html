@@ -3533,11 +3533,8 @@ async function loadReviewsList(status){
   
   try {
     const reviewsRef = collection(db, 'reviews');
-    const q = query(
-      reviewsRef,
-      where('status','==',status),
-      orderBy('createdAt','desc')
-    );
+    // بدون orderBy عشان ما نحتاج composite index
+    const q = query(reviewsRef, where('status','==',status));
     
     const snap = await getDocs(q);
     
@@ -3559,12 +3556,20 @@ async function loadReviewsList(status){
     const reviews = [];
     snap.forEach(d => reviews.push({ id: d.id, ...d.data() }));
     
+    // الترتيب يدوياً (الأحدث أولاً)
+    reviews.sort((a, b) => {
+      const ta = a.createdAt?.toMillis?.() || 0;
+      const tb = b.createdAt?.toMillis?.() || 0;
+      return tb - ta;
+    });
+    
     container.innerHTML = '<div class="rv-items-list">' + 
       reviews.map(r => renderReviewItem(r)).join('') + '</div>';
     
   } catch(error) {
     console.error('فشل جلب التقييمات:', error);
-    container.innerHTML = '<div class="rv-empty-msg"><div class="rv-empty-msg-icon">⚠️</div><p>حدث خطأ، حاول مرة أخرى</p></div>';
+    console.error('تفاصيل:', error.code, '|', error.message);
+    container.innerHTML = `<div class="rv-empty-msg"><div class="rv-empty-msg-icon">⚠️</div><p>حدث خطأ: ${error.message || error.code || 'غير معروف'}</p></div>`;
   }
 }
 

@@ -8771,10 +8771,10 @@ async function loadApprovedReviews(){
   
   try {
     const reviewsRef = collection(db, 'reviews');
+    // بدون orderBy عشان ما نحتاج composite index
     const q = query(
       reviewsRef,
       where('status', '==', 'approved'),
-      orderBy('createdAt', 'desc'),
       limit(12)
     );
     
@@ -8790,6 +8790,13 @@ async function loadApprovedReviews(){
     // فيه تقييمات → اعرضها
     const reviews = [];
     snap.forEach(d => reviews.push({ id: d.id, ...d.data() }));
+    
+    // الترتيب يدوياً (الأحدث أولاً)
+    reviews.sort((a, b) => {
+      const ta = a.createdAt?.toMillis?.() || 0;
+      const tb = b.createdAt?.toMillis?.() || 0;
+      return tb - ta;
+    });
     
     grid.innerHTML = reviews.map(r => renderReviewCard(r)).join('');
     grid.style.display = 'grid';
