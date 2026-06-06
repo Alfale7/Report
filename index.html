@@ -8755,7 +8755,7 @@ function scrollToTop(){
 <!-- ⭐ نظام التقييمات الحقيقية - من Firebase                       -->
 <!-- ═══════════════════════════════════════════════════════════ -->
 <script type="module">
-import { auth, db, isLifetime } from './firebase-config.js?v=5';
+import { auth, db, isLifetime, isAdmin } from './firebase-config.js?v=5';
 import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
 import { 
   collection, query, where, orderBy, limit, getDocs, getDoc, doc
@@ -8870,8 +8870,8 @@ onAuthStateChanged(auth, async (user) => {
     const profSnap = await getDoc(profRef);
     const profile = profSnap.exists() ? profSnap.data() : null;
     
-    if (isLifetime(profile)) {
-      // مشترك → زر إضافة
+    if (isLifetime(profile) || isAdmin(user)) {
+      // مشترك أو أدمن → زر إضافة
       addBtn.style.display = 'inline-flex';
       ctaBtn.style.display = 'none';
     } else {

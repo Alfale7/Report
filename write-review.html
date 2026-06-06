@@ -463,7 +463,7 @@ h1{
 
 <script type="module">
 import { 
-  auth, db, isLifetime
+  auth, db, isLifetime, isAdmin
 } from './firebase-config.js?v=5';
 import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
 import { 
@@ -496,17 +496,19 @@ onAuthStateChanged(auth, async (user) => {
   
   _user = user;
   
-  // جلب البروفايل
+  // جلب البروفايل (getUserProfile يرجع الـ profile مباشرة)
   try {
     const { getUserProfile } = await import('./firebase-config.js?v=5');
-    const result = await getUserProfile(user.uid);
-    _profile = result?.profile || null;
+    _profile = await getUserProfile(user.uid);
+    console.log('📋 Profile:', _profile);
+    console.log('💎 isLifetime:', isLifetime(_profile));
+    console.log('👑 isAdmin:', isAdmin(user));
   } catch(e) {
     console.error('فشل جلب البروفايل:', e);
   }
   
-  // تحقق Lifetime
-  if (!isLifetime(_profile)) {
+  // الأدمن أو Lifetime يقدرون يقيّمون
+  if (!isLifetime(_profile) && !isAdmin(user)) {
     showState('notSubscriberState');
     return;
   }
