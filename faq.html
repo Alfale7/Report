@@ -4,6 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>الأسئلة الشائعة · منصة التقارير الذكية</title>
+<link rel="icon" type="image/png" href="favicon.png">
 <link href="https://fonts.googleapis.com/css2?family=Reem+Kufi:wght@400;600;700&family=Tajawal:wght@400;500;700;900&display=swap" rel="stylesheet">
 <style>
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
@@ -32,7 +33,6 @@ body{
 }
 .back:hover{background:rgba(255,255,255,0.15);}
 
-/* Header */
 .page-header{
   text-align:center;
   margin-bottom:24px;
@@ -58,7 +58,6 @@ body{
   font-weight:700;
 }
 
-/* FAQ List */
 .faq-list{
   display:flex;
   flex-direction:column;
@@ -154,8 +153,8 @@ body{
 }
 .faq-a ul li{padding:5px 0;display:flex;gap:6px;}
 .faq-a strong{color:#1e6b8a;font-weight:900;}
+.faq-a a{color:#1e6b8a;font-weight:900;}
 
-/* CTA */
 .faq-cta{
   background:linear-gradient(135deg,#1e6b8a,#2a8aab);
   color:#fff;
@@ -227,7 +226,7 @@ body{
   <div class="page-header">
     <div class="page-icon">❓</div>
     <h1 class="page-title">الأسئلة الشائعة</h1>
-    <p class="page-sub">جاوبنا على أكثر الأسئلة اللي توصلنا</p>
+    <p class="page-sub">أكثر الأسئلة اللي توصلنا</p>
   </div>
 
   <div class="faq-list">
@@ -235,34 +234,35 @@ body{
     <div class="faq-item">
       <button class="faq-q" onclick="toggleFaq(this)">
         <span class="faq-q-icon">💎</span>
-        <span class="faq-q-text">وش يعني اشتراك "مدى الحياة"؟ هل صحيح بدون تجديد؟</span>
+        <span class="faq-q-text">وش يعني اشتراك "مدى الحياة"؟</span>
         <span class="faq-arrow">+</span>
       </button>
       <div class="faq-a">
-        <p>نعم! 100% بدون تجديد ❤️<br><br>تدفع 30 ريال مرة واحدة فقط، وتحصل على:</p>
+        <p>الاشتراك دفعة واحدة بـ <strong>49 ريال</strong>، يفتح لك الوصول لقوالب المنصة المتاحة:</p>
         <ul>
-          <li>✓ كل القوالب الـ 15 الحالية</li>
-          <li>✓ كل التحديثات الجديدة مجاناً</li>
-          <li>✓ تحميلات بلا حدود إلى الأبد</li>
-          <li>✓ بدون أي رسوم سنوية أو شهرية</li>
+          <li>✓ جميع القوالب الحالية</li>
+          <li>✓ الاستخدام الشخصي والمهني</li>
+          <li>✓ بدون رسوم شهرية متكررة</li>
         </ul>
+        <p>قد نضيف قوالب جديدة من وقت لآخر للمشتركين.</p>
       </div>
     </div>
 
     <div class="faq-item">
       <button class="faq-q" onclick="toggleFaq(this)">
         <span class="faq-q-icon">💳</span>
-        <span class="faq-q-text">كيف أقدر أدفع؟ تقبلون مدى وApple Pay؟</span>
+        <span class="faq-q-text">كيف أقدر أدفع؟</span>
         <span class="faq-arrow">+</span>
       </button>
       <div class="faq-a">
-        <p>حالياً نستقبل المدفوعات بالطرق التالية:</p>
+        <p>الدفع يتم عبر بوابة دفع آمنة معتمدة، وتدعم وسائل الدفع التالية:</p>
         <ul>
-          <li>📱 STC Pay (الأسرع)</li>
-          <li>🏦 تحويل بنكي</li>
-          <li>💬 التواصل عبر الواتساب</li>
+          <li>💳 مدى</li>
+          <li>💳 فيزا</li>
+          <li>💳 ماستركارد</li>
+          <li>📱 Apple Pay</li>
         </ul>
-        <p><strong>قريباً جداً:</strong> Apple Pay و Mada تلقائي عبر الموقع 🚀</p>
+        <p>الدفع آمن ومُشفّر، ولا نخزّن بيانات بطاقتك على المنصة.</p>
       </div>
     </div>
 
@@ -273,29 +273,25 @@ body{
         <span class="faq-arrow">+</span>
       </button>
       <div class="faq-a">
-        <p>التفعيل سريع جداً ⚡</p>
-        <ul>
-          <li>⏱️ خلال 5-10 دقائق في أوقات العمل</li>
-          <li>🌙 خلال الليل: يتم التفعيل صباحاً (8 ص)</li>
-          <li>🔔 ستصلك رسالة واتساب بمجرد التفعيل</li>
-        </ul>
+        <p>التفعيل عادة يتم بعد تأكيد عملية الدفع.</p>
+        <p>في حال تأخر التفعيل لأي سبب، يمكنك التواصل معنا عبر البريد أو الواتساب وسنساعدك في أقرب وقت.</p>
       </div>
     </div>
 
     <div class="faq-item">
       <button class="faq-q" onclick="toggleFaq(this)">
         <span class="faq-q-icon">🎁</span>
-        <span class="faq-q-text">هل أقدر أجرّب الموقع قبل الاشتراك؟</span>
+        <span class="faq-q-text">هل أقدر أشوف القوالب قبل الاشتراك؟</span>
         <span class="faq-arrow">+</span>
       </button>
       <div class="faq-a">
-        <p>أكيد! نوفر لك تجربة مجانية كاملة 🎉</p>
+        <p>نعم! يمكنك تصفّح جميع القوالب ومعاينتها قبل الاشتراك:</p>
         <ul>
-          <li>✓ قالب التأسيس مجاناً 100%</li>
-          <li>✓ 2 تحميل مجاني تجربة</li>
+          <li>✓ معاينة كاملة لكل التقارير</li>
+          <li>✓ مشاهدة التصاميم والمحتوى</li>
           <li>✓ بدون الحاجة لبطاقة ائتمان</li>
-          <li>✓ سجّل بإيميلك واستمتع</li>
         </ul>
+        <p>لتعبئة الحقول ورفع الصور والتصدير، يلزم الاشتراك.</p>
       </div>
     </div>
 
@@ -306,12 +302,11 @@ body{
         <span class="faq-arrow">+</span>
       </button>
       <div class="faq-a">
-        <p>نعم! الموقع مصمم خصيصاً للجوال 📲</p>
+        <p>نعم! المنصة مصممة للعمل على الجوال والكمبيوتر.</p>
         <ul>
-          <li>✓ تصميم متجاوب 100% مع كل الأجهزة</li>
-          <li>✓ تحميل سريع وسلس</li>
+          <li>✓ تصميم متجاوب مع مختلف الأجهزة</li>
           <li>✓ يعمل على iPhone و Android</li>
-          <li>✓ ما يحتاج تطبيق - فقط افتح المتصفح</li>
+          <li>✓ بدون الحاجة لتطبيق - فقط افتح المتصفح</li>
         </ul>
       </div>
     </div>
@@ -319,33 +314,29 @@ body{
     <div class="faq-item">
       <button class="faq-q" onclick="toggleFaq(this)">
         <span class="faq-q-icon">🔒</span>
-        <span class="faq-q-text">هل بياناتي وحسابي آمنين؟</span>
+        <span class="faq-q-text">هل بياناتي آمنة؟</span>
         <span class="faq-arrow">+</span>
       </button>
       <div class="faq-a">
-        <p>أمنك أولويتنا 🛡️</p>
+        <p>نحرص على حماية بياناتك:</p>
         <ul>
-          <li>🔐 نستخدم Firebase من Google (أعلى معايير الأمان)</li>
-          <li>🔑 كلمات السر مشفّرة 100%</li>
-          <li>📧 يمكنك استعادة حسابك بالبريد بسهولة</li>
-          <li>👤 بياناتك لا تُشارك مع أي طرف ثالث</li>
+          <li>🔐 نستخدم خدمات سحابية معتمدة</li>
+          <li>🔑 كلمات المرور مُشفّرة ولا تُحفظ بصورتها الأصلية</li>
+          <li>📧 يمكنك استعادة حسابك بالبريد</li>
         </ul>
+        <p>للتفاصيل الكاملة، راجع <a href="privacy.html">سياسة الخصوصية</a>.</p>
       </div>
     </div>
 
     <div class="faq-item">
       <button class="faq-q" onclick="toggleFaq(this)">
         <span class="faq-q-icon">🛡️</span>
-        <span class="faq-q-text">إذا ما عجبني المنصة، فيه ضمان استرداد؟</span>
+        <span class="faq-q-text">إذا ما عجبتني المنصة، فيه استرجاع؟</span>
         <span class="faq-arrow">+</span>
       </button>
       <div class="faq-a">
-        <p>نعم بالطبع! نضمن لك راحة البال 💚</p>
-        <ul>
-          <li>✓ ضمان استرداد كامل خلال 7 أيام</li>
-          <li>✓ بدون أي أسئلة أو تعقيدات</li>
-          <li>✓ تواصل معنا في الواتساب وفوراً نرجع المبلغ</li>
-        </ul>
+        <p>نعم، نوفّر إمكانية الاسترجاع خلال <strong>7 أيام</strong> من تاريخ الاشتراك.</p>
+        <p>للاطلاع على التفاصيل الكاملة وآلية الطلب، يرجى مراجعة <a href="refund.html">سياسة الاسترجاع</a>.</p>
       </div>
     </div>
 
@@ -356,31 +347,26 @@ body{
         <span class="faq-arrow">+</span>
       </button>
       <div class="faq-a">
-        <p>سهل جداً 👌</p>
+        <p>التحميل سهل:</p>
         <ul>
           <li>1️⃣ اختر القالب اللي يناسبك</li>
-          <li>2️⃣ عبّي البيانات (يحفظ تلقائياً)</li>
-          <li>3️⃣ اضغط "تحميل كصورة"</li>
-          <li>4️⃣ تستلم صورة HD جاهزة للطباعة أو الإرسال</li>
+          <li>2️⃣ عبّي بيانات التقرير</li>
+          <li>3️⃣ اضغط زر التصدير</li>
+          <li>4️⃣ اختر الصيغة المناسبة (PDF أو صورة)</li>
         </ul>
-        <p><strong>الصيغة:</strong> PNG عالية الجودة (مناسبة للواتساب والطباعة)</p>
+        <p>التقارير تكون جاهزة للطباعة أو الإرسال عبر الواتساب.</p>
       </div>
     </div>
 
     <div class="faq-item">
       <button class="faq-q" onclick="toggleFaq(this)">
         <span class="faq-q-icon">🆕</span>
-        <span class="faq-q-text">هل تضيفون قوالب جديدة بشكل مستمر؟</span>
+        <span class="faq-q-text">هل تضيفون قوالب جديدة؟</span>
         <span class="faq-arrow">+</span>
       </button>
       <div class="faq-a">
-        <p>نعم! هذا التزامنا تجاه المشتركين 🌟</p>
-        <ul>
-          <li>📅 قوالب جديدة كل شهر</li>
-          <li>🎉 قوالب خاصة بالمناسبات (التأسيس، اليوم الوطني، إلخ)</li>
-          <li>🔄 تحسينات دورية على القوالب الموجودة</li>
-          <li>💎 كل ذلك مجاناً للمشتركين Lifetime</li>
-        </ul>
+        <p>نسعى لإضافة قوالب جديدة من وقت لآخر، خاصةً مع المناسبات الوطنية والمدرسية.</p>
+        <p>يمكنك متابعتنا للاطلاع على الجديد.</p>
       </div>
     </div>
 
@@ -391,13 +377,13 @@ body{
         <span class="faq-arrow">+</span>
       </button>
       <div class="faq-a">
-        <p>نحن في خدمتك دائماً 🤝</p>
+        <p>نسعد بتواصلك عبر القنوات التالية:</p>
         <ul>
-          <li>📱 واتساب: +966 55 052 2867</li>
-          <li>⏰ متاحين 24/7 (الردود خلال ساعات النهار)</li>
-          <li>💬 سرعة الرد: عادة خلال 10-30 دقيقة</li>
-          <li>🎯 نهتم بكل تفاصيلك ونساعدك خطوة بخطوة</li>
+          <li>📧 البريد: <strong>admin@ksa2030.one</strong></li>
+          <li>📱 الواتساب: <strong>+966 55 205 2867</strong></li>
+          <li>💬 صفحة <a href="contact.html">تواصل معنا</a></li>
         </ul>
+        <p>سنحرص على الرد في أقرب وقت ممكن.</p>
       </div>
     </div>
 
@@ -407,10 +393,10 @@ body{
     <div class="faq-cta-icon">💭</div>
     <div class="faq-cta-content">
       <div class="faq-cta-title">لا زال عندك سؤال؟</div>
-      <div class="faq-cta-sub">نحن هنا لمساعدتك في أي وقت</div>
+      <div class="faq-cta-sub">نحن هنا لمساعدتك</div>
     </div>
-    <a href="https://wa.me/966550522867?text=السلام%20عليكم،%20عندي%20استفسار" target="_blank" class="faq-cta-btn">
-      <span>💬</span><span>راسلنا الآن</span>
+    <a href="https://wa.me/966552052867?text=السلام%20عليكم،%20عندي%20استفسار" target="_blank" rel="noopener" class="faq-cta-btn">
+      <span>💬</span><span>راسلنا</span>
     </a>
   </div>
 </div>
