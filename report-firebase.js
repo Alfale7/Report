@@ -13,13 +13,7 @@ import {
   logout,
   getUserProfile,
   incrementDownloadCount,
-  listenToMaintenance,
-  onPricingChange,
-  getPricing,
-  logExport,
-  createShare,
-  toggleFavorite,
-  isFavorite
+  listenToMaintenance
 } from './firebase-config.js';
 
 import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
@@ -440,72 +434,75 @@ function showSubscribeGate() {
   if (document.getElementById('subscribeGate')) return;
   const link = 'pay.html';
   const name = _profile?.displayName || (_user.email || '').split('@')[0];
-  
-  // 💰 السعر الديناميكي مع كل المعلومات
-  const pricing = (typeof getPricing === 'function') ? getPricing() : null;
-  const price = pricing?.currentPrice || window.__PRICING__?.currentPrice || 49;
-  const currency = pricing?.currency || window.__PRICING__?.currency || 'ريال';
-  const originalPrice = pricing?.originalPrice || window.__PRICING__?.originalPrice || 99;
-  const discount = pricing?.discountPercent || window.__PRICING__?.discountPercent || 50;
-  const isOfferActive = pricing?.isOfferActive !== false;
 
   const g = document.createElement('div');
   g.id = 'subscribeGate';
   g.innerHTML = `<style>
-    #subscribeGate{position:fixed;inset:0;z-index:999998;background:linear-gradient(145deg,#1a1f2e,#2a3a4e);display:flex;align-items:center;justify-content:center;padding:18px;font-family:'Tajawal','Cairo',sans-serif;overflow-y:auto;color:#fff;}
-    #subscribeGate .sg{max-width:420px;width:100%;text-align:center;padding:30px 22px;background:rgba(255,255,255,0.04);border:2px solid rgba(212,166,87,0.55);border-radius:24px;box-shadow:0 30px 80px rgba(0,0,0,0.5);}
-    #subscribeGate .ub{display:inline-flex;align-items:center;gap:6px;background:linear-gradient(135deg,#dc2626,#f59e0b);padding:6px 16px;border-radius:99px;font-size:0.78rem;font-weight:900;margin-bottom:14px;animation:sgPulse 2s ease-in-out infinite;}
+    #subscribeGate{position:fixed;inset:0;z-index:999998;background:rgba(5,10,18,0.95);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);display:flex;align-items:center;justify-content:center;padding:18px;font-family:'Tajawal','Cairo',sans-serif;overflow-y:auto;color:#fff;direction:rtl;}
+    #subscribeGate .sg{max-width:420px;width:100%;text-align:center;padding:30px 22px;background:linear-gradient(145deg,#0a1a2e 0%,#1a3a4e 50%,#0f2a3f 100%);border-radius:24px;box-shadow:0 25px 70px rgba(0,0,0,0.7),0 0 0 1px rgba(212,166,87,0.5),0 0 30px rgba(212,166,87,0.15),inset 0 1px 0 rgba(232,197,71,0.3),inset 0 -2px 8px rgba(0,0,0,0.3);position:relative;overflow:hidden;}
+    #subscribeGate .sg::before{content:"";position:absolute;top:0;left:-200%;width:80%;height:100%;background:linear-gradient(100deg,transparent 30%,rgba(255,255,255,0.04) 42%,rgba(232,197,71,0.35) 48%,rgba(255,255,255,0.55) 50%,rgba(232,197,71,0.35) 52%,rgba(255,255,255,0.04) 58%,transparent 70%);transform:skewX(-20deg);animation:sgLightning 4.5s ease-in-out infinite;pointer-events:none;z-index:2;}
+    @keyframes sgLightning{0%,100%{left:-200%;}45%{left:-200%;}55%{left:200%;}100%{left:200%;}}
+    #subscribeGate .sg::after{content:"💎";position:absolute;bottom:-30px;left:-30px;font-size:8rem;opacity:0.06;pointer-events:none;transform:rotate(-15deg);color:#d4a657;z-index:0;}
+    #subscribeGate .sg > *{position:relative;z-index:1;}
+    #subscribeGate .ub{display:inline-flex;align-items:center;gap:6px;background:linear-gradient(135deg,#dc2626,#b91c1c);color:#fff;padding:6px 16px;border-radius:99px;font-size:0.78rem;font-weight:900;margin-bottom:14px;animation:sgPulse 2s ease-in-out infinite;box-shadow:0 6px 16px rgba(220,38,38,0.45);}
     @keyframes sgPulse{0%,100%{transform:scale(1);}50%{transform:scale(1.04);}}
-    #subscribeGate .ic{font-size:3.6rem;margin-bottom:8px;display:inline-block;filter:drop-shadow(0 4px 10px rgba(212,166,87,0.5));}
-    #subscribeGate h2{font-family:'Reem Kufi','Tajawal',sans-serif;font-size:1.35rem;font-weight:900;margin-bottom:6px;}
-    #subscribeGate .su{font-size:0.88rem;color:rgba(255,255,255,0.75);font-weight:700;margin-bottom:18px;line-height:1.6;}
-    #subscribeGate .uf{background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:14px;padding:14px 16px;margin-bottom:14px;text-align:right;}
-    #subscribeGate .uft{padding:6px 0;font-size:0.86rem;font-weight:700;display:flex;align-items:center;gap:8px;}
-    #subscribeGate .uft strong{color:#f4d690;}
-    #subscribeGate .upb{background:linear-gradient(135deg,rgba(212,166,87,0.2),rgba(245,158,11,0.1));border:2px solid rgba(212,166,87,0.5);border-radius:16px;padding:16px;margin-bottom:14px;position:relative;}
-    #subscribeGate .upt{position:absolute;top:-10px;right:50%;transform:translateX(50%);background:#dc2626;color:#fff;padding:3px 12px;border-radius:99px;font-size:0.7rem;font-weight:900;white-space:nowrap;box-shadow:0 4px 12px rgba(220,38,38,0.4);}
-    #subscribeGate .uam{font-family:'Reem Kufi','Tajawal',sans-serif;font-size:3.4rem;font-weight:900;color:#ffc107;line-height:1;}
-    #subscribeGate .ucu{font-size:1.15rem;font-weight:800;color:#ffc107;}
-    #subscribeGate .ustrike{font-family:'Tajawal',sans-serif;font-size:1.1rem;font-weight:700;color:rgba(255,255,255,0.4);text-decoration:line-through;margin-bottom:4px;display:inline-block;}
-    #subscribeGate .udisc{display:inline-block;background:linear-gradient(135deg,#dc2626,#f59e0b);color:#fff;padding:3px 10px;border-radius:99px;font-size:0.7rem;font-weight:900;margin-right:8px;box-shadow:0 3px 8px rgba(220,38,38,0.4);animation:sgDiscPulse 2.5s ease-in-out infinite;}
-    @keyframes sgDiscPulse{0%,100%{transform:scale(1) rotate(-2deg);}50%{transform:scale(1.08) rotate(2deg);}}
-    #subscribeGate .uo{display:inline-block;background:linear-gradient(135deg,#16a34a,#15803d);color:#fff;padding:5px 16px;border-radius:99px;font-size:0.76rem;font-weight:900;margin-top:6px;}
-    #subscribeGate .uct{display:flex;align-items:center;justify-content:center;gap:10px;width:100%;padding:16px;background:linear-gradient(135deg,#25d366,#128c7e);color:#fff;border:none;border-radius:14px;font-family:inherit;font-size:1rem;font-weight:900;text-decoration:none;box-shadow:0 8px 22px rgba(37,211,102,0.45);margin-bottom:10px;box-sizing:border-box;}
-    #subscribeGate .ug{font-size:0.76rem;color:rgba(255,255,255,0.7);font-weight:700;margin-bottom:14px;}
+    #subscribeGate .ic{font-size:3.6rem;margin-bottom:8px;display:inline-block;filter:drop-shadow(0 4px 12px rgba(232,197,71,0.5));}
+    #subscribeGate h2{font-family:'Reem Kufi','Tajawal',sans-serif;font-size:1.35rem;font-weight:900;color:#fff;margin-bottom:6px;text-shadow:0 2px 4px rgba(0,0,0,0.3);}
+    #subscribeGate .su{font-size:0.88rem;color:#94a3b8;font-weight:700;margin-bottom:18px;line-height:1.6;}
+    #subscribeGate .uf{background:linear-gradient(135deg,rgba(232,197,71,0.08),rgba(212,166,87,0.04));border:1px solid rgba(232,197,71,0.25);border-radius:14px;padding:14px 16px;margin-bottom:14px;text-align:right;box-shadow:inset 0 1px 0 rgba(232,197,71,0.1),inset 0 -1px 0 rgba(0,0,0,0.2);}
+    #subscribeGate .uft{padding:6px 0;font-size:0.86rem;font-weight:700;color:#f1f5f9;display:flex;align-items:center;gap:8px;line-height:1.3;}
+    #subscribeGate .uft strong{color:#e8c547;font-weight:900;}
+    #subscribeGate .utick{flex-shrink:0;width:20px;height:20px;background:linear-gradient(135deg,#d4a657,#e8c547);color:#3d2200;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:0.74rem;font-weight:900;box-shadow:0 2px 6px rgba(232,197,71,0.4);}
+    #subscribeGate .upb{background:linear-gradient(135deg,rgba(232,197,71,0.12),rgba(212,166,87,0.06));border:2px solid rgba(232,197,71,0.4);border-radius:16px;padding:18px 16px 14px;margin-bottom:14px;position:relative;}
+    #subscribeGate .upt{position:absolute;top:-10px;right:50%;transform:translateX(50%);background:linear-gradient(135deg,#dc2626,#b91c1c);color:#fff;padding:4px 14px;border-radius:99px;font-size:0.72rem;font-weight:900;white-space:nowrap;box-shadow:0 4px 10px rgba(220,38,38,0.5);}
+    #subscribeGate .uold{display:flex;align-items:center;justify-content:center;gap:8px;margin-bottom:4px;opacity:0.7;}
+    #subscribeGate .uoldl{font-size:0.7rem;color:#94a3b8;font-weight:700;}
+    #subscribeGate .ustr{font-family:'Reem Kufi','Tajawal',sans-serif;font-size:1.1rem;font-weight:900;color:#94a3b8;position:relative;display:inline-block;}
+    #subscribeGate .ustr::after{content:"";position:absolute;top:50%;left:-2px;right:-2px;height:2px;background:#ef4444;transform:rotate(-12deg);border-radius:2px;}
+    #subscribeGate .uam{font-family:'Reem Kufi','Tajawal',sans-serif;font-size:3.4rem;font-weight:900;background:linear-gradient(135deg,#f5d76e 0%,#e8c547 50%,#d4a657 100%);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;filter:drop-shadow(0 4px 12px rgba(232,197,71,0.4));line-height:1;}
+    #subscribeGate .ucu{font-size:1.2rem;font-weight:900;color:#e8c547;}
+    #subscribeGate .uo{display:inline-block;background:linear-gradient(135deg,#16a34a,#15803d);color:#fff;padding:6px 14px;border-radius:99px;font-size:0.74rem;font-weight:900;margin-top:6px;letter-spacing:0.5px;box-shadow:0 4px 12px rgba(22,163,74,0.4);}
+    #subscribeGate .uct{display:flex;align-items:center;justify-content:center;gap:10px;width:100%;padding:16px 18px;background:linear-gradient(135deg,#d4a657 0%,#e8c547 40%,#d4a657 100%);color:#3d2200;border:none;border-radius:14px;font-family:'Reem Kufi','Tajawal',sans-serif;font-size:1rem;font-weight:900;text-decoration:none;text-shadow:0 1px 0 rgba(255,255,255,0.4);box-shadow:0 10px 28px rgba(212,166,87,0.5),0 0 0 1px rgba(255,255,255,0.3) inset,0 -3px 8px rgba(180,130,40,0.4) inset;transition:all 0.25s ease;position:relative;overflow:hidden;margin-bottom:10px;box-sizing:border-box;}
+    #subscribeGate .uct::before{content:"";position:absolute;top:0;left:-150%;width:80%;height:100%;background:linear-gradient(110deg,transparent 20%,rgba(255,255,255,0.6) 50%,transparent 80%);animation:uctShimmer 2.8s infinite;pointer-events:none;}
+    @keyframes uctShimmer{0%{left:-150%;}50%,100%{left:150%;}}
+    #subscribeGate .uct:hover{transform:translateY(-3px);box-shadow:0 14px 36px rgba(212,166,87,0.65),0 0 0 1px rgba(255,255,255,0.4) inset,0 -3px 8px rgba(180,130,40,0.5) inset;background:linear-gradient(135deg,#e8c547 0%,#f5d76e 40%,#e8c547 100%);}
+    #subscribeGate .uct > span{position:relative;z-index:1;}
+    #subscribeGate .ug{font-size:0.76rem;color:#94a3b8;font-weight:700;margin-bottom:14px;}
     #subscribeGate .actions{display:flex;gap:8px;}
-    #subscribeGate .ac{flex:1;padding:11px;background:rgba(255,255,255,0.08);color:#fff;border:1px solid rgba(255,255,255,0.15);border-radius:11px;font-family:inherit;font-size:0.82rem;font-weight:800;text-decoration:none;text-align:center;}
+    #subscribeGate .ac{flex:1;padding:11px;background:rgba(255,255,255,0.08);color:#fff;border:1px solid rgba(255,255,255,0.15);border-radius:11px;font-family:inherit;font-size:0.82rem;font-weight:800;text-decoration:none;text-align:center;transition:background 0.2s;}
     #subscribeGate .ac:hover{background:rgba(255,255,255,0.15);}
   </style>
   <div class="sg">
     <div class="ub">🔒 محتوى مدفوع</div>
     <div class="ic">💎</div>
     <h2>اشترك لفتح هذا التقرير</h2>
-    <div class="su">مرحباً ${name} 👋<br>افتح كل القوالب الاحترافية بـ ${price} ${currency} مدى الحياة</div>
+    <div class="su">مرحباً ${name} 👋<br>افتح كل القوالب الاحترافية بـ 49 ريال مدى الحياة</div>
 
     <div class="uf">
-      <div class="uft"><span style="color:#16a34a">✓</span><strong>+15 قالب احترافي</strong> معتمد</div>
-      <div class="uft"><span style="color:#16a34a">✓</span><strong>تحميلات بلا حدود</strong> · مدى الحياة</div>
-      <div class="uft"><span style="color:#16a34a">✓</span>كل الألوان والثيمات</div>
-      <div class="uft"><span style="color:#16a34a">✓</span><strong>تحديثات مجانية للأبد</strong></div>
-      <div class="uft"><span style="color:#16a34a">✓</span>دعم فني عبر الواتساب</div>
+      <div class="uft"><span class="utick">✓</span><strong>+21 قالب احترافي</strong> معتمد</div>
+      <div class="uft"><span class="utick">✓</span><strong>تحميلات بلا حدود</strong> · مدى الحياة</div>
+      <div class="uft"><span class="utick">✓</span>كل الألوان والثيمات</div>
+      <div class="uft"><span class="utick">✓</span><strong>تحديثات مجانية للأبد</strong></div>
+      <div class="uft"><span class="utick">✓</span>دعم فني مباشر</div>
     </div>
 
     <div class="upb">
       <div class="upt">🔥 عرض إطلاق محدود</div>
-      <div id="sg-offer-wrap" ${isOfferActive ? '' : 'style="display:none;"'} style="margin-top:8px;">
-        <span class="ustrike" id="sg-live-original">${originalPrice}</span>
-        <span class="udisc" id="sg-live-discount">-${discount}%</span>
+      <div class="uold">
+        <span class="uoldl">السعر الأصلي</span>
+        <span class="ustr">99</span>
       </div>
-      <div style="display:flex;align-items:baseline;justify-content:center;gap:5px;margin-top:8px;">
-        <span class="uam" id="sg-live-price">${price}</span>
-        <span class="ucu" id="sg-live-currency">${currency}</span>
+      <div style="display:flex;align-items:baseline;justify-content:center;gap:5px;">
+        <span class="uam">49</span>
+        <span class="ucu">ريال</span>
       </div>
       <div class="uo">💎 دفعة واحدة · مدى الحياة</div>
     </div>
 
-    <a href="${link}" target="_blank" rel="noopener" class="uct">
+    <a href="${link}" class="uct">
       <span style="font-size:1.3rem">💳</span>
-      <span>اشترك الآن</span>
+      <span>اشترك الآن - 49 ريال</span>
+      <span style="font-weight:900">←</span>
     </a>
     <div class="ug">🛡️ ضمان استرداد كامل خلال 7 أيام</div>
 
@@ -515,42 +512,6 @@ function showSubscribeGate() {
     </div>
   </div>`;
   document.body.appendChild(g);
-
-  // 🔥 التحديث الفوري للسعر داخل Subscribe Gate
-  onPricingChange((newPricing) => {
-    const priceEl = document.getElementById('sg-live-price');
-    const curEl = document.getElementById('sg-live-currency');
-    const origEl = document.getElementById('sg-live-original');
-    const discEl = document.getElementById('sg-live-discount');
-    const offerWrap = document.getElementById('sg-offer-wrap');
-    
-    if (priceEl && newPricing.currentPrice) {
-      priceEl.textContent = newPricing.currentPrice;
-      // ✨ تأثير بصري عند التحديث
-      priceEl.style.transition = 'all 0.4s ease';
-      priceEl.style.transform = 'scale(1.2)';
-      priceEl.style.textShadow = '0 0 20px rgba(34,197,94,0.8)';
-      setTimeout(() => {
-        priceEl.style.transform = 'scale(1)';
-        priceEl.style.textShadow = '';
-      }, 500);
-    }
-    if (curEl && newPricing.currency) {
-      curEl.textContent = newPricing.currency;
-    }
-    // 💸 تحديث السعر الأصلي
-    if (origEl && newPricing.originalPrice) {
-      origEl.textContent = newPricing.originalPrice;
-    }
-    // 🎁 تحديث الخصم
-    if (discEl && newPricing.discountPercent !== undefined) {
-      discEl.textContent = '-' + newPricing.discountPercent + '%';
-    }
-    // 🎯 إظهار/إخفاء العرض
-    if (offerWrap) {
-      offerWrap.style.display = newPricing.isOfferActive !== false ? '' : 'none';
-    }
-  });
 }
 
 // ═══ شارة المستخدم في الزاوية ═══
@@ -761,20 +722,6 @@ function refreshBadge() {
       </span>
       <span>الملف الشخصي</span>
     </a>
-    ${(lifetime||admin)?`
-    <div class="dv"></div>
-    <a href="#" class="mi" onclick="window.shareReport();return false;">
-      <span class="mi-icon">
-        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-          <circle cx="18" cy="5" r="3"/>
-          <circle cx="6" cy="12" r="3"/>
-          <circle cx="18" cy="19" r="3"/>
-          <line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/>
-          <line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/>
-        </svg>
-      </span>
-      <span>🔗 مشاركة التقرير</span>
-    </a>`:''}
     ${admin?`
     <a href="admin.html" class="mi adm">
       <span class="mi-icon">
@@ -968,348 +915,6 @@ window.getFirebaseProfile = () => _profile;
 window.isFirebaseLifetime = () => isLifetime(_profile);
 window.isFirebaseAdmin = () => isAdmin(_user);
 
-// ═══════════════════════════════════════════════════════════
-// 📋 تتبّع التصدير في السجل
-// ═══════════════════════════════════════════════════════════
-window.trackExport = async function(options = {}) {
-  if (!_user) return false;
-  
-  try {
-    // 💎 اجمع المحتوى تلقائياً للاستعادة لاحقاً
-    const content = options.content || collectReportContent();
-    
-    const data = {
-      type: options.type || _currentPage || 'unknown',
-      title: options.title || document.title || 'تقرير',
-      format: options.format || 'pdf',
-      templateId: options.templateId || _currentPage,
-      content: content
-    };
-    
-    const result = await logExport(data);
-    if (result.success) {
-      console.log('✅ تم تسجيل التصدير في السجل مع المحتوى');
-      showToast('📋 تم حفظ التقرير في سجلك');
-      return true;
-    }
-  } catch (err) {
-    console.warn('فشل تسجيل التصدير:', err);
-  }
-  return false;
-};
-
-// ═══════════════════════════════════════════════════════════
-// 🔗 إنشاء رابط مشاركة
-// ═══════════════════════════════════════════════════════════
-window.shareReport = async function(options = {}) {
-  if (!_user) {
-    showToast('سجّل دخولك أولاً لمشاركة التقرير', 'error');
-    setTimeout(() => window.location.href = 'login.html', 1500);
-    return null;
-  }
-  
-  // 🔒 فقط للمشتركين Lifetime
-  if (!isLifetime(_profile) && !isAdmin(_user)) {
-    showSubscribeGate();
-    return null;
-  }
-  
-  try {
-    // اجمع البيانات من الحقول إن وجدت
-    const content = options.content || collectReportContent();
-    
-    const data = {
-      type: options.type || _currentPage || 'unknown',
-      title: options.title || document.title || 'تقرير مشارك',
-      content: content
-    };
-    
-    const result = await createShare(data);
-    if (result.success) {
-      // انسخ الرابط للحافظة تلقائياً
-      try {
-        await navigator.clipboard.writeText(result.shareUrl);
-        showShareModal(result.shareUrl);
-      } catch {
-        showShareModal(result.shareUrl);
-      }
-      return result.shareUrl;
-    } else {
-      showToast('فشل إنشاء الرابط: ' + (result.error || ''), 'error');
-    }
-  } catch (err) {
-    showToast('خطأ في إنشاء الرابط', 'error');
-    console.error(err);
-  }
-  return null;
-};
-
-// جمع بيانات التقرير من الحقول
-function collectReportContent() {
-  const content = {};
-  let counter = 0;
-  
-  // Inputs العادية
-  document.querySelectorAll('input[type="text"], input[type="date"], input[type="number"]').forEach(el => {
-    const val = el.value?.trim();
-    if (val) {
-      const key = el.id || el.name || el.placeholder || `field_${++counter}`;
-      content[key] = val;
-    }
-  });
-  
-  // Textareas
-  document.querySelectorAll('textarea').forEach(el => {
-    const val = el.value?.trim();
-    if (val) {
-      const key = el.id || el.name || el.placeholder || `text_${++counter}`;
-      content[key] = val;
-    }
-  });
-  
-  // Selects
-  document.querySelectorAll('select').forEach(el => {
-    const val = el.value?.trim();
-    if (val && val !== '--' && val !== '') {
-      const key = el.id || el.name || `select_${++counter}`;
-      content[key] = val;
-    }
-  });
-  
-  // ContentEditable (للحقول داخل DIVs)
-  document.querySelectorAll('[contenteditable="true"]').forEach(el => {
-    const text = (el.innerText || el.textContent || '').trim();
-    if (text && text.length > 1) {
-      const key = el.id || el.dataset?.field || el.dataset?.label || `editable_${++counter}`;
-      if (text !== '...' && text !== '-' && text !== '_') {
-        content[key] = text;
-      }
-    }
-  });
-  
-  // 🖼️ الصور (Data URLs من رفع الملفات)
-  document.querySelectorAll('img').forEach(el => {
-    const src = el.src || '';
-    // فقط الصور اللي بصيغة data URL (المرفوعة من المستخدم)
-    if (src.startsWith('data:image/')) {
-      const key = el.id || el.dataset?.field || el.dataset?.label || `img_${++counter}`;
-      content[key] = src;
-    }
-  });
-  
-  // 🎨 خلفيات CSS بصيغة data URL
-  document.querySelectorAll('[style*="background-image"]').forEach(el => {
-    const bg = el.style.backgroundImage || '';
-    if (bg.includes('data:image/')) {
-      const key = el.id || el.dataset?.field || `bg_${++counter}`;
-      content[key + '__bg'] = bg;
-    }
-  });
-  
-  return content;
-}
-
-// 🎊 Modal مشاركة فاخر
-function showShareModal(shareUrl) {
-  // أزل القديم لو موجود
-  const old = document.getElementById('shareModal');
-  if (old) old.remove();
-  
-  const modal = document.createElement('div');
-  modal.id = 'shareModal';
-  modal.innerHTML = `
-    <style>
-      #shareModal {
-        position: fixed; inset: 0;
-        background: rgba(5, 10, 18, 0.85);
-        backdrop-filter: blur(20px);
-        -webkit-backdrop-filter: blur(20px);
-        display: flex; align-items: center; justify-content: center;
-        z-index: 10000; padding: 20px;
-        animation: smFadeIn 0.3s ease-out;
-      }
-      @keyframes smFadeIn { from { opacity: 0; } to { opacity: 1; } }
-      #shareModal .sm-card {
-        background: linear-gradient(145deg, rgba(15, 41, 66, 0.98), rgba(10, 22, 32, 0.95));
-        border: 1px solid rgba(232, 197, 71, 0.3);
-        border-radius: 24px;
-        padding: 36px 28px;
-        max-width: 460px; width: 100%;
-        text-align: center;
-        box-shadow: 0 40px 100px rgba(0, 0, 0, 0.7);
-        animation: smPop 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
-        position: relative; overflow: hidden;
-        font-family: 'Tajawal', sans-serif;
-        color: #fff;
-      }
-      @keyframes smPop {
-        from { opacity: 0; transform: scale(0.85); }
-        to { opacity: 1; transform: scale(1); }
-      }
-      #shareModal .sm-card::before {
-        content: ''; position: absolute;
-        top: -50px; left: 50%; transform: translateX(-50%);
-        width: 300px; height: 200px;
-        background: radial-gradient(circle, rgba(232, 197, 71, 0.25), transparent 70%);
-        pointer-events: none;
-      }
-      #shareModal .sm-icon {
-        width: 80px; height: 80px;
-        margin: 0 auto 18px;
-        border-radius: 50%;
-        background: linear-gradient(135deg, #4caf50, #22c55e);
-        display: grid; place-items: center;
-        font-size: 2.2rem;
-        box-shadow: 0 12px 32px rgba(76, 175, 80, 0.5);
-        position: relative; z-index: 1;
-        animation: smIconBounce 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
-      }
-      @keyframes smIconBounce {
-        0% { transform: scale(0); }
-        100% { transform: scale(1); }
-      }
-      #shareModal .sm-title {
-        font: 800 1.4rem 'Aref Ruqaa', serif;
-        background: linear-gradient(135deg, #fff, #e8c547);
-        -webkit-background-clip: text; -webkit-text-fill-color: transparent;
-        background-clip: text;
-        margin-bottom: 6px;
-        position: relative; z-index: 1;
-      }
-      #shareModal .sm-sub {
-        font: 500 0.92rem 'Tajawal', sans-serif;
-        color: rgba(255, 255, 255, 0.65);
-        margin-bottom: 22px;
-        position: relative; z-index: 1;
-      }
-      #shareModal .sm-url-box {
-        background: rgba(255, 255, 255, 0.05);
-        border: 1.5px solid rgba(232, 197, 71, 0.3);
-        border-radius: 12px;
-        padding: 14px 18px;
-        margin-bottom: 20px;
-        font: 600 0.85rem monospace;
-        color: #e8c547;
-        word-break: break-all;
-        text-align: right;
-        direction: ltr;
-        position: relative; z-index: 1;
-      }
-      #shareModal .sm-actions {
-        display: grid;
-        grid-template-columns: 1fr 1fr;
-        gap: 10px;
-        position: relative; z-index: 1;
-      }
-      #shareModal .sm-btn {
-        padding: 13px;
-        border: none; border-radius: 12px;
-        font: 800 0.92rem 'Tajawal', sans-serif;
-        cursor: pointer;
-        font-family: inherit;
-        transition: all 0.25s ease;
-        display: inline-flex; align-items: center; justify-content: center; gap: 6px;
-      }
-      #shareModal .sm-btn.copy {
-        background: linear-gradient(135deg, #1e6b8a, #2a8aab, #d4a657);
-        color: #fff;
-        box-shadow: 0 8px 22px rgba(30, 107, 138, 0.4);
-      }
-      #shareModal .sm-btn.copy:hover { transform: translateY(-2px); }
-      #shareModal .sm-btn.close {
-        background: rgba(255, 255, 255, 0.06);
-        color: rgba(255, 255, 255, 0.7);
-        border: 1px solid rgba(255, 255, 255, 0.1);
-      }
-      #shareModal .sm-btn.close:hover { background: rgba(255, 255, 255, 0.12); color: #fff; }
-      #shareModal .sm-share-buttons {
-        display: flex; gap: 8px; justify-content: center;
-        margin-top: 16px; padding-top: 16px;
-        border-top: 1px solid rgba(255, 255, 255, 0.06);
-        position: relative; z-index: 1;
-      }
-      #shareModal .sm-share-btn {
-        width: 44px; height: 44px;
-        border-radius: 12px;
-        display: grid; place-items: center;
-        font-size: 1.2rem;
-        text-decoration: none;
-        transition: all 0.2s ease;
-        background: rgba(255, 255, 255, 0.06);
-        border: 1px solid rgba(255, 255, 255, 0.1);
-      }
-      #shareModal .sm-share-btn:hover { transform: scale(1.1) translateY(-2px); }
-      #shareModal .sm-share-btn.wa { background: rgba(37, 211, 102, 0.15); border-color: rgba(37, 211, 102, 0.3); }
-      #shareModal .sm-share-btn.tw { background: rgba(29, 161, 242, 0.15); border-color: rgba(29, 161, 242, 0.3); }
-      #shareModal .sm-share-btn.tg { background: rgba(0, 136, 204, 0.15); border-color: rgba(0, 136, 204, 0.3); }
-    </style>
-    <div class="sm-card" onclick="event.stopPropagation()">
-      <div class="sm-icon">🔗</div>
-      <h3 class="sm-title">رابط المشاركة جاهز!</h3>
-      <p class="sm-sub">شارك تقريرك مع زملائك بهذا الرابط</p>
-      <div class="sm-url-box" id="smUrlBox">${shareUrl}</div>
-      <div class="sm-actions">
-        <button class="sm-btn close" onclick="document.getElementById('shareModal').remove()">إغلاق</button>
-        <button class="sm-btn copy" onclick="window._copyShareUrl('${shareUrl}')">📋 نسخ الرابط</button>
-      </div>
-      <div class="sm-share-buttons">
-        <a href="https://wa.me/?text=${encodeURIComponent('شاهد تقريري: ' + shareUrl)}" target="_blank" class="sm-share-btn wa" title="واتساب">💬</a>
-        <a href="https://twitter.com/intent/tweet?text=${encodeURIComponent('شاهد تقريري: ' + shareUrl)}" target="_blank" class="sm-share-btn tw" title="تويتر">𝕏</a>
-        <a href="https://t.me/share/url?url=${encodeURIComponent(shareUrl)}" target="_blank" class="sm-share-btn tg" title="تيليجرام">✈️</a>
-      </div>
-    </div>
-  `;
-  
-  modal.onclick = (e) => {
-    if (e.target.id === 'shareModal') modal.remove();
-  };
-  
-  document.body.appendChild(modal);
-}
-
-window._copyShareUrl = async function(url) {
-  try {
-    await navigator.clipboard.writeText(url);
-    showToast('✅ تم نسخ الرابط!');
-  } catch {
-    // Fallback
-    const ta = document.createElement('textarea');
-    ta.value = url;
-    document.body.appendChild(ta);
-    ta.select();
-    try { document.execCommand('copy'); showToast('✅ تم نسخ الرابط!'); }
-    catch { showToast('فشل النسخ', 'error'); }
-    ta.remove();
-  }
-};
-
-// ═══════════════════════════════════════════════════════════
-// ⭐ إضافة/إزالة من المفضلة (للاستخدام في index.html)
-// ═══════════════════════════════════════════════════════════
-window.toggleFavoriteTemplate = async function(templateId, metadata = {}) {
-  if (!_user) {
-    showToast('سجّل دخولك أولاً', 'error');
-    setTimeout(() => window.location.href = 'login.html', 1500);
-    return null;
-  }
-  
-  try {
-    const result = await toggleFavorite(templateId, metadata);
-    if (result.success) {
-      showToast(result.isFavorite ? '⭐ أضيف للمفضلة' : '💔 أُزيل من المفضلة');
-      return result.isFavorite;
-    }
-  } catch (err) {
-    showToast('خطأ', 'error');
-  }
-  return null;
-};
-
-window.checkFavorite = async function(templateId) {
-  if (!_user) return false;
-  return await isFavorite(templateId);
-};
-
 // 📊 تتبّع التحميلات في Firebase (Real-time)
 window.trackDownload = async function() {
   if (!_user) return false;
@@ -1332,9 +937,7 @@ window.trackDownload = async function() {
       if (used >= limit) {
         // التحميل الأخير - اعرض رسالة بعد ثانية
         setTimeout(() => {
-          const price = window.__PRICING__?.currentPrice || 49;
-          const currency = window.__PRICING__?.currency || 'ريال';
-          alert(`🎁 انتهت تحميلاتك المجانية!\n\nاشترك مرة واحدة فقط بـ ${price} ${currency} للحصول على تحميلات بلا حدود 💎`);
+          alert('🎁 انتهت تحميلاتك المجانية!\n\nاشترك مرة واحدة فقط بـ 49 ريال للحصول على تحميلات بلا حدود 💎');
           showSubscribeGate();
         }, 800);
       }
@@ -1363,9 +966,7 @@ window.canDownload = function() {
 
   if (used >= limit) {
     showSubscribeGate();
-    const price2 = window.__PRICING__?.currentPrice || 49;
-    const currency2 = window.__PRICING__?.currency || 'ريال';
-    alert(`🎁 لقد استخدمت جميع تحميلاتك المجانية\n\nاشترك مرة واحدة فقط بـ ${price2} ${currency2} 💎`);
+    alert('🎁 لقد استخدمت جميع تحميلاتك المجانية\n\nاشترك مرة واحدة فقط بـ 49 ريال 💎');
     return false;
   }
   return true;
@@ -1392,14 +993,6 @@ window.showPremiumFeatureModal = function(featureName = 'هذه الميزة') {
   const name = _user ? (_profile?.displayName || (_user.email || '').split('@')[0]) : '';
   const isGuest = !_user;
   const link = 'pay.html';
-
-  // 💰 السعر الديناميكي من Firestore (lhzy)
-  const pricing = window.__PRICING__ || {};
-  const price = pricing.currentPrice || 49;
-  const currency = pricing.currency || 'ريال';
-  const originalPrice = pricing.originalPrice || 99;
-  const discount = pricing.discountPercent || 50;
-  const isOfferActive = pricing.isOfferActive !== false;
 
   const m = document.createElement('div');
   m.id = 'premiumFeatureModal';
@@ -1491,56 +1084,23 @@ window.showPremiumFeatureModal = function(featureName = 'هذه الميزة') {
 
     /* السعر - بنر أنيق صغير */
     #premiumFeatureModal .pfm-price{
-      display:flex;align-items:center;justify-content:space-between;gap:10px;
-      background:linear-gradient(135deg,rgba(212,166,87,0.12),rgba(245,158,11,0.04));
+      display:flex;align-items:center;justify-content:space-between;
+      background:linear-gradient(135deg,rgba(212,166,87,0.1),rgba(245,158,11,0.04));
       border:1px solid rgba(212,166,87,0.3);
       border-radius:12px;padding:11px 14px;margin-bottom:12px;
-      position:relative;overflow:hidden;
     }
-    #premiumFeatureModal .pfm-price::before{
-      content:'';position:absolute;top:-20px;right:-20px;
-      width:80px;height:80px;
-      background:radial-gradient(circle,rgba(232,197,71,0.2),transparent);
-      pointer-events:none;
-    }
-    #premiumFeatureModal .pfm-price-left{display:flex;flex-direction:column;gap:3px;position:relative;z-index:1;}
+    #premiumFeatureModal .pfm-price-left{display:flex;flex-direction:column;gap:2px;}
     #premiumFeatureModal .pfm-price-label{
       font-size:0.65rem;font-weight:700;
       color:rgba(238,244,248,0.55);letter-spacing:0.4px;
     }
-    #premiumFeatureModal .pfm-price-row{
-      display:flex;align-items:baseline;gap:8px;
-    }
-    #premiumFeatureModal .pfm-strike{
-      font-family:'Tajawal',sans-serif;
-      font-size:0.85rem;font-weight:700;
-      color:rgba(238,244,248,0.35);
-      text-decoration:line-through;
-    }
     #premiumFeatureModal .pfm-price-value{
       font-family:'Reem Kufi','Tajawal',sans-serif;
-      font-size:1.5rem;font-weight:900;color:#f0b855;
+      font-size:1.4rem;font-weight:900;color:#f0b855;
       line-height:1;display:flex;align-items:baseline;gap:3px;
     }
     #premiumFeatureModal .pfm-price-value .cur{font-size:0.85rem;font-weight:700;}
     #premiumFeatureModal .pfm-price-right{
-      display:flex;flex-direction:column;align-items:center;gap:5px;
-      position:relative;z-index:1;
-    }
-    #premiumFeatureModal .pfm-discount{
-      background:linear-gradient(135deg,#dc2626,#f59e0b);
-      color:#fff;
-      padding:3px 9px;border-radius:99px;
-      font-size:0.7rem;font-weight:900;
-      font-family:'Reem Kufi',sans-serif;
-      box-shadow:0 3px 8px rgba(220,38,38,0.3);
-      animation:pfmDiscountPulse 2.5s ease-in-out infinite;
-    }
-    @keyframes pfmDiscountPulse {
-      0%,100% { transform:scale(1) rotate(-2deg); }
-      50% { transform:scale(1.08) rotate(2deg); }
-    }
-    #premiumFeatureModal .pfm-once{
       background:rgba(22,163,74,0.15);
       border:1px solid rgba(22,163,74,0.35);
       color:#22c55e;
@@ -1558,11 +1118,21 @@ window.showPremiumFeatureModal = function(featureName = 'هذه الميزة') {
       transition:all 0.2s;margin-bottom:8px;
     }
     #premiumFeatureModal .pfm-btn-pay{
-      background:linear-gradient(135deg,#25d366,#128c7e);
-      color:#fff;
-      box-shadow:0 6px 16px rgba(37,211,102,0.3);
+      background:linear-gradient(135deg,#d4a657 0%,#e8c547 40%,#d4a657 100%);
+      color:#3d2200;
+      text-shadow:0 1px 0 rgba(255,255,255,0.4);
+      box-shadow:0 10px 28px rgba(212,166,87,0.5),0 0 0 1px rgba(255,255,255,0.3) inset,0 -3px 8px rgba(180,130,40,0.4) inset;
+      position:relative;
+      overflow:hidden;
     }
-    #premiumFeatureModal .pfm-btn-pay:hover{transform:translateY(-1px);box-shadow:0 10px 22px rgba(37,211,102,0.4);}
+    #premiumFeatureModal .pfm-btn-pay::before{
+      content:"";position:absolute;top:0;left:-150%;width:80%;height:100%;
+      background:linear-gradient(110deg,transparent 20%,rgba(255,255,255,0.6) 50%,transparent 80%);
+      animation:pfmShimmer 2.8s infinite;pointer-events:none;
+    }
+    @keyframes pfmShimmer{0%{left:-150%;}50%,100%{left:150%;}}
+    #premiumFeatureModal .pfm-btn-pay > span{position:relative;z-index:1;}
+    #premiumFeatureModal .pfm-btn-pay:hover{transform:translateY(-2px);box-shadow:0 14px 36px rgba(212,166,87,0.65),0 0 0 1px rgba(255,255,255,0.4) inset,0 -3px 8px rgba(180,130,40,0.5) inset;background:linear-gradient(135deg,#e8c547 0%,#f5d76e 40%,#e8c547 100%);}
     #premiumFeatureModal .pfm-btn-login{
       background:linear-gradient(135deg,#2a8aab,#1e6b8a);
       color:#fff;
@@ -1603,25 +1173,16 @@ window.showPremiumFeatureModal = function(featureName = 'هذه الميزة') {
       <div class="pfm-li"><span class="ck">✓</span><span>رفع الصور</span></div>
       <div class="pfm-li"><span class="ck">✓</span><span>تصدير PDF</span></div>
       <div class="pfm-li"><span class="ck">✓</span><span>مشاركة</span></div>
-      <div class="pfm-li"><span class="ck">✓</span><span>+15 قالب</span></div>
+      <div class="pfm-li"><span class="ck">✓</span><span>+21 قالب</span></div>
       <div class="pfm-li"><span class="ck">✓</span><span>دعم فني</span></div>
     </div>
 
     <div class="pfm-price">
       <div class="pfm-price-left">
         <span class="pfm-price-label">اشتراك مدى الحياة</span>
-        <div class="pfm-price-row">
-          <span class="pfm-strike" id="pfm-live-original" ${isOfferActive ? '' : 'style="display:none;"'}>${originalPrice}</span>
-          <span class="pfm-price-value">
-            <span id="pfm-live-price">${price}</span>
-            <span class="cur" id="pfm-live-currency">${currency}</span>
-          </span>
-        </div>
+        <span class="pfm-price-value">49 <span class="cur">ريال</span></span>
       </div>
-      <div class="pfm-price-right">
-        <span class="pfm-discount" id="pfm-live-discount" ${isOfferActive ? '' : 'style="display:none;"'}>-${discount}%</span>
-        <span class="pfm-once">دفعة<br>واحدة</span>
-      </div>
+      <div class="pfm-price-right">دفعة<br>واحدة</div>
     </div>
 
     ${isGuest 
@@ -1629,9 +1190,9 @@ window.showPremiumFeatureModal = function(featureName = 'هذه الميزة') {
           <span style="font-size:1.05rem">🔑</span>
           <span>تسجيل الدخول</span>
         </a>`
-      : `<a href="${link}" target="_blank" rel="noopener" class="pfm-btn pfm-btn-pay">
-          <span style="font-size:1.05rem">💳</span>
-          <span>اشترك الآن</span>
+      : `<a href="${link}" class="pfm-btn pfm-btn-pay">
+          <span style="font-size:1.15rem">💳</span>
+          <span>اشترك الآن - 49 ريال</span>
         </a>
         <div class="pfm-guarantee">🛡️ ضمان استرداد كامل خلال 7 أيام</div>`
     }
@@ -1642,64 +1203,9 @@ window.showPremiumFeatureModal = function(featureName = 'هذه الميزة') {
   </div>`;
   document.body.appendChild(m);
 
-  // 🔥 التحديث الفوري للسعر داخل المودال المفتوح
-  // يتفاعل مع تغيير السعر من admin بدون إغلاق/فتح
-  const _liveUnsub = onPricingChange((newPricing) => {
-    const priceEl = document.getElementById('pfm-live-price');
-    const curEl = document.getElementById('pfm-live-currency');
-    const origEl = document.getElementById('pfm-live-original');
-    const discEl = document.getElementById('pfm-live-discount');
-    
-    if (priceEl && newPricing.currentPrice) {
-      priceEl.textContent = newPricing.currentPrice;
-      // ✨ تأثير بصري عند التحديث
-      priceEl.style.transition = 'all 0.3s ease';
-      priceEl.style.transform = 'scale(1.15)';
-      priceEl.style.color = '#22c55e';
-      setTimeout(() => {
-        priceEl.style.transform = 'scale(1)';
-        priceEl.style.color = '';
-      }, 400);
-    }
-    if (curEl && newPricing.currency) {
-      curEl.textContent = newPricing.currency;
-    }
-    // 💸 تحديث السعر الأصلي
-    if (origEl && newPricing.originalPrice) {
-      origEl.textContent = newPricing.originalPrice;
-      origEl.style.display = newPricing.isOfferActive ? '' : 'none';
-    }
-    // 🎁 تحديث نسبة الخصم
-    if (discEl && newPricing.discountPercent !== undefined) {
-      discEl.textContent = '-' + newPricing.discountPercent + '%';
-      discEl.style.display = newPricing.isOfferActive ? '' : 'none';
-    }
-  });
-
-  // 🗑️ تنظيف الـ listener عند الإغلاق
-  const _cleanup = () => {
-    if (typeof _liveUnsub === 'function') _liveUnsub();
-    m.remove();
-  };
-
-  // ربط زر الإغلاق
-  const closeBtn = m.querySelector('.pfm-x');
-  if (closeBtn) {
-    closeBtn.onclick = _cleanup;
-  }
-
-  // ربط الرابط الثانوي "متابعة المشاهدة"
-  const secondaryLink = m.querySelector('.pfm-secondary');
-  if (secondaryLink) {
-    secondaryLink.onclick = (e) => {
-      e.preventDefault();
-      _cleanup();
-    };
-  }
-
   // إغلاق عند الضغط خارج الصندوق
   m.addEventListener('click', (e) => {
-    if (e.target.id === 'premiumFeatureModal') _cleanup();
+    if (e.target.id === 'premiumFeatureModal') m.remove();
   });
 };
 
