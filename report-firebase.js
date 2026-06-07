@@ -24,7 +24,7 @@ const FREE_TRIAL_REPORTS = ['tasis.html'];
 
 // 👁️ تقارير المعاينة (تفتح لأي زائر/Free لكن الميزات التفاعلية مقفلة)
 // يشاهد كل المحتوى لكن الكتابة/الرفع/التصدير = مدفوع
-const VIEW_ONLY_REPORTS = ['report.html', 'tasis.html', 'watny.html', 'alm.html', 'alm2.html', 'green.html', 'shawahed.html', 'enjaz.html', 'kg.html', 'report2.html', 'report3.html', 'report4.html', 'teacher.html', 'arabic.html', 'cert.html', 'exam.html', 'star.html', 'plan.html', 'visit.html', 'radio.html', 'report5.html', 'council.html', 'parent.html'];
+const VIEW_ONLY_REPORTS = ['report.html', 'tasis.html', 'watny.html', 'alm.html', 'alm2.html', 'green.html', 'shawahed.html', 'enjaz.html', 'kg.html', 'report2.html', 'report3.html', 'report4.html', 'teacher.html', 'arabic.html', 'cert.html', 'exam.html', 'star.html', 'plan.html', 'visit.html', 'radio.html', 'report5.html', 'council.html', 'parent.html', 'weakness.html'];
 
 let _user = null;
 let _profile = null;

@@ -2809,6 +2809,56 @@ box-shadow:0 4px 12px rgba(0,0,0,0.2),inset 0 1px 0 rgba(255,255,255,0.2);
   background:linear-gradient(135deg,#d4a657,#b48528);
   padding:2px 10px;border-radius:99px;position:relative;z-index:1;
 }
+
+/* ═══════════════════════════════════════════════════════
+   📋 تصنيف: متابعة الطلاب - إشعار ضعف دراسي
+   ═══════════════════════════════════════════════════════ */
+.cat-icon.followup{background:linear-gradient(135deg,#a23837,#7a2828);position:relative;overflow:hidden;}
+.cat-icon.followup::after{
+  content:"";
+  position:absolute;top:-50%;left:-50%;
+  width:200%;height:200%;
+  background:linear-gradient(135deg,transparent 30%,rgba(232,197,71,0.35) 50%,transparent 70%);
+  animation:followupCatSweep 4s ease-in-out infinite;
+  pointer-events:none;
+}
+@keyframes followupCatSweep{0%,70%{transform:translateX(-100%);}85%,100%{transform:translateX(100%);}}
+
+/* صورة معاينة الكرت - إشعار ضعف */
+.followup-snap{
+  width:78%;height:82%;
+  background:linear-gradient(160deg,#fefdf8,#fdf5f0);
+  border:2px solid #a23837;border-radius:8px;
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  gap:6px;padding:6px 8px;position:relative;overflow:hidden;
+  box-shadow:0 8px 20px rgba(0,0,0,0.3);
+}
+.followup-snap-glow{
+  position:absolute;top:-40%;left:-60%;
+  width:50%;height:200%;
+  background:linear-gradient(90deg,transparent,rgba(212,166,87,0.4),transparent);
+  transform:rotate(22deg);
+  animation:followupSnapSweep 3.8s ease-in-out infinite;
+}
+@keyframes followupSnapSweep{0%,70%{left:-60%;}85%,100%{left:160%;}}
+.followup-snap-head{font-size:1.4rem;line-height:1;position:relative;z-index:1;}
+.followup-snap-title{font-family:'Reem Kufi',sans-serif;font-size:0.74rem;font-weight:800;color:#7a2828;position:relative;z-index:1;}
+.followup-snap-types{
+  display:flex;gap:3px;flex-wrap:wrap;justify-content:center;
+  position:relative;z-index:1;
+}
+.ft-pill{
+  font-size:0.5rem;font-weight:800;padding:2px 6px;border-radius:99px;color:#fff;
+  white-space:nowrap;
+}
+.ft-pill.ft-subjects{background:linear-gradient(135deg,#3b82f6,#2563eb);}
+.ft-pill.ft-reasons{background:linear-gradient(135deg,#f59e0b,#d97706);}
+.ft-pill.ft-actions{background:linear-gradient(135deg,#16a34a,#15803d);}
+.followup-snap-badge{
+  font-size:0.58rem;font-weight:800;color:#fff;
+  background:linear-gradient(135deg,#d4a657,#b48528);
+  padding:2px 10px;border-radius:99px;position:relative;z-index:1;
+}
 .cat-icon.shawahed::after{
   content:"";position:absolute;top:-50%;left:-70%;
   width:45%;height:200%;
@@ -2867,6 +2917,11 @@ box-shadow:0 4px 12px rgba(0,0,0,0.2),inset 0 1px 0 rgba(255,255,255,0.2);
 }
 .thumb-communication{
   background:linear-gradient(160deg,#0a2415,#062017);
+  display:flex;align-items:center;justify-content:center;
+  position:relative;overflow:hidden;
+}
+.thumb-followup{
+  background:linear-gradient(160deg,#2a0d0d,#1a0707);
   display:flex;align-items:center;justify-content:center;
   position:relative;overflow:hidden;
 }
@@ -4651,6 +4706,8 @@ border-radius:18px;opacity:0.5;filter:blur(8px);z-index:-1;
 .r-national .card-icon-wrap::after{background:#3a8a52;}
 .r-communication .card-icon-wrap::after{background:#d4a657;}
 .r-communication .card-icon{background:linear-gradient(135deg,#1a7a5e,#0f5a44); color:#fff;}
+.r-followup .card-icon-wrap::after{background:#d4a657;}
+.r-followup .card-icon{background:linear-gradient(135deg,#a23837,#7a2828); color:#fff;}
 
 .card-icon{
 width:52px;height:52px;border-radius:14px;
@@ -6147,6 +6204,53 @@ font-size:0.78rem;text-align:center;margin-top:12px;display:none;
         <div class="card-text">
           <div class="card-title">استمارة التواصل مع ولي الأمر</div>
           <div class="card-desc">3 أنواع · تقييم سلوكي · جدول مواعيد · توقيعات رسمية · هوية وزارة</div>
+        </div>
+        <div class="card-action">‹</div>
+      </div>
+    </div>
+
+        </div>
+      </div>
+    </div>
+
+    <!-- ═══ تصنيف: متابعة الطلاب 📋 (إشعارات تربوية) ═══ -->
+    <div class="cat-section" data-cat="followup">
+      <div class="cat-header" onclick="toggleCategory(this)">
+        <div class="cat-icon followup">📋</div>
+        <div class="cat-text">
+          <div class="cat-title">
+            <span>متابعة الطلاب</span>
+            <span class="cat-count">1</span>
+          </div>
+          <div class="cat-sub">إشعارات تربوية رسمية · ضعف دراسي · توقيعات معتمدة</div>
+        </div>
+        <div class="cat-chevron">▼</div>
+      </div>
+      <div class="cat-body">
+        <div class="cat-cards">
+
+    <div class="preview-card r-followup locked" data-target="weakness.html" onclick="handleCardClick(this)">
+      <span class="card-badge badge-new">✨ <span>جديد</span></span>
+      <div class="thumb thumb-followup">
+        <div class="followup-snap">
+          <div class="followup-snap-glow"></div>
+          <div class="followup-snap-head">📋</div>
+          <div class="followup-snap-title">إشعار ضعف دراسي</div>
+          <div class="followup-snap-types">
+            <span class="ft-pill ft-subjects">📚 مواد</span>
+            <span class="ft-pill ft-reasons">⚠️ أسباب</span>
+            <span class="ft-pill ft-actions">✅ إجراءات</span>
+          </div>
+          <div class="followup-snap-badge">هوية وزارة التعليم</div>
+        </div>
+      </div>
+      <div class="card-content">
+        <div class="card-icon-wrap">
+          <div class="card-icon">📋</div>
+        </div>
+        <div class="card-text">
+          <div class="card-title">إشعار ضعف دراسي</div>
+          <div class="card-desc">إشعار رسمي لولي الأمر · مواد الضعف · الأسباب · الإجراءات المطلوبة</div>
         </div>
         <div class="card-action">‹</div>
       </div>
@@ -8251,7 +8355,7 @@ function handleCardClick(card){
   const target = card.getAttribute('data-target');
 
   // 👁️ تقارير المعاينة / التجربة - يفتحها أي زائر بدون تسجيل دخول
-  const VIEW_ONLY_AND_FREE_TRIAL = ['report.html', 'tasis.html', 'watny.html', 'alm.html', 'alm2.html', 'green.html', 'shawahed.html', 'enjaz.html', 'kg.html', 'report2.html', 'report3.html', 'report4.html', 'teacher.html', 'arabic.html', 'cert.html', 'exam.html', 'star.html', 'plan.html', 'visit.html', 'radio.html', 'report5.html', 'council.html', 'parent.html'];
+  const VIEW_ONLY_AND_FREE_TRIAL = ['report.html', 'tasis.html', 'watny.html', 'alm.html', 'alm2.html', 'green.html', 'shawahed.html', 'enjaz.html', 'kg.html', 'report2.html', 'report3.html', 'report4.html', 'teacher.html', 'arabic.html', 'cert.html', 'exam.html', 'star.html', 'plan.html', 'visit.html', 'radio.html', 'report5.html', 'council.html', 'parent.html', 'weakness.html'];
   if (target && VIEW_ONLY_AND_FREE_TRIAL.includes(target)) {
     window.location.href = target;
     return;
