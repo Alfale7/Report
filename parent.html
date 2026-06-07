@@ -645,7 +645,7 @@ input:focus,textarea:focus{outline:none;}
 <!-- ═══════════════════════════════════════════════════════
      🔥 Firebase + الحمايات (نفس نظام الموقع)
      ═══════════════════════════════════════════════════════ -->
-<script type="module" src="report-firebase.js?v=17"></script>
+<script type="module" src="report-firebase.js?v=18"></script>
 
 <div id="page">
 
@@ -827,7 +827,7 @@ input:focus,textarea:focus{outline:none;}
 <!-- ═══ شريط الأكشن ═══ -->
 <div class="action-bar">
   <button class="btn btn-gray" onclick="confirmClear()">تفريغ</button>
-  <button class="btn btn-lang" aria-label="Language" title="اللغة"><span>🌐</span></button>
+  <button class="btn btn-lang" aria-label="Language" title="اللغة" onclick="toggleLanguage()"><span id="langIcon">EN</span></button>
   <div class="export-menu-wrap">
     <button class="btn btn-teal" onclick="toggleExportMenu()">⬇ تحميل التقرير</button>
   </div>
@@ -1439,6 +1439,192 @@ window.saveToMyProfile = async function(){
     }
   }
 };
+
+/* ═══════════════════════════════════════════════════════
+   🌐 نظام تبديل اللغة (AR ↔ EN)
+   ═══════════════════════════════════════════════════════ */
+const I18N = {
+  // الترويسة
+  'header-l1': { ar: 'الإدارة العامة للتعليم', en: 'General Administration of Education' },
+  'header-admin-ph': { ar: 'اسم المنطقة هنا', en: 'Region Name Here' },
+  'header-office-ph': { ar: 'اسم مكتب التعليم هنا', en: 'Education Office Name Here' },
+  'school-ph': { ar: 'اسم المدرسة هنا', en: 'School Name Here' },
+  
+  // عنوان التقرير
+  'report-title': { ar: 'تقرير توثيق التواصل مع أولياء الأمور', en: 'Parent Communication Documentation Report' },
+  
+  // معلومات الطالب
+  'lab-student': { ar: 'اسم الطالب/ـة', en: 'Student Name' },
+  'ph-student': { ar: 'اكتب الاسم الكامل...', en: 'Enter full name...' },
+  'lab-date': { ar: 'تاريخ التواصل', en: 'Contact Date' },
+  'lab-class': { ar: 'الصف', en: 'Class' },
+  'ph-class': { ar: 'مثال: الثالث 3/ب', en: 'e.g., Grade 3/B' },
+  
+  // الفصل الدراسي
+  'lab-term': { ar: 'الفصل الدراسي', en: 'Semester' },
+  'term-1': { ar: 'الأول', en: 'First' },
+  'term-2': { ar: 'الثاني', en: 'Second' },
+  'lab-note': { ar: 'الملاحظة', en: 'Note' },
+  'ph-note': { ar: 'ملاحظة عامة عن التواصل...', en: 'General note about the contact...' },
+  
+  // سبب التواصل
+  'reason-title': { ar: 'سبب التواصل', en: 'Reason for Contact' },
+  'r-1': { ar: 'تكريم', en: 'Honor' },
+  'r-2': { ar: 'غياب', en: 'Absence' },
+  'r-3': { ar: 'تأخير', en: 'Tardiness' },
+  'r-4': { ar: 'سلوك', en: 'Behavior' },
+  'r-5': { ar: 'الأداء المدرسي', en: 'Academic Performance' },
+  'r-6': { ar: 'أخرى:', en: 'Other:' },
+  
+  // وسيلة التواصل
+  'method-title': { ar: 'وسيلة التواصل', en: 'Contact Method' },
+  'm-1': { ar: 'مكالمة هاتفية', en: 'Phone Call' },
+  'm-2': { ar: 'حضوري', en: 'In Person' },
+  'm-3': { ar: 'اشعار ورقي', en: 'Paper Notice' },
+  'm-4': { ar: 'رسالة واتساب', en: 'WhatsApp Message' },
+  'm-5': { ar: 'منصة مدرستي', en: 'Madrasati Platform' },
+  'm-6': { ar: 'أخرى:', en: 'Other:' },
+  
+  // المتواصل
+  'who-title': { ar: 'الذي تواصل مع ولي الأمر', en: 'Who Contacted the Parent' },
+  'w-1': { ar: 'الموجه الطلابي', en: 'Student Counselor' },
+  'w-2': { ar: 'الوكيل الطلابي', en: 'Student Affairs Deputy' },
+  'w-3': { ar: 'مدير المدرسة', en: 'School Principal' },
+  'w-4': { ar: 'وكيل المدرسة', en: 'School Deputy' },
+  'w-5': { ar: 'المعلم/ـة', en: 'Teacher' },
+  'w-6': { ar: 'أخرى:', en: 'Other:' },
+  
+  // الأزرار
+  'btn-clear': { ar: 'تفريغ', en: 'Clear' },
+  'btn-download': { ar: '⬇ تحميل التقرير', en: '⬇ Download Report' },
+  
+  // قائمة التصدير
+  'export-title': { ar: 'اختر طريقة التصدير', en: 'Choose Export Method' },
+  'opt-png-title': { ar: 'حفظ كصورة', en: 'Save as Image' },
+  'opt-png-desc': { ar: 'PNG عالي الجودة', en: 'High-quality PNG' },
+  'opt-pdf-title': { ar: 'حفظ PDF', en: 'Save as PDF' },
+  'opt-pdf-desc': { ar: 'ملف PDF احترافي للطباعة', en: 'Professional PDF for printing' },
+  'opt-share-title': { ar: 'مشاركة', en: 'Share' },
+  'opt-share-desc': { ar: 'شارك التقرير عبر تطبيقاتك', en: 'Share via your apps' },
+  'opt-cloud-title': { ar: 'حفظ في حسابي', en: 'Save to My Account' },
+  'opt-cloud-desc': { ar: 'احفظ التقرير في سجلك للرجوع له لاحقاً', en: 'Save report to your records for later' }
+};
+
+const I18N_PLACEHOLDERS = {
+  'moe-admin': 'header-admin-ph',
+  'moe-office': 'header-office-ph',
+  'school-name': 'school-ph',
+  'f-student': 'ph-student',
+  'f-class': 'ph-class',
+  'f-note': 'ph-note'
+};
+
+let _currentLang = localStorage.getItem('parent_lang') || 'ar';
+
+window.toggleLanguage = function() {
+  _currentLang = _currentLang === 'ar' ? 'en' : 'ar';
+  localStorage.setItem('parent_lang', _currentLang);
+  applyLanguage();
+};
+
+function applyLanguage() {
+  const lang = _currentLang;
+  const isAr = lang === 'ar';
+  
+  // غيّر اتجاه الصفحة
+  document.documentElement.lang = lang;
+  document.documentElement.dir = isAr ? 'rtl' : 'ltr';
+  
+  // غيّر نص الزر
+  const langIcon = document.getElementById('langIcon');
+  if (langIcon) langIcon.textContent = isAr ? 'EN' : 'ع';
+  
+  // الترويسة - l1
+  const l1 = document.querySelector('.moe-band .l1');
+  if (l1) l1.textContent = I18N['header-l1'][lang];
+  
+  // placeholders
+  Object.entries(I18N_PLACEHOLDERS).forEach(([id, key]) => {
+    const el = document.getElementById(id);
+    if (el && I18N[key]) el.placeholder = I18N[key][lang];
+  });
+  
+  // عنوان التقرير
+  const reportTitle = document.querySelector('.report-title');
+  if (reportTitle) reportTitle.textContent = I18N['report-title'][lang];
+  
+  // labels (lab class)
+  const labMap = {
+    'f-student': 'lab-student',
+    'f-date': 'lab-date',
+    'f-class': 'lab-class',
+    'f-note': 'lab-note'
+  };
+  Object.entries(labMap).forEach(([inputId, key]) => {
+    const input = document.getElementById(inputId);
+    if (input) {
+      const cell = input.closest('.info-cell, .term-cell');
+      const lab = cell?.querySelector('.lab');
+      if (lab && I18N[key]) lab.textContent = I18N[key][lang];
+    }
+  });
+  
+  // term cells
+  const termCells = document.querySelectorAll('.term-cell .lab');
+  if (termCells[0] && I18N['lab-term']) termCells[0].textContent = I18N['lab-term'][lang];
+  
+  // فصل دراسي 1، 2
+  ['term-1', 'term-2'].forEach(id => {
+    const cb = document.getElementById(id);
+    const span = cb?.parentNode.querySelector('.ctx');
+    if (span && I18N[id]) span.textContent = I18N[id][lang];
+  });
+  
+  // عناوين الأقسام (opt-header)
+  const optHeaders = document.querySelectorAll('.opt-header');
+  if (optHeaders[0]) optHeaders[0].textContent = I18N['reason-title'][lang];
+  // الأقسام الأخرى - نبحث عن النص
+  optHeaders.forEach(h => {
+    const t = h.textContent.trim();
+    if (t === 'وسيلة التواصل' || t === 'Contact Method') h.textContent = I18N['method-title'][lang];
+    if (t === 'الذي تواصل مع ولي الأمر' || t === 'Who Contacted the Parent') h.textContent = I18N['who-title'][lang];
+  });
+  
+  // كل الـ checkbox labels
+  ['r-1','r-2','r-3','r-4','r-5','r-6','m-1','m-2','m-3','m-4','m-5','m-6','w-1','w-2','w-3','w-4','w-5','w-6'].forEach(id => {
+    const cb = document.getElementById(id);
+    const span = cb?.parentNode.querySelector('.ctx');
+    if (span && I18N[id]) span.textContent = I18N[id][lang];
+  });
+  
+  // الأزرار في شريط الأكشن
+  const btnClear = document.querySelector('.btn-gray');
+  if (btnClear) btnClear.textContent = I18N['btn-clear'][lang];
+  
+  const btnDownload = document.querySelector('.btn-teal');
+  if (btnDownload) btnDownload.textContent = I18N['btn-download'][lang];
+  
+  // قائمة التصدير
+  const exportTitle = document.querySelector('.export-menu-title');
+  if (exportTitle) exportTitle.textContent = I18N['export-title'][lang];
+  
+  // خيارات التصدير
+  const options = document.querySelectorAll('.export-option');
+  const optKeys = ['png', 'pdf', 'share', 'cloud'];
+  options.forEach((opt, i) => {
+    const key = optKeys[i];
+    if (!key) return;
+    const title = opt.querySelector('.opt-title');
+    const desc = opt.querySelector('.opt-desc');
+    if (title && I18N['opt-'+key+'-title']) title.textContent = I18N['opt-'+key+'-title'][lang];
+    if (desc && I18N['opt-'+key+'-desc']) desc.textContent = I18N['opt-'+key+'-desc'][lang];
+  });
+}
+
+// طبّق اللغة عند تحميل الصفحة
+document.addEventListener('DOMContentLoaded', () => {
+  setTimeout(applyLanguage, 100);
+});
 </script>
 
 </body>
