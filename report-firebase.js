@@ -40,13 +40,7 @@ if (_rawPage && !_rawPage.includes('.')) {
   _rawPage = _rawPage + '.html';
 }
 let _currentPage = _rawPage || 'index.html';
-// parent.html تفتح للجميع بدون أي تحقق (مثل index.html)
-let _isReportPage = !['index.html', 'login.html', 'profile.html', 'admin.html', 'parent.html', ''].includes(_currentPage);
-
-// 🔍 تشخيص: اطبع المعلومات في الـ console
-console.log('[ksa2030] 📄 Current page:', _currentPage);
-console.log('[ksa2030] 📋 Is report page:', _isReportPage);
-console.log('[ksa2030] 👁️ In VIEW_ONLY list:', VIEW_ONLY_REPORTS.includes(_currentPage));
+let _isReportPage = !['index.html', 'login.html', 'profile.html', 'admin.html', ''].includes(_currentPage);
 
 // ═══ شاشة التحميل - تخفي التقرير حتى نتأكد ═══
 function showFullPageLoader() {
@@ -357,8 +351,6 @@ onAuthStateChanged(auth, (user) => {
 
 // ═══ 🔥 الدالة الرئيسية: قرار الوصول ═══
 function handleAccess() {
-  console.log('[ksa2030] 🔄 handleAccess called - user:', _user ? 'logged in' : 'guest', '| page:', _currentPage);
-  
   // ما نتدخل في الصفحات اللي مش تقارير
   if (!_isReportPage) {
     hideFullPageLoader();
@@ -370,12 +362,10 @@ function handleAccess() {
   // - زائر/Free: يشاهد التقرير لكن لا يقدر يكتب في الحقول + لا يصدر
   // - مشترك Lifetime/Admin: تعديل كامل + تصدير
   if (VIEW_ONLY_REPORTS.includes(_currentPage)) {
-    console.log('[ksa2030] ✅ Page is VIEW_ONLY - opening for everyone');
     hideFullPageLoader();
     
     if (isLifetime(_profile) || isAdmin(_user)) {
       // مشترك أو Admin → تعديل كامل
-      console.log('[ksa2030] 💎 Lifetime/Admin user - full edit mode');
       removeAllGuards();
       removeViewOnlyMode();
       refreshBadge();
@@ -383,7 +373,6 @@ function handleAccess() {
     }
     
     // زائر أو Free → وضع المشاهدة فقط (مايقدر يكتب)
-    console.log('[ksa2030] 👁️ Guest/Free user - view-only mode');
     removeAllGuards();
     applyViewOnlyMode();
     refreshBadge();
@@ -392,7 +381,6 @@ function handleAccess() {
 
   // 1️⃣ زائر بدون تسجيل دخول → روح login
   if (!_user) {
-    console.log('[ksa2030] ⚠️ Guest on protected page - redirecting to login');
     hideFullPageLoader();
     showLoginRequired();
     return;
