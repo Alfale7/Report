@@ -40,7 +40,8 @@ if (_rawPage && !_rawPage.includes('.')) {
   _rawPage = _rawPage + '.html';
 }
 let _currentPage = _rawPage || 'index.html';
-let _isReportPage = !['index.html', 'login.html', 'profile.html', 'admin.html', ''].includes(_currentPage);
+// parent.html تفتح للجميع بدون أي تحقق (مثل index.html)
+let _isReportPage = !['index.html', 'login.html', 'profile.html', 'admin.html', 'parent.html', ''].includes(_currentPage);
 
 // 🔍 تشخيص: اطبع المعلومات في الـ console
 console.log('[ksa2030] 📄 Current page:', _currentPage);
