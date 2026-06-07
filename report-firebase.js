@@ -24,7 +24,7 @@ const FREE_TRIAL_REPORTS = ['tasis.html'];
 
 // 👁️ تقارير المعاينة (تفتح لأي زائر/Free لكن الميزات التفاعلية مقفلة)
 // يشاهد كل المحتوى لكن الكتابة/الرفع/التصدير = مدفوع
-const VIEW_ONLY_REPORTS = ['report.html', 'tasis.html', 'watny.html', 'alm.html', 'alm2.html', 'green.html', 'shawahed.html', 'enjaz.html', 'kg.html', 'report2.html', 'report3.html', 'report4.html', 'teacher.html', 'arabic.html', 'cert.html', 'exam.html', 'star.html', 'plan.html', 'visit.html', 'radio.html', 'report5.html', 'council.html'];
+const VIEW_ONLY_REPORTS = ['report.html', 'tasis.html', 'watny.html', 'alm.html', 'alm2.html', 'green.html', 'shawahed.html', 'enjaz.html', 'kg.html', 'report2.html', 'report3.html', 'report4.html', 'teacher.html', 'arabic.html', 'cert.html', 'exam.html', 'star.html', 'plan.html', 'visit.html', 'radio.html', 'report5.html', 'council.html', 'parent.html'];
 
 let _user = null;
 let _profile = null;
@@ -349,10 +349,22 @@ function handleAccess() {
   }
 
   // 👁️ تقارير المعاينة → افتح للجميع (زائر/Free/Paid) في وضع المعاينة
-  // الحماية بتكون على مستوى الميزات التفاعلية فقط
+  // - زائر/Free: يشاهد التقرير لكن لا يقدر يكتب في الحقول + لا يصدر
+  // - مشترك Lifetime/Admin: تعديل كامل + تصدير
   if (VIEW_ONLY_REPORTS.includes(_currentPage)) {
     hideFullPageLoader();
+    
+    if (isLifetime(_profile) || isAdmin(_user)) {
+      // مشترك أو Admin → تعديل كامل
+      removeAllGuards();
+      removeViewOnlyMode();
+      refreshBadge();
+      return;
+    }
+    
+    // زائر أو Free → وضع المشاهدة فقط (مايقدر يكتب)
     removeAllGuards();
+    applyViewOnlyMode();
     refreshBadge();
     return;
   }
@@ -402,6 +414,183 @@ function removeAllGuards() {
   if (g) g.remove();
   const s = document.getElementById('subscribeGate');
   if (s) s.remove();
+}
+
+// ═══════════════════════════════════════════════════════════
+// 👁️ وضع المشاهدة فقط (للزائر/Free)
+// - يعطّل كل inputs/textareas/select/contenteditable
+// - يمنع الكتابة + الضغط على radio/checkbox
+// - أي محاولة تفاعل → showSubscribeGate()
+// ═══════════════════════════════════════════════════════════
+function applyViewOnlyMode() {
+  // 1) أضف CSS لو ما كان موجود
+  if (!document.getElementById('viewOnlyStyle')) {
+    const style = document.createElement('style');
+    style.id = 'viewOnlyStyle';
+    style.textContent = `
+      /* تعطيل المدخلات للزائر/Free في وضع المشاهدة */
+      body.view-only-mode input:not([type="hidden"]):not([type="button"]):not([type="submit"]):not([type="reset"]),
+      body.view-only-mode textarea,
+      body.view-only-mode select,
+      body.view-only-mode [contenteditable="true"],
+      body.view-only-mode [contenteditable=""] {
+        pointer-events: none !important;
+        user-select: none !important;
+        -webkit-user-select: none !important;
+        caret-color: transparent !important;
+      }
+      
+      /* Overlay دعوة للاشتراك أسفل الشاشة */
+      body.view-only-mode .view-only-overlay {
+        position: fixed;
+        bottom: 84px;
+        left: 50%;
+        transform: translateX(-50%);
+        background: linear-gradient(135deg, #d4a657 0%, #e8c547 40%, #d4a657 100%);
+        color: #3d2200;
+        padding: 12px 22px;
+        border-radius: 99px;
+        font-family: 'Tajawal', 'Cairo', sans-serif;
+        font-weight: 900;
+        font-size: 0.9rem;
+        box-shadow: 
+          0 14px 36px rgba(212,166,87,0.5),
+          0 0 0 1px rgba(255,255,255,0.3) inset,
+          0 -2px 6px rgba(180,130,40,0.35) inset;
+        z-index: 99997;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        cursor: pointer;
+        animation: viewOnlyPulse 2.5s ease-in-out infinite;
+        text-shadow: 0 1px 0 rgba(255,255,255,0.3);
+        max-width: calc(100% - 32px);
+        white-space: nowrap;
+      }
+      @keyframes viewOnlyPulse {
+        0%, 100% { transform: translateX(-50%) scale(1); }
+        50% { transform: translateX(-50%) scale(1.04); }
+      }
+      body.view-only-mode .view-only-overlay:hover {
+        background: linear-gradient(135deg, #e8c547 0%, #f5d76e 40%, #e8c547 100%);
+        box-shadow: 0 18px 44px rgba(212,166,87,0.65);
+      }
+    `;
+    document.head.appendChild(style);
+  }
+  
+  // 2) فعّل الوضع
+  document.body.classList.add('view-only-mode');
+  
+  // 3) امنع contenteditable
+  document.querySelectorAll('[contenteditable="true"], [contenteditable=""]').forEach(el => {
+    if (!el.dataset.origContenteditable) {
+      el.dataset.origContenteditable = el.getAttribute('contenteditable') || '';
+    }
+    el.setAttribute('contenteditable', 'false');
+  });
+  
+  // 4) ضع readonly على كل inputs/textareas + disable radio/checkbox
+  document.querySelectorAll('input:not([type="hidden"]):not([type="button"]):not([type="submit"]):not([type="reset"]), textarea, select').forEach(el => {
+    if (el.type === 'radio' || el.type === 'checkbox') {
+      if (!el.dataset.origDisabled) {
+        el.dataset.origDisabled = el.disabled ? '1' : '0';
+      }
+      el.disabled = true;
+    } else if (!el.readOnly && !el.disabled) {
+      el.dataset.origReadonly = '0';
+      el.setAttribute('readonly', 'readonly');
+    }
+  });
+  
+  // 5) Listener شامل: أي محاولة تفاعل → showSubscribeGate
+  if (!document._viewOnlyListenerAttached) {
+    document.addEventListener('mousedown', viewOnlyInterceptor, true);
+    document.addEventListener('touchstart', viewOnlyInterceptor, true);
+    document.addEventListener('keydown', viewOnlyKeyInterceptor, true);
+    document._viewOnlyListenerAttached = true;
+  }
+  
+  // 6) أضف overlay دعوة للاشتراك
+  if (!document.getElementById('viewOnlyOverlay')) {
+    const overlay = document.createElement('div');
+    overlay.id = 'viewOnlyOverlay';
+    overlay.className = 'view-only-overlay';
+    overlay.innerHTML = '<span>💎</span><span>اشترك لتعبئة التقرير</span>';
+    overlay.onclick = (e) => {
+      e.preventDefault();
+      e.stopPropagation();
+      showSubscribeGate();
+    };
+    document.body.appendChild(overlay);
+  }
+}
+
+function viewOnlyInterceptor(e) {
+  if (!document.body.classList.contains('view-only-mode')) return;
+  
+  const t = e.target;
+  if (!t || !t.matches) return;
+  
+  // تحقق إذا كان عنصر قابل للتفاعل
+  const interactive = t.matches('input, textarea, select, [contenteditable]') 
+    || (t.closest && t.closest('input, textarea, select, [contenteditable]'));
+  
+  if (interactive) {
+    // اسمح بالأزرار العادية والنماذج
+    const allowedTypes = ['button', 'submit', 'reset', 'hidden'];
+    if (t.tagName === 'INPUT' && allowedTypes.includes(t.type)) return;
+    if (t.tagName === 'BUTTON') return;
+    
+    e.preventDefault();
+    e.stopPropagation();
+    showSubscribeGate();
+    return false;
+  }
+}
+
+function viewOnlyKeyInterceptor(e) {
+  if (!document.body.classList.contains('view-only-mode')) return;
+  
+  const t = e.target;
+  if (!t || !t.matches) return;
+  
+  if (t.matches('input, textarea, [contenteditable]')) {
+    // اسمح فقط بمفاتيح التنقل
+    const allowedKeys = ['Tab', 'Escape', 'ArrowLeft', 'ArrowRight', 'ArrowUp', 'ArrowDown', 'Home', 'End', 'PageUp', 'PageDown'];
+    if (!allowedKeys.includes(e.key)) {
+      e.preventDefault();
+      e.stopPropagation();
+      showSubscribeGate();
+      return false;
+    }
+  }
+}
+
+function removeViewOnlyMode() {
+  document.body.classList.remove('view-only-mode');
+  
+  // أعد contenteditable
+  document.querySelectorAll('[data-orig-contenteditable]').forEach(el => {
+    el.setAttribute('contenteditable', el.dataset.origContenteditable || 'true');
+    delete el.dataset.origContenteditable;
+  });
+  
+  // أزل readonly
+  document.querySelectorAll('input[data-orig-readonly], textarea[data-orig-readonly], select[data-orig-readonly]').forEach(el => {
+    el.removeAttribute('readonly');
+    delete el.dataset.origReadonly;
+  });
+  
+  // أعد radio/checkbox
+  document.querySelectorAll('input[data-orig-disabled]').forEach(el => {
+    el.disabled = el.dataset.origDisabled === '1';
+    delete el.dataset.origDisabled;
+  });
+  
+  // أزل overlay
+  const overlay = document.getElementById('viewOnlyOverlay');
+  if (overlay) overlay.remove();
 }
 
 // ═══ شاشة "سجّل دخولك" (للزوار) ═══
