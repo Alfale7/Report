@@ -3119,6 +3119,16 @@ backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);
 }
 .gift-banner:active{transform:scale(0.98);}
 
+/* ═══ بانر هوية الأظرف للاختبارات - تنويع لوني ═══ */
+.gift-banner-envelope{
+  background:linear-gradient(135deg, #1a3c5e 0%, #2b5d8c 50%, #c9a45b 100%);
+  box-shadow:0 8px 24px rgba(26,60,94,0.35), 0 0 0 1px rgba(212,164,91,0.4);
+  margin-top:0;
+}
+.gift-banner-envelope:hover{
+  box-shadow:0 12px 32px rgba(26,60,94,0.45), 0 0 0 1px rgba(212,164,91,0.7);
+}
+
 /* ═══ بانر الأدوات المجانية ═══ */
 .tools-banner{
   margin:10px 2px 12px;
@@ -5870,6 +5880,27 @@ font-size:0.78rem;text-align:center;margin-top:12px;display:none;
       </div>
     </a>
 
+    <!-- ═══ بانر هوية الأظرف للاختبارات - هدية مجانية ═══ -->
+    <a href="download/envelope-id.pdf" download="هوية_الأظرف_للاختبارات.pdf" class="gift-banner gift-banner-envelope" id="envelopeBanner">
+      <div class="gift-shine"></div>
+      <div class="gift-icon-wrap">
+        <div class="gift-icon">✉️</div>
+        <div class="gift-pdf-badge">PDF</div>
+      </div>
+      <div class="gift-content">
+        <div class="gift-row1">
+          <span class="gift-tag" data-i18n="envTag">هدية مجانية</span>
+          <span class="gift-sparkle">✨</span>
+        </div>
+        <div class="gift-title" data-i18n="envTitle">هوية الأظرف للاختبارات</div>
+        <div class="gift-sub" data-i18n="envSub">قوالب جاهزة · للأظرف الرسمية للاختبارات</div>
+      </div>
+      <div class="gift-cta">
+        <span class="gift-cta-icon">⬇</span>
+        <span class="gift-cta-text" data-i18n="envCta">حمّل</span>
+      </div>
+    </a>
+
     <!-- ═══ بانر الأدوات المجانية (باركود QR) ═══ -->
     <div class="tools-banner">
       <div class="tools-banner-head">
@@ -7581,6 +7612,10 @@ const I18N = {
     giftTitle: "التقويم الدراسي الجديد",
     giftSub: "للعام ١٤٤٨هـ - ١٤٤٩هـ · جاهز للتحميل",
     giftCta: "حمّل",
+    envTag: "هدية مجانية",
+    envTitle: "هوية الأظرف للاختبارات",
+    envSub: "قوالب جاهزة · للأظرف الرسمية للاختبارات",
+    envCta: "حمّل",
     tbTitle: "أدوات مجانية",
     tbSub: "مولّد باركود QR · مجاني للجميع",
     tbBadge: "مجاني ✨",
@@ -7863,6 +7898,10 @@ const I18N = {
     giftTitle: "New Academic Calendar",
     giftSub: "For 1448H - 1449H · Ready to download",
     giftCta: "Get",
+    envTag: "FREE GIFT",
+    envTitle: "Exam Envelope Templates",
+    envSub: "Ready templates · For official exam envelopes",
+    envCta: "Get",
     tbTitle: "Free Tools",
     tbSub: "QR code generator · Free for everyone",
     tbBadge: "Free ✨",
