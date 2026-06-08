@@ -616,7 +616,7 @@ input:focus,textarea:focus{outline:none;}
 <body>
 
 <!-- 🔥 Firebase + الحمايات -->
-<script type="module" src="report-firebase.js?v=18"></script>
+<script type="module" src="report-firebase.js?v=19"></script>
 
 <div id="page">
 
@@ -987,20 +987,33 @@ async function _doExportPDF(){
 }
 
 /* ═══ مشاركة ═══ */
-function shareReport(){
-  toggleExportMenu();
-  setTimeout(() => { _doShareReport(); }, 200);
-}
+window.shareReport = function(){
+  closeExportMenu();
+  showToast('⏳ جاري تحضير المشاركة...');
+  setTimeout(() => { _doShareReport(); }, 250);
+};
+
 async function _doShareReport(){
-  showToast('⏳ جاري تحضير المشاركة...', 30000);
   if (typeof window.checkDownloadAccess === 'function') {
     try {
       const allowed = await window.checkDownloadAccess();
       if (!allowed) return;
-    } catch(e){ console.error('FB check error', e); }
+    } catch(e){ 
+      console.error('FB check error', e); 
+      showToast('❌ خطأ في التحقق من الاشتراك');
+      return;
+    }
   }
+  
   const state = prepareForExport();
   const page = document.getElementById('page');
+  
+  if (!page) {
+    showToast('❌ خطأ: لم يتم العثور على التقرير');
+    restoreFromExport(state);
+    return;
+  }
+  
   try {
     await document.fonts.ready;
     await new Promise(r => setTimeout(r, 350));
@@ -1012,41 +1025,47 @@ async function _doShareReport(){
         doc.head.appendChild(style);
       }
     });
-    if(!canvas){ showToast('❌ فشل إنشاء الصورة'); return; }
+    if(!canvas){ 
+      showToast('❌ فشل إنشاء الصورة'); 
+      restoreFromExport(state);
+      return; 
+    }
     canvas.toBlob(async (blob) => {
+      restoreFromExport(state);
+      
       if(!blob){ showToast('❌ فشل إنشاء الملف'); return; }
       const file = new File([blob], 'إشعار_ضعف_دراسي.png', { type:'image/png' });
-      const canShareFiles = navigator.share && (!navigator.canShare || navigator.canShare({ files:[file] }));
+      const canShareFiles = navigator.share && navigator.canShare && navigator.canShare({ files:[file] });
       if(canShareFiles){
         try {
           await navigator.share({ files:[file], title:'إشعار ضعف دراسي', text:'إشعار ضعف دراسي' });
           showToast('✅ تم المشاركة');
         } catch(err){
           if(err.name === 'AbortError') return;
-          const link = document.createElement('a');
-          link.download = 'إشعار_ضعف_دراسي.png';
-          link.href = URL.createObjectURL(blob);
-          document.body.appendChild(link);
-          link.click();
-          document.body.removeChild(link);
-          setTimeout(() => URL.revokeObjectURL(link.href), 1000);
+          console.error('Share err', err);
+          downloadBlob(blob, 'إشعار_ضعف_دراسي.png');
           showToast('📥 تم التنزيل (المشاركة غير متاحة)');
         }
       } else {
-        const link = document.createElement('a');
-        link.download = 'إشعار_ضعف_دراسي.png';
-        link.href = URL.createObjectURL(blob);
-        document.body.appendChild(link);
-        link.click();
-        document.body.removeChild(link);
-        setTimeout(() => URL.revokeObjectURL(link.href), 1000);
-        showToast('📥 تم التنزيل');
+        downloadBlob(blob, 'إشعار_ضعف_دراسي.png');
+        showToast('📥 تم التنزيل (متصفحك لا يدعم المشاركة)');
       }
     }, 'image/png');
   } catch(e){
-    console.error(e);
-    showToast('❌ فشل التصدير');
-  } finally { restoreFromExport(state); }
+    console.error('shareReport error:', e);
+    showToast('❌ فشل التصدير: ' + (e.message || ''));
+    restoreFromExport(state);
+  }
+}
+
+function downloadBlob(blob, filename){
+  const link = document.createElement('a');
+  link.download = filename;
+  link.href = URL.createObjectURL(blob);
+  document.body.appendChild(link);
+  link.click();
+  document.body.removeChild(link);
+  setTimeout(() => URL.revokeObjectURL(link.href), 1000);
 }
 
 /* ═══ ☁️ حفظ في حسابي (Firebase) ═══ */

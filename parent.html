@@ -645,7 +645,7 @@ input:focus,textarea:focus{outline:none;}
 <!-- ═══════════════════════════════════════════════════════
      🔥 Firebase + الحمايات (نفس نظام الموقع)
      ═══════════════════════════════════════════════════════ -->
-<script type="module" src="report-firebase.js?v=18"></script>
+<script type="module" src="report-firebase.js?v=19"></script>
 
 <div id="page">
 
@@ -1263,23 +1263,34 @@ async function _doExportPDF(){
 }
 
 /* ═══ مشاركة ═══ */
-function shareReport(){
-  toggleExportMenu();
-  setTimeout(() => { _doShareReport(); }, 200);
-}
+window.shareReport = function(){
+  // أولاً: اقفل القائمة + رد فعل فوري
+  closeExportMenu();
+  showToast('⏳ جاري تحضير المشاركة...');
+  setTimeout(() => { _doShareReport(); }, 250);
+};
 
 async function _doShareReport(){
-  showToast('⏳ جاري تحضير المشاركة...', 30000);
-
+  // تحقق من الاشتراك
   if (typeof window.checkDownloadAccess === 'function') {
     try {
       const allowed = await window.checkDownloadAccess();
       if (!allowed) return;
-    } catch(e){ console.error('FB check error', e); }
+    } catch(e){ 
+      console.error('FB check error', e); 
+      showToast('❌ خطأ في التحقق من الاشتراك');
+      return;
+    }
   }
 
   const state = prepareForExport();
   const page = document.getElementById('page');
+  
+  if (!page) {
+    showToast('❌ خطأ: لم يتم العثور على التقرير');
+    restoreFromExport(state);
+    return;
+  }
 
   try {
     await document.fonts.ready;
@@ -1298,15 +1309,20 @@ async function _doShareReport(){
       }
     });
 
-    if(!canvas){ showToast('❌ فشل إنشاء الصورة'); return; }
+    if(!canvas){ 
+      showToast('❌ فشل إنشاء الصورة'); 
+      restoreFromExport(state);
+      return; 
+    }
 
     canvas.toBlob(async (blob) => {
+      restoreFromExport(state);
+      
       if(!blob){ showToast('❌ فشل إنشاء الملف'); return; }
       const file = new File([blob], 'تقرير_توثيق_التواصل.png', { type: 'image/png' });
 
-      const canShareFiles = navigator.share && (
-        !navigator.canShare || navigator.canShare({ files: [file] })
-      );
+      // تحقق من دعم المشاركة
+      const canShareFiles = navigator.share && navigator.canShare && navigator.canShare({ files: [file] });
 
       if(canShareFiles){
         try {
@@ -1320,32 +1336,30 @@ async function _doShareReport(){
           if(err.name === 'AbortError') return;
           console.error('Share err', err);
           // fallback: تنزيل
-          const link = document.createElement('a');
-          link.download = 'تقرير_توثيق_التواصل.png';
-          link.href = URL.createObjectURL(blob);
-          document.body.appendChild(link);
-          link.click();
-          document.body.removeChild(link);
-          setTimeout(() => URL.revokeObjectURL(link.href), 1000);
+          downloadBlob(blob, 'تقرير_توثيق_التواصل.png');
           showToast('📥 تم التنزيل (المشاركة غير متاحة)');
         }
       } else {
-        const link = document.createElement('a');
-        link.download = 'تقرير_توثيق_التواصل.png';
-        link.href = URL.createObjectURL(blob);
-        document.body.appendChild(link);
-        link.click();
-        document.body.removeChild(link);
-        setTimeout(() => URL.revokeObjectURL(link.href), 1000);
-        showToast('📥 تم التنزيل');
+        // المتصفح لا يدعم المشاركة → نزّل مباشرة
+        downloadBlob(blob, 'تقرير_توثيق_التواصل.png');
+        showToast('📥 تم التنزيل (متصفحك لا يدعم المشاركة)');
       }
     }, 'image/png');
   } catch(e){
-    console.error(e);
-    showToast('❌ فشل التصدير');
-  } finally {
+    console.error('shareReport error:', e);
+    showToast('❌ فشل التصدير: ' + (e.message || ''));
     restoreFromExport(state);
   }
+}
+
+function downloadBlob(blob, filename){
+  const link = document.createElement('a');
+  link.download = filename;
+  link.href = URL.createObjectURL(blob);
+  document.body.appendChild(link);
+  link.click();
+  document.body.removeChild(link);
+  setTimeout(() => URL.revokeObjectURL(link.href), 1000);
 }
 
 /* ═══ ☁️ حفظ في حسابي (Firebase) ═══ */
