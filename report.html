@@ -909,7 +909,7 @@ transition:all 0.2s;
 </style>
 
   <!-- 🔥 Firebase Integration (يجب أن يكون قبل أي محتوى) -->
-  <script type="module" src="report-firebase.js?v=12"></script>
+  <script type="module" src="report-firebase.js?v=22"></script>
 
   <!-- 📲 مكتبة QR Code (للنشر بـ Firestore) -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
@@ -1488,9 +1488,12 @@ function closeExportMenu(){
 }
 
 function exportAsImage(){
+  console.log('🔵 exportAsImage: تم الضغط');
+  if(typeof showToast === 'function') showToast('🖼 جاري التحضير...');
   closeExportMenu();
   setTimeout(() => { saveImg(); }, 200);
 }
+window.exportAsImage = exportAsImage;
 
 function printReport(){
   // ⚠️ تم استبدالها بـ shareReport - محتفظ بها للتوافق
@@ -1499,37 +1502,21 @@ function printReport(){
 }
 
 // ═══════════════════════════════════════════════
-// 📤 مشاركة التقرير (Web Share API)
+// 📤 مشاركة التقرير (Web Share API) - iOS Safari Optimized
 // ═══════════════════════════════════════════════
-function shareReport(){
-  closeExportMenu();
-  setTimeout(() => { _doShareReport(); }, 200);
-}
 
-async function _doShareReport(){
-  // 🆕 toast فوري حتى يعرف المستخدم أن الزر استجاب
-  if(typeof showToast === 'function') showToast('⏳ جاري تحضير المشاركة...');
+// متغير عالمي لتخزين الصورة الجاهزة للمشاركة
+let _shareReadyBlob = null;
+let _shareReadyTime = 0;
 
-  // 🔥 فحص Firebase (نفس نمط saveImg)
-  if (typeof window.checkDownloadAccess === 'function') {
-    try {
-      const allowed = await window.checkDownloadAccess();
-      if (!allowed) return;
-    } catch(fbErr) {
-      console.error('Firebase check error:', fbErr);
-      // نكمل بدون حماية لو فشل الفحص (نفس سلوك saveImg)
-    }
-  }
-
+// preload الصورة عند فتح قائمة التصدير
+async function _preloadShareBlob(){
+  if (_shareReadyBlob && (Date.now() - _shareReadyTime < 60000)) return;
+  
   try {
-    // استخدم نفس آلية saveAsImage لكن للمشاركة بدل التنزيل
-    // نُنشئ صورة مؤقتاً من #page
     const page = document.getElementById('page');
-    if(!page){
-      if(typeof showToast === 'function') showToast('❌ لم يتم العثور على التقرير');
-      return;
-    }
-
+    if (!page) return;
+    
     // إخفاء أزرار الأكشن أثناء الالتقاط
     const actionButtons = document.querySelectorAll('.export-menu-wrap, .export-menu, [class*="action-bar"]');
     const hiddenStates = [];
@@ -1537,10 +1524,9 @@ async function _doShareReport(){
       hiddenStates.push({el, prev: el.style.display});
       el.style.display = 'none';
     });
-
+    
     await document.fonts.ready;
-    await new Promise(r => setTimeout(r, 300));
-
+    
     const canvas = await html2canvas(page, {
       backgroundColor: '#ffffff',
       scale: 3,
@@ -1553,78 +1539,110 @@ async function _doShareReport(){
         doc.head.appendChild(style);
       }
     });
-
+    
     // إرجاع الأزرار
     hiddenStates.forEach(({el, prev}) => { el.style.display = prev; });
-
-    // 🆕 تحقق من نجاح إنشاء الكانفس
-    if(!canvas){
-      if(typeof showToast === 'function') showToast('❌ فشل إنشاء الصورة');
-      return;
-    }
-
-    canvas.toBlob(async (blob) => {
-      // 🆕 تحقق من blob - أحياناً يفشل بصمت على iOS
-      if(!blob){
-        if(typeof showToast === 'function') showToast('❌ فشل إنشاء الملف - حاول مرة أخرى');
-        return;
-      }
-
-      const file = new File([blob], 'تقرير_الادارة_العامة.png', { type: 'image/png' });
-
-      // 🆕 فحص دعم navigator.share مع canShare (تخطّى canShare لو مش متاح - iOS قديم)
-      const canShareFiles = navigator.share && (
-        !navigator.canShare ||
-        navigator.canShare({ files: [file] })
-      );
-
-      if (canShareFiles) {
-        try {
-          // 🆕 نص بدون emoji في البداية (يسبب فشل على iOS)
-          await navigator.share({
-            files: [file],
-            title: 'تقرير الإدارة العامة للتعليم',
-            text: 'تقرير الإدارة العامة للتعليم'
-          });
-          if(typeof showToast === 'function') showToast('✅ تم المشاركة');
-        } catch(err) {
-          // المستخدم ألغى المشاركة - مش خطأ حقيقي
-          if (err.name === 'AbortError') return;
-          console.error('Share error:', err);
-          // 🆕 fallback: لو فشل navigator.share نحاول التنزيل
-          try {
-            const link = document.createElement('a');
-            link.download = 'تقرير_الادارة_العامة.png';
-            link.href = URL.createObjectURL(blob);
-            document.body.appendChild(link);
-            link.click();
-            document.body.removeChild(link);
-            setTimeout(() => URL.revokeObjectURL(link.href), 1000);
-            if(typeof showToast === 'function') showToast('📥 تم التنزيل (المشاركة غير مدعومة)');
-          } catch(dlErr) {
-            if(typeof showToast === 'function') showToast('❌ فشل المشاركة');
-          }
-        }
-      } else {
-        // Fallback: تنزيل مباشر (لـ Desktop ومتصفحات قديمة)
-        try {
-          const link = document.createElement('a');
-          link.download = 'تقرير_الادارة_العامة.png';
-          link.href = URL.createObjectURL(blob);
-          document.body.appendChild(link);
-          link.click();
-          document.body.removeChild(link);
-          setTimeout(() => URL.revokeObjectURL(link.href), 1000);
-          if(typeof showToast === 'function') showToast('📥 تم التنزيل');
-        } catch(dlErr) {
-          if(typeof showToast === 'function') showToast('❌ فشل التنزيل');
-        }
-      }
-    }, 'image/png');
-  } catch(e) {
-    console.error('Share error:', e);
-    if(typeof showToast === 'function') showToast('❌ فشل التصدير: ' + (e.message || ''));
+    
+    if (!canvas) return;
+    
+    _shareReadyBlob = await new Promise(resolve => canvas.toBlob(resolve, 'image/png'));
+    _shareReadyTime = Date.now();
+  } catch(e){
+    console.error('preload share blob error:', e);
   }
+}
+
+// 🎯 شارك التقرير - بدون أي await قبل navigator.share (iOS gesture فadon)
+function shareReport(){
+  // فحص الاشتراك بطريقة مزامنة (synchronous) - لا تستخدم await
+  // نستخدم window.isFirebaseLifetime() و window.isFirebaseAdmin() الموجودين مسبقاً
+  const isAllowed = (typeof window.isFirebaseLifetime === 'function' && window.isFirebaseLifetime()) 
+                 || (typeof window.isFirebaseAdmin === 'function' && window.isFirebaseAdmin());
+  
+  if (!isAllowed) {
+    // غير مشترك → استدعِ checkDownloadAccess (التي ستعرض المودال)
+    if (typeof window.checkDownloadAccess === 'function') {
+      window.checkDownloadAccess();
+    }
+    return;
+  }
+  
+  // ✅ مشترك → نواصل المشاركة
+  
+  // لو الصورة جاهزة → navigator.share فوراً
+  if (_shareReadyBlob) {
+    const file = new File([_shareReadyBlob], 'تقرير_الادارة_العامة.png', { type: 'image/png' });
+    closeExportMenu();
+    
+    // navigator.share مباشرة - لا await قبلها
+    if (navigator.share && navigator.canShare && navigator.canShare({ files: [file] })) {
+      navigator.share({
+        files: [file],
+        title: 'تقرير الإدارة العامة للتعليم',
+        text: 'تقرير الإدارة العامة للتعليم'
+      }).then(() => {
+        if(typeof showToast === 'function') showToast('✅ تم المشاركة');
+      }).catch(err => {
+        if (err.name === 'AbortError') return;
+        console.error('Share error:', err);
+        // fallback: تنزيل
+        _downloadShareBlob();
+      });
+    } else {
+      _downloadShareBlob();
+    }
+    return;
+  }
+  
+  // الصورة غير جاهزة → نحضّرها ثم نشارك (هنا قد يفشل على iOS)
+  if(typeof showToast === 'function') showToast('⏳ جاري التحضير... اضغط مرة أخرى بعد ثانيتين');
+  _preloadShareBlob();
+}
+
+function _downloadShareBlob(){
+  if (!_shareReadyBlob) return;
+  try {
+    const link = document.createElement('a');
+    link.download = 'تقرير_الادارة_العامة.png';
+    link.href = URL.createObjectURL(_shareReadyBlob);
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    setTimeout(() => URL.revokeObjectURL(link.href), 1000);
+    if(typeof showToast === 'function') showToast('📥 تم التنزيل');
+  } catch(e){
+    if(typeof showToast === 'function') showToast('❌ فشل التنزيل');
+  }
+}
+
+// نضمن إن shareReport متاحة في window
+window.shareReport = shareReport;
+
+// 🔥 preload الصورة عند فتح القائمة - يحل مشكلة iOS Safari
+// نراقب فتح القائمة عبر MutationObserver
+(function(){
+  const observeMenu = () => {
+    const menu = document.getElementById('exportMenu');
+    if (!menu) { setTimeout(observeMenu, 500); return; }
+    
+    const observer = new MutationObserver(() => {
+      if (menu.classList.contains('show')) {
+        _preloadShareBlob();
+      }
+    });
+    observer.observe(menu, { attributes: true, attributeFilter: ['class'] });
+  };
+  
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', observeMenu);
+  } else {
+    observeMenu();
+  }
+})();
+
+// الدالة القديمة _doShareReport - محتفظ بها للتوافق فقط (لم تعد تستخدم)
+async function _doShareReport(){
+  return shareReport();
 }
 
 function loadJsPDF(){
