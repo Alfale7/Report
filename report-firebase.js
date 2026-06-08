@@ -1453,13 +1453,15 @@ window.trackExport = async function(data) {
 };
 
 // ═══════════════════════════════════════════════════════════
-// 📤 window.shareReport - مشاركة التقرير عبر رابط
+// 📤 window.shareReportLink - مشاركة التقرير عبر رابط (Firebase)
+// ⚠️ تم تغيير الاسم من shareReport إلى shareReportLink
+// لتجنب التعارض مع دالة shareReport المحلية في كل تقرير HTML
 // ═══════════════════════════════════════════════════════════
-window.shareReport = async function(data) {
-  console.log('📤 shareReport called:', { type: data?.type });
+window.shareReportLink = async function(data) {
+  console.log('📤 shareReportLink called:', { type: data?.type });
   
   if (!_user) {
-    console.error('❌ shareReport: لا يوجد مستخدم مسجل');
+    console.error('❌ shareReportLink: لا يوجد مستخدم مسجل');
     throw new Error('سجّل دخولك أولاً');
   }
   
@@ -1480,14 +1482,14 @@ window.shareReport = async function(data) {
     const ref = await addDoc(sharesRef, shareData);
     
     const shareUrl = `${window.location.origin}/view.html?r=${ref.id}`;
-    console.log('✅ shareReport نجح:', shareUrl);
+    console.log('✅ shareReportLink نجح:', shareUrl);
     
     return { success: true, url: shareUrl, id: ref.id };
     
   } catch (error) {
-    console.error('❌ shareReport فشل:', error.code, '|', error.message);
+    console.error('❌ shareReportLink فشل:', error.code, '|', error.message);
     throw error;
   }
 };
 
-console.log('✅ window.trackExport و window.shareReport جاهزتان');
+console.log('✅ window.trackExport و window.shareReportLink جاهزتان');
