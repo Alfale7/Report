@@ -1026,7 +1026,9 @@ async function _doExportPDF(){
 
 /* ═══ مشاركة ═══ */
 window.shareReport = async function(){
-  // ⚡ استخدم الصورة المُحضّرة مسبقاً (إن وجدت) → navigator.share فوري على iOS
+  // 🆕 إغلاق القائمة فوراً + toast فوري (المستخدم يعرف أن الزر استجاب)
+  closeExportMenu();
+  showToast('⏳ جاري تحضير المشاركة...');
   
   if (typeof window.checkDownloadAccess === 'function') {
     try {
@@ -1041,7 +1043,6 @@ window.shareReport = async function(){
   
   // لو ما عندنا صورة مخزّنة → حضّرها الحين
   if (!_cachedShareBlob || (Date.now() - _cachedShareTime > 30000)) {
-    showToast('⏳ جاري تحضير المشاركة...');
     await preloadShareImage();
   }
   
@@ -1052,25 +1053,41 @@ window.shareReport = async function(){
   
   const file = new File([_cachedShareBlob], 'إشعار_ضعف_دراسي.png', { type:'image/png' });
   
-  closeExportMenu();
+  // 🆕 فحص أكثر تسامحاً: canShare مش متاح في Safari قديم
+  const canShareFiles = navigator.share && (
+    !navigator.canShare ||  // لو canShare غير موجودة، نجرّب على أي حال
+    navigator.canShare({ files:[file] })
+  );
   
-  if(navigator.share && navigator.canShare && navigator.canShare({ files:[file] })){
+  if(canShareFiles){
     try {
+      // 🆕 نص بدون emoji في البداية (iOS يفشل أحياناً مع emoji)
       await navigator.share({ 
         files:[file], 
         title:'إشعار ضعف دراسي', 
-        text:'📋 إشعار ضعف دراسي\n\n🌐 www.ksa2030.one\nالتقارير الذكية' 
+        text:'إشعار ضعف دراسي - www.ksa2030.one' 
       });
       showToast('✅ تم المشاركة');
     } catch(err){
+      // المستخدم ألغى - مش خطأ
       if(err.name === 'AbortError') return;
-      console.error('Share err', err);
-      downloadBlob(_cachedShareBlob, 'إشعار_ضعف_دراسي.png');
-      showToast('📥 تم التنزيل (المشاركة غير متاحة)');
+      console.error('Share error:', err);
+      // fallback: تنزيل
+      try {
+        downloadBlob(_cachedShareBlob, 'إشعار_ضعف_دراسي.png');
+        showToast('📥 تم التنزيل (المشاركة غير متاحة)');
+      } catch(dlErr){
+        showToast('❌ فشل التنزيل: ' + (dlErr.message || ''));
+      }
     }
   } else {
-    downloadBlob(_cachedShareBlob, 'إشعار_ضعف_دراسي.png');
-    showToast('📥 تم التنزيل (متصفحك لا يدعم المشاركة)');
+    // Desktop أو متصفح بدون دعم: تنزيل مباشر
+    try {
+      downloadBlob(_cachedShareBlob, 'إشعار_ضعف_دراسي.png');
+      showToast('📥 تم التنزيل (متصفحك لا يدعم المشاركة)');
+    } catch(dlErr){
+      showToast('❌ فشل التنزيل');
+    }
   }
 };
 
