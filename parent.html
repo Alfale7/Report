@@ -645,7 +645,7 @@ input:focus,textarea:focus{outline:none;}
 <!-- ═══════════════════════════════════════════════════════
      🔥 Firebase + الحمايات (نفس نظام الموقع)
      ═══════════════════════════════════════════════════════ -->
-<script type="module" src="report-firebase.js?v=21"></script>
+<script type="module" src="report-firebase.js?v=99"></script>
 
 <div id="page">
 
@@ -1305,6 +1305,9 @@ async function _doExportPDF(){
 
 /* ═══ مشاركة ═══ */
 window.shareReport = async function(){
+  // 🔍 اختبار تشخيصي - لو طلع هذا alert يعني الدالة تنفّذ
+  alert('✅ زر المشاركة شغّال! (v21)');
+  
   // ⚡ استخدم الصورة المُحضّرة مسبقاً (إن وجدت) → navigator.share فوري
   
   // تحقق من الاشتراك
