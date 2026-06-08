@@ -5706,12 +5706,265 @@ font-size:0.78rem;text-align:center;margin-top:12px;display:none;
 .error-msg.show{display:block;}
 
 .modal-hint{text-align:center;font-size:0.72rem;color:rgba(255,255,255,0.45);margin-top:14px;}
+
+/* ═══════════════════════════════════════════════════════
+   🎯 شريط التحديثات المتحرك العلوي - تحفة عالمية
+   ═══════════════════════════════════════════════════════ */
+.updates-ticker{
+  position:relative;
+  width:100%;
+  background:linear-gradient(90deg, #0a1929 0%, #1a3a5e 25%, #2b5d8c 50%, #1a3a5e 75%, #0a1929 100%);
+  background-size:200% 100%;
+  border-bottom:1px solid rgba(232,197,71,0.4);
+  box-shadow:0 4px 20px rgba(0,0,0,0.3), 0 0 40px rgba(232,197,71,0.08);
+  overflow:hidden;
+  z-index:50;
+  animation:tickerBgShift 12s ease-in-out infinite;
+}
+@keyframes tickerBgShift{
+  0%,100%{background-position:0% 50%;}
+  50%{background-position:100% 50%;}
+}
+
+/* الخط الذهبي العلوي والسفلي */
+.updates-ticker::before,
+.updates-ticker::after{
+  content:"";
+  position:absolute;
+  left:0;right:0;
+  height:1px;
+  background:linear-gradient(90deg,transparent,#e8c547 30%,#d4a657 50%,#e8c547 70%,transparent);
+  opacity:0.7;
+}
+.updates-ticker::before{top:0;}
+.updates-ticker::after{bottom:0;}
+
+/* الحاوية الداخلية */
+.ticker-inner{
+  display:flex;
+  align-items:center;
+  gap:0;
+  padding:10px 0;
+  position:relative;
+}
+
+/* البادج الثابت (Live Badge) */
+.ticker-badge{
+  flex-shrink:0;
+  display:inline-flex;
+  align-items:center;
+  gap:7px;
+  background:linear-gradient(135deg, #e8c547, #d4a657);
+  color:#3d2200;
+  padding:6px 14px 6px 12px;
+  border-radius:99px;
+  font-size:0.74rem;
+  font-weight:900;
+  margin:0 14px;
+  box-shadow:0 4px 14px rgba(232,197,71,0.4), 0 0 0 1px rgba(232,197,71,0.6);
+  position:relative;
+  z-index:2;
+  white-space:nowrap;
+  letter-spacing:0.3px;
+}
+.ticker-badge .pulse-dot{
+  width:7px;
+  height:7px;
+  background:#dc2626;
+  border-radius:50%;
+  box-shadow:0 0 0 0 rgba(220,38,38,0.7);
+  animation:pulseDot 1.6s infinite;
+}
+@keyframes pulseDot{
+  0%{box-shadow:0 0 0 0 rgba(220,38,38,0.7);}
+  70%{box-shadow:0 0 0 8px rgba(220,38,38,0);}
+  100%{box-shadow:0 0 0 0 rgba(220,38,38,0);}
+}
+
+/* الشريط المتحرك */
+.ticker-track-wrap{
+  flex:1;
+  overflow:hidden;
+  position:relative;
+  direction:ltr; /* مهم: نخرج من RTL للحركة */
+  -webkit-mask-image:linear-gradient(90deg, transparent 0, #000 5%, #000 95%, transparent 100%);
+  mask-image:linear-gradient(90deg, transparent 0, #000 5%, #000 95%, transparent 100%);
+}
+
+.ticker-track{
+  display:flex;
+  gap:0;
+  width:max-content;
+  animation:tickerScroll 50s linear infinite;
+  will-change:transform;
+}
+.ticker-track:hover{animation-play-state:paused;}
+
+@keyframes tickerScroll{
+  from{transform:translateX(-50%);}
+  to{transform:translateX(0);}
+}
+
+/* العناصر داخل الشريط - نرجع للـ RTL */
+.ticker-item{
+  display:inline-flex;
+  align-items:center;
+  gap:6px;
+  padding:0 20px;
+  font-size:0.74rem !important;
+  font-weight:700 !important;
+  color:#fff;
+  white-space:nowrap;
+  position:relative;
+  direction:rtl;
+  line-height:1.4;
+}
+.ticker-item *{
+  font-size:0.74rem !important;
+  line-height:1.4 !important;
+}
+.ticker-item .ico{
+  font-size:0.88rem !important;
+  line-height:1 !important;
+  filter:drop-shadow(0 0 6px rgba(232,197,71,0.4));
+  flex-shrink:0;
+}
+.ticker-item .highlight{
+  background:linear-gradient(135deg, #e8c547, #d4a657);
+  -webkit-background-clip:text;
+  background-clip:text;
+  -webkit-text-fill-color:transparent;
+  font-weight:900;
+}
+.ticker-item:not(:last-child)::after{
+  content:"";
+  position:absolute;
+  left:0;
+  top:50%;
+  transform:translateY(-50%);
+  width:5px;
+  height:5px;
+  background:linear-gradient(135deg, #e8c547, #d4a657);
+  border-radius:50%;
+  box-shadow:0 0 8px rgba(232,197,71,0.5);
+}
+
+/* Sparkle effect */
+.ticker-sparkle{
+  position:absolute;
+  top:50%;
+  transform:translateY(-50%);
+  font-size:0.7rem;
+  opacity:0;
+  animation:sparkleFloat 4s ease-in-out infinite;
+  pointer-events:none;
+}
+.ticker-sparkle:nth-child(1){left:15%;animation-delay:0s;}
+.ticker-sparkle:nth-child(2){left:45%;animation-delay:1.3s;}
+.ticker-sparkle:nth-child(3){left:75%;animation-delay:2.6s;}
+@keyframes sparkleFloat{
+  0%,100%{opacity:0;transform:translateY(-50%) scale(0.5);}
+  50%{opacity:1;transform:translateY(-50%) scale(1);}
+}
+
+@media (max-width:600px){
+  .ticker-badge{
+    font-size:0.7rem;
+    padding:5px 12px 5px 10px;
+    margin:0 10px;
+  }
+  .ticker-item,
+  .ticker-item *{
+    font-size:0.68rem !important;
+  }
+  .ticker-item{padding:0 16px;}
+  .ticker-item .ico{font-size:0.8rem !important;}
+  .ticker-inner{padding:9px 0;}
+}
+
+@media (max-width:380px){
+  .ticker-badge{
+    font-size:0.66rem;
+    padding:4px 10px 4px 8px;
+    margin:0 8px;
+  }
+  .ticker-item,
+  .ticker-item *{font-size:0.64rem !important;}
+  .ticker-item{padding:0 12px;}
+}
 </style>
 <!-- 🎉 Canvas Confetti - مكتبة الاحتفال العالمية -->
 <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.3/dist/confetti.browser.min.js"></script>
 
 </head>
 <body>
+
+<!-- ═══ 🎯 شريط التحديثات المتحرك العلوي ═══ -->
+<div class="updates-ticker" id="updatesTicker">
+  <div class="ticker-inner">
+    <div class="ticker-badge">
+      <span class="pulse-dot"></span>
+      <span data-i18n="tickerBadge">مباشر</span>
+    </div>
+    <div class="ticker-track-wrap">
+      <span class="ticker-sparkle">✨</span>
+      <span class="ticker-sparkle">✨</span>
+      <span class="ticker-sparkle">✨</span>
+      <div class="ticker-track" id="tickerTrack">
+        <!-- المجموعة الأولى -->
+        <span class="ticker-item">
+          <span class="ico">🚀</span>
+          <span data-i18n="tick1">تحديثات مستمرة على المنصة لتقديم أفضل تجربة لمعلمي ومعلمات المملكة</span>
+        </span>
+        <span class="ticker-item">
+          <span class="ico">💎</span>
+          <span data-i18n="tick2">قوالب جديدة تُضاف بشكل دوري ضمن <span class="highlight">اشتراك مدى الحياة</span></span>
+        </span>
+        <span class="ticker-item">
+          <span class="ico">🎨</span>
+          <span data-i18n="tick3">تصاميم احترافية بهوية رسمية معتمدة لوزارة التعليم</span>
+        </span>
+        <span class="ticker-item">
+          <span class="ico">🔥</span>
+          <span data-i18n="tick4">عرض الإطلاق: <span class="highlight">49 ريالاً فقط</span> دفعة واحدة مدى الحياة</span>
+        </span>
+        <span class="ticker-item">
+          <span class="ico">🛡️</span>
+          <span data-i18n="tick5">ضمان استرداد كامل خلال 7 أيام</span>
+        </span>
+        <span class="ticker-item">
+          <span class="ico">⚡</span>
+          <span data-i18n="tick6">تحديثات مجانية مدى الحياة لجميع المشتركين</span>
+        </span>
+        <!-- المجموعة الثانية (نسخة طبق الأصل للتمرير اللانهائي) -->
+        <span class="ticker-item">
+          <span class="ico">🚀</span>
+          <span>تحديثات مستمرة على المنصة لتقديم أفضل تجربة لمعلمي ومعلمات المملكة</span>
+        </span>
+        <span class="ticker-item">
+          <span class="ico">💎</span>
+          <span>قوالب جديدة تُضاف بشكل دوري ضمن <span class="highlight">اشتراك مدى الحياة</span></span>
+        </span>
+        <span class="ticker-item">
+          <span class="ico">🎨</span>
+          <span>تصاميم احترافية بهوية رسمية معتمدة لوزارة التعليم</span>
+        </span>
+        <span class="ticker-item">
+          <span class="ico">🔥</span>
+          <span>عرض الإطلاق: <span class="highlight">49 ريالاً فقط</span> دفعة واحدة مدى الحياة</span>
+        </span>
+        <span class="ticker-item">
+          <span class="ico">🛡️</span>
+          <span>ضمان استرداد كامل خلال 7 أيام</span>
+        </span>
+        <span class="ticker-item">
+          <span class="ico">⚡</span>
+          <span>تحديثات مجانية مدى الحياة لجميع المشتركين</span>
+        </span>
+      </div>
+    </div>
+  </div>
+</div>
 
 <div class="bg-layer"></div>
 <div class="bg-grid"></div>
@@ -7490,6 +7743,13 @@ const users = {
 const I18N = {
   ar: {
     brandMark: "المنصة متاحة الآن",
+    tickerBadge: "مباشر",
+    tick1: "تحديثات مستمرة على المنصة لتقديم أفضل تجربة لمعلمي ومعلمات المملكة",
+    tick2: "قوالب جديدة تُضاف بشكل دوري ضمن اشتراك مدى الحياة",
+    tick3: "تصاميم احترافية بهوية رسمية معتمدة لوزارة التعليم",
+    tick4: "عرض الإطلاق: 49 ريالاً فقط دفعة واحدة مدى الحياة",
+    tick5: "ضمان استرداد كامل خلال 7 أيام",
+    tick6: "تحديثات مجانية مدى الحياة لجميع المشتركين",
     shareBtn: "مشاركة",
     appTitle: "التقارير الذكية",
     limitedOffer: "عرض إطلاق محدود · لفترة محدودة",
@@ -7776,6 +8036,13 @@ const I18N = {
   },
   en: {
     brandMark: "Platform is Live",
+    tickerBadge: "LIVE",
+    tick1: "Continuous platform updates to deliver the best experience for Saudi educators",
+    tick2: "New templates added regularly · Included with Lifetime subscription",
+    tick3: "Professional designs with official Ministry of Education identity",
+    tick4: "Launch offer: Only 49 SAR · One-time payment · Lifetime access",
+    tick5: "Full money-back guarantee within 7 days",
+    tick6: "Free lifetime updates for all subscribers",
     shareBtn: "Share",
     appTitle: "Smart Reports",
     limitedOffer: "Limited Launch Offer",
