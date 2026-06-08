@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>اختبار زر المشاركة</title>
+<style>
+  body { 
+    font-family: -apple-system, sans-serif; 
+    padding: 20px; 
+    background: #f5f5f0; 
+    text-align: center;
+  }
+  h1 { color: #1a7a5e; margin-bottom: 20px; }
+  .test-box { 
+    background: #fff; 
+    padding: 24px; 
+    border-radius: 16px; 
+    margin: 12px 0;
+    box-shadow: 0 4px 16px rgba(0,0,0,0.08);
+  }
+  button { 
+    width: 100%;
+    background: linear-gradient(135deg, #d4a657, #e8c547);
+    color: #3d2200;
+    border: none;
+    padding: 16px;
+    font-size: 1rem;
+    font-weight: 900;
+    border-radius: 99px;
+    margin-top: 12px;
+    cursor: pointer;
+  }
+  .label { font-weight: 700; color: #333; margin-bottom: 8px; }
+  .result { 
+    background: #f0f8f4; 
+    padding: 12px; 
+    border-radius: 8px; 
+    margin-top: 12px;
+    font-size: 0.9rem;
+    text-align: right;
+    direction: ltr;
+  }
+</style>
+</head>
+<body>
+
+<h1>🔬 اختبار زر المشاركة</h1>
+
+<!-- اختبار 1: alert مباشر -->
+<div class="test-box">
+  <div class="label">اختبار 1: alert مباشر</div>
+  <button onclick="alert('✅ نجح! الزر يستجيب')">
+    اضغطني للتأكد إن الأزرار تشتغل
+  </button>
+</div>
+
+<!-- اختبار 2: navigator.share مع نص فقط -->
+<div class="test-box">
+  <div class="label">اختبار 2: مشاركة نص</div>
+  <button onclick="testShareText()">
+    شارك نص
+  </button>
+  <div class="result" id="result2">جاهز</div>
+</div>
+
+<!-- اختبار 3: navigator.share مع ملف -->
+<div class="test-box">
+  <div class="label">اختبار 3: مشاركة صورة بسيطة</div>
+  <button onclick="testShareImage()">
+    شارك صورة
+  </button>
+  <div class="result" id="result3">جاهز</div>
+</div>
+
+<!-- معلومات الجهاز -->
+<div class="test-box">
+  <div class="label">معلومات المتصفح</div>
+  <div class="result" id="info"></div>
+</div>
+
+<script>
+// اعرض معلومات المتصفح
+document.getElementById('info').innerHTML = 
+  'navigator.share: ' + (typeof navigator.share) + '<br>' +
+  'navigator.canShare: ' + (typeof navigator.canShare) + '<br>' +
+  'UserAgent: ' + navigator.userAgent.substring(0, 80);
+
+// اختبار 2: مشاركة نص
+function testShareText() {
+  document.getElementById('result2').textContent = 'جاري...';
+  
+  if (!navigator.share) {
+    document.getElementById('result2').textContent = '❌ navigator.share غير مدعوم';
+    return;
+  }
+  
+  navigator.share({
+    title: 'اختبار',
+    text: 'هذا اختبار للمشاركة',
+    url: 'https://ksa2030.one'
+  })
+  .then(() => {
+    document.getElementById('result2').textContent = '✅ تم بنجاح';
+  })
+  .catch(err => {
+    document.getElementById('result2').textContent = '❌ خطأ: ' + err.name + ' - ' + err.message;
+  });
+}
+
+// اختبار 3: مشاركة صورة
+async function testShareImage() {
+  document.getElementById('result3').textContent = 'جاري إنشاء الصورة...';
+  
+  try {
+    // أنشئ canvas صغير
+    const canvas = document.createElement('canvas');
+    canvas.width = 200;
+    canvas.height = 200;
+    const ctx = canvas.getContext('2d');
+    ctx.fillStyle = '#1a7a5e';
+    ctx.fillRect(0, 0, 200, 200);
+    ctx.fillStyle = '#fff';
+    ctx.font = 'bold 30px Arial';
+    ctx.fillText('TEST', 50, 110);
+    
+    const blob = await new Promise(r => canvas.toBlob(r, 'image/png'));
+    if (!blob) {
+      document.getElementById('result3').textContent = '❌ فشل إنشاء الصورة';
+      return;
+    }
+    
+    const file = new File([blob], 'test.png', { type: 'image/png' });
+    
+    if (!navigator.share) {
+      document.getElementById('result3').textContent = '❌ navigator.share غير مدعوم';
+      return;
+    }
+    
+    if (navigator.canShare && !navigator.canShare({ files: [file] })) {
+      document.getElementById('result3').textContent = '❌ مشاركة الملفات غير مدعومة';
+      return;
+    }
+    
+    navigator.share({
+      files: [file],
+      title: 'اختبار صورة',
+      text: 'صورة اختبارية'
+    })
+    .then(() => {
+      document.getElementById('result3').textContent = '✅ تم بنجاح';
+    })
+    .catch(err => {
+      document.getElementById('result3').textContent = '❌ خطأ: ' + err.name + ' - ' + err.message;
+    });
+  } catch(e) {
+    document.getElementById('result3').textContent = '❌ خطأ عام: ' + e.message;
+  }
+}
+</script>
+
+</body>
+</html>
