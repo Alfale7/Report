@@ -1505,13 +1505,25 @@ function printReport(){
 // 📤 مشاركة التقرير - نفس الكود الناجح من share-test.html
 // ═══════════════════════════════════════════════
 async function shareReport(){
-  if(typeof showToast === 'function') showToast('⏳ جاري إنشاء الصورة...');
-  closeExportMenu();
+  // 🔬 فحص فوري - alert ما يحتاج أي شي
+  try { alert('⏳ بدء المشاركة'); } catch(e){}
+  
+  // إغلاق القائمة + toast بأمان
+  try { if(typeof closeExportMenu === 'function') closeExportMenu(); } catch(e){ console.error('closeExportMenu err:', e); }
+  try { if(typeof showToast === 'function') showToast('⏳ جاري إنشاء الصورة...'); } catch(e){ console.error('showToast err:', e); }
   
   try {
     const page = document.getElementById('page');
     if(!page){
+      try { alert('❌ لم يتم العثور على #page'); } catch(e){}
       if(typeof showToast === 'function') showToast('❌ لم يتم العثور على التقرير');
+      return;
+    }
+    
+    // 🔬 تأكد من توفر html2canvas
+    if(typeof html2canvas !== 'function'){
+      try { alert('❌ html2canvas غير محمّل!'); } catch(e){}
+      if(typeof showToast === 'function') showToast('❌ مكتبة الصور غير محمّلة');
       return;
     }
     
@@ -1542,6 +1554,7 @@ async function shareReport(){
     hiddenStates.forEach(({el, prev}) => { el.style.display = prev; });
     
     if(!canvas){
+      try { alert('❌ canvas null'); } catch(e){}
       if(typeof showToast === 'function') showToast('❌ فشل إنشاء الصورة');
       return;
     }
@@ -1549,13 +1562,16 @@ async function shareReport(){
     // حول لـ blob
     const blob = await new Promise(r => canvas.toBlob(r, 'image/png'));
     if(!blob){
+      try { alert('❌ blob null'); } catch(e){}
       if(typeof showToast === 'function') showToast('❌ فشل إنشاء الملف');
       return;
     }
     
     const file = new File([blob], 'تقرير_الادارة_العامة.png', { type: 'image/png' });
     
-    // ⚡ نفس الكود الناجح من share-test.html بالضبط
+    // 🔬 alert يخبرنا أن الكود وصل لقبل navigator.share
+    try { alert('✅ الصورة جاهزة - نفتح المشاركة'); } catch(e){}
+    
     if (!navigator.share) {
       // fallback: تنزيل
       const link = document.createElement('a');
@@ -1598,6 +1614,7 @@ async function shareReport(){
     });
   } catch(e){
     console.error('Share error:', e);
+    try { alert('❌ خطأ: ' + (e.message || e.toString())); } catch(e){}
     if(typeof showToast === 'function') showToast('❌ خطأ: ' + (e.message || ''));
   }
 }
