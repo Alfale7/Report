@@ -123,6 +123,12 @@ h1{
 }
 .section li{margin-bottom:6px;}
 .section strong{color:#15803d;font-weight:900;}
+/* 🆕 رقم الهاتف بـ LTR إجباري لمنع انعكاس علامة + */
+.phone-num{
+  unicode-bidi:embed;
+  direction:ltr;
+  display:inline-block;
+}
 .warn-box{
   background:#fef3c7;
   border:1.5px solid #d4a657;
@@ -192,7 +198,7 @@ h1{
       <h2>📞 كيف تطلب الاسترجاع؟</h2>
       <ul>
         <li>📧 البريد: <strong>admin@ksa2030.one</strong></li>
-        <li>📱 الواتساب: <strong>+966550522867</strong></li>
+        <li>📱 الواتساب: <strong><bdi class="phone-num">+966550522867</bdi></strong></li>
         <li>💬 صفحة التواصل: <a href="contact.html" style="color:#16a34a;font-weight:900;">صفحة التواصل</a></li>
       </ul>
     </div>
@@ -216,7 +222,7 @@ h1{
     <div class="footer-cta">
       <p>📬 <strong>لأي استفسار حول الاسترجاع:</strong></p>
       <p style="margin-top:6px;">📧 <a href="mailto:admin@ksa2030.one">admin@ksa2030.one</a></p>
-      <p style="margin-top:6px;">📱 <a href="https://wa.me/966550522867">+966 55 052 2867</a></p>
+      <p style="margin-top:6px;">📱 <a href="https://wa.me/966550522867"><bdi class="phone-num">+966 55 052 2867</bdi></a></p>
     </div>
   </div>
 </div>
