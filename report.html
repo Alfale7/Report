@@ -1552,20 +1552,36 @@ async function _preloadShareBlob(){
   }
 }
 
-// 🎯 شارك التقرير - بدون أي await قبل navigator.share (iOS gesture فadon)
+// 🎯 شارك التقرير - بدون أي await قبل navigator.share (iOS gesture يفقد)
 function shareReport(){
+  // 🔍 تشخيص: نعرض كل المعلومات
+  const diag = {
+    'isFirebaseLifetime function': typeof window.isFirebaseLifetime === 'function',
+    'isFirebaseLifetime result': typeof window.isFirebaseLifetime === 'function' ? window.isFirebaseLifetime() : 'N/A',
+    'isFirebaseAdmin function': typeof window.isFirebaseAdmin === 'function',
+    'isFirebaseAdmin result': typeof window.isFirebaseAdmin === 'function' ? window.isFirebaseAdmin() : 'N/A',
+    'checkDownloadAccess function': typeof window.checkDownloadAccess === 'function',
+    '_shareReadyBlob': _shareReadyBlob ? 'موجود ✓' : 'غير موجود ✗',
+    'navigator.share': typeof navigator.share,
+    'navigator.canShare': typeof navigator.canShare,
+    'getFirebaseUser': typeof window.getFirebaseUser === 'function' ? !!window.getFirebaseUser() : 'N/A',
+    'getFirebaseProfile': typeof window.getFirebaseProfile === 'function' ? !!window.getFirebaseProfile() : 'N/A'
+  };
+  alert('🔍 التشخيص:\n' + JSON.stringify(diag, null, 2));
+  
   // فحص الاشتراك بطريقة مزامنة (synchronous) - لا تستخدم await
-  // نستخدم window.isFirebaseLifetime() و window.isFirebaseAdmin() الموجودين مسبقاً
   const isAllowed = (typeof window.isFirebaseLifetime === 'function' && window.isFirebaseLifetime()) 
                  || (typeof window.isFirebaseAdmin === 'function' && window.isFirebaseAdmin());
   
   if (!isAllowed) {
-    // غير مشترك → استدعِ checkDownloadAccess (التي ستعرض المودال)
+    alert('⚠️ غير مشترك - سيعرض مودال الاشتراك');
     if (typeof window.checkDownloadAccess === 'function') {
       window.checkDownloadAccess();
     }
     return;
   }
+  
+  alert('✅ مشترك! نواصل المشاركة...');
   
   // ✅ مشترك → نواصل المشاركة
   
@@ -2328,7 +2344,7 @@ window.shareQRLink = async function(url) {
     </span>
     <span class="arrow">‹</span>
   </button>
-  <button class="export-option" onclick="alert('✅ زر المشاركة وصلت! v22'); shareReport();">
+  <button class="export-option" onclick="shareReport()">
     <span class="ico share">📤</span>
     <span class="opt-text">
       <div class="opt-title">مشاركة</div>
