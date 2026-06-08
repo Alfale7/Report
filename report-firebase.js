@@ -513,15 +513,7 @@ function applyViewOnlyMode() {
     }
   });
   
-  // 5) Listener شامل: أي محاولة تفاعل → showSubscribeGate
-  if (!document._viewOnlyListenerAttached) {
-    document.addEventListener('mousedown', viewOnlyInterceptor, true);
-    document.addEventListener('touchstart', viewOnlyInterceptor, true);
-    document.addEventListener('keydown', viewOnlyKeyInterceptor, true);
-    document._viewOnlyListenerAttached = true;
-  }
-  
-  // 6) أضف overlay دعوة للاشتراك
+  // 5) أضف overlay دعوة للاشتراك (CSS فقط - بدون event listeners عالمية)
   if (!document.getElementById('viewOnlyOverlay')) {
     const overlay = document.createElement('div');
     overlay.id = 'viewOnlyOverlay';
@@ -533,47 +525,6 @@ function applyViewOnlyMode() {
       showSubscribeGate();
     };
     document.body.appendChild(overlay);
-  }
-}
-
-function viewOnlyInterceptor(e) {
-  if (!document.body.classList.contains('view-only-mode')) return;
-  
-  const t = e.target;
-  if (!t || !t.matches) return;
-  
-  // تحقق إذا كان عنصر قابل للتفاعل
-  const interactive = t.matches('input, textarea, select, [contenteditable]') 
-    || (t.closest && t.closest('input, textarea, select, [contenteditable]'));
-  
-  if (interactive) {
-    // اسمح بالأزرار العادية والنماذج
-    const allowedTypes = ['button', 'submit', 'reset', 'hidden'];
-    if (t.tagName === 'INPUT' && allowedTypes.includes(t.type)) return;
-    if (t.tagName === 'BUTTON') return;
-    
-    e.preventDefault();
-    e.stopPropagation();
-    showSubscribeGate();
-    return false;
-  }
-}
-
-function viewOnlyKeyInterceptor(e) {
-  if (!document.body.classList.contains('view-only-mode')) return;
-  
-  const t = e.target;
-  if (!t || !t.matches) return;
-  
-  if (t.matches('input, textarea, [contenteditable]')) {
-    // اسمح فقط بمفاتيح التنقل
-    const allowedKeys = ['Tab', 'Escape', 'ArrowLeft', 'ArrowRight', 'ArrowUp', 'ArrowDown', 'Home', 'End', 'PageUp', 'PageDown'];
-    if (!allowedKeys.includes(e.key)) {
-      e.preventDefault();
-      e.stopPropagation();
-      showSubscribeGate();
-      return false;
-    }
   }
 }
 
