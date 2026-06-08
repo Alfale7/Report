@@ -645,7 +645,7 @@ input:focus,textarea:focus{outline:none;}
 <!-- ═══════════════════════════════════════════════════════
      🔥 Firebase + الحمايات (نفس نظام الموقع)
      ═══════════════════════════════════════════════════════ -->
-<script type="module" src="report-firebase.js?v=19"></script>
+<script type="module" src="report-firebase.js?v=20"></script>
 
 <div id="page">
 
@@ -1263,15 +1263,10 @@ async function _doExportPDF(){
 }
 
 /* ═══ مشاركة ═══ */
-window.shareReport = function(){
-  // أولاً: اقفل القائمة + رد فعل فوري
-  closeExportMenu();
-  showToast('⏳ جاري تحضير المشاركة...');
-  setTimeout(() => { _doShareReport(); }, 250);
-};
-
-async function _doShareReport(){
-  // تحقق من الاشتراك
+window.shareReport = async function(){
+  // ⚠️ مهم: لا setTimeout قبل navigator.share() (يكسر user gesture على iOS Safari)
+  
+  // تحقق من الاشتراك أولاً
   if (typeof window.checkDownloadAccess === 'function') {
     try {
       const allowed = await window.checkDownloadAccess();
@@ -1282,7 +1277,9 @@ async function _doShareReport(){
       return;
     }
   }
-
+  
+  showToast('⏳ جاري تحضير المشاركة...');
+  
   const state = prepareForExport();
   const page = document.getElementById('page');
   
@@ -1294,8 +1291,7 @@ async function _doShareReport(){
 
   try {
     await document.fonts.ready;
-    await new Promise(r => setTimeout(r, 350));
-
+    
     const canvas = await html2canvas(page, {
       backgroundColor: '#ffffff',
       scale: 3,
@@ -1309,48 +1305,48 @@ async function _doShareReport(){
       }
     });
 
+    restoreFromExport(state);
+    
     if(!canvas){ 
       showToast('❌ فشل إنشاء الصورة'); 
-      restoreFromExport(state);
       return; 
     }
 
-    canvas.toBlob(async (blob) => {
-      restoreFromExport(state);
-      
-      if(!blob){ showToast('❌ فشل إنشاء الملف'); return; }
-      const file = new File([blob], 'تقرير_توثيق_التواصل.png', { type: 'image/png' });
+    // حوّل الـ canvas إلى blob (Promise)
+    const blob = await new Promise(resolve => canvas.toBlob(resolve, 'image/png'));
+    
+    if(!blob){ showToast('❌ فشل إنشاء الملف'); return; }
+    
+    const file = new File([blob], 'تقرير_توثيق_التواصل.png', { type: 'image/png' });
+    
+    // اقفل القائمة بعد التحضير
+    closeExportMenu();
 
-      // تحقق من دعم المشاركة
-      const canShareFiles = navigator.share && navigator.canShare && navigator.canShare({ files: [file] });
-
-      if(canShareFiles){
-        try {
-          await navigator.share({
-            files: [file],
-            title: 'تقرير توثيق التواصل مع أولياء الأمور',
-            text: 'تقرير توثيق التواصل مع أولياء الأمور'
-          });
-          showToast('✅ تم المشاركة');
-        } catch(err){
-          if(err.name === 'AbortError') return;
-          console.error('Share err', err);
-          // fallback: تنزيل
-          downloadBlob(blob, 'تقرير_توثيق_التواصل.png');
-          showToast('📥 تم التنزيل (المشاركة غير متاحة)');
-        }
-      } else {
-        // المتصفح لا يدعم المشاركة → نزّل مباشرة
+    // navigator.share مباشرة (داخل نفس async chain)
+    if(navigator.share && navigator.canShare && navigator.canShare({ files: [file] })){
+      try {
+        await navigator.share({
+          files: [file],
+          title: 'تقرير توثيق التواصل مع أولياء الأمور',
+          text: '📋 تقرير توثيق التواصل مع أولياء الأمور\n\n🌐 www.ksa2030.one\nالتقارير الذكية'
+        });
+        showToast('✅ تم المشاركة');
+      } catch(err){
+        if(err.name === 'AbortError') return;
+        console.error('Share err', err);
         downloadBlob(blob, 'تقرير_توثيق_التواصل.png');
-        showToast('📥 تم التنزيل (متصفحك لا يدعم المشاركة)');
+        showToast('📥 تم التنزيل (المشاركة غير متاحة)');
       }
-    }, 'image/png');
+    } else {
+      downloadBlob(blob, 'تقرير_توثيق_التواصل.png');
+      showToast('📥 تم التنزيل (متصفحك لا يدعم المشاركة)');
+    }
   } catch(e){
     console.error('shareReport error:', e);
     showToast('❌ فشل التصدير: ' + (e.message || ''));
     restoreFromExport(state);
   }
-}
+};
 
 function downloadBlob(blob, filename){
   const link = document.createElement('a');

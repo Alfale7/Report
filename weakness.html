@@ -616,7 +616,7 @@ input:focus,textarea:focus{outline:none;}
 <body>
 
 <!-- 🔥 Firebase + الحمايات -->
-<script type="module" src="report-firebase.js?v=19"></script>
+<script type="module" src="report-firebase.js?v=20"></script>
 
 <div id="page">
 
@@ -987,13 +987,9 @@ async function _doExportPDF(){
 }
 
 /* ═══ مشاركة ═══ */
-window.shareReport = function(){
-  closeExportMenu();
-  showToast('⏳ جاري تحضير المشاركة...');
-  setTimeout(() => { _doShareReport(); }, 250);
-};
-
-async function _doShareReport(){
+window.shareReport = async function(){
+  // ⚠️ مهم: لا setTimeout قبل navigator.share() (يكسر user gesture على iOS Safari)
+  
   if (typeof window.checkDownloadAccess === 'function') {
     try {
       const allowed = await window.checkDownloadAccess();
@@ -1004,6 +1000,8 @@ async function _doShareReport(){
       return;
     }
   }
+  
+  showToast('⏳ جاري تحضير المشاركة...');
   
   const state = prepareForExport();
   const page = document.getElementById('page');
@@ -1016,7 +1014,7 @@ async function _doShareReport(){
   
   try {
     await document.fonts.ready;
-    await new Promise(r => setTimeout(r, 350));
+    
     const canvas = await html2canvas(page, {
       backgroundColor:'#ffffff', scale:3, useCORS:true, logging:false, allowTaint:true,
       onclone: (doc) => {
@@ -1025,38 +1023,46 @@ async function _doShareReport(){
         doc.head.appendChild(style);
       }
     });
+    
+    restoreFromExport(state);
+    
     if(!canvas){ 
       showToast('❌ فشل إنشاء الصورة'); 
-      restoreFromExport(state);
       return; 
     }
-    canvas.toBlob(async (blob) => {
-      restoreFromExport(state);
-      
-      if(!blob){ showToast('❌ فشل إنشاء الملف'); return; }
-      const file = new File([blob], 'إشعار_ضعف_دراسي.png', { type:'image/png' });
-      const canShareFiles = navigator.share && navigator.canShare && navigator.canShare({ files:[file] });
-      if(canShareFiles){
-        try {
-          await navigator.share({ files:[file], title:'إشعار ضعف دراسي', text:'إشعار ضعف دراسي' });
-          showToast('✅ تم المشاركة');
-        } catch(err){
-          if(err.name === 'AbortError') return;
-          console.error('Share err', err);
-          downloadBlob(blob, 'إشعار_ضعف_دراسي.png');
-          showToast('📥 تم التنزيل (المشاركة غير متاحة)');
-        }
-      } else {
+    
+    const blob = await new Promise(resolve => canvas.toBlob(resolve, 'image/png'));
+    
+    if(!blob){ showToast('❌ فشل إنشاء الملف'); return; }
+    
+    const file = new File([blob], 'إشعار_ضعف_دراسي.png', { type:'image/png' });
+    
+    closeExportMenu();
+    
+    if(navigator.share && navigator.canShare && navigator.canShare({ files:[file] })){
+      try {
+        await navigator.share({ 
+          files:[file], 
+          title:'إشعار ضعف دراسي', 
+          text:'📋 إشعار ضعف دراسي\n\n🌐 www.ksa2030.one\nالتقارير الذكية' 
+        });
+        showToast('✅ تم المشاركة');
+      } catch(err){
+        if(err.name === 'AbortError') return;
+        console.error('Share err', err);
         downloadBlob(blob, 'إشعار_ضعف_دراسي.png');
-        showToast('📥 تم التنزيل (متصفحك لا يدعم المشاركة)');
+        showToast('📥 تم التنزيل (المشاركة غير متاحة)');
       }
-    }, 'image/png');
+    } else {
+      downloadBlob(blob, 'إشعار_ضعف_دراسي.png');
+      showToast('📥 تم التنزيل (متصفحك لا يدعم المشاركة)');
+    }
   } catch(e){
     console.error('shareReport error:', e);
     showToast('❌ فشل التصدير: ' + (e.message || ''));
     restoreFromExport(state);
   }
-}
+};
 
 function downloadBlob(blob, filename){
   const link = document.createElement('a');
