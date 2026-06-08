@@ -1026,6 +1026,9 @@ async function _doExportPDF(){
 
 /* ═══ مشاركة ═══ */
 window.shareReport = async function(){
+  // 🔬 تشخيص: alert فوري لمعرفة هل الدالة تستجيب
+  alert('تم الضغط على المشاركة - بدء التحضير');
+  
   // 🆕 إغلاق القائمة فوراً + toast فوري (المستخدم يعرف أن الزر استجاب)
   closeExportMenu();
   showToast('⏳ جاري تحضير المشاركة...');
