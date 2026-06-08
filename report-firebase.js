@@ -13,8 +13,10 @@ import {
   logout,
   getUserProfile,
   incrementDownloadCount,
-  listenToMaintenance
-} from './firebase-config.js';
+  listenToMaintenance,
+  onPricingChange,
+  getPricing
+} from './firebase-config.js?v=6';
 
 import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
 import { doc, onSnapshot } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
@@ -626,7 +628,7 @@ function showSubscribeGate() {
     <div class="ub">🔒 محتوى مدفوع</div>
     <div class="ic">💎</div>
     <h2>اشترك لفتح هذا التقرير</h2>
-    <div class="su">مرحباً ${name} 👋<br>افتح كل القوالب الاحترافية بـ 49 ريال مدى الحياة</div>
+    <div class="su">مرحباً ${name} 👋<br>افتح كل القوالب الاحترافية بـ <span data-fb-current-price>49</span> ريال مدى الحياة</div>
 
     <div class="uf">
       <div class="uft"><span class="utick">✓</span><strong>+21 قالب احترافي</strong> معتمد</div>
@@ -640,10 +642,10 @@ function showSubscribeGate() {
       <div class="upt">🔥 عرض إطلاق محدود</div>
       <div class="uold">
         <span class="uoldl">السعر الأصلي</span>
-        <span class="ustr">99</span>
+        <span class="ustr" data-fb-original-price>99</span>
       </div>
       <div style="display:flex;align-items:baseline;justify-content:center;gap:5px;">
-        <span class="uam">49</span>
+        <span class="uam" data-fb-current-price>49</span>
         <span class="ucu">ريال</span>
       </div>
       <div class="uo">💎 دفعة واحدة · مدى الحياة</div>
@@ -651,7 +653,7 @@ function showSubscribeGate() {
 
     <a href="${link}" class="uct">
       <span style="font-size:1.3rem">💳</span>
-      <span>اشترك الآن - 49 ريال</span>
+      <span>اشترك الآن - <span data-fb-current-price>49</span> ريال</span>
       <span style="font-weight:900">←</span>
     </a>
     <div class="ug">🛡️ ضمان استرداد كامل خلال 7 أيام</div>
@@ -1330,7 +1332,7 @@ window.showPremiumFeatureModal = function(featureName = 'هذه الميزة') {
     <div class="pfm-price">
       <div class="pfm-price-left">
         <span class="pfm-price-label">اشتراك مدى الحياة</span>
-        <span class="pfm-price-value">49 <span class="cur">ريال</span></span>
+        <span class="pfm-price-value"><span data-fb-current-price>49</span> <span class="cur">ريال</span></span>
       </div>
       <div class="pfm-price-right">دفعة<br>واحدة</div>
     </div>
@@ -1493,3 +1495,71 @@ window.shareReportLink = async function(data) {
 };
 
 console.log('✅ window.trackExport و window.shareReportLink جاهزتان');
+
+// ═══════════════════════════════════════════════════════════
+// 💎 مستمع تحديث السعر اللحظي للمودالات
+// ═══════════════════════════════════════════════════════════
+function applyPricingToModals(pricing) {
+  if (!pricing || !pricing.loaded) return;
+  
+  const current = pricing.currentPrice;
+  const original = pricing.originalPrice;
+  
+  // حدّث كل العناصر بـ data-fb-current-price
+  document.querySelectorAll('[data-fb-current-price]').forEach(el => {
+    el.textContent = current;
+  });
+  
+  // حدّث كل العناصر بـ data-fb-original-price
+  document.querySelectorAll('[data-fb-original-price]').forEach(el => {
+    el.textContent = original;
+  });
+  
+  // خزّن السعر في window للوصول السريع
+  window.__CURRENT_PRICE__ = current;
+  window.__ORIGINAL_PRICE__ = original;
+}
+
+// استمع للتغييرات اللحظية
+if (typeof onPricingChange === 'function') {
+  onPricingChange((pricing) => {
+    applyPricingToModals(pricing);
+    console.log('💎 تم تحديث السعر في المودالات:', pricing.currentPrice);
+  });
+}
+
+// MutationObserver: لما يفتح أي مودال (مودال يحتوي data-fb-current-price)، طبّق السعر الحالي
+const _pricingObserver = new MutationObserver((mutations) => {
+  for (const m of mutations) {
+    if (m.addedNodes.length > 0) {
+      // تحقق إذا فيه عناصر سعر جديدة
+      const hasPriceElements = Array.from(m.addedNodes).some(node => {
+        if (node.nodeType !== 1) return false;
+        return node.querySelector && (
+          node.querySelector('[data-fb-current-price]') || 
+          node.querySelector('[data-fb-original-price]') ||
+          node.matches?.('[data-fb-current-price]') ||
+          node.matches?.('[data-fb-original-price]')
+        );
+      });
+      if (hasPriceElements) {
+        // حصلنا مودال جديد - طبّق السعر الحالي
+        const pricing = typeof getPricing === 'function' ? getPricing() : null;
+        if (pricing && pricing.loaded) {
+          applyPricingToModals(pricing);
+        }
+      }
+    }
+  }
+});
+
+// راقب الـ body عند تحميل الصفحة
+if (document.readyState === 'loading') {
+  document.addEventListener('DOMContentLoaded', () => {
+    _pricingObserver.observe(document.body, { childList: true, subtree: true });
+  });
+} else {
+  _pricingObserver.observe(document.body, { childList: true, subtree: true });
+}
+
+console.log('✅ مراقب السعر اللحظي جاهز');
