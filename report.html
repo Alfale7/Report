@@ -909,7 +909,7 @@ transition:all 0.2s;
 </style>
 
   <!-- 🔥 Firebase Integration (يجب أن يكون قبل أي محتوى) -->
-  <script type="module" src="report-firebase.js?v=22"></script>
+  <script type="module" src="report-firebase.js?v=23"></script>
 
   <!-- 📲 مكتبة QR Code (للنشر بـ Firestore) -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
@@ -1505,6 +1505,20 @@ function printReport(){
 // 📤 مشاركة التقرير - نفس الكود الناجح من share-test.html
 // ═══════════════════════════════════════════════
 async function shareReport(){
+  // 🔒 فحص الاشتراك أولاً (نفس بقية أزرار التصدير)
+  if (typeof window.checkDownloadAccess === 'function') {
+    try {
+      const allowed = await window.checkDownloadAccess();
+      if (!allowed) {
+        try { if(typeof closeExportMenu === 'function') closeExportMenu(); } catch(e){}
+        return;
+      }
+    } catch(fbErr) {
+      console.error('Firebase check error:', fbErr);
+      // نكمل بدون حماية لو فشل الفحص
+    }
+  }
+  
   // إغلاق القائمة + toast بأمان
   try { if(typeof closeExportMenu === 'function') closeExportMenu(); } catch(e){ console.error('closeExportMenu err:', e); }
   try { if(typeof showToast === 'function') showToast('⏳ جاري إنشاء الصورة...'); } catch(e){ console.error('showToast err:', e); }
