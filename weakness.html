@@ -616,7 +616,7 @@ input:focus,textarea:focus{outline:none;}
 <body>
 
 <!-- 🔥 Firebase + الحمايات -->
-<script type="module" src="report-firebase.js?v=20"></script>
+<script type="module" src="report-firebase.js?v=21"></script>
 
 <div id="page">
 
@@ -828,11 +828,49 @@ function toggleExportMenu(){
   const menu = document.getElementById('exportMenu');
   const bd = document.getElementById('exportBackdrop');
   if(menu.classList.contains('show')) closeExportMenu();
-  else { menu.classList.add('show'); bd.classList.add('show'); }
+  else { 
+    menu.classList.add('show'); 
+    bd.classList.add('show');
+    // 🚀 ابدأ تحضير الصورة في الخلفية فوراً (للمشاركة السريعة)
+    preloadShareImage();
+  }
 }
 function closeExportMenu(){
   document.getElementById('exportMenu').classList.remove('show');
   document.getElementById('exportBackdrop').classList.remove('show');
+}
+
+// 📦 تخزين مؤقت للصورة الجاهزة للمشاركة (يحل مشكلة user gesture على iOS)
+let _cachedShareBlob = null;
+let _cachedShareTime = 0;
+
+async function preloadShareImage(){
+  if (_cachedShareBlob && (Date.now() - _cachedShareTime < 30000)) return;
+  
+  try {
+    const state = prepareForExport();
+    const page = document.getElementById('page');
+    if (!page) { restoreFromExport(state); return; }
+    
+    await document.fonts.ready;
+    
+    const canvas = await html2canvas(page, {
+      backgroundColor: '#ffffff', scale: 3, useCORS: true, logging: false, allowTaint: true,
+      onclone: (doc) => {
+        const style = doc.createElement('style');
+        style.textContent = "* { font-family: 'Tajawal','Reem Kufi','Arial Unicode MS','Tahoma',Arial,sans-serif !important; letter-spacing: 0 !important; }";
+        doc.head.appendChild(style);
+      }
+    });
+    
+    restoreFromExport(state);
+    if (!canvas) return;
+    
+    _cachedShareBlob = await new Promise(resolve => canvas.toBlob(resolve, 'image/png'));
+    _cachedShareTime = Date.now();
+  } catch(e) {
+    console.error('preloadShareImage error:', e);
+  }
 }
 
 function escHtml(s){
@@ -988,7 +1026,7 @@ async function _doExportPDF(){
 
 /* ═══ مشاركة ═══ */
 window.shareReport = async function(){
-  // ⚠️ مهم: لا setTimeout قبل navigator.share() (يكسر user gesture على iOS Safari)
+  // ⚡ استخدم الصورة المُحضّرة مسبقاً (إن وجدت) → navigator.share فوري على iOS
   
   if (typeof window.checkDownloadAccess === 'function') {
     try {
@@ -1001,66 +1039,38 @@ window.shareReport = async function(){
     }
   }
   
-  showToast('⏳ جاري تحضير المشاركة...');
+  // لو ما عندنا صورة مخزّنة → حضّرها الحين
+  if (!_cachedShareBlob || (Date.now() - _cachedShareTime > 30000)) {
+    showToast('⏳ جاري تحضير المشاركة...');
+    await preloadShareImage();
+  }
   
-  const state = prepareForExport();
-  const page = document.getElementById('page');
-  
-  if (!page) {
-    showToast('❌ خطأ: لم يتم العثور على التقرير');
-    restoreFromExport(state);
+  if (!_cachedShareBlob) {
+    showToast('❌ فشل تحضير الصورة');
     return;
   }
   
-  try {
-    await document.fonts.ready;
-    
-    const canvas = await html2canvas(page, {
-      backgroundColor:'#ffffff', scale:3, useCORS:true, logging:false, allowTaint:true,
-      onclone: (doc) => {
-        const style = doc.createElement('style');
-        style.textContent = "* { font-family: 'Tajawal','Reem Kufi','Arial Unicode MS','Tahoma',Arial,sans-serif !important; letter-spacing: 0 !important; }";
-        doc.head.appendChild(style);
-      }
-    });
-    
-    restoreFromExport(state);
-    
-    if(!canvas){ 
-      showToast('❌ فشل إنشاء الصورة'); 
-      return; 
+  const file = new File([_cachedShareBlob], 'إشعار_ضعف_دراسي.png', { type:'image/png' });
+  
+  closeExportMenu();
+  
+  if(navigator.share && navigator.canShare && navigator.canShare({ files:[file] })){
+    try {
+      await navigator.share({ 
+        files:[file], 
+        title:'إشعار ضعف دراسي', 
+        text:'📋 إشعار ضعف دراسي\n\n🌐 www.ksa2030.one\nالتقارير الذكية' 
+      });
+      showToast('✅ تم المشاركة');
+    } catch(err){
+      if(err.name === 'AbortError') return;
+      console.error('Share err', err);
+      downloadBlob(_cachedShareBlob, 'إشعار_ضعف_دراسي.png');
+      showToast('📥 تم التنزيل (المشاركة غير متاحة)');
     }
-    
-    const blob = await new Promise(resolve => canvas.toBlob(resolve, 'image/png'));
-    
-    if(!blob){ showToast('❌ فشل إنشاء الملف'); return; }
-    
-    const file = new File([blob], 'إشعار_ضعف_دراسي.png', { type:'image/png' });
-    
-    closeExportMenu();
-    
-    if(navigator.share && navigator.canShare && navigator.canShare({ files:[file] })){
-      try {
-        await navigator.share({ 
-          files:[file], 
-          title:'إشعار ضعف دراسي', 
-          text:'📋 إشعار ضعف دراسي\n\n🌐 www.ksa2030.one\nالتقارير الذكية' 
-        });
-        showToast('✅ تم المشاركة');
-      } catch(err){
-        if(err.name === 'AbortError') return;
-        console.error('Share err', err);
-        downloadBlob(blob, 'إشعار_ضعف_دراسي.png');
-        showToast('📥 تم التنزيل (المشاركة غير متاحة)');
-      }
-    } else {
-      downloadBlob(blob, 'إشعار_ضعف_دراسي.png');
-      showToast('📥 تم التنزيل (متصفحك لا يدعم المشاركة)');
-    }
-  } catch(e){
-    console.error('shareReport error:', e);
-    showToast('❌ فشل التصدير: ' + (e.message || ''));
-    restoreFromExport(state);
+  } else {
+    downloadBlob(_cachedShareBlob, 'إشعار_ضعف_دراسي.png');
+    showToast('📥 تم التنزيل (متصفحك لا يدعم المشاركة)');
   }
 };
 
