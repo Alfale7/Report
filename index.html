@@ -4558,7 +4558,6 @@ background:#4caf50;border-radius:1px;opacity:0.5;
 
 /* Thumb التقرير العام */
 .thumb-general{background:#fff;}
-.thumb-report4{background:#eef9f7;}
 .thumb-general .t-header{
 height:34px;
 background:linear-gradient(135deg,#1a3c4e,#2a6878);
@@ -6827,7 +6826,7 @@ font-size:0.78rem;text-align:center;margin-top:12px;display:none;
         <div class="cat-text">
           <div class="cat-title">
             <span data-i18n="catSchool">التقارير المدرسية</span>
-            <span class="cat-count">4</span>
+            <span class="cat-count">2</span>
           </div>
           <div class="cat-sub" data-i18n="catSchoolSub">تقارير الأنشطة والفعاليات</div>
         </div>
@@ -6930,79 +6929,6 @@ font-size:0.78rem;text-align:center;margin-top:12px;display:none;
             <span class="meta-pill">📷 <span data-i18n="metaPhotosMag">5 صور + شعار</span></span>
             <span class="meta-sep"></span>
             <span class="meta-pill">📝 <span data-i18n="metaFieldsMag">44 حقل تفاعلي</span></span>
-          </div>
-        </div>
-        <div class="card-action">‹</div>
-      </div>
-    </div>
-
-    <div class="preview-card r-report4" data-target="report4.html" onclick="handleCardClick(this)">
-      <span class="card-badge badge-new">✨ <span data-i18n="badgeNew">جديد</span></span>
-      <div class="thumb thumb-report4">
-        <div class="iframe-snap-wrap" id="iframe-report4">
-          <div class="iframe-loading" data-i18n="loadingPreview">جاري تحميل المعاينة</div>
-          <iframe src="report4.html" loading="lazy" scrolling="no" sandbox="allow-same-origin allow-scripts" title="معاينة التقرير المرن" onload="this.parentElement.classList.add('loaded')"></iframe>
-        </div>
-      </div>
-      <div class="card-content">
-        <div class="card-icon-wrap">
-          <div class="card-icon">🎨</div>
-        </div>
-        <div class="card-text">
-          <div class="title" data-i18n="cardFlexTitle">التقرير المرن المتعدد</div>
-          <div class="desc" data-i18n="cardFlexDesc">عام أو خاص · أقسام مرنة · 6 ثيمات ملوّنة 🎨</div>
-          <div class="meta">
-            <span class="meta-pill">📷 <span data-i18n="metaPhotosFlex">3 صور + شعار</span></span>
-            <span class="meta-sep"></span>
-            <span class="meta-pill">🎨 <span data-i18n="metaThemesFlex">6 ثيمات</span></span>
-          </div>
-        </div>
-        <div class="card-action">‹</div>
-      </div>
-    </div>
-
-    <!-- Card: تقرير الفعاليات كتاب رقمي -->
-    <div class="preview-card r-book" data-target="report5.html" onclick="handleCardClick(this)">
-      <span class="card-badge badge-premium">📖 <span data-i18n="badgeBook">كتاب رقمي</span></span>
-      <div class="thumb thumb-book">
-        <div class="book-snap">
-          <div class="book-snap-spine"></div>
-          <div class="book-snap-page book-snap-left">
-            <div class="book-snap-cover-eyebrow">EVENTS REPORT</div>
-            <div class="book-snap-cover-title">تقرير الفعاليات</div>
-            <div class="book-snap-cover-divider"></div>
-            <div class="book-snap-cover-sub">كتاب رقمي تفاعلي</div>
-            <div class="book-snap-cover-year">١٤٤٧ هـ</div>
-          </div>
-          <div class="book-snap-page book-snap-right">
-            <div class="book-snap-eyebrow">EVENT 01</div>
-            <div class="book-snap-title-line"></div>
-            <div class="book-snap-meta">
-              <div class="book-snap-meta-cell"></div>
-              <div class="book-snap-meta-cell"></div>
-              <div class="book-snap-meta-cell"></div>
-              <div class="book-snap-meta-cell"></div>
-            </div>
-            <div class="book-snap-images">
-              <div class="book-snap-img"></div>
-              <div class="book-snap-img"></div>
-            </div>
-            <div class="book-snap-text-line"></div>
-            <div class="book-snap-text-line short"></div>
-          </div>
-        </div>
-      </div>
-      <div class="card-content">
-        <div class="card-icon-wrap">
-          <div class="card-icon">📖</div>
-        </div>
-        <div class="card-text">
-          <div class="title" data-i18n="cardBookTitle">تقرير الفعاليات · كتاب رقمي</div>
-          <div class="desc" data-i18n="cardBookDesc">كتاب تفاعلي بصفحات متعددة · 5 ثيمات · تأثير تقليب</div>
-          <div class="meta">
-            <span class="meta-pill">📄 <span data-i18n="metaPagesBook">صفحات لا محدودة</span></span>
-            <span class="meta-sep"></span>
-            <span class="meta-pill">🎨 <span data-i18n="metaThemesBook">5 ثيمات</span></span>
           </div>
         </div>
         <div class="card-action">‹</div>
@@ -8355,7 +8281,7 @@ function handleCardClick(card){
   const target = card.getAttribute('data-target');
 
   // 👁️ تقارير المعاينة / التجربة - يفتحها أي زائر بدون تسجيل دخول
-  const VIEW_ONLY_AND_FREE_TRIAL = ['report.html', 'tasis.html', 'watny.html', 'alm.html', 'alm2.html', 'green.html', 'shawahed.html', 'enjaz.html', 'kg.html', 'report2.html', 'report3.html', 'report4.html', 'teacher.html', 'arabic.html', 'cert.html', 'exam.html', 'star.html', 'plan.html', 'visit.html', 'radio.html', 'report5.html', 'council.html', 'parent.html', 'weakness.html'];
+  const VIEW_ONLY_AND_FREE_TRIAL = ['report.html', 'tasis.html', 'watny.html', 'alm.html', 'alm2.html', 'green.html', 'shawahed.html', 'enjaz.html', 'kg.html', 'report2.html', 'report3.html', 'teacher.html', 'arabic.html', 'cert.html', 'exam.html', 'star.html', 'plan.html', 'visit.html', 'radio.html', 'council.html', 'parent.html', 'weakness.html'];
   if (target && VIEW_ONLY_AND_FREE_TRIAL.includes(target)) {
     window.location.href = target;
     return;
