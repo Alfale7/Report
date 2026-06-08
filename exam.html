@@ -920,6 +920,136 @@ body::before{
 .btn-share{background:linear-gradient(135deg,#16a34a,#15803d); color:#fff; box-shadow:0 4px 12px rgba(22,163,74,0.25);}
 .btn-img:hover,.btn-pdf:hover,.btn-share:hover{transform:translateY(-1px); filter:brightness(1.05);}
 
+/* ⬇ زر "تحميل الملف" الموحَّد - فاخر وأنيق */
+.btn-export-main{
+  background:linear-gradient(135deg, #2a9d8f 0%, #1a7a8a 50%, #0d4d5d 100%);
+  color:#fff;
+  font-weight:900;
+  padding:11px 22px;
+  box-shadow:
+    0 6px 18px rgba(42,157,143,0.42),
+    0 0 0 1px rgba(255,255,255,0.18) inset;
+  letter-spacing:0.3px;
+  position:relative;
+  overflow:hidden;
+}
+.btn-export-main::before{
+  content:'';
+  position:absolute;
+  top:0; left:-150%;
+  width:80%; height:100%;
+  background:linear-gradient(110deg, transparent 20%, rgba(255,255,255,0.25) 50%, transparent 80%);
+  animation:btnShine 3.5s infinite;
+  pointer-events:none;
+}
+@keyframes btnShine{0%{left:-150%;} 50%,100%{left:150%;}}
+.btn-export-main:hover{
+  transform:translateY(-2px);
+  box-shadow:0 10px 26px rgba(42,157,143,0.55), 0 0 0 1px rgba(255,255,255,0.22) inset;
+}
+.btn-export-main span{position:relative; z-index:1;}
+
+/* ═══ قائمة التصدير المنبثقة (Bottom Sheet) ═══ */
+.export-menu-wrap{position:relative; display:inline-block;}
+.export-sheet-backdrop{
+  position:fixed; inset:0;
+  background:rgba(8,28,36,0.55);
+  backdrop-filter:blur(4px);
+  -webkit-backdrop-filter:blur(4px);
+  z-index:180;
+  display:none;
+  opacity:0;
+  transition:opacity .25s;
+}
+.export-sheet-backdrop.show{display:block; opacity:1;}
+.export-menu{
+  position:fixed;
+  bottom:-100%;
+  left:50%; transform:translateX(-50%);
+  width:min(440px, calc(100vw - 24px));
+  background:#fff;
+  border-radius:24px 24px 0 0;
+  padding:14px 0 22px;
+  z-index:190;
+  transition:bottom .35s cubic-bezier(.2,.85,.3,1);
+  box-shadow:0 -12px 42px rgba(7,38,49,0.28);
+  max-height:80vh;
+  overflow-y:auto;
+}
+.export-menu.show{bottom:0;}
+.export-menu::before{
+  content:'';
+  display:block;
+  width:44px; height:4px;
+  background:#cfd5cf;
+  border-radius:3px;
+  margin:0 auto 12px;
+}
+.export-menu-title{
+  text-align:center;
+  font-size:1.04rem;
+  font-weight:900;
+  color:var(--moe-navy);
+  margin-bottom:12px;
+  letter-spacing:0.3px;
+}
+.export-option{
+  width:100%;
+  display:flex; align-items:center; gap:12px;
+  padding:13px 20px;
+  background:transparent;
+  border:none;
+  border-bottom:1px solid #f1f2ee;
+  cursor:pointer;
+  text-align:right;
+  font:inherit;
+  transition:background .15s;
+}
+.export-option:last-child{border-bottom:none;}
+.export-option:hover, .export-option:active{background:#f5f7f4;}
+.export-option .ico{
+  width:44px; height:44px;
+  border-radius:12px;
+  display:flex; align-items:center; justify-content:center;
+  font-size:21px;
+  flex-shrink:0;
+  color:#fff;
+  box-shadow:0 4px 11px rgba(0,0,0,0.13);
+}
+.export-option .ico.png{background:linear-gradient(135deg, #2a9d8f, #1a7a8a);}
+.export-option .ico.pdf{background:linear-gradient(135deg, #d32f2f, #b71c1c);}
+.export-option .ico.share{background:linear-gradient(135deg, #16a34a, #15803d);}
+.export-option .ico.cloud{
+  background:linear-gradient(135deg, #f5d76e 0%, #e8c547 35%, #d4a657 100%);
+  color:#3d2200;
+  box-shadow:0 4px 14px rgba(232,197,71,0.55), 0 0 0 1px rgba(255,255,255,0.25) inset;
+}
+.export-option .opt-text{flex:1; min-width:0;}
+.export-option .opt-title{
+  font-weight:800;
+  font-size:0.96rem;
+  color:var(--ink);
+  margin-bottom:2px;
+}
+.export-option .opt-desc{
+  font-size:0.76rem;
+  color:#7a8a90;
+  font-weight:500;
+}
+.export-option .arrow{color:#bcc3bc; font-size:1.15rem;}
+
+/* تمييز "حفظ في حسابي" بإطار ذهبي رقيق */
+.export-option.profile-save{
+  background:linear-gradient(90deg, rgba(232,197,71,0.05) 0%, rgba(232,197,71,0.12) 100%);
+  border:1.5px solid rgba(232,197,71,0.3);
+  border-radius:12px;
+  margin:6px 12px;
+}
+.export-option.profile-save:hover{
+  background:linear-gradient(90deg, rgba(232,197,71,0.1) 0%, rgba(232,197,71,0.2) 100%);
+}
+.export-option.profile-save .opt-title{color:#7a5a1a;}
+
 .btn-clear{
   background:#fff;
   color:#a85050;
@@ -1178,6 +1308,9 @@ body::before{
 /* إخفاء نقش الترويسة عند التصدير/الطباعة لتفادي ظهوره دوائر بيضاء */
 .exporting .moe-band-body::before,
 .exporting .moe-school-band::before{display:none !important; content:none !important;}
+.exporting .action-bar,
+.exporting .export-menu,
+.exporting .export-sheet-backdrop{display:none !important;}
 @media print{
   .moe-band-body::before, .moe-school-band::before{display:none !important; content:none !important;}
 }
@@ -1242,6 +1375,8 @@ body::before{
   .mode-selector,
   .add-controls,
   .action-bar,
+  .export-menu,
+  .export-sheet-backdrop,
   .col-delete,
   .row-delete,
   .row-delete-cell,
@@ -1475,7 +1610,7 @@ body::before{
 
 </div>
 
-<!-- ═══════════ ACTION BAR ═══════════ -->
+<!-- ═══════════ ACTION BAR (مُحدَّث - نظيف ومتناسق) ═══════════ -->
 <div class="action-bar">
   <button class="btn btn-clear" onclick="confirmClear()">
     🗑️ <span class="btn-text">تفريغ</span>
@@ -1484,17 +1619,48 @@ body::before{
     <span class="theme-swatch"></span>
     <span class="btn-text">الثيم</span>
   </button>
-  <button class="btn btn-img" onclick="saveAsImage()">
-    🖼️ <span class="btn-text">صورة</span>
-  </button>
-  <button class="btn btn-pdf" onclick="exportAsPDFv2()">
-    📄 <span class="btn-text">PDF</span>
-  </button>
-    <button class="btn btn-cloud" onclick="saveToMyProfile()" title="حفظ في حسابي للرجوع له لاحقاً">
-      <span>☁️ حفظ في حسابي</span>
+  <div class="export-menu-wrap">
+    <button class="btn btn-export-main" onclick="toggleExportMenu()">
+      <span>⬇</span><span class="btn-text">تحميل الملف</span>
     </button>
-  <button class="btn btn-share" onclick="shareReport()">
-    📤 <span class="btn-text">مشاركة</span>
+  </div>
+</div>
+
+<!-- قائمة التصدير المنبثقة (Bottom Sheet) -->
+<div class="export-sheet-backdrop" id="exportBackdrop" onclick="closeExportMenu()"></div>
+<div class="export-menu" id="exportMenu">
+  <div class="export-menu-title">اختر طريقة التصدير</div>
+  <button class="export-option" onclick="saveAsImage()">
+    <span class="ico png">🖼</span>
+    <span class="opt-text">
+      <div class="opt-title">حفظ كصورة</div>
+      <div class="opt-desc">PNG عالي الجودة</div>
+    </span>
+    <span class="arrow">‹</span>
+  </button>
+  <button class="export-option" onclick="exportAsPDFv2()">
+    <span class="ico pdf">📄</span>
+    <span class="opt-text">
+      <div class="opt-title">حفظ PDF</div>
+      <div class="opt-desc">ملف PDF احترافي للطباعة</div>
+    </span>
+    <span class="arrow">‹</span>
+  </button>
+  <button class="export-option" onclick="shareReport()">
+    <span class="ico share">📤</span>
+    <span class="opt-text">
+      <div class="opt-title">مشاركة</div>
+      <div class="opt-desc">شارك الملف عبر تطبيقاتك</div>
+    </span>
+    <span class="arrow">‹</span>
+  </button>
+  <button class="export-option profile-save" onclick="saveToMyProfile()">
+    <span class="ico cloud">☁️</span>
+    <span class="opt-text">
+      <div class="opt-title">حفظ في حسابي</div>
+      <div class="opt-desc">احفظ الملف في سجلك للرجوع له لاحقاً</div>
+    </span>
+    <span class="arrow">‹</span>
   </button>
 </div>
 
@@ -2060,9 +2226,33 @@ function restoreFromExport(replacements){
 }
 
 // ═══════════════════════════════════════════════
+// ⬇ قائمة التصدير المنبثقة (Bottom Sheet)
+// ═══════════════════════════════════════════════
+function toggleExportMenu(){
+  const menu = document.getElementById('exportMenu');
+  const bd = document.getElementById('exportBackdrop');
+  if(!menu || !bd) return;
+  if(menu.classList.contains('show')){
+    closeExportMenu();
+  } else {
+    menu.classList.add('show');
+    bd.classList.add('show');
+  }
+}
+function closeExportMenu(){
+  const menu = document.getElementById('exportMenu');
+  const bd = document.getElementById('exportBackdrop');
+  if(menu) menu.classList.remove('show');
+  if(bd) bd.classList.remove('show');
+}
+window.toggleExportMenu = toggleExportMenu;
+window.closeExportMenu = closeExportMenu;
+
+// ═══════════════════════════════════════════════
 // التصدير كصورة
 // ═══════════════════════════════════════════════
 async function saveAsImage(){
+  closeExportMenu();
   if (typeof window.checkDownloadAccess === 'function') {
     const allowed = await window.checkDownloadAccess();
     if (!allowed) return;
@@ -2096,6 +2286,7 @@ async function saveAsImage(){
 // التصدير كـ PDF
 // ═══════════════════════════════════════════════
 async function exportAsPDFv2(){
+  closeExportMenu();
   if (typeof window.checkDownloadAccess === 'function') {
     const allowed = await window.checkDownloadAccess();
     if (!allowed) return;
@@ -2159,6 +2350,7 @@ async function exportAsPDFv2(){
 // 📤 مشاركة التقرير
 // ═══════════════════════════════════════════════
 async function shareReport(){
+  closeExportMenu();
   if (typeof window.checkDownloadAccess === 'function') {
     const allowed = await window.checkDownloadAccess();
     if (!allowed) return;
@@ -2347,6 +2539,7 @@ document.addEventListener('DOMContentLoaded', () => {
 <!-- ☁️ نظام الحفظ في البروفايل -->
 <script>
 async function saveToMyProfile() {
+  if(typeof closeExportMenu === 'function') closeExportMenu();
   if (typeof window.getFirebaseUser !== 'function' || !window.getFirebaseUser()) {
     if (typeof showToast === 'function') showToast('⚠️ سجّل دخولك أولاً');
     setTimeout(() => { window.location.href = 'login.html?next=exam.html'; }, 1500);

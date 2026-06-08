@@ -1930,85 +1930,152 @@ body.view-tabs .section.tab-section.tab-active{display:block; animation:fadeInTa
   color:var(--text);
 }
 .action-btn:hover{background:var(--paper-tint);}
-.action-btn-export{
-  background:linear-gradient(135deg, #2a9d8f, #1a7a8a);
-  color:#fff;
-  box-shadow:0 4px 14px rgba(42,157,143,0.35);
-}
-.action-btn-export:hover{transform:translateY(-1px); background:linear-gradient(135deg, #1a7a8a, #0d4d5d);}
-.action-btn-pdf{
-  background:linear-gradient(135deg, #d32f2f, #b71c1c);
-  color:#fff;
-  box-shadow:0 4px 14px rgba(211,47,47,0.35);
-}
 
-/* ☁️ زر حفظ في حسابي - فاخر ذهبي تحفة */
-.action-btn-cloud{
-  background:linear-gradient(135deg, #f5d76e 0%, #e8c547 35%, #d4a657 100%) !important;
-  color:#3d2200 !important;
+/* ⬇ زر "تحميل الملف" الموحَّد - فاخر وأنيق */
+.action-btn-export-main{
+  background:linear-gradient(135deg, #2a9d8f 0%, #1a7a8a 50%, #0d4d5d 100%);
+  color:#fff;
+  font-weight:900;
+  padding:11px 22px;
   box-shadow:
-    0 6px 20px rgba(232,197,71,0.5),
-    0 0 0 1px rgba(255,255,255,0.3) inset,
-    0 -2px 6px rgba(212,166,87,0.4) inset;
+    0 6px 18px rgba(42,157,143,0.42),
+    0 0 0 1px rgba(255,255,255,0.18) inset;
+  letter-spacing:0.3px;
   position:relative;
   overflow:hidden;
-  font-weight:900 !important;
-  text-shadow:0 1px 0 rgba(255,255,255,0.4);
-  border:1px solid rgba(212,166,87,0.5) !important;
 }
-.action-btn-cloud::before{
+.action-btn-export-main::before{
   content:'';
   position:absolute;
-  top:0;left:-150%;
-  width:80%;height:100%;
-  background:linear-gradient(110deg, transparent 20%, rgba(255,255,255,0.6) 50%, transparent 80%);
-  animation:cloudBtnShimmer 2.5s infinite;
+  top:0; left:-150%;
+  width:80%; height:100%;
+  background:linear-gradient(110deg, transparent 20%, rgba(255,255,255,0.25) 50%, transparent 80%);
+  animation:btnShine 3.5s infinite;
   pointer-events:none;
 }
-.action-btn-cloud::after{
-  content:'';
-  position:absolute;
-  inset:0;
-  background:radial-gradient(ellipse at top, rgba(255,255,255,0.4), transparent 70%);
-  pointer-events:none;
-}
-@keyframes cloudBtnShimmer{0%{left:-150%;}50%,100%{left:150%;}}
-.action-btn-cloud:hover{
+@keyframes btnShine{0%{left:-150%;} 50%,100%{left:150%;}}
+.action-btn-export-main:hover{
   transform:translateY(-2px);
-  box-shadow:
-    0 10px 28px rgba(232,197,71,0.65),
-    0 0 0 1px rgba(255,255,255,0.4) inset,
-    0 -2px 6px rgba(212,166,87,0.5) inset !important;
-  background:linear-gradient(135deg, #ffd966 0%, #f5d76e 35%, #e8c547 100%) !important;
+  box-shadow:0 10px 26px rgba(42,157,143,0.55), 0 0 0 1px rgba(255,255,255,0.22) inset;
 }
-.action-btn-cloud:active{transform:translateY(0);}
-.action-btn-cloud span{position:relative; z-index:1;}
+.action-btn-export-main span{position:relative; z-index:1;}
 
-.action-btn-share{
-  background:linear-gradient(135deg, #16a34a, #15803d);
-  color:#fff;
-  box-shadow:0 4px 14px rgba(22,163,74,0.35);
-}
-.action-btn-print{
-  background:linear-gradient(135deg, #2563eb, #1d4ed8);
-  color:#fff;
-  box-shadow:0 4px 14px rgba(37,99,235,0.35);
-}
-.action-btn-print:hover{transform:translateY(-1px); background:linear-gradient(135deg, #1d4ed8, #1e3a8a);}
 .action-btn-reset{
-  background:linear-gradient(135deg, #6c757d, #495057);
-  color:#fff;
-  box-shadow:0 4px 14px rgba(108,117,125,0.35);
+  background:#eef0eb;
+  color:#3a4348;
 }
 .action-btn-reset:hover{
   background:linear-gradient(135deg, #dc3545, #b71c1c);
+  color:#fff;
   transform:translateY(-1px);
-  box-shadow:0 6px 18px rgba(220,53,69,0.45);
+  box-shadow:0 6px 18px rgba(220,53,69,0.42);
 }
 .action-divider{
   width:1px; height:24px; background:var(--border);
   margin:0 2px;
 }
+
+/* ═══ قائمة التصدير المنبثقة (Bottom Sheet) ═══ */
+.export-menu-wrap{position:relative; display:inline-block;}
+.export-sheet-backdrop{
+  position:fixed; inset:0;
+  background:rgba(8,28,36,0.55);
+  backdrop-filter:blur(4px);
+  -webkit-backdrop-filter:blur(4px);
+  z-index:180;
+  display:none;
+  opacity:0;
+  transition:opacity .25s;
+}
+.export-sheet-backdrop.show{display:block; opacity:1;}
+.export-menu{
+  position:fixed;
+  bottom:-100%;
+  left:50%; transform:translateX(-50%);
+  width:min(440px, calc(100vw - 24px));
+  background:#fff;
+  border-radius:24px 24px 0 0;
+  padding:14px 0 22px;
+  z-index:190;
+  transition:bottom .35s cubic-bezier(.2,.85,.3,1);
+  box-shadow:0 -12px 42px rgba(7,38,49,0.28);
+  max-height:80vh;
+  overflow-y:auto;
+}
+.export-menu.show{bottom:0;}
+.export-menu::before{
+  content:'';
+  display:block;
+  width:44px; height:4px;
+  background:#cfd5cf;
+  border-radius:3px;
+  margin:0 auto 12px;
+}
+.export-menu-title{
+  text-align:center;
+  font-size:1.04rem;
+  font-weight:900;
+  color:#0b3946;
+  margin-bottom:12px;
+  letter-spacing:0.3px;
+}
+.export-option{
+  width:100%;
+  display:flex; align-items:center; gap:12px;
+  padding:13px 20px;
+  background:transparent;
+  border:none;
+  border-bottom:1px solid #f1f2ee;
+  cursor:pointer;
+  text-align:right;
+  font:inherit;
+  transition:background .15s;
+}
+.export-option:last-child{border-bottom:none;}
+.export-option:hover, .export-option:active{background:#f5f7f4;}
+.export-option .ico{
+  width:44px; height:44px;
+  border-radius:12px;
+  display:flex; align-items:center; justify-content:center;
+  font-size:21px;
+  flex-shrink:0;
+  color:#fff;
+  box-shadow:0 4px 11px rgba(0,0,0,0.13);
+}
+.export-option .ico.png{background:linear-gradient(135deg, #2a9d8f, #1a7a8a);}
+.export-option .ico.pdf{background:linear-gradient(135deg, #d32f2f, #b71c1c);}
+.export-option .ico.share{background:linear-gradient(135deg, #16a34a, #15803d);}
+.export-option .ico.print{background:linear-gradient(135deg, #2563eb, #1d4ed8);}
+.export-option .ico.cloud{
+  background:linear-gradient(135deg, #f5d76e 0%, #e8c547 35%, #d4a657 100%);
+  color:#3d2200;
+  box-shadow:0 4px 14px rgba(232,197,71,0.55), 0 0 0 1px rgba(255,255,255,0.25) inset;
+}
+.export-option .opt-text{flex:1; min-width:0;}
+.export-option .opt-title{
+  font-weight:800;
+  font-size:0.96rem;
+  color:#16323a;
+  margin-bottom:2px;
+}
+.export-option .opt-desc{
+  font-size:0.76rem;
+  color:#7a8a90;
+  font-weight:500;
+}
+.export-option .arrow{color:#bcc3bc; font-size:1.15rem;}
+
+/* تمييز "حفظ في حسابي" بإطار ذهبي رقيق */
+.export-option.profile-save{
+  background:linear-gradient(90deg, rgba(232,197,71,0.05) 0%, rgba(232,197,71,0.12) 100%);
+  border:1.5px solid rgba(232,197,71,0.3);
+  border-radius:12px;
+  margin:6px 12px;
+}
+.export-option.profile-save:hover{
+  background:linear-gradient(90deg, rgba(232,197,71,0.1) 0%, rgba(232,197,71,0.2) 100%);
+}
+.export-option.profile-save .opt-title{color:#7a5a1a;}
 
 /* ═══════════════════════════════════════════════════════
    🎨 منتقي الثيم
@@ -2352,6 +2419,8 @@ body.view-tabs .section.tab-section.tab-active{display:block; animation:fadeInTa
    🖨️ التصدير
    ═══════════════════════════════════════════════════════ */
 .exporting .action-bar,
+.exporting .export-menu,
+.exporting .export-sheet-backdrop,
 .exporting .shahed-slot-del,
 .exporting .btn-row-del,
 .exporting .btn-add-row,
@@ -2922,7 +2991,7 @@ body.view-tabs .section.tab-section.tab-active{display:block; animation:fadeInTa
 <!-- ═══ زر التمرير للأعلى ═══ -->
 <button class="scroll-top-btn" id="scrollTopBtn" onclick="scrollToTop()" title="العودة للأعلى" aria-label="العودة للأعلى">↑</button>
 
-<!-- ═══ شريط الأدوات العائم ═══ -->
+<!-- ═══ شريط الأدوات العائم (مُحدَّث - نظيف ومتناسق) ═══ -->
 <div class="action-bar" id="actionBar">
   <div class="theme-picker">
     <button class="theme-toggle" onclick="toggleThemeMenu(event)">
@@ -2936,17 +3005,49 @@ body.view-tabs .section.tab-section.tab-active{display:block; animation:fadeInTa
   <button class="action-btn action-btn-reset" onclick="resetAllData()" title="مسح كل البيانات وتفريغ الملف">
     <span>🗑️</span><span>تفريغ</span>
   </button>
-  <button class="action-btn action-btn-export" onclick="saveAsImage()">
-    <span>🖼️</span><span>صورة</span>
+
+  <div class="export-menu-wrap">
+    <button class="action-btn action-btn-export-main" onclick="toggleExportMenu()">
+      <span>⬇</span><span>تحميل الملف</span>
+    </button>
+  </div>
+</div>
+
+<!-- قائمة التصدير المنبثقة (Bottom Sheet) -->
+<div class="export-sheet-backdrop" id="exportBackdrop" onclick="closeExportMenu()"></div>
+<div class="export-menu" id="exportMenu">
+  <div class="export-menu-title">اختر طريقة التصدير</div>
+  <button class="export-option" onclick="saveAsImage()">
+    <span class="ico png">🖼</span>
+    <span class="opt-text">
+      <div class="opt-title">حفظ كصورة</div>
+      <div class="opt-desc">PNG عالي الجودة</div>
+    </span>
+    <span class="arrow">‹</span>
   </button>
-  <button class="action-btn action-btn-pdf" onclick="exportAsPDFv2()">
-    <span>📄</span><span>PDF</span>
+  <button class="export-option" onclick="exportAsPDFv2()">
+    <span class="ico pdf">📄</span>
+    <span class="opt-text">
+      <div class="opt-title">حفظ PDF</div>
+      <div class="opt-desc">ملف PDF احترافي للطباعة</div>
+    </span>
+    <span class="arrow">‹</span>
   </button>
-  <button class="action-btn action-btn-cloud" onclick="saveToMyProfile()" title="حفظ في حسابي للرجوع له لاحقاً">
-    <span>☁️ حفظ في حسابي</span>
+  <button class="export-option" onclick="printReport()">
+    <span class="ico print">🖨️</span>
+    <span class="opt-text">
+      <div class="opt-title">طباعة</div>
+      <div class="opt-desc">اطبع الملف من المتصفح</div>
+    </span>
+    <span class="arrow">‹</span>
   </button>
-  <button class="action-btn action-btn-print" onclick="printReport()">
-    <span>🖨️</span><span>طباعة</span>
+  <button class="export-option profile-save" onclick="saveToMyProfile()">
+    <span class="ico cloud">☁️</span>
+    <span class="opt-text">
+      <div class="opt-title">حفظ في حسابي</div>
+      <div class="opt-desc">احفظ الملف في سجلك للرجوع له لاحقاً</div>
+    </span>
+    <span class="arrow">‹</span>
   </button>
 </div>
 
@@ -4249,9 +4350,33 @@ function restoreFromExport(ctx){
 }
 
 /* ═══════════════════════════════════════════════════════
+   ⬇ قائمة التصدير المنبثقة (Bottom Sheet)
+   ═══════════════════════════════════════════════════════ */
+function toggleExportMenu(){
+  const menu = document.getElementById('exportMenu');
+  const bd = document.getElementById('exportBackdrop');
+  if(!menu || !bd) return;
+  if(menu.classList.contains('show')){
+    closeExportMenu();
+  } else {
+    menu.classList.add('show');
+    bd.classList.add('show');
+  }
+}
+function closeExportMenu(){
+  const menu = document.getElementById('exportMenu');
+  const bd = document.getElementById('exportBackdrop');
+  if(menu) menu.classList.remove('show');
+  if(bd) bd.classList.remove('show');
+}
+window.toggleExportMenu = toggleExportMenu;
+window.closeExportMenu = closeExportMenu;
+
+/* ═══════════════════════════════════════════════════════
    🖼️ تصدير كصورة
    ═══════════════════════════════════════════════════════ */
 async function saveAsImage(){
+  closeExportMenu();
   if (typeof window.checkDownloadAccess === 'function') {
     const allowed = await window.checkDownloadAccess();
     if (!allowed) return;
@@ -4417,6 +4542,7 @@ function adjustCutForAtomic(tentativeCut, atomic, yOffset, pageHeight){
 }
 
 async function exportAsPDFv2(){
+  closeExportMenu();
   if (typeof window.checkDownloadAccess === 'function') {
     const allowed = await window.checkDownloadAccess();
     if (!allowed) return;
@@ -4520,6 +4646,7 @@ async function exportAsPDFv2(){
    🖨️ الطباعة (يستخدم محرك المتصفح الأصلي → نصوص حادّة)
    ═══════════════════════════════════════════════════════ */
 function printReport(){
+  closeExportMenu();
   // 1) جهّز الملف بنفس منطق التصدير (يستبدل inputs بـ spans، يصلح letter-spacing، يلفّ الكلمات)
   const stored = prepareForExport();
   // 2) أعطِ المتصفح فرصة لإعادة تخطيط الصفحة قبل فتح حوار الطباعة
@@ -4947,6 +5074,7 @@ window.addEventListener('beforeunload', saveData);
 // ☁️ حفظ التقرير في حساب المستخدم (enjaz)
 // ═══════════════════════════════════════════════════════
 async function saveToMyProfile() {
+  closeExportMenu();
   console.log('💾 saveToMyProfile started');
   
   // 1. تحقق من تسجيل الدخول
