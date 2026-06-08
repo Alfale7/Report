@@ -155,6 +155,13 @@ body{
 .faq-a strong{color:#1e6b8a;font-weight:900;}
 .faq-a a{color:#1e6b8a;font-weight:900;}
 
+/* 🆕 رقم الهاتف بـ LTR إجباري لمنع انعكاس علامة + */
+.phone-num{
+  unicode-bidi:embed;
+  direction:ltr;
+  display:inline-block;
+}
+
 .faq-cta{
   background:linear-gradient(135deg,#1e6b8a,#2a8aab);
   color:#fff;
@@ -380,7 +387,7 @@ body{
         <p>نسعد بتواصلك عبر القنوات التالية:</p>
         <ul>
           <li>📧 البريد: <strong>admin@ksa2030.one</strong></li>
-          <li>📱 الواتساب: <strong>+966 55 052 2867</strong></li>
+          <li>📱 الواتساب: <strong><bdi class="phone-num">+966 55 052 2867</bdi></strong></li>
           <li>💬 صفحة <a href="contact.html">تواصل معنا</a></li>
         </ul>
         <p>سنحرص على الرد في أقرب وقت ممكن.</p>
