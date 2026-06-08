@@ -1531,16 +1531,14 @@ function renderProfile() {
   document.getElementById('profileEmail').textContent = _user.email || '--';
   document.getElementById('avatar').textContent = displayName.charAt(0).toUpperCase();
   
-  // 🆔 عرض معرّف العميل (UID مختصر)
+  // 🆔 عرض معرّف العميل (UID قصير - 8 حروف للبحث في admin)
   const uidEl = document.getElementById('uidValue');
   if (uidEl && _user?.uid) {
     const fullUid = _user.uid;
-    // اعرض أول 8 أحرف + ... + آخر 4 (مختصر وأنيق)
-    const shortUid = fullUid.length > 14 
-      ? fullUid.substring(0, 8) + '...' + fullUid.slice(-4) 
-      : fullUid;
+    // اعرض أول 8 حروف فقط (مناسب للبحث الجزئي في admin)
+    const shortUid = fullUid.substring(0, 8);
     uidEl.textContent = shortUid;
-    uidEl.dataset.fullUid = fullUid;
+    uidEl.dataset.fullUid = shortUid; // ننسخ القصير عشان يستخدمه في admin
   }
   
   const badges = document.getElementById('profileBadges');
@@ -1554,29 +1552,24 @@ function renderProfile() {
   if (_profile?.isAdmin) badges.innerHTML += '<span class="badge admin">🛡️ مدير</span>';
 }
 
-// 📋 نسخ معرّف العميل
+// 📋 نسخ معرّف العميل (القصير - 8 حروف)
 window.copyUserId = async function() {
   const uidEl = document.getElementById('uidValue');
-  const fullUid = uidEl?.dataset?.fullUid;
-  if (!fullUid) return;
+  const shortUid = uidEl?.dataset?.fullUid;
+  if (!shortUid) return;
   
   try {
-    await navigator.clipboard.writeText(fullUid);
+    await navigator.clipboard.writeText(shortUid);
     const container = document.getElementById('profileUserId');
     container.classList.add('copied');
     
-    // اعرض المعرّف الكامل مؤقتاً
-    const originalText = uidEl.textContent;
-    uidEl.textContent = fullUid;
-    
     setTimeout(() => {
       container.classList.remove('copied');
-      uidEl.textContent = originalText;
-    }, 2000);
+    }, 1800);
   } catch(e) {
     // fallback للمتصفحات القديمة
     const textArea = document.createElement('textarea');
-    textArea.value = fullUid;
+    textArea.value = shortUid;
     document.body.appendChild(textArea);
     textArea.select();
     try { document.execCommand('copy'); } catch(e) {}
