@@ -399,11 +399,75 @@ body {
 .profile-email {
   font: 500 0.92rem 'Tajawal', sans-serif;
   color: var(--text-tertiary);
-  margin-bottom: 14px;
+  margin-bottom: 10px;
   opacity: 0;
   animation: fadeUp 0.6s ease-out 0.5s forwards;
   white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
 }
+
+/* 🆔 معرّف العميل */
+.profile-user-id {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 14px;
+  background: linear-gradient(135deg, rgba(232,197,71,0.1), rgba(212,166,87,0.05));
+  border: 1px solid rgba(232,197,71,0.25);
+  border-radius: 10px;
+  margin-bottom: 12px;
+  cursor: pointer;
+  transition: all 0.25s ease;
+  font-family: 'Tajawal', sans-serif;
+  font-size: 0.8rem;
+  opacity: 0;
+  animation: fadeUp 0.6s ease-out 0.55s forwards;
+  max-width: 100%;
+}
+.profile-user-id:hover {
+  background: linear-gradient(135deg, rgba(232,197,71,0.18), rgba(212,166,87,0.1));
+  border-color: rgba(232,197,71,0.45);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(232,197,71,0.18);
+}
+.profile-user-id .uid-label {
+  font-weight: 700;
+  color: var(--text-secondary);
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+.profile-user-id .uid-value {
+  font-family: 'Courier New', monospace;
+  font-weight: 600;
+  color: var(--text-primary);
+  background: rgba(255,255,255,0.6);
+  padding: 2px 8px;
+  border-radius: 6px;
+  letter-spacing: 0.5px;
+  font-size: 0.78rem;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 180px;
+  direction: ltr;
+}
+.profile-user-id .uid-copy-icon {
+  font-size: 0.85rem;
+  opacity: 0.7;
+  transition: opacity 0.2s;
+  flex-shrink: 0;
+}
+.profile-user-id:hover .uid-copy-icon {opacity: 1;}
+.profile-user-id.copied {
+  background: linear-gradient(135deg, rgba(16,185,129,0.15), rgba(5,150,105,0.08));
+  border-color: rgba(16,185,129,0.45);
+}
+.profile-user-id.copied .uid-copy-icon::before {
+  content: "✓";
+  color: #10b981;
+  font-weight: 900;
+}
+.profile-user-id.copied .uid-copy-icon {font-size: 0;}
+
 .profile-badges {
   display: flex; gap: 8px; flex-wrap: wrap;
   opacity: 0;
@@ -1311,6 +1375,11 @@ body {
           <div class="profile-greeting">مرحباً بعودتك</div>
           <h1 class="profile-name" id="profileName">جاري التحميل...</h1>
           <div class="profile-email" id="profileEmail">--</div>
+          <div class="profile-user-id" id="profileUserId" onclick="copyUserId()" title="انقر للنسخ">
+            <span class="uid-label">🆔 معرّف العميل:</span>
+            <span class="uid-value" id="uidValue">--</span>
+            <span class="uid-copy-icon">📋</span>
+          </div>
           <div class="profile-badges" id="profileBadges"></div>
         </div>
         <div class="profile-actions">
@@ -1462,6 +1531,18 @@ function renderProfile() {
   document.getElementById('profileEmail').textContent = _user.email || '--';
   document.getElementById('avatar').textContent = displayName.charAt(0).toUpperCase();
   
+  // 🆔 عرض معرّف العميل (UID مختصر)
+  const uidEl = document.getElementById('uidValue');
+  if (uidEl && _user?.uid) {
+    const fullUid = _user.uid;
+    // اعرض أول 8 أحرف + ... + آخر 4 (مختصر وأنيق)
+    const shortUid = fullUid.length > 14 
+      ? fullUid.substring(0, 8) + '...' + fullUid.slice(-4) 
+      : fullUid;
+    uidEl.textContent = shortUid;
+    uidEl.dataset.fullUid = fullUid;
+  }
+  
   const badges = document.getElementById('profileBadges');
   badges.innerHTML = '';
   if (isLifetime(_profile)) {
@@ -1472,6 +1553,36 @@ function renderProfile() {
   }
   if (_profile?.isAdmin) badges.innerHTML += '<span class="badge admin">🛡️ مدير</span>';
 }
+
+// 📋 نسخ معرّف العميل
+window.copyUserId = async function() {
+  const uidEl = document.getElementById('uidValue');
+  const fullUid = uidEl?.dataset?.fullUid;
+  if (!fullUid) return;
+  
+  try {
+    await navigator.clipboard.writeText(fullUid);
+    const container = document.getElementById('profileUserId');
+    container.classList.add('copied');
+    
+    // اعرض المعرّف الكامل مؤقتاً
+    const originalText = uidEl.textContent;
+    uidEl.textContent = fullUid;
+    
+    setTimeout(() => {
+      container.classList.remove('copied');
+      uidEl.textContent = originalText;
+    }, 2000);
+  } catch(e) {
+    // fallback للمتصفحات القديمة
+    const textArea = document.createElement('textarea');
+    textArea.value = fullUid;
+    document.body.appendChild(textArea);
+    textArea.select();
+    try { document.execCommand('copy'); } catch(e) {}
+    document.body.removeChild(textArea);
+  }
+};
 
 // Animate number
 function animateNum(el, target) {
