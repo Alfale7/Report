@@ -5786,11 +5786,11 @@ font-size:0.78rem;text-align:center;margin-top:12px;display:none;
       <div class="hpc-price-row">
         <div class="hpc-old">
           <span data-i18n="hpcOldLabel">السعر الأصلي</span>
-          <span class="hpc-strike">99</span>
+          <span class="hpc-strike" data-original-price="99">99</span>
         </div>
         <div class="hpc-now">
           <div class="hpc-amount">
-            <span class="hpc-num">49</span>
+            <span class="hpc-num" data-current-price="49">49</span>
             <span class="hpc-cur" data-i18n="hpcCur">ريال</span>
           </div>
           <div class="hpc-once" data-i18n="hpcOnce">دفعة واحدة فقط</div>
@@ -7364,7 +7364,7 @@ font-size:0.78rem;text-align:center;margin-top:12px;display:none;
           <span data-i18n="priceLine1">النسخة الذهبية مدى الحياة</span>
         </div>
         <div class="price-line-2">
-          <span data-i18n="priceLine2Pre">بـ</span> <span class="price-num">49</span> <span data-i18n="priceLine2Post">ريال فقط!</span>
+          <span data-i18n="priceLine2Pre">بـ</span> <span class="price-num" data-current-price="49">49</span> <span data-i18n="priceLine2Post">ريال فقط!</span>
         </div>
       </div>
 
@@ -7436,7 +7436,7 @@ font-size:0.78rem;text-align:center;margin-top:12px;display:none;
         <span class="discount-badge" data-i18n="upDiscount">خصم 17%</span>
       </div>
       <div class="upgrade-price-new">
-        <span class="price-amount">49</span>
+        <span class="price-amount" data-current-price="49">49</span>
         <span class="price-currency" data-i18n="upCurrency">ريال</span>
       </div>
       <div class="upgrade-price-note" data-i18n="upPriceNote">دفعة واحدة · مدى الحياة</div>
@@ -8362,7 +8362,7 @@ document.getElementById('loginModal').addEventListener('click', function(e){
 
 <!-- ═══ Firebase Integration ═══ -->
 <script type="module">
-import { onUserChange, logout, isLifetime, isAdmin, SITE_CONFIG, db, listenToOffer, listenToMaintenance } from './firebase-config.js';
+import { onUserChange, logout, isLifetime, isAdmin, SITE_CONFIG, db, listenToOffer, listenToMaintenance, onPricingChange, getPricing } from './firebase-config.js?v=6';
 import { doc, onSnapshot, updateDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
 // ═══════════════════════════════════════════════════════
@@ -8625,6 +8625,47 @@ function applyUserState(user, profile) {
   }
 }
 
+// 💎 مستمع تحديثات السعر اللحظي (Real-time Pricing)
+function initPricingListener() {
+  if (typeof onPricingChange !== 'function') {
+    console.warn('onPricingChange غير متاح');
+    return;
+  }
+  
+  onPricingChange((pricing) => {
+    if (!pricing || !pricing.loaded) return;
+    
+    const current = pricing.currentPrice;
+    const original = pricing.originalPrice;
+    const currency = pricing.currency || 'ريال';
+    
+    // 🔄 حدّث كل العناصر اللي تعرض السعر الحالي
+    document.querySelectorAll('[data-current-price]').forEach(el => {
+      el.textContent = current;
+      el.setAttribute('data-current-price', current);
+    });
+    
+    // 🔄 حدّث كل العناصر اللي تعرض السعر الأصلي (المشطوب)
+    document.querySelectorAll('[data-original-price]').forEach(el => {
+      el.textContent = original;
+      el.setAttribute('data-original-price', original);
+    });
+    
+    // 🔄 حدّث i18n strings للأزرار "اشترك الآن - 49 ريال"
+    const i18nKeys = ['hpcCta', 'upCtaWa', 'promoWaBtn'];
+    i18nKeys.forEach(key => {
+      const els = document.querySelectorAll(`[data-i18n="${key}"]`);
+      els.forEach(el => {
+        const txt = el.textContent;
+        // استبدل أي رقم سعر بالسعر الجديد
+        el.textContent = txt.replace(/\d+\s*(ريال|SAR)/g, current + ' $1');
+      });
+    });
+    
+    console.log('✅ تم تحديث السعر إلى:', current, currency);
+  });
+}
+
 // ⏰ المؤقت التنازلي للعرض (يديره الأدمن)
 let _offerInterval = null;
 let _offerEndTime = 0;
@@ -8716,6 +8757,9 @@ function updateOfferTimer() {
 
 // بدء المؤقت لما تحمّل الصفحة
 setTimeout(initOfferCountdown, 800);
+
+// 💎 بدء مستمع تحديث السعر (Real-time من admin إلى index)
+setTimeout(initPricingListener, 600);
 
 // 🎉 شاشة الاحتفال بالتفعيل (Lifetime)
 function showWelcomeCelebration(user, profile) {
