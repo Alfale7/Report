@@ -1192,4 +1192,204 @@ function parseAuthError(error) {
   return messages[code] || error.message || 'حدث خطأ غير متوقع';
 }
 
+// ═══════════════════════════════════════════════════════════
+// 🎟️ نظام أكواد الخصم (Coupons System)
+// ═══════════════════════════════════════════════════════════
+
+/**
+ * إنشاء كود خصم جديد
+ * @param {object} coupon - {code, discountPercent, maxUses, expiresAt, description}
+ */
+export async function createCoupon(coupon) {
+  try {
+    const code = coupon.code.trim().toUpperCase();
+    if (!code) return { success: false, error: 'الكود مطلوب' };
+    if (!/^[A-Z0-9_-]{3,20}$/.test(code)) {
+      return { success: false, error: 'الكود يجب أن يحتوي أحرف إنجليزية وأرقام فقط (3-20 حرف)' };
+    }
+    
+    const percent = parseInt(coupon.discountPercent) || 0;
+    if (percent < 1 || percent > 100) {
+      return { success: false, error: 'نسبة الخصم يجب أن تكون بين 1-100' };
+    }
+    
+    // تأكد إن الكود مو موجود
+    const existing = await getDoc(doc(db, 'coupons', code));
+    if (existing.exists()) {
+      return { success: false, error: 'هذا الكود موجود مسبقاً' };
+    }
+    
+    const couponData = {
+      code: code,
+      discountPercent: percent,
+      maxUses: parseInt(coupon.maxUses) || 0, // 0 = بدون حد
+      currentUses: 0,
+      expiresAt: coupon.expiresAt ? Timestamp.fromDate(new Date(coupon.expiresAt)) : null,
+      description: coupon.description || '',
+      active: true,
+      createdAt: serverTimestamp(),
+      createdBy: auth.currentUser?.uid || 'system'
+    };
+    
+    await setDoc(doc(db, 'coupons', code), couponData);
+    return { success: true, code: code };
+  } catch (error) {
+    console.error('createCoupon error:', error);
+    return { success: false, error: error.message };
+  }
+}
+
+/**
+ * التحقق من كود الخصم وإرجاع تفاصيله
+ * تُستخدم في pay.html
+ */
+export async function validateCoupon(code) {
+  try {
+    if (!code) return { valid: false, error: 'أدخل كود الخصم' };
+    
+    const codeUpper = code.trim().toUpperCase();
+    const snap = await getDoc(doc(db, 'coupons', codeUpper));
+    
+    if (!snap.exists()) {
+      return { valid: false, error: 'كود غير صحيح' };
+    }
+    
+    const coupon = snap.data();
+    
+    // 1) فعّال؟
+    if (!coupon.active) {
+      return { valid: false, error: 'هذا الكود مُعطّل' };
+    }
+    
+    // 2) منتهي؟
+    if (coupon.expiresAt) {
+      const expiry = coupon.expiresAt.toDate();
+      if (expiry < new Date()) {
+        return { valid: false, error: 'انتهت صلاحية هذا الكود' };
+      }
+    }
+    
+    // 3) وصل الحد الأقصى للاستخدام؟
+    if (coupon.maxUses > 0 && coupon.currentUses >= coupon.maxUses) {
+      return { valid: false, error: 'وصل هذا الكود لحد الاستخدام الأقصى' };
+    }
+    
+    return {
+      valid: true,
+      code: coupon.code,
+      discountPercent: coupon.discountPercent,
+      description: coupon.description,
+      remainingUses: coupon.maxUses > 0 ? (coupon.maxUses - coupon.currentUses) : -1,
+      expiresAt: coupon.expiresAt ? coupon.expiresAt.toDate() : null
+    };
+  } catch (error) {
+    console.error('validateCoupon error:', error);
+    return { valid: false, error: 'خطأ في التحقق من الكود' };
+  }
+}
+
+/**
+ * تسجيل استخدام كود (يُستدعى بعد نجاح الدفع)
+ */
+export async function incrementCouponUsage(code, userId) {
+  try {
+    const codeUpper = code.trim().toUpperCase();
+    const couponRef = doc(db, 'coupons', codeUpper);
+    
+    await updateDoc(couponRef, {
+      currentUses: increment(1),
+      lastUsedAt: serverTimestamp(),
+      lastUsedBy: userId
+    });
+    
+    // أضف سجل استخدام
+    const usageId = `${codeUpper}_${Date.now()}`;
+    await setDoc(doc(db, 'coupon_usage', usageId), {
+      code: codeUpper,
+      userId: userId,
+      usedAt: serverTimestamp()
+    });
+    
+    return { success: true };
+  } catch (error) {
+    console.error('incrementCouponUsage error:', error);
+    return { success: false, error: error.message };
+  }
+}
+
+/**
+ * جلب كل الأكواد (للأدمن)
+ */
+export async function getAllCoupons() {
+  try {
+    const q = query(collection(db, 'coupons'), orderBy('createdAt', 'desc'));
+    const snap = await getDocs(q);
+    return snap.docs.map(d => ({ id: d.id, ...d.data() }));
+  } catch (error) {
+    console.error('getAllCoupons error:', error);
+    return [];
+  }
+}
+
+/**
+ * تحديث كود (تفعيل/تعطيل/تعديل)
+ */
+export async function updateCoupon(code, updates) {
+  try {
+    const codeUpper = code.trim().toUpperCase();
+    const allowed = ['active', 'discountPercent', 'maxUses', 'expiresAt', 'description'];
+    const filtered = {};
+    allowed.forEach(key => {
+      if (updates[key] !== undefined) {
+        if (key === 'expiresAt' && updates[key]) {
+          filtered[key] = Timestamp.fromDate(new Date(updates[key]));
+        } else {
+          filtered[key] = updates[key];
+        }
+      }
+    });
+    filtered.updatedAt = serverTimestamp();
+    
+    await updateDoc(doc(db, 'coupons', codeUpper), filtered);
+    return { success: true };
+  } catch (error) {
+    console.error('updateCoupon error:', error);
+    return { success: false, error: error.message };
+  }
+}
+
+/**
+ * حذف كود
+ */
+export async function deleteCoupon(code) {
+  try {
+    const codeUpper = code.trim().toUpperCase();
+    await deleteDoc(doc(db, 'coupons', codeUpper));
+    return { success: true };
+  } catch (error) {
+    console.error('deleteCoupon error:', error);
+    return { success: false, error: error.message };
+  }
+}
+
+/**
+ * جلب سجل استخدام كود معين
+ */
+export async function getCouponUsageHistory(code) {
+  try {
+    const codeUpper = code.trim().toUpperCase();
+    const q = query(
+      collection(db, 'coupon_usage'),
+      where('code', '==', codeUpper),
+      orderBy('usedAt', 'desc'),
+      limit(50)
+    );
+    const snap = await getDocs(q);
+    return snap.docs.map(d => ({ id: d.id, ...d.data() }));
+  } catch (error) {
+    console.error('getCouponUsageHistory error:', error);
+    return [];
+  }
+}
+
 export { auth, db, app, Timestamp };

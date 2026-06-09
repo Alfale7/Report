@@ -2042,6 +2042,330 @@ body{
   .rv-action-btn{font-size:0.74rem;padding:8px 10px;}
 }
 
+/* ═══════════════════════════════════════════════════════
+   🎟️ نظام أكواد الخصم - تحفة عالمية
+   ═══════════════════════════════════════════════════════ */
+.coupons-panel{
+  background:#fff;
+  border-radius:18px;
+  padding:24px;
+  margin-bottom:20px;
+  box-shadow:0 4px 20px rgba(0,0,0,0.05);
+  border:1px solid #e2e8f0;
+}
+.cp-header{
+  display:flex;
+  align-items:center;
+  gap:14px;
+  margin-bottom:20px;
+  padding-bottom:16px;
+  border-bottom:1px solid #e2e8f0;
+}
+.cp-header-icon{
+  width:48px;height:48px;
+  background:linear-gradient(135deg,#8b5cf6,#7c3aed);
+  border-radius:14px;
+  display:flex;align-items:center;justify-content:center;
+  font-size:1.4rem;
+  flex-shrink:0;
+  box-shadow:0 6px 16px rgba(139,92,246,0.3);
+}
+.cp-header-title{
+  font:700 1.15rem 'Reem Kufi',sans-serif;
+  color:#1e293b;
+  margin-bottom:2px;
+}
+.cp-header-sub{
+  font-size:0.82rem;
+  color:#64748b;
+  margin:0;
+}
+.cp-add-btn{
+  margin-right:auto;
+  display:inline-flex;align-items:center;gap:6px;
+  padding:10px 16px;
+  background:linear-gradient(135deg,#8b5cf6,#7c3aed);
+  color:#fff;
+  border:none;
+  border-radius:10px;
+  font:700 0.86rem 'Tajawal',sans-serif;
+  cursor:pointer;
+  box-shadow:0 6px 16px rgba(139,92,246,0.35);
+  transition:all 0.25s;
+}
+.cp-add-btn:hover{transform:translateY(-2px);box-shadow:0 10px 22px rgba(139,92,246,0.45);}
+
+/* الإحصائيات */
+.cp-stats-grid{
+  display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(160px,1fr));
+  gap:12px;
+  margin-bottom:20px;
+}
+.cp-stat{
+  display:flex;align-items:center;gap:12px;
+  background:linear-gradient(135deg,#f8fafc,#fff);
+  border:1px solid #e2e8f0;
+  border-radius:14px;
+  padding:14px;
+  transition:all 0.25s;
+}
+.cp-stat:hover{border-color:#8b5cf6;transform:translateY(-2px);}
+.cp-stat-icon{
+  width:42px;height:42px;
+  border-radius:11px;
+  display:flex;align-items:center;justify-content:center;
+  font-size:1.15rem;
+  flex-shrink:0;
+}
+.cp-stat-num{
+  font:900 1.5rem 'Reem Kufi',sans-serif;
+  color:#1e293b;
+  line-height:1;
+  margin-bottom:2px;
+}
+.cp-stat-label{
+  font-size:0.74rem;
+  color:#64748b;
+  font-weight:700;
+}
+
+/* قائمة الأكواد */
+.cp-list{
+  display:flex;
+  flex-direction:column;
+  gap:10px;
+}
+.cp-empty{
+  text-align:center;
+  padding:40px;
+  color:#94a3b8;
+  font-weight:700;
+}
+
+.cp-card{
+  background:linear-gradient(135deg,#fafbfc,#fff);
+  border:1.5px solid #e2e8f0;
+  border-radius:14px;
+  padding:16px;
+  display:grid;
+  grid-template-columns:auto 1fr auto;
+  gap:14px;
+  align-items:center;
+  transition:all 0.25s;
+}
+.cp-card:hover{
+  border-color:#8b5cf6;
+  box-shadow:0 8px 20px rgba(139,92,246,0.12);
+}
+.cp-card.inactive{
+  opacity:0.6;
+  background:#f8fafc;
+}
+.cp-card.expired{
+  border-color:#fecaca;
+  background:linear-gradient(135deg,#fef2f2,#fff);
+}
+
+.cp-card-code{
+  font:900 1.05rem 'Courier New',monospace;
+  color:#7c3aed;
+  background:linear-gradient(135deg,rgba(139,92,246,0.1),rgba(124,58,237,0.05));
+  border:1.5px solid rgba(139,92,246,0.3);
+  padding:8px 14px;
+  border-radius:10px;
+  letter-spacing:1px;
+  direction:ltr;
+}
+
+.cp-card-info{min-width:0;}
+.cp-card-title{
+  display:flex;align-items:center;gap:8px;
+  margin-bottom:4px;
+  flex-wrap:wrap;
+}
+.cp-card-percent{
+  font:900 1.05rem 'Reem Kufi',sans-serif;
+  color:#10b981;
+  background:rgba(16,185,129,0.1);
+  padding:3px 10px;
+  border-radius:7px;
+  font-size:0.86rem;
+}
+.cp-card-desc{
+  font-size:0.84rem;
+  color:#475569;
+  font-weight:600;
+}
+.cp-card-meta{
+  display:flex;gap:14px;flex-wrap:wrap;
+  font-size:0.74rem;
+  color:#64748b;
+  margin-top:6px;
+}
+.cp-card-meta span{display:inline-flex;align-items:center;gap:4px;}
+.cp-status-badge{
+  padding:3px 8px;
+  border-radius:99px;
+  font-size:0.7rem;
+  font-weight:900;
+}
+.cp-status-active{background:#dcfce7;color:#15803d;}
+.cp-status-inactive{background:#fee2e2;color:#991b1b;}
+.cp-status-expired{background:#fef3c7;color:#92400e;}
+
+.cp-card-actions{
+  display:flex;gap:6px;
+  flex-shrink:0;
+}
+.cp-card-btn{
+  padding:7px 11px;
+  border:1.5px solid;
+  border-radius:8px;
+  font:700 0.78rem 'Tajawal',sans-serif;
+  cursor:pointer;
+  transition:all 0.2s;
+  background:#fff;
+}
+.cp-btn-toggle{color:#64748b;border-color:#cbd5e1;}
+.cp-btn-toggle:hover{background:#f1f5f9;}
+.cp-btn-toggle.is-active{color:#15803d;border-color:#86efac;}
+.cp-btn-toggle.is-active:hover{background:#dcfce7;}
+.cp-btn-delete{color:#dc2626;border-color:#fecaca;}
+.cp-btn-delete:hover{background:#fee2e2;}
+
+/* المودال */
+.cp-modal-overlay{
+  display:none;
+  position:fixed;inset:0;
+  background:rgba(15,23,42,0.7);
+  backdrop-filter:blur(8px);
+  z-index:9999;
+  align-items:center;
+  justify-content:center;
+  padding:20px;
+}
+.cp-modal-overlay.show{display:flex;}
+.cp-modal{
+  background:#fff;
+  border-radius:20px;
+  max-width:520px;
+  width:100%;
+  max-height:90vh;
+  overflow-y:auto;
+  box-shadow:0 24px 60px rgba(0,0,0,0.4);
+  animation:cpModalIn 0.3s cubic-bezier(0.4,0,0.2,1);
+}
+@keyframes cpModalIn{
+  from{opacity:0;transform:scale(0.92) translateY(20px);}
+  to{opacity:1;transform:scale(1) translateY(0);}
+}
+.cp-modal-header{
+  display:flex;align-items:center;gap:14px;
+  padding:20px 24px;
+  border-bottom:1px solid #e2e8f0;
+  position:relative;
+}
+.cp-modal-icon{
+  width:48px;height:48px;
+  background:linear-gradient(135deg,#8b5cf6,#7c3aed);
+  border-radius:14px;
+  display:flex;align-items:center;justify-content:center;
+  font-size:1.4rem;
+  box-shadow:0 6px 16px rgba(139,92,246,0.3);
+}
+.cp-modal-title{
+  font:700 1.1rem 'Reem Kufi',sans-serif;
+  color:#1e293b;
+  margin-bottom:2px;
+}
+.cp-modal-sub{font-size:0.8rem;color:#64748b;margin:0;}
+.cp-modal-close{
+  position:absolute;
+  top:16px;left:16px;
+  width:32px;height:32px;
+  border-radius:50%;
+  background:#f1f5f9;
+  border:none;
+  font-size:1.4rem;
+  color:#64748b;
+  cursor:pointer;
+  transition:all 0.2s;
+  display:flex;align-items:center;justify-content:center;
+}
+.cp-modal-close:hover{background:#fee2e2;color:#dc2626;}
+
+.cp-modal-body{padding:20px 24px;}
+.cp-field{margin-bottom:16px;}
+.cp-label{
+  display:block;
+  font:700 0.9rem 'Tajawal',sans-serif;
+  color:#334155;
+  margin-bottom:6px;
+}
+.cp-hint{
+  display:block;
+  font-size:0.72rem;
+  color:#94a3b8;
+  font-weight:500;
+  margin-top:2px;
+}
+.cp-input{
+  width:100%;
+  padding:11px 14px;
+  border:1.5px solid #e2e8f0;
+  border-radius:10px;
+  font:600 0.92rem 'Tajawal',sans-serif;
+  color:#1e293b;
+  background:#fafbfc;
+  transition:all 0.2s;
+}
+.cp-input:focus{
+  outline:none;
+  border-color:#8b5cf6;
+  background:#fff;
+  box-shadow:0 0 0 3px rgba(139,92,246,0.15);
+}
+
+.cp-modal-actions{
+  display:flex;gap:10px;
+  margin-top:8px;
+}
+.cp-btn-save{
+  flex:1;
+  display:inline-flex;align-items:center;justify-content:center;gap:6px;
+  padding:13px;
+  background:linear-gradient(135deg,#8b5cf6,#7c3aed);
+  color:#fff;
+  border:none;
+  border-radius:11px;
+  font:900 0.95rem 'Tajawal',sans-serif;
+  cursor:pointer;
+  box-shadow:0 8px 18px rgba(139,92,246,0.4);
+  transition:all 0.25s;
+}
+.cp-btn-save:hover{transform:translateY(-2px);box-shadow:0 12px 24px rgba(139,92,246,0.5);}
+.cp-btn-save:disabled{opacity:0.6;cursor:not-allowed;}
+.cp-btn-cancel{
+  padding:13px 22px;
+  background:#f1f5f9;
+  color:#475569;
+  border:none;
+  border-radius:11px;
+  font:700 0.9rem 'Tajawal',sans-serif;
+  cursor:pointer;
+  transition:all 0.2s;
+}
+.cp-btn-cancel:hover{background:#e2e8f0;}
+
+@media (max-width:600px){
+  .cp-card{grid-template-columns:1fr;}
+  .cp-card-code{justify-self:start;}
+  .cp-card-actions{justify-self:end;}
+  .cp-header{flex-wrap:wrap;}
+  .cp-add-btn{margin-right:0;margin-top:8px;width:100%;justify-content:center;}
+}
+
 </style>
 </head>
 <body>
@@ -2501,6 +2825,128 @@ body{
     </div>
 
     <!-- ════════════════════════════════════════════════ -->
+    <!-- 🎟️ نظام أكواد الخصم - تحفة عالمية                  -->
+    <!-- ════════════════════════════════════════════════ -->
+    <div class="coupons-panel">
+      <div class="cp-header">
+        <div class="cp-header-icon">🎟️</div>
+        <div>
+          <h3 class="cp-header-title">إدارة أكواد الخصم</h3>
+          <p class="cp-header-sub">أنشئ وأدر أكواد الخصم بنسب وحدود استخدام مرنة</p>
+        </div>
+        <button class="cp-add-btn" onclick="openAddCouponModal()">
+          <span>➕</span>
+          <span>كود جديد</span>
+        </button>
+      </div>
+
+      <!-- إحصائيات -->
+      <div class="cp-stats-grid">
+        <div class="cp-stat">
+          <div class="cp-stat-icon" style="background:linear-gradient(135deg,#3b82f6,#2563eb);">🎟️</div>
+          <div class="cp-stat-info">
+            <div class="cp-stat-num" id="cpStatTotal">0</div>
+            <div class="cp-stat-label">إجمالي الأكواد</div>
+          </div>
+        </div>
+        <div class="cp-stat">
+          <div class="cp-stat-icon" style="background:linear-gradient(135deg,#10b981,#059669);">✅</div>
+          <div class="cp-stat-info">
+            <div class="cp-stat-num" id="cpStatActive">0</div>
+            <div class="cp-stat-label">أكواد نشطة</div>
+          </div>
+        </div>
+        <div class="cp-stat">
+          <div class="cp-stat-icon" style="background:linear-gradient(135deg,#f59e0b,#d97706);">🔥</div>
+          <div class="cp-stat-info">
+            <div class="cp-stat-num" id="cpStatUsage">0</div>
+            <div class="cp-stat-label">مرات الاستخدام</div>
+          </div>
+        </div>
+        <div class="cp-stat">
+          <div class="cp-stat-icon" style="background:linear-gradient(135deg,#ef4444,#dc2626);">⛔</div>
+          <div class="cp-stat-info">
+            <div class="cp-stat-num" id="cpStatExpired">0</div>
+            <div class="cp-stat-label">منتهية الصلاحية</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- قائمة الأكواد -->
+      <div class="cp-list" id="couponsList">
+        <div class="cp-empty">⏳ جاري التحميل...</div>
+      </div>
+    </div>
+
+    <!-- مودال إضافة/تعديل كود -->
+    <div class="cp-modal-overlay" id="cpModalOverlay" onclick="closeCouponModal(event)">
+      <div class="cp-modal" onclick="event.stopPropagation()">
+        <div class="cp-modal-header">
+          <div class="cp-modal-icon">🎟️</div>
+          <div>
+            <h3 class="cp-modal-title" id="cpModalTitle">إنشاء كود خصم جديد</h3>
+            <p class="cp-modal-sub">املأ التفاصيل أدناه</p>
+          </div>
+          <button class="cp-modal-close" onclick="closeCouponModal()">×</button>
+        </div>
+
+        <div class="cp-modal-body">
+          <!-- الكود -->
+          <div class="cp-field">
+            <label class="cp-label">
+              🏷️ الكود
+              <span class="cp-hint">أحرف إنجليزية كبيرة وأرقام (3-20)</span>
+            </label>
+            <input type="text" id="cpInputCode" class="cp-input" placeholder="EID2030" maxlength="20" oninput="this.value = this.value.toUpperCase()">
+          </div>
+
+          <!-- نسبة الخصم -->
+          <div class="cp-field">
+            <label class="cp-label">
+              💯 نسبة الخصم (%)
+              <span class="cp-hint">من 1 إلى 100</span>
+            </label>
+            <input type="number" id="cpInputPercent" class="cp-input" placeholder="20" min="1" max="100">
+          </div>
+
+          <!-- الحد الأقصى للاستخدام -->
+          <div class="cp-field">
+            <label class="cp-label">
+              🔢 الحد الأقصى للاستخدام
+              <span class="cp-hint">0 = بدون حد</span>
+            </label>
+            <input type="number" id="cpInputMaxUses" class="cp-input" placeholder="100" min="0" value="0">
+          </div>
+
+          <!-- تاريخ الانتهاء -->
+          <div class="cp-field">
+            <label class="cp-label">
+              📅 تاريخ الانتهاء
+              <span class="cp-hint">اتركه فارغاً لعدم انتهاء</span>
+            </label>
+            <input type="datetime-local" id="cpInputExpiry" class="cp-input">
+          </div>
+
+          <!-- الوصف -->
+          <div class="cp-field">
+            <label class="cp-label">
+              📝 الوصف (اختياري)
+              <span class="cp-hint">للتنظيم الداخلي</span>
+            </label>
+            <input type="text" id="cpInputDesc" class="cp-input" placeholder="مثال: خصم العيد" maxlength="100">
+          </div>
+
+          <!-- الأزرار -->
+          <div class="cp-modal-actions">
+            <button class="cp-btn-save" onclick="saveCoupon()" id="cpSaveBtn">
+              <span>💾</span>
+              <span>إنشاء الكود</span>
+            </button>
+            <button class="cp-btn-cancel" onclick="closeCouponModal()">إلغاء</button>
+          </div>
+        </div>
+      </div>
+    </div>
 
     <!-- ════════════════════════════════════════════════ -->
     <!-- ⭐ إدارة التقييمات                                  -->
@@ -2604,8 +3050,13 @@ import {
   onPricingChange,
   updatePricing,
   getPricing,
+  createCoupon,
+  validateCoupon,
+  getAllCoupons,
+  updateCoupon,
+  deleteCoupon,
   db
-} from './firebase-config.js?v=4';
+} from './firebase-config.js?v=7';
 
 import { doc, updateDoc, deleteDoc, collection, query, where, orderBy, getDocs, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
@@ -3686,6 +4137,188 @@ setTimeout(() => {
   if (currentUser) {
     loadReviewsStats();
     loadReviewsList('pending');
+  }
+}, 1500);
+
+// ═══════════════════════════════════════════════════════════
+// 🎟️ إدارة أكواد الخصم
+// ═══════════════════════════════════════════════════════════
+let _editingCouponCode = null;
+
+window.openAddCouponModal = function(code = null) {
+  _editingCouponCode = code;
+  document.getElementById('cpModalOverlay').classList.add('show');
+  
+  if (!code) {
+    // إضافة جديد - مسح الحقول
+    document.getElementById('cpModalTitle').textContent = 'إنشاء كود خصم جديد';
+    document.getElementById('cpSaveBtn').innerHTML = '<span>💾</span><span>إنشاء الكود</span>';
+    document.getElementById('cpInputCode').value = '';
+    document.getElementById('cpInputCode').disabled = false;
+    document.getElementById('cpInputPercent').value = '';
+    document.getElementById('cpInputMaxUses').value = '0';
+    document.getElementById('cpInputExpiry').value = '';
+    document.getElementById('cpInputDesc').value = '';
+  }
+};
+
+window.closeCouponModal = function(event) {
+  if (event && event.target !== event.currentTarget) return;
+  document.getElementById('cpModalOverlay').classList.remove('show');
+  _editingCouponCode = null;
+};
+
+window.saveCoupon = async function() {
+  const saveBtn = document.getElementById('cpSaveBtn');
+  saveBtn.disabled = true;
+  saveBtn.innerHTML = '<span>⏳</span><span>جاري الحفظ...</span>';
+  
+  try {
+    const code = document.getElementById('cpInputCode').value.trim();
+    const percent = parseInt(document.getElementById('cpInputPercent').value) || 0;
+    const maxUses = parseInt(document.getElementById('cpInputMaxUses').value) || 0;
+    const expiryVal = document.getElementById('cpInputExpiry').value;
+    const desc = document.getElementById('cpInputDesc').value.trim();
+    
+    const couponData = {
+      code: code,
+      discountPercent: percent,
+      maxUses: maxUses,
+      expiresAt: expiryVal || null,
+      description: desc
+    };
+    
+    const result = await createCoupon(couponData);
+    
+    if (result.success) {
+      showToast(`✅ تم إنشاء الكود ${result.code} بنجاح`, 'success');
+      closeCouponModal();
+      loadCoupons();
+    } else {
+      showToast('❌ ' + (result.error || 'فشل الإنشاء'), 'error');
+    }
+  } catch(e) {
+    console.error(e);
+    showToast('❌ خطأ: ' + e.message, 'error');
+  } finally {
+    saveBtn.disabled = false;
+    saveBtn.innerHTML = '<span>💾</span><span>إنشاء الكود</span>';
+  }
+};
+
+window.toggleCouponActive = async function(code, currentActive) {
+  try {
+    const result = await updateCoupon(code, { active: !currentActive });
+    if (result.success) {
+      showToast(currentActive ? '⏸️ تم تعطيل الكود' : '✅ تم تفعيل الكود', 'success');
+      loadCoupons();
+    } else {
+      showToast('❌ ' + result.error, 'error');
+    }
+  } catch(e) {
+    showToast('❌ خطأ: ' + e.message, 'error');
+  }
+};
+
+window.handleDeleteCoupon = async function(code) {
+  if (!confirm(`⚠️ هل أنت متأكد من حذف الكود "${code}"؟\nلن يمكن استرجاعه!`)) return;
+  
+  try {
+    const result = await deleteCoupon(code);
+    if (result.success) {
+      showToast('🗑️ تم حذف الكود', 'success');
+      loadCoupons();
+    } else {
+      showToast('❌ ' + result.error, 'error');
+    }
+  } catch(e) {
+    showToast('❌ خطأ: ' + e.message, 'error');
+  }
+};
+
+async function loadCoupons() {
+  const listEl = document.getElementById('couponsList');
+  if (!listEl) return;
+  
+  listEl.innerHTML = '<div class="cp-empty">⏳ جاري التحميل...</div>';
+  
+  try {
+    const coupons = await getAllCoupons();
+    
+    // إحصائيات
+    const now = new Date();
+    let totalUsage = 0, activeCount = 0, expiredCount = 0;
+    coupons.forEach(c => {
+      totalUsage += c.currentUses || 0;
+      const expired = c.expiresAt && c.expiresAt.toDate() < now;
+      if (c.active && !expired) activeCount++;
+      if (expired) expiredCount++;
+    });
+    
+    document.getElementById('cpStatTotal').textContent = coupons.length;
+    document.getElementById('cpStatActive').textContent = activeCount;
+    document.getElementById('cpStatUsage').textContent = totalUsage;
+    document.getElementById('cpStatExpired').textContent = expiredCount;
+    
+    if (coupons.length === 0) {
+      listEl.innerHTML = '<div class="cp-empty">📭 لا توجد أكواد خصم بعد. اضغط "كود جديد" لإنشاء أول كود.</div>';
+      return;
+    }
+    
+    listEl.innerHTML = coupons.map(c => {
+      const expired = c.expiresAt && c.expiresAt.toDate() < now;
+      const expiryStr = c.expiresAt ? c.expiresAt.toDate().toLocaleDateString('ar-SA') : 'بدون انتهاء';
+      const usesStr = c.maxUses > 0 ? `${c.currentUses || 0}/${c.maxUses}` : `${c.currentUses || 0} مرة`;
+      
+      let statusBadge = '';
+      let cardClass = '';
+      if (expired) {
+        statusBadge = '<span class="cp-status-badge cp-status-expired">⏰ منتهي</span>';
+        cardClass = 'expired';
+      } else if (!c.active) {
+        statusBadge = '<span class="cp-status-badge cp-status-inactive">⏸️ معطّل</span>';
+        cardClass = 'inactive';
+      } else {
+        statusBadge = '<span class="cp-status-badge cp-status-active">✅ نشط</span>';
+      }
+      
+      return `
+        <div class="cp-card ${cardClass}">
+          <div class="cp-card-code">${c.code}</div>
+          <div class="cp-card-info">
+            <div class="cp-card-title">
+              <span class="cp-card-percent">-${c.discountPercent}%</span>
+              ${statusBadge}
+            </div>
+            ${c.description ? `<div class="cp-card-desc">${c.description}</div>` : ''}
+            <div class="cp-card-meta">
+              <span>🔢 ${usesStr}</span>
+              <span>📅 ${expiryStr}</span>
+            </div>
+          </div>
+          <div class="cp-card-actions">
+            <button class="cp-card-btn cp-btn-toggle ${c.active && !expired ? 'is-active' : ''}" 
+                    onclick="toggleCouponActive('${c.code}', ${c.active})" 
+                    title="${c.active ? 'تعطيل' : 'تفعيل'}">
+              ${c.active ? '⏸️' : '▶️'}
+            </button>
+            <button class="cp-card-btn cp-btn-delete" onclick="handleDeleteCoupon('${c.code}')" title="حذف">
+              🗑️
+            </button>
+          </div>
+        </div>
+      `;
+    }).join('');
+  } catch(e) {
+    console.error('loadCoupons error:', e);
+    listEl.innerHTML = '<div class="cp-empty">❌ فشل تحميل الأكواد</div>';
+  }
+}
+
+// تحميل الأكواد بعد التحقق من الأدمن
+setTimeout(() => {
+  if (currentUser) {
+    loadCoupons();
   }
 }, 1500);
 

@@ -763,6 +763,134 @@
     @supports (padding: max(0px)) {
       .checkout-page { padding-bottom: max(60px, env(safe-area-inset-bottom)); }
     }
+
+    /* ═══════════════════════════════════════════════════════
+       🎟️ قسم كود الخصم - تحفة عالمية
+       ═══════════════════════════════════════════════════════ */
+    .coupon-section{
+      background:linear-gradient(135deg, rgba(139,92,246,0.05), rgba(124,58,237,0.02));
+      border:1.5px solid rgba(139,92,246,0.2);
+      border-radius:14px;
+      padding:14px;
+      margin-bottom:18px;
+      transition:all 0.3s;
+    }
+    .coupon-section.expanded{
+      background:linear-gradient(135deg, rgba(139,92,246,0.08), rgba(124,58,237,0.04));
+      border-color:rgba(139,92,246,0.35);
+    }
+    .coupon-section.has-discount{
+      background:linear-gradient(135deg, rgba(16,185,129,0.08), rgba(5,150,105,0.04));
+      border-color:rgba(16,185,129,0.35);
+    }
+    
+    .coupon-header{
+      display:flex;align-items:center;gap:10px;
+      cursor:pointer;
+      user-select:none;
+      padding:4px;
+    }
+    .coupon-header-icon{font-size:1.3rem;}
+    .coupon-header-text{
+      flex:1;
+      font:700 0.95rem 'Tajawal',sans-serif;
+      color:#475569;
+    }
+    .coupon-toggle-arrow{
+      font-size:0.85rem;
+      color:#8b5cf6;
+      transition:transform 0.3s;
+    }
+    .coupon-section.expanded .coupon-toggle-arrow{transform:rotate(180deg);}
+    
+    .coupon-input-wrap{
+      display:none;
+      gap:8px;
+      margin-top:12px;
+    }
+    .coupon-section.expanded .coupon-input-wrap{display:flex;}
+    .coupon-input{
+      flex:1;
+      padding:11px 14px;
+      border:1.5px solid #e2e8f0;
+      border-radius:10px;
+      font:700 0.95rem 'Courier New',monospace;
+      letter-spacing:1px;
+      direction:ltr;
+      text-align:center;
+      background:#fff;
+      transition:all 0.2s;
+    }
+    .coupon-input:focus{
+      outline:none;
+      border-color:#8b5cf6;
+      box-shadow:0 0 0 3px rgba(139,92,246,0.15);
+    }
+    .coupon-apply-btn{
+      padding:11px 20px;
+      background:linear-gradient(135deg,#8b5cf6,#7c3aed);
+      color:#fff;
+      border:none;
+      border-radius:10px;
+      font:700 0.88rem 'Tajawal',sans-serif;
+      cursor:pointer;
+      box-shadow:0 4px 12px rgba(139,92,246,0.35);
+      transition:all 0.25s;
+      white-space:nowrap;
+    }
+    .coupon-apply-btn:hover{transform:translateY(-2px);box-shadow:0 8px 18px rgba(139,92,246,0.5);}
+    .coupon-apply-btn:disabled{opacity:0.6;cursor:not-allowed;transform:none;}
+    
+    .coupon-message{
+      margin-top:8px;
+      font-size:0.84rem;
+      font-weight:700;
+      padding:0 4px;
+    }
+    .coupon-message.error{color:#dc2626;}
+    .coupon-message.success{color:#10b981;}
+    
+    .coupon-summary{
+      margin-top:14px;
+      padding:14px;
+      background:#fff;
+      border:1.5px solid rgba(16,185,129,0.3);
+      border-radius:10px;
+    }
+    .cs-row{
+      display:flex;justify-content:space-between;align-items:center;
+      padding:6px 0;
+      font:600 0.88rem 'Tajawal',sans-serif;
+      color:#475569;
+    }
+    .cs-row.cs-discount{color:#10b981;}
+    .cs-row.cs-total{
+      border-top:1.5px dashed #e2e8f0;
+      padding-top:10px;
+      margin-top:4px;
+      font:900 1.05rem 'Reem Kufi',sans-serif;
+      color:#1e293b;
+    }
+    .cs-original{text-decoration:line-through;color:#94a3b8;}
+    
+    .coupon-remove-btn{
+      width:100%;
+      margin-top:10px;
+      padding:8px;
+      background:transparent;
+      color:#dc2626;
+      border:1px dashed #fecaca;
+      border-radius:8px;
+      font:700 0.82rem 'Tajawal',sans-serif;
+      cursor:pointer;
+      transition:all 0.2s;
+    }
+    .coupon-remove-btn:hover{background:#fee2e2;border-style:solid;}
+
+    @media (max-width:480px){
+      .coupon-input-wrap{flex-direction:column;}
+      .coupon-apply-btn{width:100%;}
+    }
   </style>
 </head>
 <body>
@@ -872,6 +1000,47 @@
           <span class="pm-logo pm-stc">STC Pay</span>
         </div>
 
+        <!-- 🎟️ كود الخصم -->
+        <div class="coupon-section" id="couponSection">
+          <div class="coupon-header" onclick="toggleCouponInput()">
+            <span class="coupon-header-icon">🎟️</span>
+            <span class="coupon-header-text">عندك كود خصم؟</span>
+            <span class="coupon-toggle-arrow" id="couponArrow">▼</span>
+          </div>
+          
+          <div class="coupon-input-wrap" id="couponInputWrap">
+            <input type="text" 
+                   id="couponInput" 
+                   class="coupon-input" 
+                   placeholder="أدخل الكود هنا" 
+                   maxlength="20"
+                   oninput="this.value = this.value.toUpperCase()"
+                   onkeyup="if(event.key==='Enter')applyCoupon()">
+            <button class="coupon-apply-btn" onclick="applyCoupon()" id="couponApplyBtn">
+              تطبيق
+            </button>
+          </div>
+          
+          <div class="coupon-message" id="couponMessage"></div>
+          
+          <!-- ملخص السعر بعد الخصم -->
+          <div class="coupon-summary" id="couponSummary" style="display:none;">
+            <div class="cs-row">
+              <span>السعر الأصلي:</span>
+              <span class="cs-original"><span id="csOriginalPrice">49</span> ريال</span>
+            </div>
+            <div class="cs-row cs-discount">
+              <span>الخصم:</span>
+              <span>-<span id="csDiscountAmount">0</span> ريال (<span id="csDiscountPercent">0</span>%)</span>
+            </div>
+            <div class="cs-row cs-total">
+              <span>المبلغ النهائي:</span>
+              <span><span id="csFinalPrice">49</span> ريال</span>
+            </div>
+            <button class="coupon-remove-btn" onclick="removeCoupon()">إزالة الكود</button>
+          </div>
+        </div>
+
         <!-- Moyasar Form -->
         <div class="mysr-form" id="moyasar-form">
           <div class="loading-state">
@@ -892,7 +1061,7 @@
 
   <!-- JavaScript -->
   <script type="module">
-  import { onUserChange, onPricingChange, getPricing, logout } from './firebase-config.js?v=4';
+  import { onUserChange, onPricingChange, getPricing, logout, validateCoupon, incrementCouponUsage } from './firebase-config.js?v=7';
 
   // 🚪 تسجيل الخروج (متاح عالمياً)
   window.handleLogout = async function() {
@@ -959,14 +1128,19 @@
       return;
     }
 
-    const amountInHalalas = (_pricing.currentPrice || 49) * 100;
+    const finalPrice = _appliedCoupon 
+      ? Math.max(1, Math.round((_pricing.currentPrice || 49) * (1 - _appliedCoupon.discountPercent / 100)))
+      : (_pricing.currentPrice || 49);
+    const amountInHalalas = finalPrice * 100;
     document.getElementById('moyasar-form').innerHTML = '';
 
     Moyasar.init({
       element: '.mysr-form',
       amount: amountInHalalas,
       currency: MOYASAR_CONFIG.currency,
-      description: MOYASAR_CONFIG.description,
+      description: _appliedCoupon 
+        ? `${MOYASAR_CONFIG.description} (كود: ${_appliedCoupon.code} -${_appliedCoupon.discountPercent}%)` 
+        : MOYASAR_CONFIG.description,
       publishable_api_key: MOYASAR_CONFIG.publishable_key,
       callback_url: MOYASAR_CONFIG.callback_url,
       methods: MOYASAR_CONFIG.methods,
@@ -976,7 +1150,10 @@
         email: _user.email,
         plan: 'lifetime',
         product: 'ksa2030_subscription',
-        priceAtPurchase: _pricing.currentPrice
+        priceAtPurchase: finalPrice,
+        originalPrice: _pricing.currentPrice,
+        couponCode: _appliedCoupon ? _appliedCoupon.code : null,
+        couponDiscount: _appliedCoupon ? _appliedCoupon.discountPercent : 0
       }
     });
   }
@@ -988,6 +1165,90 @@
       initMoyasar();
     }
   }, 3000);
+
+  // ═══════════════════════════════════════════════════════════
+  // 🎟️ نظام كود الخصم
+  // ═══════════════════════════════════════════════════════════
+  let _appliedCoupon = null;
+
+  window.toggleCouponInput = function() {
+    document.getElementById('couponSection').classList.toggle('expanded');
+  };
+
+  window.applyCoupon = async function() {
+    const code = document.getElementById('couponInput').value.trim();
+    const msgEl = document.getElementById('couponMessage');
+    const btn = document.getElementById('couponApplyBtn');
+    
+    if (!code) {
+      msgEl.textContent = '❌ أدخل كود الخصم';
+      msgEl.className = 'coupon-message error';
+      return;
+    }
+    
+    btn.disabled = true;
+    btn.textContent = '⏳ جاري التحقق...';
+    msgEl.textContent = '';
+    msgEl.className = 'coupon-message';
+    
+    try {
+      const result = await validateCoupon(code);
+      
+      if (!result.valid) {
+        msgEl.textContent = '❌ ' + result.error;
+        msgEl.className = 'coupon-message error';
+        return;
+      }
+      
+      // الكود صحيح - طبّق الخصم
+      _appliedCoupon = result;
+      
+      const originalPrice = _pricing.currentPrice || 49;
+      const discountAmount = Math.round(originalPrice * (result.discountPercent / 100));
+      const finalPrice = Math.max(1, originalPrice - discountAmount);
+      
+      // اعرض الملخص
+      document.getElementById('csOriginalPrice').textContent = originalPrice;
+      document.getElementById('csDiscountAmount').textContent = discountAmount;
+      document.getElementById('csDiscountPercent').textContent = result.discountPercent;
+      document.getElementById('csFinalPrice').textContent = finalPrice;
+      document.getElementById('couponSummary').style.display = 'block';
+      document.getElementById('couponSection').classList.add('has-discount');
+      
+      msgEl.textContent = `✅ تم تطبيق الكود! وفّرت ${discountAmount} ريال`;
+      msgEl.className = 'coupon-message success';
+      
+      // اخفي الحقل والزر
+      document.getElementById('couponInput').disabled = true;
+      btn.style.display = 'none';
+      
+      // أعد تهيئة Moyasar بالسعر الجديد
+      initMoyasar();
+    } catch(e) {
+      console.error('applyCoupon error:', e);
+      msgEl.textContent = '❌ حدث خطأ، حاول مرة أخرى';
+      msgEl.className = 'coupon-message error';
+    } finally {
+      btn.disabled = false;
+      if (!_appliedCoupon) btn.textContent = 'تطبيق';
+    }
+  };
+
+  window.removeCoupon = function() {
+    _appliedCoupon = null;
+    document.getElementById('couponInput').value = '';
+    document.getElementById('couponInput').disabled = false;
+    document.getElementById('couponSummary').style.display = 'none';
+    document.getElementById('couponMessage').textContent = '';
+    document.getElementById('couponSection').classList.remove('has-discount');
+    
+    const btn = document.getElementById('couponApplyBtn');
+    btn.style.display = '';
+    btn.textContent = 'تطبيق';
+    
+    // أعد تهيئة Moyasar بالسعر الأصلي
+    initMoyasar();
+  };
 
   console.log('💳 ksa2030 - Moyasar:', MOYASAR_CONFIG.enabled ? 'ACTIVE' : 'PENDING');
   </script>
