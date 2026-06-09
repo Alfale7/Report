@@ -325,7 +325,8 @@ input:focus,textarea:focus{outline:none;}
 .table-scroll-indicator.hidden{display:none !important;}
 
 .grades-table{
-  width:100%;
+  width:1100px;
+  max-width:1100px;
   border-collapse:collapse;
   font-size:0.74rem;
   table-layout:fixed;
@@ -348,25 +349,22 @@ input:focus,textarea:focus{outline:none;}
   height:34px;
 }
 
-/* النص العمودي في رؤوس الجدول - باستخدام position absolute + rotate(-90deg) */
-/* هذه الطريقة الأكثر موثوقية مع html2canvas-pro */
+/* النص العمودي - الطريقة الأبسط والأكثر موثوقية */
 .grades-table thead .vertical-text{
-  position:absolute;
-  top:50%;
-  left:50%;
-  transform:translate(-50%, -50%) rotate(-90deg);
-  transform-origin:center center;
+  display:inline-block;
+  writing-mode:vertical-rl;
+  text-orientation:mixed;
   white-space:nowrap;
-  writing-mode:horizontal-tb;
   font-weight:800;
-  font-size:0.72rem;
-  line-height:1.2;
-  text-align:center;
+  font-size:0.68rem;
+  line-height:1.3;
+  padding:6px 0;
+  font-family:'Tajawal',Tahoma,Arial,sans-serif;
   unicode-bidi:plaintext;
-  direction:rtl;
+  transform:rotate(180deg);
 }
 
-/* الـ th الذي يحتوي vertical-text - ارتفاع كافي + position relative */
+/* الـ th الذي يحتوي vertical-text */
 .grades-table thead .sub-task,
 .grades-table thead .sub-sum-task,
 .grades-table thead .sub-tahriri,
@@ -375,13 +373,13 @@ input:focus,textarea:focus{outline:none;}
 .grades-table thead .col-final-exam,
 .grades-table thead .col-listening,
 .grades-table thead .group-tahriri{
-  height:120px;
-  padding:4px 2px;
+  height:130px;
+  width:40px;
+  min-width:40px;
+  max-width:40px;
+  padding:6px 0;
   vertical-align:middle;
   text-align:center;
-  min-width:36px;
-  position:relative;
-  overflow:hidden;
 }
 
 /* عند التصدير: النص العمودي يبقى كما هو (يعمل بشكل صحيح بـ rotate(-90deg)) */
@@ -940,7 +938,7 @@ input:focus,textarea:focus{outline:none;}
   .table-scroll-indicator{display:block !important;}
 
   .table-wrap{padding:10px 8px;}
-  .grades-table{font-size:0.74rem;}
+  .grades-table{font-size:0.72rem; width:1100px; min-width:1100px;}
   .grades-table thead tr:first-child th{font-size:0.78rem; padding:7px 4px;}
   .grades-table thead tr:nth-child(2) th{font-size:0.6rem; padding:4px 2px; height:54px;}
   .grades-table thead .sub-degree{font-size:0.66rem;}
