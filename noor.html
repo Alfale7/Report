@@ -744,10 +744,57 @@ input:focus,textarea:focus{outline:none;}
 .export-option .ico.pdf{background:linear-gradient(135deg, #d32f2f, #b71c1c);}
 .export-option .ico.share{background:linear-gradient(135deg, #16a34a, #15803d);}
 .export-option .ico.print{background:linear-gradient(135deg, var(--primary), var(--accent));}
+.export-option .ico.cloud{
+  background:linear-gradient(135deg, #e8c547, #d4a657);
+  box-shadow:0 4px 12px rgba(232,197,71,0.35);
+}
 .export-option .opt-text{flex:1;}
 .export-option .opt-title{font-weight:800; font-size:0.94rem; color:var(--ink); margin-bottom:2px;}
 .export-option .opt-desc{font-size:0.74rem; color:var(--muted);}
 .export-option .arrow{color:#bcc3bc; font-size:1.1rem;}
+
+/* زر "حفظ في حسابي" - مميّز ذهبي */
+.export-option.profile-save{
+  background:linear-gradient(135deg, rgba(232,197,71,0.1), rgba(212,166,87,0.05));
+  border:1px solid rgba(232,197,71,0.35);
+  margin:8px 0 4px;
+  position:relative;
+  overflow:hidden;
+  border-radius:12px;
+}
+.export-option.profile-save::before{
+  content:'';
+  position:absolute;top:0;left:-100%;
+  width:60%;height:100%;
+  background:linear-gradient(120deg, transparent, rgba(232,197,71,0.25), transparent);
+  animation:cloudShimmer 3s infinite;
+  pointer-events:none;
+}
+@keyframes cloudShimmer{0%{left:-100%;}50%,100%{left:140%;}}
+.export-option.profile-save:hover{
+  background:linear-gradient(135deg, rgba(232,197,71,0.18), rgba(212,166,87,0.08));
+  border-color:rgba(232,197,71,0.55);
+}
+.export-option.profile-save .opt-title{
+  color:#aa8540;
+  font-weight:900;
+}
+.export-option.profile-save .opt-desc{
+  color:#a08040;
+}
+
+/* زر الإلغاء */
+.export-cancel-btn{
+  width:100%; padding:14px;
+  border:none; background:#f1f3f0;
+  color:var(--muted);
+  font-family:inherit; font-weight:700; font-size:0.92rem;
+  border-radius:12px;
+  cursor:pointer;
+  margin-top:10px;
+  transition:background 0.2s;
+}
+.export-cancel-btn:hover{background:#e6e9e4;}
 
 /* Toast & Modal */
 #toast{
@@ -862,6 +909,7 @@ input:focus,textarea:focus{outline:none;}
   }
 }
 </style>
+<script type="module" src="report-firebase.js?v=23"></script>
 </head>
 <body>
 
@@ -1018,6 +1066,15 @@ input:focus,textarea:focus{outline:none;}
     </span>
     <span class="arrow">‹</span>
   </button>
+  <button class="export-option profile-save" onclick="saveToMyProfile()">
+    <span class="ico cloud">☁️</span>
+    <span class="opt-text">
+      <div class="opt-title">حفظ في حسابي</div>
+      <div class="opt-desc">احفظ الكشف في سجلك للرجوع له لاحقاً</div>
+    </span>
+    <span class="arrow">‹</span>
+  </button>
+  <button class="export-cancel-btn" onclick="closeExportMenu()">إلغاء</button>
 </div>
 
 <div id="toast"></div>
@@ -1633,6 +1690,391 @@ function printReport(){
   toggleExportMenu();
   setTimeout(() => { window.print(); }, 350);
 }
+
+// ═══════════════════════════════════════════════════════
+// ☁️ حفظ في حسابي (Firebase)
+// ═══════════════════════════════════════════════════════
+async function saveToMyProfile() {
+  closeExportMenu();
+  
+  // تحقق من تسجيل الدخول
+  if (typeof window.getFirebaseUser !== 'function' || !window.getFirebaseUser()) {
+    if (typeof showToast === 'function') {
+      showToast('⚠️ سجّل دخولك أولاً لحفظ الكشف في حسابك');
+    }
+    setTimeout(() => {
+      window.location.href = 'login.html?next=noor.html';
+    }, 1500);
+    return;
+  }
+  
+  // اعرض loader
+  const loader = document.createElement('div');
+  loader.id = '_saveLoader';
+  loader.style.cssText = `
+    position:fixed;inset:0;background:rgba(7,38,49,0.92);
+    backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);
+    z-index:99999;display:flex;align-items:center;justify-content:center;
+    flex-direction:column;gap:20px;
+  `;
+  loader.innerHTML = `
+    <div style="width:60px;height:60px;border:5px solid rgba(232,197,71,0.2);border-top-color:#e8c547;border-radius:50%;animation:_sl 0.8s linear infinite;"></div>
+    <div style="font:800 1.05rem 'Tajawal',sans-serif;color:#fff;text-align:center;padding:0 20px;">
+      ☁️ جاري حفظ الكشف في حسابك...
+    </div>
+    <style>@keyframes _sl{to{transform:rotate(360deg);}}</style>
+  `;
+  document.body.appendChild(loader);
+  
+  try {
+    await saveExportToCloud('save');
+    
+    loader.style.transition = 'opacity 0.3s';
+    loader.style.opacity = '0';
+    setTimeout(() => loader.remove(), 300);
+    
+    if (typeof showToast === 'function') {
+      showToast('✅ تم حفظ الكشف في حسابك');
+    }
+  } catch (e) {
+    console.error(e);
+    loader.remove();
+    if (typeof showToast === 'function') {
+      showToast('❌ فشل الحفظ');
+    }
+  }
+}
+
+// ═══════════════════════════════════════════════════════
+// ☁️ حفظ الكشف في السحابة
+// ═══════════════════════════════════════════════════════
+async function saveExportToCloud(format = 'pdf') {
+  console.log('💾 saveExportToCloud:', format);
+  
+  try {
+    // 1️⃣ تحقق من Firebase
+    if (typeof window.trackExport !== 'function') {
+      console.log('⏳ trackExport غير جاهز، انتظر...');
+      for (let i = 0; i < 100; i++) {
+        await new Promise(r => setTimeout(r, 100));
+        if (typeof window.trackExport === 'function') break;
+      }
+      if (typeof window.trackExport !== 'function') {
+        console.error('❌ trackExport لم تتوفر');
+        return;
+      }
+    }
+    
+    // 2️⃣ تحقق من المستخدم
+    if (typeof window.getFirebaseUser === 'function') {
+      const user = window.getFirebaseUser();
+      if (!user) {
+        console.error('❌ لا يوجد مستخدم مسجل');
+        return;
+      }
+    }
+    
+    // 3️⃣ اجمع البيانات النصية
+    const fields = {};
+    
+    // contenteditable divs
+    document.querySelectorAll('[contenteditable="true"]').forEach((el, i) => {
+      const text = (el.innerText || el.textContent || '').trim();
+      if (text && text !== '...' && text !== '-') {
+        let key = el.id || el.dataset?.field;
+        if (!key && el.className) {
+          const cls = el.className.split(' ').filter(c => c && c !== 'editable').join('-');
+          if (cls) key = 'ce-' + cls;
+        }
+        if (!key) key = `editable_${i}`;
+        fields[key] = text;
+      }
+    });
+    
+    // كل inputs + textareas + selects
+    document.querySelectorAll('input, textarea, select').forEach((el, i) => {
+      if (el.type === 'file' || el.type === 'button' || el.type === 'submit' || 
+          el.type === 'reset' || el.type === 'checkbox' || el.type === 'radio') return;
+      
+      const val = (el.value || '').toString().trim();
+      if (val) {
+        const key = el.id || el.name || `input_${i}`;
+        fields[key] = val;
+      }
+    });
+    
+    console.log('📝 حقول مجمّعة:', Object.keys(fields).length);
+    
+    // 4️⃣ البيانات النهائية (بدون صور - noor.html غالباً ما فيه صور كبيرة)
+    const content = { ...fields };
+    const sizeKB = Math.round(JSON.stringify(content).length / 1024);
+    console.log('📊 الحجم:', sizeKB, 'KB');
+    
+    // 5️⃣ إرسال
+    const result = await window.trackExport({
+      type: 'noor',
+      title: 'كشف رصد درجات (نور)',
+      format: format,
+      content: content
+    });
+    
+    console.log('✅ النتيجة:', result);
+    
+    if (result === true || (result && result.success)) {
+      if (typeof showToast === 'function') {
+        showToast('📋 تم الحفظ في سجلك');
+      }
+    } else {
+      console.warn('⚠️ result غير متوقع:', result);
+      if (typeof showToast === 'function') {
+        showToast('⚠️ تم الإرسال (تحقق من السجل)');
+      }
+    }
+  } catch (e) {
+    console.error('❌ خطأ في saveExportToCloud:', e);
+    if (typeof showToast === 'function') {
+      showToast('❌ فشل: ' + (e.message || 'خطأ'));
+    }
+  }
+}
+
+// ═══════════════════════════════════════════════════════
+// 🔄 استعادة الكشف من السحابة (?restore=1)
+// ═══════════════════════════════════════════════════════
+(function tryRestoreFromCloud(){
+  const params = new URLSearchParams(window.location.search);
+  if (params.get('restore') !== '1') return;
+  
+  try {
+    const stored = localStorage.getItem('ksa_restore_export');
+    if (!stored) {
+      if (window.history) window.history.replaceState({}, '', window.location.pathname);
+      return;
+    }
+    
+    const data = JSON.parse(stored);
+    if (!data.content) return;
+    
+    // loader
+    const loader = document.createElement('div');
+    loader.id = '_restoreLoader';
+    loader.style.cssText = `
+      position:fixed;inset:0;background:rgba(7,38,49,0.95);
+      backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);
+      z-index:99999;display:flex;align-items:center;justify-content:center;
+      flex-direction:column;gap:20px;
+    `;
+    loader.innerHTML = `
+      <div style="width:60px;height:60px;border:5px solid rgba(232,197,71,0.2);border-top-color:#e8c547;border-radius:50%;animation:_rs 0.8s linear infinite;"></div>
+      <div style="font:800 1.1rem 'Tajawal',sans-serif;color:#fff;">⏳ جاري استعادة بياناتك...</div>
+      <style>@keyframes _rs{to{transform:rotate(360deg);}}</style>
+    `;
+    document.body.appendChild(loader);
+    
+    let restored = 0;
+    
+    // استعد الحقول
+    Object.entries(data.content).forEach(([key, value]) => {
+      if (key === '_images' || !value) return;
+      
+      let el = document.getElementById(key);
+      if (!el) el = document.querySelector(`[name="${key}"]`);
+      if (!el) el = document.querySelector(`[data-field="${key}"]`);
+      
+      if (!el && key.startsWith('ce-')) {
+        const className = key.substring(3);
+        el = document.querySelector(`.${className}.editable[contenteditable="true"]`)
+          || document.querySelector(`[contenteditable="true"].${className.split('-')[0]}`);
+      }
+      
+      if (el) {
+        if (el.tagName === 'INPUT' || el.tagName === 'TEXTAREA') {
+          el.value = value;
+        } else {
+          el.innerText = value;
+        }
+        restored++;
+      }
+    });
+    
+    localStorage.removeItem('ksa_restore_export');
+    if (window.history) window.history.replaceState({}, '', window.location.pathname);
+    
+    setTimeout(() => {
+      loader.style.transition = 'opacity 0.4s';
+      loader.style.opacity = '0';
+      setTimeout(() => loader.remove(), 400);
+      
+      if (typeof showToast === 'function' && restored > 0) {
+        showToast(`✅ تمت استعادة ${restored} عنصر`);
+      }
+    }, 600);
+  } catch (e) {
+    console.warn('فشلت الاستعادة:', e);
+    const loader = document.getElementById('_restoreLoader');
+    if (loader) loader.remove();
+  }
+})();
+
+// ═══════════════════════════════════════════════════════
+// 👁️ Preview Mode للزوار والمستخدمين المجانيين
+// (view-only: ما يقدر يكتب أو يصدّر إلا بعد الاشتراك)
+// ═══════════════════════════════════════════════════════
+(function setupPreviewMode(){
+  let _previewEnforced = false;
+  let _bannerShown = false;
+  
+  function enforcePreviewMode(){
+    if (_previewEnforced) return;
+    _previewEnforced = true;
+    
+    console.log('👁️ Preview Mode مفعّل (view-only)');
+    
+    // 1️⃣ اقفل كل الحقول
+    document.querySelectorAll('input, textarea, select').forEach(el => {
+      el.setAttribute('readonly', 'true');
+      el.setAttribute('data-was-readonly', '1');
+      el.addEventListener('mousedown', blockAndShow, true);
+      el.addEventListener('focus', blockAndShow, true);
+      el.addEventListener('keydown', blockAndShow, true);
+      el.style.cursor = 'not-allowed';
+    });
+    
+    // 2️⃣ اقفل الـ contenteditable
+    document.querySelectorAll('[contenteditable="true"]').forEach(el => {
+      el.setAttribute('contenteditable', 'false');
+      el.setAttribute('data-was-editable', '1');
+      el.addEventListener('mousedown', blockAndShow, true);
+      el.style.cursor = 'not-allowed';
+    });
+    
+    // 3️⃣ اقفل زر "إضافة طالب"
+    document.querySelectorAll('.add-row-btn').forEach(btn => {
+      btn.addEventListener('click', blockAndShow, true);
+      btn.style.opacity = '0.5';
+      btn.style.cursor = 'not-allowed';
+    });
+    
+    // 4️⃣ اقفل أزرار حذف الصفوف
+    document.querySelectorAll('.row-delete, .btn-delete').forEach(btn => {
+      btn.addEventListener('click', blockAndShow, true);
+      btn.style.opacity = '0.5';
+      btn.style.cursor = 'not-allowed';
+    });
+    
+    // 5️⃣ اعرض شريط معاينة في الأعلى (مرة وحدة)
+    showPreviewBanner();
+  }
+  
+  function blockAndShow(e){
+    e.preventDefault();
+    e.stopPropagation();
+    
+    // اعرض modal الاشتراك (نفس بقية التقارير)
+    if (typeof window.showUpgradeModal === 'function') {
+      window.showUpgradeModal('noor');
+    } else if (typeof showToast === 'function') {
+      showToast('⚠️ هذا الكشف للمشتركين فقط · اشترك لفتح كامل الميزات');
+      setTimeout(() => {
+        window.location.href = 'pay.html?from=noor';
+      }, 2000);
+    } else {
+      window.location.href = 'pay.html?from=noor';
+    }
+    return false;
+  }
+  
+  function showPreviewBanner(){
+    if (_bannerShown) return;
+    _bannerShown = true;
+    
+    const banner = document.createElement('div');
+    banner.id = '_previewBanner';
+    banner.style.cssText = `
+      position:fixed;top:0;left:0;right:0;
+      background:linear-gradient(135deg,#0b3946,#1a6a7d);
+      color:#fff;
+      padding:10px 16px;
+      font:700 0.86rem 'Tajawal',sans-serif;
+      text-align:center;
+      z-index:9998;
+      box-shadow:0 4px 14px rgba(7,38,49,0.35);
+      display:flex;align-items:center;justify-content:center;gap:8px;
+      flex-wrap:wrap;
+    `;
+    banner.innerHTML = `
+      <span>👁️ <strong>وضع المعاينة</strong> · اشترك للحصول على الكشف كاملاً</span>
+      <button onclick="window.location.href='pay.html?from=noor'" 
+              style="background:linear-gradient(135deg,#e8c547,#d4a657);color:#3d2200;
+                     border:none;padding:6px 14px;border-radius:99px;
+                     font:900 0.8rem 'Tajawal',sans-serif;cursor:pointer;
+                     box-shadow:0 4px 10px rgba(232,197,71,0.3);">
+        🔓 اشترك الآن
+      </button>
+    `;
+    document.body.appendChild(banner);
+    document.body.style.paddingTop = '50px';
+  }
+  
+  function disablePreviewMode(){
+    // المستخدم اشترك → فك القيود
+    document.querySelectorAll('[data-was-readonly]').forEach(el => {
+      el.removeAttribute('readonly');
+      el.removeAttribute('data-was-readonly');
+      el.style.cursor = '';
+    });
+    document.querySelectorAll('[data-was-editable]').forEach(el => {
+      el.setAttribute('contenteditable', 'true');
+      el.removeAttribute('data-was-editable');
+      el.style.cursor = '';
+    });
+    document.querySelectorAll('.add-row-btn, .row-delete, .btn-delete').forEach(btn => {
+      btn.style.opacity = '';
+      btn.style.cursor = '';
+    });
+    const banner = document.getElementById('_previewBanner');
+    if (banner) {
+      banner.remove();
+      document.body.style.paddingTop = '';
+    }
+    _previewEnforced = false;
+  }
+  
+  // ═══ التحقق من حالة المستخدم ═══
+  function checkUserAndApply(){
+    // إذا Firebase ما تحمل بعد - حاول كل 200ms
+    if (typeof window.getFirebaseUser !== 'function') {
+      setTimeout(checkUserAndApply, 200);
+      return;
+    }
+    
+    const user = window.getFirebaseUser();
+    const isLifetime = (typeof window.isFirebaseLifetime === 'function') && window.isFirebaseLifetime();
+    
+    if (isLifetime) {
+      // ✅ مشترك → فك القيود
+      disablePreviewMode();
+    } else {
+      // 👁️ زائر أو فري → preview mode
+      enforcePreviewMode();
+    }
+  }
+  
+  // طبّق Preview Mode فوراً (للزائر) ثم تحقق
+  document.addEventListener('DOMContentLoaded', () => {
+    enforcePreviewMode(); // ابدأ بالقيود فوراً (آمن أكثر)
+    setTimeout(checkUserAndApply, 500); // ثم تحقق من Firebase
+    
+    // راقب تغيّر حالة Firebase
+    setInterval(checkUserAndApply, 3000);
+  });
+  
+  // لو الـ DOM جاهز بالفعل
+  if (document.readyState !== 'loading') {
+    enforcePreviewMode();
+    setTimeout(checkUserAndApply, 500);
+  }
+})();
 </script>
 
 </body>
