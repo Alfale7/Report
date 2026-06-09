@@ -3239,7 +3239,40 @@ backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);
   position:relative;
   z-index:1;
 }
-.tb-card.full-width{grid-column:1/-1;}
+.tb-card.full-width{
+  grid-column:1/-1;
+  background:linear-gradient(135deg, rgba(240,184,85,0.08), rgba(42,138,171,0.06), rgba(240,184,85,0.08));
+  border-color:rgba(240,184,85,0.35);
+  padding:14px 16px;
+  justify-content:center;
+  text-align:center;
+  position:relative;
+}
+.tb-card.full-width::before{
+  content:"";
+  position:absolute;
+  top:0;left:0;right:0;
+  height:2px;
+  background:linear-gradient(90deg, transparent, var(--gold,#f0b855), transparent);
+  opacity:0.6;
+}
+.tb-card.full-width::after{
+  content:"";
+  position:absolute;
+  bottom:0;left:0;right:0;
+  height:2px;
+  background:linear-gradient(90deg, transparent, var(--gold,#f0b855), transparent);
+  opacity:0.6;
+}
+.tb-card.full-width .tb-card-ico{
+  background:linear-gradient(135deg, rgba(240,184,85,0.25), rgba(240,184,85,0.12));
+  border-color:rgba(240,184,85,0.45);
+}
+.tb-card.full-width:hover{
+  border-color:rgba(240,184,85,0.7);
+  background:linear-gradient(135deg, rgba(240,184,85,0.15), rgba(42,138,171,0.1), rgba(240,184,85,0.15));
+  box-shadow:0 10px 28px rgba(240,184,85,0.2);
+}
 .tb-card{
   background:linear-gradient(160deg,#12202f,#0d1925);
   border:1px solid rgba(42,138,171,0.22);
@@ -6288,8 +6321,21 @@ font-size:0.78rem;text-align:center;margin-top:12px;display:none;
           </div>
         </div>
 
-        <!-- 🆕 قالب: التوقيع الإلكتروني -->
-        <div class="tb-card" onclick="window.location.href='sign.html'">
+        <!-- 🆕 قالب: فيديو إلى رابط -->
+        <div class="tb-card" onclick="window.location.href='video-to-link.html'">
+          <div class="tb-card-glow"></div>
+          <div class="tb-card-ico">🎬</div>
+          <div class="tb-card-body">
+            <div class="tb-card-title" data-i18n="tbVid2Link">فيديو ← رابط</div>
+            <div class="tb-card-go">
+              <span data-i18n="tbOpen7">افتح</span>
+              <span>←</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- 🆕 قالب: التوقيع الإلكتروني (full-width على امتداد البانر) -->
+        <div class="tb-card full-width" onclick="window.location.href='sign.html'">
           <div class="tb-card-glow"></div>
           <div class="tb-card-ico">✍️</div>
           <div class="tb-card-body">
@@ -7974,6 +8020,8 @@ const I18N = {
     tbOpen5: "افتح",
     tbSign: "توقيع إلكتروني",
     tbOpen6: "افتح",
+    tbVid2Link: "فيديو ← رابط",
+    tbOpen7: "افتح",
     upgradeTitle: "انتهت تحميلاتك المجانية!",
     upgradeSubtitle: "احصل على الباقة الكاملة واستفد من جميع القوالب",
     upFeat1: "13 قالب احترافي معتمد",
@@ -8297,6 +8345,8 @@ const I18N = {
     tbOpen5: "Open",
     tbSign: "E-Signature",
     tbOpen6: "Open",
+    tbVid2Link: "Video → Link",
+    tbOpen7: "Open",
     upgradeTitle: "Free downloads ended!",
     upgradeSubtitle: "Get the full package and access all templates",
     upFeat1: "13 professional templates",
