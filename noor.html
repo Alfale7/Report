@@ -1527,6 +1527,31 @@ function exportAsImage(){
   toggleExportMenu();
   setTimeout(() => { _doSaveImage(); }, 200);
 }
+/* 🆕 دالة مساعدة: تجبر عرض الصفحة لتفادي التصغير على الجوال */
+const EXPORT_WIDTH = 940;
+function forceExportWidth(page){
+  const original = {
+    width: page.style.width,
+    maxWidth: page.style.maxWidth,
+    minWidth: page.style.minWidth,
+    margin: page.style.margin
+  };
+  page.style.width = EXPORT_WIDTH + 'px';
+  page.style.maxWidth = EXPORT_WIDTH + 'px';
+  page.style.minWidth = EXPORT_WIDTH + 'px';
+  page.style.margin = '0 auto';
+  // ضبط ارتفاع الأسماء بعد تغيير العرض
+  page.querySelectorAll('.cell-name textarea').forEach(ta => autoResizeName(ta));
+  return original;
+}
+function restoreExportWidth(page, original){
+  page.style.width = original.width;
+  page.style.maxWidth = original.maxWidth;
+  page.style.minWidth = original.minWidth;
+  page.style.margin = original.margin;
+  page.querySelectorAll('.cell-name textarea').forEach(ta => autoResizeName(ta));
+}
+
 async function _doSaveImage(){
   if (typeof window.checkDownloadAccess === 'function') {
     try {
@@ -1537,15 +1562,24 @@ async function _doSaveImage(){
   showToast('⏳ جاري إنشاء الصورة...', 30000);
   const state = prepareForExport();
   const page = document.getElementById('page');
+  const originalWidth = forceExportWidth(page);
   try {
     await document.fonts.ready;
-    await new Promise(r => setTimeout(r, 350));
+    await new Promise(r => setTimeout(r, 400));
     const canvas = await html2canvas(page, {
       backgroundColor:'#ffffff', scale:2.5, useCORS:true, logging:false, allowTaint:true,
+      width: EXPORT_WIDTH,
+      windowWidth: EXPORT_WIDTH + 40,
       onclone:(doc) => {
         const style = doc.createElement('style');
         style.textContent = "* { font-family: 'Tajawal','Reem Kufi','Arial Unicode MS','Tahoma',Arial,sans-serif !important; letter-spacing:0 !important; }";
         doc.head.appendChild(style);
+        const clonedPage = doc.getElementById('page');
+        if(clonedPage){
+          clonedPage.style.width = EXPORT_WIDTH + 'px';
+          clonedPage.style.maxWidth = EXPORT_WIDTH + 'px';
+          clonedPage.style.minWidth = EXPORT_WIDTH + 'px';
+        }
       }
     });
     canvas.toBlob(blob => {
@@ -1563,6 +1597,7 @@ async function _doSaveImage(){
     console.error(e);
     showToast('❌ فشل التصدير: ' + (e.message || ''));
   } finally {
+    restoreExportWidth(page, originalWidth);
     restoreFromExport(state);
   }
 }
@@ -1592,28 +1627,52 @@ async function _doExportPDF(){
   showToast('⏳ جاري إنشاء ملف PDF...', 30000);
   try { await loadJsPDF(); }
   catch(e){ showToast('❌ فشل تحميل مكتبة PDF'); return; }
+  
   const state = prepareForExport();
   const page = document.getElementById('page');
+  const originalWidth = forceExportWidth(page);
+  
   try {
     await document.fonts.ready;
-    await new Promise(r => setTimeout(r, 350));
+    await new Promise(r => setTimeout(r, 400));
     const canvas = await html2canvas(page, {
-      backgroundColor:'#ffffff', scale:2.2, useCORS:true, logging:false, allowTaint:true,
+      backgroundColor:'#ffffff', scale:2, useCORS:true, logging:false, allowTaint:true,
+      width: EXPORT_WIDTH,
+      windowWidth: EXPORT_WIDTH + 40,
       onclone:(doc) => {
         const style = doc.createElement('style');
         style.textContent = "* { font-family: 'Tajawal','Reem Kufi','Arial Unicode MS','Tahoma',Arial,sans-serif !important; letter-spacing:0 !important; }";
         doc.head.appendChild(style);
+        const clonedPage = doc.getElementById('page');
+        if(clonedPage){
+          clonedPage.style.width = EXPORT_WIDTH + 'px';
+          clonedPage.style.maxWidth = EXPORT_WIDTH + 'px';
+          clonedPage.style.minWidth = EXPORT_WIDTH + 'px';
+        }
       }
     });
     const imgData = canvas.toDataURL('image/jpeg', 0.92);
     const { jsPDF } = window.jspdf;
-    // A4 portrait
-    const pdf = new jsPDF({ orientation:'portrait', unit:'mm', format:'a4' });
-    const pageW = 210, pageH = 297;
+    
+    // 🆕 اختيار الاتجاه تلقائياً حسب نسبة الصورة
+    // الجدول عريض بطبيعته → landscape أوضح بكثير
+    const isWideContent = canvas.width > canvas.height;
+    const orientation = isWideContent ? 'landscape' : 'portrait';
+    const pdf = new jsPDF({ orientation, unit:'mm', format:'a4' });
+    
+    const pageW = orientation === 'landscape' ? 297 : 210;
+    const pageH = orientation === 'landscape' ? 210 : 297;
+    const margin = 6;
+    const maxW = pageW - margin * 2;
+    const maxH = pageH - margin * 2;
+    
     const ratio = canvas.height / canvas.width;
-    let imgW = pageW;
+    let imgW = maxW;
     let imgH = imgW * ratio;
-    if(imgH > pageH){ imgH = pageH; imgW = imgH / ratio; }
+    if(imgH > maxH){
+      imgH = maxH;
+      imgW = imgH / ratio;
+    }
     const x = (pageW - imgW) / 2, y = (pageH - imgH) / 2;
     pdf.addImage(imgData, 'JPEG', x, y, imgW, imgH);
     pdf.save('كشف_رصد_درجات.pdf');
@@ -1622,6 +1681,7 @@ async function _doExportPDF(){
     console.error(e);
     showToast('❌ فشل التصدير: ' + (e.message || ''));
   } finally {
+    restoreExportWidth(page, originalWidth);
     restoreFromExport(state);
   }
 }
@@ -1638,17 +1698,32 @@ async function shareReportLocal(){
   }
   const state = prepareForExport();
   const page = document.getElementById('page');
+  const originalWidth = forceExportWidth(page);
   let stateRestored = false;
-  const safeRestore = () => { if(!stateRestored){ stateRestored = true; restoreFromExport(state); } };
+  const safeRestore = () => {
+    if(!stateRestored){
+      stateRestored = true;
+      restoreExportWidth(page, originalWidth);
+      restoreFromExport(state);
+    }
+  };
   try {
     await document.fonts.ready;
-    await new Promise(r => setTimeout(r, 350));
+    await new Promise(r => setTimeout(r, 400));
     const canvas = await html2canvas(page, {
       backgroundColor:'#ffffff', scale:2.5, useCORS:true, logging:false, allowTaint:true,
+      width: EXPORT_WIDTH,
+      windowWidth: EXPORT_WIDTH + 40,
       onclone:(doc) => {
         const style = doc.createElement('style');
         style.textContent = "* { font-family: 'Tajawal','Reem Kufi','Arial Unicode MS','Tahoma',Arial,sans-serif !important; letter-spacing:0 !important; }";
         doc.head.appendChild(style);
+        const clonedPage = doc.getElementById('page');
+        if(clonedPage){
+          clonedPage.style.width = EXPORT_WIDTH + 'px';
+          clonedPage.style.maxWidth = EXPORT_WIDTH + 'px';
+          clonedPage.style.minWidth = EXPORT_WIDTH + 'px';
+        }
       }
     });
     if(!canvas){ showToast('❌ فشل إنشاء الصورة'); safeRestore(); return; }
