@@ -1036,9 +1036,8 @@ window.copyUrl = async function(){
 window.shareVideo = async function(){
   if (!_uploadedVideoUrl) return;
   
-  // نص المشاركة الفاخر (يطلع في واتساب وغيره)
-  const shareText = '🎬 شاهد الفيديو\n\n' + _uploadedVideoUrl + '\n\n' +
-                    '✨ تم إنشاء الرابط من:\n' +
+  // النص بدون الرابط (الرابط يُضاف تلقائياً من url field)
+  const shareText = '✨ تم إنشاء الرابط من:\n' +
                     '🌐 www.ksa2030.one\n' +
                     'التقارير الذكية — منصة تقارير المدرسة';
   
@@ -1048,11 +1047,10 @@ window.shareVideo = async function(){
       await navigator.share({
         title: 'التقارير الذكية · ksa2030.one',
         text: shareText,
-        url: _uploadedVideoUrl
+        url: _uploadedVideoUrl  // الرابط هنا فقط
       });
     } catch(err) {
       if (err.name !== 'AbortError') {
-        // fallback لو فشل
         fallbackShare(shareText);
       }
     }
@@ -1063,8 +1061,9 @@ window.shareVideo = async function(){
 };
 
 function fallbackShare(text) {
-  // افتح واتس مع النص كامل
-  const waUrl = 'https://wa.me/?text=' + encodeURIComponent(text);
+  // للـ fallback نضيف الرابط مرة واحدة فقط
+  const fullText = text + '\n\n' + _uploadedVideoUrl;
+  const waUrl = 'https://wa.me/?text=' + encodeURIComponent(fullText);
   window.open(waUrl, '_blank');
 }
 </script>
