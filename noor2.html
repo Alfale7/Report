@@ -348,21 +348,25 @@ input:focus,textarea:focus{outline:none;}
   height:34px;
 }
 
-/* النص العمودي في رؤوس الجدول */
+/* النص العمودي في رؤوس الجدول - باستخدام position absolute + rotate(-90deg) */
+/* هذه الطريقة الأكثر موثوقية مع html2canvas-pro */
 .grades-table thead .vertical-text{
-  writing-mode:vertical-rl;
-  text-orientation:mixed;
+  position:absolute;
+  top:50%;
+  left:50%;
+  transform:translate(-50%, -50%) rotate(-90deg);
+  transform-origin:center center;
   white-space:nowrap;
-  display:inline-block;
-  padding:6px 2px;
+  writing-mode:horizontal-tb;
   font-weight:800;
-  font-size:0.7rem;
+  font-size:0.72rem;
   line-height:1.2;
+  text-align:center;
   unicode-bidi:plaintext;
-  transform:rotate(180deg);
+  direction:rtl;
 }
 
-/* الـ th الذي يحتوي vertical-text - ارتفاع كافي */
+/* الـ th الذي يحتوي vertical-text - ارتفاع كافي + position relative */
 .grades-table thead .sub-task,
 .grades-table thead .sub-sum-task,
 .grades-table thead .sub-tahriri,
@@ -376,24 +380,11 @@ input:focus,textarea:focus{outline:none;}
   vertical-align:middle;
   text-align:center;
   min-width:36px;
+  position:relative;
+  overflow:hidden;
 }
 
-/* عند التصدير: نخفي العمودي ونظهر بديل أفقي مؤقت */
-.exporting .vertical-text{display:none !important;}
-.exporting .vertical-text-export{
-  display:inline-block !important;
-  writing-mode:horizontal-tb;
-  transform:none;
-  font-weight:800;
-  font-size:0.65rem;
-  line-height:1.15;
-  padding:4px 2px;
-  text-align:center;
-  white-space:normal;
-  word-wrap:break-word;
-  width:100%;
-}
-.vertical-text-export{display:none;}
+/* عند التصدير: النص العمودي يبقى كما هو (يعمل بشكل صحيح بـ rotate(-90deg)) */
 .grades-table thead .col-num{width:34px; background:#fff;}
 .grades-table thead .col-name{width:auto; min-width:160px; background:#fff;}
 /* رؤوس "الفترة الأولى" و "الفترة الثانية" - رمادي خفيف */
@@ -1649,23 +1640,6 @@ function closeExportMenu(){
 function prepareForExport(){
   document.body.classList.add('exporting');
   const restores = [];
-  
-  // 🆕 معالجة خاصة للنصوص العمودية: نستبدلها بنصوص أفقية مؤقتة
-  // (html2canvas-pro لا يدعم writing-mode + rotate(180) بشكل موثوق)
-  document.querySelectorAll('.vertical-text').forEach(el => {
-    const text = el.textContent.trim();
-    const parentTh = el.parentElement;
-    if(!parentTh) return;
-    const original = parentTh.innerHTML;
-    restores.push({ el:parentTh, original });
-    // أنشئ بديل أفقي - النص يلتف لعدة أسطر إذا لزم
-    const words = text.split(/\s+/);
-    // إذا كان النص طويل (أكثر من كلمة)، اعرضه عمودياً بسطر لكل كلمة
-    const verticalHTML = words.map(w =>
-      `<div style="display:block;line-height:1.15;">${w}</div>`
-    ).join('');
-    parentTh.innerHTML = `<div class="vertical-text-export" style="display:inline-block;font-weight:800;font-size:0.62rem;line-height:1.15;padding:4px 2px;text-align:center;writing-mode:horizontal-tb;transform:none;">${verticalHTML}</div>`;
-  });
 
   // لف نصوص الترويسة والرؤوس بـ spans لكل كلمة (للترويسة الرئيسية فقط، مش الجدول)
   document.querySelectorAll('.l1, .info-strip .title, .info-strip .lab, .sig-cell .lab').forEach(el => {
