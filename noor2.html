@@ -349,7 +349,7 @@ input:focus,textarea:focus{outline:none;}
   height:34px;
 }
 
-/* النص العمودي - الطريقة الأبسط والأكثر موثوقية */
+/* النص العمودي - vertical-rl بدون rotate (للعربية) */
 .grades-table thead .vertical-text{
   display:inline-block;
   writing-mode:vertical-rl;
@@ -361,7 +361,6 @@ input:focus,textarea:focus{outline:none;}
   padding:6px 0;
   font-family:'Tajawal',Tahoma,Arial,sans-serif;
   unicode-bidi:plaintext;
-  transform:rotate(180deg);
 }
 
 /* الـ th الذي يحتوي vertical-text */
