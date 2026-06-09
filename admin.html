@@ -292,6 +292,43 @@ body{
 }
 .stat-card.red .num{color:#ff8a80;}
 
+/* 🎯 بطاقة تفاعلية - قابلة للنقر */
+.stat-card.clickable{
+  cursor:pointer;
+  position:relative;
+  overflow:hidden;
+}
+.stat-card.clickable::before{
+  content:"";
+  position:absolute;
+  top:-50%;left:-100%;
+  width:60%;height:200%;
+  background:linear-gradient(110deg, transparent 30%, rgba(244,67,54,0.12) 50%, transparent 70%);
+  transition:left 0.6s cubic-bezier(0.4,0,0.2,1);
+  pointer-events:none;
+}
+.stat-card.clickable:hover{
+  transform:translateY(-3px);
+  border-color:rgba(244,67,54,0.55) !important;
+  box-shadow:0 12px 28px rgba(244,67,54,0.18);
+}
+.stat-card.clickable:hover::before{
+  left:160%;
+}
+.stat-card.clickable:active{
+  transform:translateY(-1px);
+}
+.stat-card.clickable .stat-hint{
+  font-size:0.66rem;
+  color:#ff8a80;
+  font-weight:700;
+  margin-top:4px;
+  opacity:0.7;
+  letter-spacing:0.3px;
+  transition:opacity 0.25s;
+}
+.stat-card.clickable:hover .stat-hint{opacity:1;}
+
 @media (max-width:480px){
   .top-bar{padding:14px 16px;border-radius:16px;}
   .tb-crown{width:42px;height:42px;font-size:1.3rem;border-radius:12px;}
@@ -2450,10 +2487,11 @@ body{
         <div class="num" id="totalDownloads">0</div>
         <div class="lbl">إجمالي التحميلات</div>
       </div>
-      <div class="stat-card red">
+      <div class="stat-card red clickable" onclick="filterFreeUsers()" title="انقر لعرض الحسابات المجانية فقط">
         <div class="ic">🆓</div>
         <div class="num" id="totalFree">0</div>
         <div class="lbl">حسابات مجانية</div>
+        <div class="stat-hint">👆 انقر للعرض والتفعيل</div>
       </div>
     </div>
 
@@ -3112,6 +3150,106 @@ window.loadAllUsers = async function() {
 
   renderUsers(users);
   updateStats(users);
+};
+
+// 🆓 عرض الحسابات المجانية فقط (تفعيل سريع)
+window.filterFreeUsers = async function() {
+  // امسح حقل البحث
+  document.getElementById('searchInput').value = '';
+  
+  // اعرض رسالة التحميل
+  document.getElementById('userList').innerHTML = '<div class="empty-state">⏳ جاري عرض الحسابات المجانية...</div>';
+  
+  // مرّر للأسفل تلقائياً لقائمة المستخدمين
+  setTimeout(() => {
+    document.getElementById('userList').scrollIntoView({ 
+      behavior: 'smooth', 
+      block: 'start' 
+    });
+  }, 100);
+  
+  try {
+    const users = await getAllUsers(500);
+    
+    // فلتر: الحسابات المجانية فقط (مش lifetime ومش admin)
+    const freeUsers = users.filter(u => {
+      const isAdmin = ADMIN_UIDS_LOCAL.includes(u.uid || u.id);
+      return u.plan !== 'lifetime' && !isAdmin;
+    });
+    
+    // ترتيب: الأحدث أولاً
+    freeUsers.sort((a, b) => {
+      const aTime = a.createdAt?.toDate?.()?.getTime() || 0;
+      const bTime = b.createdAt?.toDate?.()?.getTime() || 0;
+      return bTime - aTime;
+    });
+    
+    if (freeUsers.length === 0) {
+      document.getElementById('userList').innerHTML = `
+        <div class="empty-state" style="padding:40px 20px;">
+          <div style="font-size:3rem;margin-bottom:12px;">🎉</div>
+          <div style="font-size:1.05rem;font-weight:900;color:#15803d;margin-bottom:6px;">
+            ممتاز! ما عندك حسابات مجانية الحين
+          </div>
+          <div style="font-size:0.85rem;color:#64748b;">
+            كل المستخدمين مفعّلين أو إداريين
+          </div>
+        </div>
+      `;
+      return;
+    }
+    
+    // أظهر بانر إعلامي فوق القائمة
+    const banner = `
+      <div style="background:linear-gradient(135deg, rgba(244,67,54,0.08), rgba(220,38,38,0.04));
+                  border:1.5px solid rgba(244,67,54,0.3);
+                  border-radius:14px;
+                  padding:14px 18px;
+                  margin-bottom:14px;
+                  display:flex;
+                  align-items:center;
+                  gap:12px;">
+        <div style="font-size:1.6rem;">🆓</div>
+        <div style="flex:1;">
+          <div style="font:900 0.96rem 'Reem Kufi',sans-serif;color:#dc2626;margin-bottom:2px;">
+            ${freeUsers.length} حساب مجاني بانتظار التفعيل
+          </div>
+          <div style="font-size:0.78rem;color:#64748b;font-weight:700;">
+            👆 اضغط "✨ تفعيل" لرفع المستخدم إلى Lifetime
+          </div>
+        </div>
+        <button onclick="loadAllUsers()" 
+                style="padding:8px 14px;
+                       background:#fff;
+                       color:#5a7080;
+                       border:1.5px solid #cbd5e1;
+                       border-radius:8px;
+                       font:700 0.78rem 'Tajawal',sans-serif;
+                       cursor:pointer;
+                       transition:all 0.2s;"
+                onmouseover="this.style.background='#f1f5f9'"
+                onmouseout="this.style.background='#fff'">
+          ← الكل
+        </button>
+      </div>
+    `;
+    
+    document.getElementById('userList').innerHTML = banner;
+    
+    // عرض الحسابات
+    const tempDiv = document.createElement('div');
+    document.getElementById('userList').appendChild(tempDiv);
+    
+    // استخدم renderUsers لكن نضيف للـ DOM الموجود
+    renderUsers(freeUsers);
+    
+    // أضف البانر مرة ثانية لأن renderUsers يستبدل المحتوى
+    document.getElementById('userList').insertAdjacentHTML('afterbegin', banner);
+    
+  } catch(e) {
+    console.error('filterFreeUsers error:', e);
+    document.getElementById('userList').innerHTML = '<div class="empty-state">❌ فشل تحميل الحسابات</div>';
+  }
 };
 
 // البحث
