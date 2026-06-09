@@ -1497,12 +1497,17 @@ function prepareForExport(){
     div.className = '__export-tmp';
     const cs = getComputedStyle(ta);
     div.style.cssText = `
-      width:100%; min-height:${ta.offsetHeight}px;
+      width:${ta.offsetWidth}px; min-height:${ta.offsetHeight}px;
       font-size:${cs.fontSize}; font-weight:${cs.fontWeight};
       color:${cs.color}; padding:${cs.padding};
-      text-align:right; line-height:1.4;
-      direction:rtl; font-family:inherit;
-      white-space:pre-wrap; word-wrap:break-word;
+      text-align:right; line-height:1.5;
+      direction:rtl; font-family:'Tajawal','Reem Kufi','Segoe UI',Tahoma,Arial,sans-serif;
+      white-space:normal; word-wrap:break-word; overflow-wrap:break-word;
+      letter-spacing:normal; word-spacing:normal;
+      text-rendering:optimizeLegibility;
+      -webkit-font-feature-settings:"liga","calt","kern";
+      font-feature-settings:"liga","calt","kern";
+      unicode-bidi:embed;
       display:block; box-sizing:border-box;
     `;
     div.textContent = ta.value;
@@ -1572,7 +1577,22 @@ async function _doSaveImage(){
       windowWidth: EXPORT_WIDTH + 40,
       onclone:(doc) => {
         const style = doc.createElement('style');
-        style.textContent = "* { font-family: 'Tajawal','Reem Kufi','Arial Unicode MS','Tahoma',Arial,sans-serif !important; letter-spacing:0 !important; }";
+        style.textContent = `
+          * {
+            font-family: 'Tajawal','Reem Kufi','Segoe UI',Tahoma,Arial,sans-serif !important;
+            letter-spacing: normal !important;
+            word-spacing: normal !important;
+            text-rendering: optimizeLegibility !important;
+            -webkit-font-feature-settings: "liga","calt","kern" !important;
+            font-feature-settings: "liga","calt","kern" !important;
+          }
+          .cell-name textarea, .cell-name .__export-tmp {
+            white-space: normal !important;
+            word-wrap: break-word !important;
+            overflow-wrap: break-word !important;
+            unicode-bidi: embed !important;
+          }
+        `;
         doc.head.appendChild(style);
         const clonedPage = doc.getElementById('page');
         if(clonedPage){
@@ -1641,7 +1661,22 @@ async function _doExportPDF(){
       windowWidth: EXPORT_WIDTH + 40,
       onclone:(doc) => {
         const style = doc.createElement('style');
-        style.textContent = "* { font-family: 'Tajawal','Reem Kufi','Arial Unicode MS','Tahoma',Arial,sans-serif !important; letter-spacing:0 !important; }";
+        style.textContent = `
+          * {
+            font-family: 'Tajawal','Reem Kufi','Segoe UI',Tahoma,Arial,sans-serif !important;
+            letter-spacing: normal !important;
+            word-spacing: normal !important;
+            text-rendering: optimizeLegibility !important;
+            -webkit-font-feature-settings: "liga","calt","kern" !important;
+            font-feature-settings: "liga","calt","kern" !important;
+          }
+          .cell-name textarea, .cell-name .__export-tmp {
+            white-space: normal !important;
+            word-wrap: break-word !important;
+            overflow-wrap: break-word !important;
+            unicode-bidi: embed !important;
+          }
+        `;
         doc.head.appendChild(style);
         const clonedPage = doc.getElementById('page');
         if(clonedPage){
@@ -1716,7 +1751,22 @@ async function shareReportLocal(){
       windowWidth: EXPORT_WIDTH + 40,
       onclone:(doc) => {
         const style = doc.createElement('style');
-        style.textContent = "* { font-family: 'Tajawal','Reem Kufi','Arial Unicode MS','Tahoma',Arial,sans-serif !important; letter-spacing:0 !important; }";
+        style.textContent = `
+          * {
+            font-family: 'Tajawal','Reem Kufi','Segoe UI',Tahoma,Arial,sans-serif !important;
+            letter-spacing: normal !important;
+            word-spacing: normal !important;
+            text-rendering: optimizeLegibility !important;
+            -webkit-font-feature-settings: "liga","calt","kern" !important;
+            font-feature-settings: "liga","calt","kern" !important;
+          }
+          .cell-name textarea, .cell-name .__export-tmp {
+            white-space: normal !important;
+            word-wrap: break-word !important;
+            overflow-wrap: break-word !important;
+            unicode-bidi: embed !important;
+          }
+        `;
         doc.head.appendChild(style);
         const clonedPage = doc.getElementById('page');
         if(clonedPage){
