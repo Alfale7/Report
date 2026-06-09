@@ -15,6 +15,8 @@
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf-lib/1.17.1/pdf-lib.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mammoth/1.6.0/mammoth.browser.min.js"></script>
 
 <style>
 :root{
@@ -293,6 +295,41 @@ body{
   margin-bottom:14px;
 }
 
+/* 🆕 Format Pills */
+.format-pills{
+  display:flex;
+  justify-content:center;
+  gap:8px;
+  flex-wrap:wrap;
+  margin-top:6px;
+}
+.fmt-pill{
+  display:inline-flex;align-items:center;gap:4px;
+  padding:5px 12px;
+  background:rgba(240,184,85,0.08);
+  border:1px solid var(--border-gold);
+  color:var(--gold);
+  border-radius:99px;
+  font-size:0.74rem;
+  font-weight:700;
+}
+
+/* 🆕 Doc Type Info */
+.doc-type-info{
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  gap:8px;
+  padding:8px 14px;
+  background:rgba(42,138,171,0.1);
+  border:1px solid var(--border);
+  border-radius:99px;
+  margin-bottom:10px;
+  font-size:0.8rem;
+  font-weight:700;
+  color:var(--teal-bright);
+}
+
 /* ═══ Text Sign ═══ */
 .text-input{
   width:100%;
@@ -415,6 +452,14 @@ body{
   box-shadow:0 10px 22px rgba(240,184,85,0.45);
 }
 .btn-primary:disabled{opacity:0.5;cursor:not-allowed;transform:none;}
+
+/* 🆕 نص أصغر للأزرار الطويلة */
+.btn-sm-text{
+  font-size:0.78rem;
+  padding:11px 12px;
+  white-space:nowrap;
+  letter-spacing:-0.2px;
+}
 
 .btn-secondary{
   background:rgba(42,138,171,0.12);
@@ -729,48 +774,59 @@ body{
     </div>
     <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;">
       <button class="btn btn-secondary" onclick="downloadSignature()">📥 تنزيل PNG</button>
-      <button class="btn btn-primary" onclick="showAddToPdfCard()">📄 إضافة على PDF</button>
+      <button class="btn btn-primary btn-sm-text" onclick="showAddToPdfCard()">📎 إضافة توقيعك إلى مستند</button>
     </div>
   </div>
 
-  <!-- 3️⃣ إضافة على PDF -->
+  <!-- 3️⃣ إضافة على مستند (PDF / صور / Word) -->
   <div class="card" id="pdfCard" style="display:none;">
-    <div class="card-title">📄 إضافة التوقيع على PDF</div>
+    <div class="card-title">📎 إضافة التوقيع على مستند</div>
     
     <div id="pdfUploadZone" class="upload-zone" onclick="document.getElementById('pdfFileInput').click()">
-      <input type="file" id="pdfFileInput" accept="application/pdf" style="display:none">
+      <input type="file" id="pdfFileInput" accept=".pdf,.jpg,.jpeg,.png,.webp,.gif,.bmp,.heic,.heif,.doc,.docx,application/pdf,image/*,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document" style="display:none">
       <div class="upload-icon">
         <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-          <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
-          <polyline points="14 2 14 8 20 8"/>
+          <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+          <polyline points="17 8 12 3 7 8"/>
+          <line x1="12" y1="3" x2="12" y2="15"/>
         </svg>
       </div>
-      <div class="upload-title">ارفع ملف PDF</div>
-      <div class="upload-sub">سيتم عرضه لإضافة التوقيع</div>
+      <div class="upload-title">ارفع مستندك</div>
+      <div class="upload-sub">PDF · صور (JPG, PNG, WebP) · Word</div>
+      <div class="format-pills">
+        <span class="fmt-pill">📄 PDF</span>
+        <span class="fmt-pill">🖼️ صور</span>
+        <span class="fmt-pill">📝 Word</span>
+      </div>
     </div>
 
     <div id="pdfViewerWrap" style="display:none;">
+      <div class="doc-type-info" id="docTypeInfo">
+        <span id="docTypeIcon">📄</span>
+        <span id="docTypeText">PDF · صفحة 1 من 1</span>
+      </div>
+      
       <div style="font-size:0.78rem;color:var(--text-dim);margin-bottom:10px;text-align:center;font-weight:700;">
-        💡 اضغط على الصفحة لإضافة التوقيع، ثم اسحبه لتحديد المكان
+        💡 اضغط على المستند لإضافة التوقيع، ثم اسحبه لتحديد المكان
       </div>
       <div class="pdf-viewer">
         <div class="pdf-canvas-wrap" id="pdfCanvasWrap">
           <canvas id="pdfCanvas"></canvas>
         </div>
-        <div class="pdf-nav">
+        <div class="pdf-nav" id="pdfNav">
           <button class="pdf-nav-btn" id="prevPage" onclick="changePage(-1)">السابقة ›</button>
           <div class="pdf-page-info"><span id="pageNum">1</span> / <span id="pageCount">1</span></div>
           <button class="pdf-nav-btn" id="nextPage" onclick="changePage(1)">‹ التالية</button>
         </div>
       </div>
       
-      <button class="convert-btn" onclick="generateSignedPdf()">
+      <button class="convert-btn" onclick="generateSignedDoc()">
         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round">
           <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
           <polyline points="7 10 12 15 17 10"/>
           <line x1="12" y1="15" x2="12" y2="3"/>
         </svg>
-        <span>تنزيل PDF موقّع</span>
+        <span id="downloadBtnText">تنزيل المستند الموقّع</span>
       </button>
     </div>
     
@@ -1070,17 +1126,46 @@ window.showAddToPdfCard = function() {
 // ═══════════════════════════════════════════════
 // 📄 PDF
 // ═══════════════════════════════════════════════
+// 📎 المستندات المرنة (PDF, صور, Word)
+// ═══════════════════════════════════════════════
 pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
+
+let _docType = null; // 'pdf' | 'image' | 'word'
+let _imageData = null; // للصور
+let _wordPagesImages = []; // للـ Word (نحوّله لصور)
 
 document.getElementById('pdfFileInput').addEventListener('change', async (e) => {
   const file = e.target.files[0];
   if (!file) return;
-  if (file.type !== 'application/pdf') {
-    showStatus('❌ اختر ملف PDF', 'error');
-    return;
-  }
+  
+  const fileName = file.name.toLowerCase();
+  const fileType = file.type;
   
   _pdfFile = file;
+  _signaturesOnPdf = [];
+  _currentPage = 1;
+  
+  // ═══ PDF ═══
+  if (fileType === 'application/pdf' || fileName.endsWith('.pdf')) {
+    await loadPdfFile(file);
+  }
+  // ═══ صورة ═══
+  else if (fileType.startsWith('image/') || /\.(jpg|jpeg|png|webp|gif|bmp|heic|heif)$/i.test(fileName)) {
+    await loadImageFile(file);
+  }
+  // ═══ Word ═══
+  else if (fileName.endsWith('.docx') || fileName.endsWith('.doc') || 
+           fileType.includes('word') || fileType.includes('document')) {
+    await loadWordFile(file);
+  }
+  else {
+    showStatus('❌ نوع الملف غير مدعوم. استخدم PDF أو صورة أو Word', 'error');
+  }
+});
+
+// ═══ تحميل PDF ═══
+async function loadPdfFile(file) {
+  _docType = 'pdf';
   showStatus('جاري تحميل PDF...', 'loading');
   
   try {
@@ -1089,16 +1174,132 @@ document.getElementById('pdfFileInput').addEventListener('change', async (e) => 
     
     document.getElementById('pdfUploadZone').style.display = 'none';
     document.getElementById('pdfViewerWrap').style.display = 'block';
+    document.getElementById('pdfNav').style.display = _pdfDoc.numPages > 1 ? 'flex' : 'none';
     document.getElementById('pageCount').textContent = _pdfDoc.numPages;
-    _currentPage = 1;
-    _signaturesOnPdf = [];
+    document.getElementById('docTypeIcon').textContent = '📄';
+    document.getElementById('docTypeText').textContent = `PDF · ${_pdfDoc.numPages} صفحة`;
+    document.getElementById('downloadBtnText').textContent = 'تنزيل PDF موقّع';
+    
     renderPdfPage();
     hideStatus();
   } catch(err) {
     console.error(err);
     showStatus('❌ فشل تحميل PDF', 'error');
   }
-});
+}
+
+// ═══ تحميل صورة ═══
+async function loadImageFile(file) {
+  _docType = 'image';
+  showStatus('جاري تحميل الصورة...', 'loading');
+  
+  try {
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      const img = new Image();
+      img.onload = () => {
+        _imageData = { src: e.target.result, width: img.width, height: img.height };
+        
+        document.getElementById('pdfUploadZone').style.display = 'none';
+        document.getElementById('pdfViewerWrap').style.display = 'block';
+        document.getElementById('pdfNav').style.display = 'none';
+        document.getElementById('docTypeIcon').textContent = '🖼️';
+        document.getElementById('docTypeText').textContent = `صورة · ${img.width}×${img.height}px`;
+        document.getElementById('downloadBtnText').textContent = 'تنزيل الصورة الموقّعة';
+        
+        renderImageOnCanvas();
+        hideStatus();
+      };
+      img.onerror = () => showStatus('❌ فشل قراءة الصورة', 'error');
+      img.src = e.target.result;
+    };
+    reader.readAsDataURL(file);
+  } catch(err) {
+    console.error(err);
+    showStatus('❌ فشل تحميل الصورة', 'error');
+  }
+}
+
+// ═══ تحميل Word ═══
+async function loadWordFile(file) {
+  _docType = 'word';
+  showStatus('جاري تحويل Word...', 'loading');
+  
+  try {
+    // تأكد إن mammoth.js محمّل
+    if (typeof mammoth === 'undefined') {
+      await loadScript('https://cdnjs.cloudflare.com/ajax/libs/mammoth/1.6.0/mammoth.browser.min.js');
+    }
+    
+    const arrayBuffer = await file.arrayBuffer();
+    const result = await mammoth.convertToHtml({arrayBuffer});
+    
+    // أنشئ Canvas من الـ HTML
+    const tempDiv = document.createElement('div');
+    tempDiv.style.cssText = 'position:absolute;left:-9999px;top:0;width:800px;padding:60px;background:#fff;font-family:Tajawal,Arial;font-size:14px;line-height:1.8;direction:rtl;color:#000;';
+    tempDiv.innerHTML = result.value;
+    document.body.appendChild(tempDiv);
+    
+    // استخدم html2canvas لتحويل الـ HTML لصورة
+    if (typeof html2canvas === 'undefined') {
+      await loadScript('https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js');
+    }
+    
+    const canvas = await html2canvas(tempDiv, {scale: 1.5, backgroundColor: '#ffffff'});
+    document.body.removeChild(tempDiv);
+    
+    _imageData = {
+      src: canvas.toDataURL('image/png'),
+      width: canvas.width,
+      height: canvas.height
+    };
+    
+    document.getElementById('pdfUploadZone').style.display = 'none';
+    document.getElementById('pdfViewerWrap').style.display = 'block';
+    document.getElementById('pdfNav').style.display = 'none';
+    document.getElementById('docTypeIcon').textContent = '📝';
+    document.getElementById('docTypeText').textContent = 'مستند Word';
+    document.getElementById('downloadBtnText').textContent = 'تنزيل المستند الموقّع (PDF)';
+    
+    renderImageOnCanvas();
+    hideStatus();
+  } catch(err) {
+    console.error(err);
+    showStatus('❌ فشل تحميل Word: ' + (err.message || ''), 'error');
+  }
+}
+
+// ═══ Helper: تحميل سكريبت ═══
+function loadScript(src) {
+  return new Promise((resolve, reject) => {
+    const s = document.createElement('script');
+    s.src = src;
+    s.onload = resolve;
+    s.onerror = reject;
+    document.head.appendChild(s);
+  });
+}
+
+// ═══ رسم الصورة على Canvas ═══
+function renderImageOnCanvas() {
+  if (!_imageData) return;
+  
+  const pdfCanvas = document.getElementById('pdfCanvas');
+  const pdfCtx = pdfCanvas.getContext('2d');
+  
+  // حدد العرض المناسب (max 600px للعرض)
+  const maxDisplayWidth = 600;
+  const scale = Math.min(1, maxDisplayWidth / _imageData.width);
+  pdfCanvas.width = _imageData.width * scale;
+  pdfCanvas.height = _imageData.height * scale;
+  
+  const img = new Image();
+  img.onload = () => {
+    pdfCtx.drawImage(img, 0, 0, pdfCanvas.width, pdfCanvas.height);
+    renderSignaturesOnPage();
+  };
+  img.src = _imageData.src;
+}
 
 async function renderPdfPage() {
   if (!_pdfDoc) return;
@@ -1133,7 +1334,8 @@ function renderSignaturesOnPage() {
   const offsetY = rect.top - wrapRect.top;
   
   _signaturesOnPdf.forEach((sig, idx) => {
-    if (sig.page !== _currentPage) return;
+    // فلتر بالصفحة فقط لـ PDF
+    if (_docType === 'pdf' && sig.page !== _currentPage) return;
     
     const div = document.createElement('div');
     div.className = 'draggable-sig';
@@ -1270,66 +1472,169 @@ window.changePage = function(delta) {
 };
 
 // ═══════════════════════════════════════════════
-// توليد PDF موقّع
+// 💾 توليد المستند الموقّع (مرن)
 // ═══════════════════════════════════════════════
-window.generateSignedPdf = async function() {
+window.generateSignedDoc = async function() {
   if (!_pdfFile || _signaturesOnPdf.length === 0) {
-    showStatus('❌ أضف التوقيع على PDF أولاً', 'error');
+    showStatus('❌ أضف التوقيع على المستند أولاً', 'error');
     return;
   }
   
-  showStatus('جاري إنشاء PDF موقّع...', 'loading');
+  showStatus('جاري إنشاء المستند الموقّع...', 'loading');
   
   try {
-    const { PDFDocument } = PDFLib;
-    const arrayBuffer = await _pdfFile.arrayBuffer();
-    const pdfDoc = await PDFDocument.load(arrayBuffer);
-    const pages = pdfDoc.getPages();
-    
-    for (const sig of _signaturesOnPdf) {
-      const page = pages[sig.page - 1];
-      const pageHeight = page.getHeight();
-      const pageWidth = page.getWidth();
-      
-      // الكانفس بحجم _pageScale * original
-      const canvasW = pageWidth * _pageScale;
-      const canvasH = pageHeight * _pageScale;
-      
-      // حوّل الإحداثيات من canvas إلى PDF
-      const pdfX = (sig.x / canvasW) * pageWidth;
-      const pdfY = pageHeight - ((sig.y / canvasH) * pageHeight) - ((sig.height / canvasH) * pageHeight);
-      const pdfW = (sig.width / canvasW) * pageWidth;
-      const pdfH = (sig.height / canvasH) * pageHeight;
-      
-      // أدرج الصورة
-      const imgBytes = await fetch(sig.dataUrl).then(r => r.arrayBuffer());
-      const img = await pdfDoc.embedPng(imgBytes);
-      
-      page.drawImage(img, {
-        x: pdfX,
-        y: pdfY,
-        width: pdfW,
-        height: pdfH
-      });
+    if (_docType === 'pdf') {
+      await generateSignedPdfFile();
+    } else if (_docType === 'image') {
+      await generateSignedImage();
+    } else if (_docType === 'word') {
+      await generateSignedWordAsPdf();
     }
-    
-    const pdfBytes = await pdfDoc.save();
-    const blob = new Blob([pdfBytes], {type:'application/pdf'});
-    const url = URL.createObjectURL(blob);
-    
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = 'signed-' + _pdfFile.name;
-    a.click();
-    
-    setTimeout(() => URL.revokeObjectURL(url), 1000);
-    showStatus('✅ تم تنزيل PDF الموقّع بنجاح', 'success');
-    
   } catch(err) {
     console.error(err);
-    showStatus('❌ فشل توليد PDF: ' + (err.message || ''), 'error');
+    showStatus('❌ فشل: ' + (err.message || ''), 'error');
   }
 };
+
+// ═══ PDF موقّع ═══
+async function generateSignedPdfFile() {
+  const { PDFDocument } = PDFLib;
+  const arrayBuffer = await _pdfFile.arrayBuffer();
+  const pdfDoc = await PDFDocument.load(arrayBuffer);
+  const pages = pdfDoc.getPages();
+  
+  for (const sig of _signaturesOnPdf) {
+    const page = pages[sig.page - 1];
+    const pageHeight = page.getHeight();
+    const pageWidth = page.getWidth();
+    
+    const canvasW = pageWidth * _pageScale;
+    const canvasH = pageHeight * _pageScale;
+    
+    const pdfX = (sig.x / canvasW) * pageWidth;
+    const pdfY = pageHeight - ((sig.y / canvasH) * pageHeight) - ((sig.height / canvasH) * pageHeight);
+    const pdfW = (sig.width / canvasW) * pageWidth;
+    const pdfH = (sig.height / canvasH) * pageHeight;
+    
+    const imgBytes = await fetch(sig.dataUrl).then(r => r.arrayBuffer());
+    const img = await pdfDoc.embedPng(imgBytes);
+    
+    page.drawImage(img, {x: pdfX, y: pdfY, width: pdfW, height: pdfH});
+  }
+  
+  const pdfBytes = await pdfDoc.save();
+  downloadBlob(new Blob([pdfBytes], {type:'application/pdf'}), 'signed-' + _pdfFile.name);
+  showStatus('✅ تم تنزيل PDF الموقّع', 'success');
+}
+
+// ═══ صورة موقّعة ═══
+async function generateSignedImage() {
+  // أنشئ canvas بحجم الصورة الأصلية
+  const finalCanvas = document.createElement('canvas');
+  finalCanvas.width = _imageData.width;
+  finalCanvas.height = _imageData.height;
+  const finalCtx = finalCanvas.getContext('2d');
+  
+  // ارسم الصورة الأصلية
+  const baseImg = new Image();
+  await new Promise((res, rej) => {
+    baseImg.onload = res;
+    baseImg.onerror = rej;
+    baseImg.src = _imageData.src;
+  });
+  finalCtx.drawImage(baseImg, 0, 0);
+  
+  // احسب نسبة التحجيم بين canvas المعروض والصورة الأصلية
+  const displayCanvas = document.getElementById('pdfCanvas');
+  const scaleRatioX = _imageData.width / displayCanvas.width;
+  const scaleRatioY = _imageData.height / displayCanvas.height;
+  
+  // ارسم كل التوقيعات
+  for (const sig of _signaturesOnPdf) {
+    const sigImg = new Image();
+    await new Promise((res, rej) => {
+      sigImg.onload = res;
+      sigImg.onerror = rej;
+      sigImg.src = sig.dataUrl;
+    });
+    
+    const x = sig.x * scaleRatioX;
+    const y = sig.y * scaleRatioY;
+    const w = sig.width * scaleRatioX;
+    const h = sig.height * scaleRatioY;
+    
+    finalCtx.drawImage(sigImg, x, y, w, h);
+  }
+  
+  // اختر الصيغة المناسبة (PNG لو فيه شفافية، JPG غير ذلك)
+  const originalExt = _pdfFile.name.split('.').pop().toLowerCase();
+  const isJpg = ['jpg', 'jpeg'].includes(originalExt);
+  const mimeType = isJpg ? 'image/jpeg' : 'image/png';
+  const ext = isJpg ? 'jpg' : 'png';
+  
+  finalCanvas.toBlob((blob) => {
+    const baseName = _pdfFile.name.replace(/\.[^.]+$/, '');
+    downloadBlob(blob, `signed-${baseName}.${ext}`);
+    showStatus('✅ تم تنزيل الصورة الموقّعة', 'success');
+  }, mimeType, 0.95);
+}
+
+// ═══ Word → PDF موقّع ═══
+async function generateSignedWordAsPdf() {
+  // أنشئ canvas بحجم الصورة (الـ Word المحوّل)
+  const finalCanvas = document.createElement('canvas');
+  finalCanvas.width = _imageData.width;
+  finalCanvas.height = _imageData.height;
+  const finalCtx = finalCanvas.getContext('2d');
+  
+  const baseImg = new Image();
+  await new Promise((res, rej) => {
+    baseImg.onload = res;
+    baseImg.onerror = rej;
+    baseImg.src = _imageData.src;
+  });
+  finalCtx.drawImage(baseImg, 0, 0);
+  
+  const displayCanvas = document.getElementById('pdfCanvas');
+  const scaleRatioX = _imageData.width / displayCanvas.width;
+  const scaleRatioY = _imageData.height / displayCanvas.height;
+  
+  for (const sig of _signaturesOnPdf) {
+    const sigImg = new Image();
+    await new Promise((res, rej) => {
+      sigImg.onload = res;
+      sigImg.onerror = rej;
+      sigImg.src = sig.dataUrl;
+    });
+    
+    finalCtx.drawImage(sigImg, sig.x * scaleRatioX, sig.y * scaleRatioY, 
+                       sig.width * scaleRatioX, sig.height * scaleRatioY);
+  }
+  
+  // حوّل الـ canvas لـ PDF
+  const { PDFDocument } = PDFLib;
+  const pdfDoc = await PDFDocument.create();
+  const pngBytes = await fetch(finalCanvas.toDataURL('image/png')).then(r => r.arrayBuffer());
+  const png = await pdfDoc.embedPng(pngBytes);
+  
+  const page = pdfDoc.addPage([_imageData.width, _imageData.height]);
+  page.drawImage(png, {x: 0, y: 0, width: _imageData.width, height: _imageData.height});
+  
+  const pdfBytes = await pdfDoc.save();
+  const baseName = _pdfFile.name.replace(/\.[^.]+$/, '');
+  downloadBlob(new Blob([pdfBytes], {type:'application/pdf'}), `signed-${baseName}.pdf`);
+  showStatus('✅ تم تنزيل المستند الموقّع (PDF)', 'success');
+}
+
+// ═══ Helper: تنزيل Blob ═══
+function downloadBlob(blob, filename) {
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = filename;
+  a.click();
+  setTimeout(() => URL.revokeObjectURL(url), 1000);
+}
 
 // ═══════════════════════════════════════════════
 // Status
