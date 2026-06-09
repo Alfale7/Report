@@ -166,6 +166,56 @@ body{
 #qrcode{display:flex; justify-content:center;}
 #qrcode img, #qrcode canvas{display:block; border-radius:8px;}
 
+/* 🎨 Color Picker */
+.color-picker-card{
+  background:var(--surface);
+  border:1px solid var(--border);
+  border-radius:16px;
+  padding:14px;
+  margin-bottom:12px;
+  text-align:center;
+}
+.cp-title{
+  font-family:'Reem Kufi','Tajawal',sans-serif;
+  font-size:0.86rem;
+  font-weight:800;
+  color:var(--gold);
+  margin-bottom:10px;
+}
+.cp-colors{
+  display:flex;
+  justify-content:center;
+  gap:8px;
+  flex-wrap:wrap;
+}
+.color-dot{
+  width:36px;
+  height:36px;
+  border-radius:50%;
+  cursor:pointer;
+  border:2px solid transparent;
+  transition:all 0.2s;
+  position:relative;
+  padding:0;
+  box-shadow:0 2px 6px rgba(0,0,0,0.3);
+}
+.color-dot:hover{transform:scale(1.1);}
+.color-dot.active{
+  border-color:var(--gold);
+  transform:scale(1.15);
+  box-shadow:0 0 0 3px rgba(240,184,85,0.3), 0 4px 12px rgba(0,0,0,0.4);
+}
+.color-dot.active::after{
+  content:"✓";
+  position:absolute;
+  top:50%;left:50%;
+  transform:translate(-50%, -50%);
+  color:#fff;
+  font-size:0.9rem;
+  font-weight:900;
+  text-shadow:0 1px 3px rgba(0,0,0,0.6);
+}
+
 .qr-brand{margin-top:16px; padding-top:15px; border-top:1.5px solid rgba(5,10,18,0.1); text-align:center;}
 .qr-brand-name{font-family:'Aref Ruqaa','Reem Kufi',serif; font-size:1.05rem; font-weight:700; color:#0a1620; margin-bottom:3px;}
 .qr-brand-url{font-size:0.78rem; font-weight:800; color:#d99a2b; letter-spacing:1px; direction:ltr;}
@@ -250,6 +300,21 @@ body{
       <span>✨</span><span>توليد الباركود</span>
     </button>
 
+    <!-- 🎨 منتقي ألوان الباركود -->
+    <div class="color-picker-card" id="colorPickerCard" style="display:none;">
+      <div class="cp-title">🎨 لون الباركود</div>
+      <div class="cp-colors">
+        <button class="color-dot active" data-color="#0a1620" style="background:#0a1620;" title="أزرق داكن"></button>
+        <button class="color-dot" data-color="#2a8aab" style="background:#2a8aab;" title="تركوازي"></button>
+        <button class="color-dot" data-color="#d99a2b" style="background:#d99a2b;" title="ذهبي"></button>
+        <button class="color-dot" data-color="#16a34a" style="background:#16a34a;" title="أخضر"></button>
+        <button class="color-dot" data-color="#dc2626" style="background:#dc2626;" title="أحمر"></button>
+        <button class="color-dot" data-color="#7c3aed" style="background:#7c3aed;" title="بنفسجي"></button>
+        <button class="color-dot" data-color="#ea580c" style="background:#ea580c;" title="برتقالي"></button>
+        <button class="color-dot" data-color="#000000" style="background:#000000;" title="أسود"></button>
+      </div>
+    </div>
+
     <div class="result" id="result">
       <div class="qr-frame" id="qrFrame">
         <span class="corner tl"></span>
@@ -316,11 +381,31 @@ function convertToQR(){
   showToast('✅ تم إنشاء الباركود');
   setTimeout(() => { result.scrollIntoView({behavior:'smooth', block:'center'}); }, 200);
 }
+let _qrColor = '#0a1620';
+
 function generateQRCode(url){
   const container = document.getElementById('qrcode');
   container.innerHTML = '';
-  new QRCode(container, { text: url, width: 230, height: 230, colorDark: '#0a1620', colorLight: '#ffffff', correctLevel: QRCode.CorrectLevel.H });
+  new QRCode(container, { 
+    text: url, 
+    width: 230, 
+    height: 230, 
+    colorDark: _qrColor, 
+    colorLight: '#ffffff', 
+    correctLevel: QRCode.CorrectLevel.H 
+  });
+  document.getElementById('colorPickerCard').style.display = 'block';
 }
+
+// 🎨 اختيار اللون
+document.querySelectorAll('.color-dot').forEach(dot => {
+  dot.addEventListener('click', () => {
+    document.querySelectorAll('.color-dot').forEach(d => d.classList.remove('active'));
+    dot.classList.add('active');
+    _qrColor = dot.dataset.color;
+    if (currentUrl) generateQRCode(currentUrl);
+  });
+});
 async function captureFrame(){
   const frame = document.getElementById('qrFrame');
   await new Promise(r => setTimeout(r, 100));
