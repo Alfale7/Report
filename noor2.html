@@ -540,11 +540,17 @@ input:focus,textarea:focus{outline:none;}
   background:var(--tasks-cell);
 }
 
+/* عمود المجموع الكلي - حدود قوية كاملة */
+.grades-table th.col-total,
+.grades-table td.cell-total{
+  border-left:2px solid #000 !important;
+  border-right:2px solid #000 !important;
+}
 .grades-table td.cell-total{
   background:var(--total-bg);
   font-weight:900;
   color:#000;
-  font-size:0.96rem;
+  font-size:1rem;
   padding:6px 4px;
   font-family:'Reem Kufi','Tajawal',sans-serif;
 }
