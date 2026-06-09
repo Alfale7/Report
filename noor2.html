@@ -540,11 +540,12 @@ input:focus,textarea:focus{outline:none;}
   background:var(--tasks-cell);
 }
 
-/* عمود المجموع الكلي - حدود قوية كاملة */
+/* عمود المجموع الكلي - حدود قوية كاملة (border + box-shadow كـ backup) */
 .grades-table th.col-total,
 .grades-table td.cell-total{
-  border-left:2px solid #000 !important;
-  border-right:2px solid #000 !important;
+  border-left:2.5px solid #000 !important;
+  border-right:2.5px solid #000 !important;
+  box-shadow:inset 2.5px 0 0 #000, inset -2.5px 0 0 #000;
 }
 .grades-table td.cell-total{
   background:var(--total-bg);
