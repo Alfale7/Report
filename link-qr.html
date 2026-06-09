@@ -166,54 +166,147 @@ body{
 #qrcode{display:flex; justify-content:center;}
 #qrcode img, #qrcode canvas{display:block; border-radius:8px;}
 
-/* 🎨 Color Picker */
+/* 🎨 Color Picker - تصميم فاخر عالمي */
 .color-picker-card{
-  background:var(--surface);
-  border:1px solid var(--border);
-  border-radius:16px;
-  padding:14px;
-  margin-bottom:12px;
+  position:relative;
+  background:linear-gradient(135deg, 
+    rgba(255,255,255,0.06) 0%, 
+    rgba(240,184,85,0.04) 50%, 
+    rgba(42,138,171,0.06) 100%);
+  border:1px solid rgba(240,184,85,0.25);
+  border-radius:20px;
+  padding:18px 16px 16px;
+  margin-bottom:14px;
   text-align:center;
+  overflow:hidden;
+  box-shadow:
+    0 10px 30px rgba(0,0,0,0.3),
+    inset 0 1px 0 rgba(255,255,255,0.08);
+  animation:slideInUp 0.5s cubic-bezier(0.22,1,0.36,1);
+}
+.color-picker-card::before{
+  content:"";
+  position:absolute;
+  top:0;left:0;right:0;
+  height:2px;
+  background:linear-gradient(90deg, 
+    transparent, 
+    rgba(240,184,85,0.4), 
+    rgba(42,138,171,0.4), 
+    rgba(240,184,85,0.4), 
+    transparent);
+}
+.color-picker-card::after{
+  content:"";
+  position:absolute;
+  top:-50%;right:-20%;
+  width:200px;height:200px;
+  background:radial-gradient(circle, rgba(240,184,85,0.08) 0%, transparent 65%);
+  pointer-events:none;
+}
+@keyframes slideInUp{
+  from{opacity:0;transform:translateY(15px);}
+  to{opacity:1;transform:translateY(0);}
 }
 .cp-title{
   font-family:'Reem Kufi','Tajawal',sans-serif;
-  font-size:0.86rem;
+  font-size:0.9rem;
   font-weight:800;
   color:var(--gold);
-  margin-bottom:10px;
+  margin-bottom:14px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  gap:8px;
+  position:relative;
+  z-index:1;
+}
+.cp-title::before, .cp-title::after{
+  content:"";
+  flex:1;
+  height:1px;
+  background:linear-gradient(90deg, transparent, rgba(240,184,85,0.3), transparent);
+  max-width:40px;
 }
 .cp-colors{
   display:flex;
   justify-content:center;
-  gap:8px;
+  gap:10px;
   flex-wrap:wrap;
+  position:relative;
+  z-index:1;
 }
 .color-dot{
-  width:36px;
-  height:36px;
+  width:38px;
+  height:38px;
   border-radius:50%;
   cursor:pointer;
-  border:2px solid transparent;
-  transition:all 0.2s;
+  border:2.5px solid rgba(255,255,255,0.15);
+  transition:all 0.3s cubic-bezier(0.22,1,0.36,1);
   position:relative;
   padding:0;
-  box-shadow:0 2px 6px rgba(0,0,0,0.3);
+  box-shadow:
+    0 4px 12px rgba(0,0,0,0.4),
+    inset 0 1px 2px rgba(255,255,255,0.3),
+    inset 0 -2px 4px rgba(0,0,0,0.2);
 }
-.color-dot:hover{transform:scale(1.1);}
+.color-dot:hover{
+  transform:scale(1.15) translateY(-2px);
+  border-color:rgba(255,255,255,0.4);
+  box-shadow:
+    0 8px 20px rgba(0,0,0,0.5),
+    inset 0 1px 2px rgba(255,255,255,0.3);
+}
 .color-dot.active{
   border-color:var(--gold);
-  transform:scale(1.15);
-  box-shadow:0 0 0 3px rgba(240,184,85,0.3), 0 4px 12px rgba(0,0,0,0.4);
+  border-width:3px;
+  transform:scale(1.2) translateY(-2px);
+  box-shadow:
+    0 0 0 4px rgba(240,184,85,0.2),
+    0 10px 24px rgba(240,184,85,0.35),
+    inset 0 1px 2px rgba(255,255,255,0.3);
 }
 .color-dot.active::after{
-  content:"✓";
+  content:"";
+  position:absolute;
+  inset:-7px;
+  border-radius:50%;
+  border:2px dashed var(--gold);
+  opacity:0.5;
+  animation:rotate 4s linear infinite;
+}
+@keyframes rotate{
+  from{transform:rotate(0deg);}
+  to{transform:rotate(360deg);}
+}
+.color-dot[data-color="#000000"],
+.color-dot[data-color="#0a1620"]{
+  border-color:rgba(240,184,85,0.4);
+  background-image:linear-gradient(135deg, rgba(255,255,255,0.05), transparent);
+}
+.color-dot[data-color="#000000"].active,
+.color-dot[data-color="#0a1620"].active{
+  border-color:var(--gold);
+  box-shadow:
+    0 0 0 4px rgba(240,184,85,0.3),
+    0 0 20px rgba(240,184,85,0.4),
+    0 10px 24px rgba(0,0,0,0.6);
+}
+.color-dot .check-mark{
   position:absolute;
   top:50%;left:50%;
-  transform:translate(-50%, -50%);
+  transform:translate(-50%, -50%) scale(0);
   color:#fff;
-  font-size:0.9rem;
+  font-size:1rem;
   font-weight:900;
-  text-shadow:0 1px 3px rgba(0,0,0,0.6);
+  text-shadow:
+    0 0 4px rgba(0,0,0,0.8),
+    0 1px 2px rgba(0,0,0,0.6);
+  transition:transform 0.3s cubic-bezier(0.34,1.56,0.64,1);
+  pointer-events:none;
+}
+.color-dot.active .check-mark{
+  transform:translate(-50%, -50%) scale(1);
 }
 
 .qr-brand{margin-top:16px; padding-top:15px; border-top:1.5px solid rgba(5,10,18,0.1); text-align:center;}
@@ -304,14 +397,30 @@ body{
     <div class="color-picker-card" id="colorPickerCard" style="display:none;">
       <div class="cp-title">🎨 لون الباركود</div>
       <div class="cp-colors">
-        <button class="color-dot active" data-color="#0a1620" style="background:#0a1620;" title="أزرق داكن"></button>
-        <button class="color-dot" data-color="#2a8aab" style="background:#2a8aab;" title="تركوازي"></button>
-        <button class="color-dot" data-color="#d99a2b" style="background:#d99a2b;" title="ذهبي"></button>
-        <button class="color-dot" data-color="#16a34a" style="background:#16a34a;" title="أخضر"></button>
-        <button class="color-dot" data-color="#dc2626" style="background:#dc2626;" title="أحمر"></button>
-        <button class="color-dot" data-color="#7c3aed" style="background:#7c3aed;" title="بنفسجي"></button>
-        <button class="color-dot" data-color="#ea580c" style="background:#ea580c;" title="برتقالي"></button>
-        <button class="color-dot" data-color="#000000" style="background:#000000;" title="أسود"></button>
+        <button class="color-dot active" data-color="#0a1620" style="background:#0a1620;" title="أزرق داكن">
+          <span class="check-mark">✓</span>
+        </button>
+        <button class="color-dot" data-color="#2a8aab" style="background:#2a8aab;" title="تركوازي">
+          <span class="check-mark">✓</span>
+        </button>
+        <button class="color-dot" data-color="#d99a2b" style="background:#d99a2b;" title="ذهبي">
+          <span class="check-mark">✓</span>
+        </button>
+        <button class="color-dot" data-color="#16a34a" style="background:#16a34a;" title="أخضر">
+          <span class="check-mark">✓</span>
+        </button>
+        <button class="color-dot" data-color="#dc2626" style="background:#dc2626;" title="أحمر">
+          <span class="check-mark">✓</span>
+        </button>
+        <button class="color-dot" data-color="#7c3aed" style="background:#7c3aed;" title="بنفسجي">
+          <span class="check-mark">✓</span>
+        </button>
+        <button class="color-dot" data-color="#ea580c" style="background:#ea580c;" title="برتقالي">
+          <span class="check-mark">✓</span>
+        </button>
+        <button class="color-dot" data-color="#000000" style="background:#000000;" title="أسود">
+          <span class="check-mark">✓</span>
+        </button>
       </div>
     </div>
 
