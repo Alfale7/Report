@@ -457,6 +457,133 @@ body{
 }
 @keyframes spin{to{transform:rotate(360deg);}}
 
+/* ═══ Limit Modal ═══ */
+.limit-overlay{
+  position:fixed;
+  inset:0;
+  background:rgba(5,10,18,0.92);
+  backdrop-filter:blur(8px);
+  -webkit-backdrop-filter:blur(8px);
+  z-index:9999;
+  display:none;
+  align-items:center;
+  justify-content:center;
+  padding:20px;
+  animation:fadeIn 0.3s ease;
+}
+.limit-overlay.show{display:flex;}
+@keyframes fadeIn{from{opacity:0;}to{opacity:1;}}
+
+.limit-card{
+  background:linear-gradient(180deg, var(--surface), var(--surface-2));
+  border:2px solid var(--border-gold);
+  border-radius:24px;
+  padding:30px 24px;
+  max-width:440px;
+  width:100%;
+  text-align:center;
+  box-shadow:0 24px 60px rgba(0,0,0,0.6), 0 0 0 1px rgba(240,184,85,0.15);
+  position:relative;
+  animation:slideUp 0.4s cubic-bezier(0.22,1,0.36,1);
+}
+@keyframes slideUp{
+  from{opacity:0;transform:translateY(30px) scale(0.95);}
+  to{opacity:1;transform:translateY(0) scale(1);}
+}
+.limit-card::before{
+  content:"";
+  position:absolute;
+  top:0;left:0;right:0;
+  height:4px;
+  background:linear-gradient(90deg, var(--gold), var(--teal-bright), var(--gold));
+  border-radius:24px 24px 0 0;
+}
+.limit-icon{
+  width:80px;height:80px;
+  margin:0 auto 18px;
+  background:linear-gradient(135deg, rgba(240,184,85,0.2), rgba(217,154,43,0.08));
+  border:2px solid var(--border-gold);
+  border-radius:22px;
+  display:flex;align-items:center;justify-content:center;
+  font-size:2.4rem;
+  animation:pulse 2s ease-in-out infinite;
+}
+@keyframes pulse{
+  0%,100%{box-shadow:0 0 0 0 rgba(240,184,85,0.4);}
+  50%{box-shadow:0 0 0 12px rgba(240,184,85,0);}
+}
+.limit-title{
+  font-family:'Aref Ruqaa', serif;
+  font-size:1.45rem;
+  font-weight:700;
+  color:var(--gold);
+  margin-bottom:10px;
+  letter-spacing:-0.3px;
+}
+.limit-subtitle{
+  font-size:0.9rem;
+  color:var(--text);
+  font-weight:600;
+  line-height:1.6;
+  margin-bottom:18px;
+}
+.limit-explanation{
+  background:rgba(42,138,171,0.08);
+  border:1px solid var(--border);
+  border-radius:14px;
+  padding:14px;
+  margin-bottom:18px;
+  font-size:0.84rem;
+  color:var(--text-dim);
+  line-height:1.7;
+  text-align:right;
+}
+.limit-explanation strong{color:var(--text);}
+.limit-explanation .em{color:var(--gold);font-weight:700;}
+.limit-actions{
+  display:grid;
+  grid-template-columns:1fr;
+  gap:8px;
+}
+.limit-btn{
+  padding:12px 18px;
+  border:none;
+  border-radius:12px;
+  font-family:inherit;
+  font-size:0.9rem;
+  font-weight:800;
+  cursor:pointer;
+  text-decoration:none;
+  display:flex;align-items:center;justify-content:center;gap:8px;
+  transition:all 0.2s;
+}
+.limit-btn-primary{
+  background:linear-gradient(135deg, var(--gold), var(--gold-soft));
+  color:#3d2200;
+  box-shadow:0 6px 16px rgba(240,184,85,0.3);
+}
+.limit-btn-primary:hover{transform:translateY(-2px);box-shadow:0 10px 22px rgba(240,184,85,0.45);}
+.limit-btn-secondary{
+  background:rgba(42,138,171,0.12);
+  color:var(--teal-bright);
+  border:1px solid var(--border);
+}
+.limit-btn-secondary:hover{background:rgba(42,138,171,0.2);border-color:rgba(58,168,208,0.55);color:var(--text);}
+.limit-close{
+  position:absolute;
+  top:14px;left:14px;
+  width:32px;height:32px;
+  background:rgba(255,255,255,0.06);
+  border:1px solid var(--border);
+  color:var(--text-dim);
+  border-radius:50%;
+  cursor:pointer;
+  font-size:1rem;
+  display:flex;align-items:center;justify-content:center;
+  transition:all 0.2s;
+}
+.limit-close:hover{background:rgba(255,255,255,0.12);color:var(--text);}
+
 @media (max-width:480px){
   body{padding:24px 14px 50px;}
   .title{font-size:1.65rem;}
@@ -606,6 +733,38 @@ body{
 
 </div>
 
+<!-- 🆕 Modal تنبيه تجاوز الحد -->
+<div class="limit-overlay" id="limitOverlay">
+  <div class="limit-card">
+    <button class="limit-close" onclick="closeLimitModal()">✕</button>
+    
+    <div class="limit-icon">⚠️</div>
+    
+    <h2 class="limit-title">الأداة في صيانة مؤقتة للتطوير</h2>
+    <p class="limit-subtitle">شكراً لتفاعلكم الكبير 🌹</p>
+    
+    <div class="limit-explanation">
+      ✨ ستعود الأداة للعمل تلقائياً 
+      <span class="em">قريباً جداً</span>.
+      <br><br>
+      🔄 يمكنك استخدام بقية الأدوات المجانية:
+      <br>• تحويل الصورة إلى رابط
+      <br>• تحويل الصور إلى PDF
+      <br>• توليد باركود QR
+      <br>• التوقيع الإلكتروني
+    </div>
+    
+    <div class="limit-actions">
+      <a href="index.html" class="limit-btn limit-btn-primary">
+        <span>🏠</span><span>الذهاب للأدوات الأخرى</span>
+      </a>
+      <a href="https://wa.me/966550522867?text=أحتاج+المساعدة+في+تحويل+فيديو" target="_blank" class="limit-btn limit-btn-secondary">
+        <span>💬</span><span>تواصل معنا</span>
+      </a>
+    </div>
+  </div>
+</div>
+
 <script>
 // ═══ إعدادات Cloudinary ═══
 const CLOUDINARY_CLOUD_NAME = 'dpbtsy3kz';
@@ -714,7 +873,7 @@ function showStatus(msg, type = 'loading'){
 }
 function hideStatus(){statusEl.classList.remove('show');}
 
-// رفع لـ Cloudinary
+// رفع لـ Cloudinary مع كشف ذكي للأخطاء
 function uploadCloudinary(file, onProgress){
   return new Promise((resolve, reject) => {
     const formData = new FormData();
@@ -723,7 +882,7 @@ function uploadCloudinary(file, onProgress){
     formData.append('folder', 'ksa2030/videos');
     
     const xhr = new XMLHttpRequest();
-    xhr.timeout = 300000; // 5 دقائق للفيديوهات الكبيرة
+    xhr.timeout = 300000;
     xhr.open('POST', `https://api.cloudinary.com/v1_1/${CLOUDINARY_CLOUD_NAME}/auto/upload`);
     
     xhr.upload.addEventListener('progress', (e) => {
@@ -745,12 +904,40 @@ function uploadCloudinary(file, onProgress){
           reject(new Error('فشل تحليل الرد'));
         }
       } else {
+        // ═══ كشف ذكي لأخطاء Cloudinary ═══
         try {
           const errData = JSON.parse(xhr.responseText);
-          const msg = errData.error?.message || 'HTTP ' + xhr.status;
-          reject(new Error(msg));
+          const errMsg = errData.error?.message || '';
+          const errMsgLower = errMsg.toLowerCase();
+          
+          // كشف تجاوز الحد المجاني
+          if (
+            errMsgLower.includes('bandwidth') ||
+            errMsgLower.includes('quota') ||
+            errMsgLower.includes('limit') ||
+            errMsgLower.includes('exceeded') ||
+            errMsgLower.includes('credit') ||
+            errMsgLower.includes('usage') ||
+            xhr.status === 420 ||  // Cloudinary uses 420 for quota
+            xhr.status === 429     // Too many requests
+          ) {
+            const error = new Error('CLOUDINARY_LIMIT_REACHED');
+            error.isLimitError = true;
+            error.originalMsg = errMsg;
+            reject(error);
+            return;
+          }
+          
+          reject(new Error(errMsg || 'HTTP ' + xhr.status));
         } catch(e){
-          reject(new Error('HTTP ' + xhr.status));
+          // لو ما قدرنا نقرأ الرد، لكن الـ status code يدل على مشكلة
+          if (xhr.status === 420 || xhr.status === 429 || xhr.status >= 500) {
+            const error = new Error('CLOUDINARY_LIMIT_REACHED');
+            error.isLimitError = true;
+            reject(error);
+          } else {
+            reject(new Error('HTTP ' + xhr.status));
+          }
         }
       }
     });
@@ -796,12 +983,35 @@ window.uploadVideo = async function(){
   } catch(err) {
     console.error('Upload error:', err);
     progressWrap.classList.remove('show');
-    showStatus('❌ فشل الرفع: ' + (err.message || 'حاول مرة أخرى'), 'error');
+    
+    // ═══ كشف خطأ الحد المجاني ═══
+    if (err.isLimitError || err.message === 'CLOUDINARY_LIMIT_REACHED') {
+      showLimitModal();
+    } else {
+      showStatus('❌ فشل الرفع: ' + (err.message || 'حاول مرة أخرى'), 'error');
+    }
   } finally {
     convertBtn.disabled = false;
     convertBtn.innerHTML = '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 7 16 12 23 17 23 7"/><rect x="1" y="5" width="15" height="14" rx="2" ry="2"/></svg><span>تحويل إلى رابط</span>';
   }
 };
+
+// ═══ Modal التنبيه ═══
+window.showLimitModal = function(){
+  document.getElementById('limitOverlay').classList.add('show');
+  document.body.style.overflow = 'hidden';
+};
+window.closeLimitModal = function(){
+  document.getElementById('limitOverlay').classList.remove('show');
+  document.body.style.overflow = '';
+};
+
+// إغلاق بـ ESC
+document.addEventListener('keydown', (e) => {
+  if (e.key === 'Escape' && document.getElementById('limitOverlay').classList.contains('show')) {
+    closeLimitModal();
+  }
+});
 
 window.copyUrl = async function(){
   const urlInput = document.getElementById('urlInput');
