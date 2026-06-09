@@ -1918,11 +1918,10 @@ async function saveExportToCloud(format = 'pdf') {
 
 // ═══════════════════════════════════════════════════════
 // 👁️ Preview Mode للزوار والمستخدمين المجانيين
-// (view-only: ما يقدر يكتب أو يصدّر إلا بعد الاشتراك)
+// (هادئ بدون banner أو redirect - مثل بقية الملفات)
 // ═══════════════════════════════════════════════════════
 (function setupPreviewMode(){
   let _previewEnforced = false;
-  let _bannerShown = false;
   
   function enforcePreviewMode(){
     if (_previewEnforced) return;
@@ -1930,13 +1929,10 @@ async function saveExportToCloud(format = 'pdf') {
     
     console.log('👁️ Preview Mode مفعّل (view-only)');
     
-    // 1️⃣ اقفل كل الحقول
+    // 1️⃣ اقفل كل الحقول (readonly فقط - بدون redirect)
     document.querySelectorAll('input, textarea, select').forEach(el => {
       el.setAttribute('readonly', 'true');
       el.setAttribute('data-was-readonly', '1');
-      el.addEventListener('mousedown', blockAndShow, true);
-      el.addEventListener('focus', blockAndShow, true);
-      el.addEventListener('keydown', blockAndShow, true);
       el.style.cursor = 'not-allowed';
     });
     
@@ -1944,76 +1940,30 @@ async function saveExportToCloud(format = 'pdf') {
     document.querySelectorAll('[contenteditable="true"]').forEach(el => {
       el.setAttribute('contenteditable', 'false');
       el.setAttribute('data-was-editable', '1');
-      el.addEventListener('mousedown', blockAndShow, true);
       el.style.cursor = 'not-allowed';
     });
     
-    // 3️⃣ اقفل زر "إضافة طالب"
+    // 3️⃣ اقفل زر "إضافة طالب" (مخفي بهدوء)
     document.querySelectorAll('.add-row-btn').forEach(btn => {
-      btn.addEventListener('click', blockAndShow, true);
+      btn.setAttribute('data-was-active', '1');
       btn.style.opacity = '0.5';
       btn.style.cursor = 'not-allowed';
+      btn.addEventListener('click', silentBlock, true);
     });
     
     // 4️⃣ اقفل أزرار حذف الصفوف
     document.querySelectorAll('.row-delete, .btn-delete').forEach(btn => {
-      btn.addEventListener('click', blockAndShow, true);
       btn.style.opacity = '0.5';
       btn.style.cursor = 'not-allowed';
+      btn.addEventListener('click', silentBlock, true);
     });
-    
-    // 5️⃣ اعرض شريط معاينة في الأعلى (مرة وحدة)
-    showPreviewBanner();
   }
   
-  function blockAndShow(e){
+  // منع صامت - بدون redirect أو modal
+  function silentBlock(e){
     e.preventDefault();
     e.stopPropagation();
-    
-    // اعرض modal الاشتراك (نفس بقية التقارير)
-    if (typeof window.showUpgradeModal === 'function') {
-      window.showUpgradeModal('noor');
-    } else if (typeof showToast === 'function') {
-      showToast('⚠️ هذا الكشف للمشتركين فقط · اشترك لفتح كامل الميزات');
-      setTimeout(() => {
-        window.location.href = 'pay.html?from=noor';
-      }, 2000);
-    } else {
-      window.location.href = 'pay.html?from=noor';
-    }
     return false;
-  }
-  
-  function showPreviewBanner(){
-    if (_bannerShown) return;
-    _bannerShown = true;
-    
-    const banner = document.createElement('div');
-    banner.id = '_previewBanner';
-    banner.style.cssText = `
-      position:fixed;top:0;left:0;right:0;
-      background:linear-gradient(135deg,#0b3946,#1a6a7d);
-      color:#fff;
-      padding:10px 16px;
-      font:700 0.86rem 'Tajawal',sans-serif;
-      text-align:center;
-      z-index:9998;
-      box-shadow:0 4px 14px rgba(7,38,49,0.35);
-      display:flex;align-items:center;justify-content:center;gap:8px;
-      flex-wrap:wrap;
-    `;
-    banner.innerHTML = `
-      <span>👁️ <strong>وضع المعاينة</strong> · اشترك للحصول على الكشف كاملاً</span>
-      <button onclick="window.location.href='pay.html?from=noor'" 
-              style="background:linear-gradient(135deg,#e8c547,#d4a657);color:#3d2200;
-                     border:none;padding:6px 14px;border-radius:99px;
-                     font:900 0.8rem 'Tajawal',sans-serif;cursor:pointer;
-                     box-shadow:0 4px 10px rgba(232,197,71,0.3);">
-        🔓 اشترك الآن
-      </button>
-    `;
-    document.body.appendChild(banner);
-    document.body.style.paddingTop = '50px';
   }
   
   function disablePreviewMode(){
@@ -2028,15 +1978,15 @@ async function saveExportToCloud(format = 'pdf') {
       el.removeAttribute('data-was-editable');
       el.style.cursor = '';
     });
-    document.querySelectorAll('.add-row-btn, .row-delete, .btn-delete').forEach(btn => {
+    document.querySelectorAll('[data-was-active]').forEach(btn => {
+      btn.removeAttribute('data-was-active');
       btn.style.opacity = '';
       btn.style.cursor = '';
     });
-    const banner = document.getElementById('_previewBanner');
-    if (banner) {
-      banner.remove();
-      document.body.style.paddingTop = '';
-    }
+    document.querySelectorAll('.row-delete, .btn-delete').forEach(btn => {
+      btn.style.opacity = '';
+      btn.style.cursor = '';
+    });
     _previewEnforced = false;
   }
   
@@ -2048,14 +1998,13 @@ async function saveExportToCloud(format = 'pdf') {
       return;
     }
     
-    const user = window.getFirebaseUser();
     const isLifetime = (typeof window.isFirebaseLifetime === 'function') && window.isFirebaseLifetime();
     
     if (isLifetime) {
       // ✅ مشترك → فك القيود
       disablePreviewMode();
     } else {
-      // 👁️ زائر أو فري → preview mode
+      // 👁️ زائر أو فري → preview mode (هادئ)
       enforcePreviewMode();
     }
   }
