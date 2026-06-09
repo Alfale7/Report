@@ -356,17 +356,26 @@ input:focus,textarea:focus{outline:none;}
   display:inline-block;
   padding:6px 2px;
   font-weight:800;
-  font-size:0.72rem;
+  font-size:0.7rem;
   line-height:1.2;
   unicode-bidi:plaintext;
-  /* نستخدم scale بدل rotate(180) لأنه أكثر توافقاً مع html2canvas-pro */
   transform:rotate(180deg);
 }
-.grades-table thead th:has(.vertical-text){
-  height:110px;
+
+/* الـ th الذي يحتوي vertical-text - ارتفاع كافي */
+.grades-table thead .sub-task,
+.grades-table thead .sub-sum-task,
+.grades-table thead .sub-tahriri,
+.grades-table thead .sub-final,
+.grades-table thead .sub-listening,
+.grades-table thead .col-final-exam,
+.grades-table thead .col-listening,
+.grades-table thead .group-tahriri{
+  height:120px;
   padding:4px 2px;
   vertical-align:middle;
   text-align:center;
+  min-width:36px;
 }
 
 /* عند التصدير: نخفي العمودي ونظهر بديل أفقي مؤقت */
