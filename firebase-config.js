@@ -1107,16 +1107,30 @@ export async function findUser(searchTerm) {
       });
     }
 
-    // 🆔 بحث بمعرّف العميل (أول 8 حروف من UID)
-    if (results.length === 0 && term.length >= 4 && term.length <= 10 && !term.includes('@')) {
-      const allSnap = await getDocs(query(collection(db, 'users'), limit(500)));
-      allSnap.forEach(d => {
-        if (d.id.startsWith(term)) {
-          if (!results.find(r => r.id === d.id)) {
-            results.push({ id: d.id, ...d.data() });
+    // 🆔 بحث بمعرّف العميل (UID كامل أو جزئي)
+    if (results.length === 0 && !term.includes('@') && !term.startsWith('05') && !term.startsWith('+966')) {
+      // 1) لو الـ UID كامل (28 حرف) → بحث مباشر بـ doc ID
+      if (term.length >= 20) {
+        try {
+          const userDoc = await getDoc(doc(db, 'users', term));
+          if (userDoc.exists()) {
+            results.push({ id: userDoc.id, ...userDoc.data() });
           }
+        } catch(e) {
+          console.error('UID lookup error:', e);
         }
-      });
+      }
+      // 2) لو الـ UID جزئي (4-19 حرف) → بحث بـ prefix
+      else if (term.length >= 4 && term.length <= 19) {
+        const allSnap = await getDocs(query(collection(db, 'users'), limit(500)));
+        allSnap.forEach(d => {
+          if (d.id.startsWith(term)) {
+            if (!results.find(r => r.id === d.id)) {
+              results.push({ id: d.id, ...d.data() });
+            }
+          }
+        });
+      }
     }
 
     return results;
