@@ -1215,6 +1215,7 @@
       document.getElementById('couponSummary').style.display = 'block';
       document.getElementById('couponSection').classList.add('has-discount');
       
+      // 🎉 رسالة النجاح أولاً
       msgEl.textContent = `✅ تم تطبيق الكود! وفّرت ${discountAmount} ريال`;
       msgEl.className = 'coupon-message success';
       
@@ -1222,11 +1223,17 @@
       document.getElementById('couponInput').disabled = true;
       btn.style.display = 'none';
       
-      // أعد تهيئة Moyasar بالسعر الجديد
-      initMoyasar();
+      // أعد تهيئة Moyasar بالسعر الجديد (لا نرمي exception منها)
+      try {
+        initMoyasar();
+      } catch(moyasarErr) {
+        console.warn('Moyasar reinit warning:', moyasarErr);
+        // ما نظهر خطأ للمستخدم - الخصم اتطبّق صح
+      }
     } catch(e) {
+      // ❌ خطأ فقط لو فشل validateCoupon
       console.error('applyCoupon error:', e);
-      msgEl.textContent = '❌ حدث خطأ، حاول مرة أخرى';
+      msgEl.textContent = '❌ حدث خطأ في التحقق من الكود';
       msgEl.className = 'coupon-message error';
     } finally {
       btn.disabled = false;
