@@ -358,6 +358,8 @@ input:focus,textarea:focus{outline:none;}
   font-weight:800;
   font-size:0.72rem;
   line-height:1.2;
+  unicode-bidi:plaintext;
+  /* نستخدم scale بدل rotate(180) لأنه أكثر توافقاً مع html2canvas-pro */
   transform:rotate(180deg);
 }
 .grades-table thead th:has(.vertical-text){
@@ -366,6 +368,23 @@ input:focus,textarea:focus{outline:none;}
   vertical-align:middle;
   text-align:center;
 }
+
+/* عند التصدير: نخفي العمودي ونظهر بديل أفقي مؤقت */
+.exporting .vertical-text{display:none !important;}
+.exporting .vertical-text-export{
+  display:inline-block !important;
+  writing-mode:horizontal-tb;
+  transform:none;
+  font-weight:800;
+  font-size:0.65rem;
+  line-height:1.15;
+  padding:4px 2px;
+  text-align:center;
+  white-space:normal;
+  word-wrap:break-word;
+  width:100%;
+}
+.vertical-text-export{display:none;}
 .grades-table thead .col-num{width:34px; background:#fff;}
 .grades-table thead .col-name{width:auto; min-width:160px; background:#fff;}
 /* رؤوس "الفترة الأولى" و "الفترة الثانية" - رمادي خفيف */
@@ -981,6 +1000,9 @@ input:focus,textarea:focus{outline:none;}
 <script type="module" src="report-firebase.js?v=23"></script>
 </head>
 <body>
+
+<!-- 🔥 Firebase + الحمايات -->
+<script type="module" src="report-firebase.js?v=17"></script>
 
 <div id="page">
 
@@ -1618,18 +1640,34 @@ function closeExportMenu(){
 function prepareForExport(){
   document.body.classList.add('exporting');
   const restores = [];
-  // لف نصوص الترويسة والرؤوس بـ spans لكل كلمة
-  document.querySelectorAll('.l1, .info-strip .title, .info-strip .lab, .sig-cell .lab, .grades-table thead th').forEach(el => {
-    if(el.children.length > 0 && !el.querySelector('.sub-degree')) return;
-    const subDegree = el.querySelector('.sub-degree');
-    const subText = subDegree ? subDegree.outerHTML : '';
-    const mainText = el.textContent.replace(subDegree ? subDegree.textContent : '', '').trim();
-    if(!mainText) return;
+  
+  // 🆕 معالجة خاصة للنصوص العمودية: نستبدلها بنصوص أفقية مؤقتة
+  // (html2canvas-pro لا يدعم writing-mode + rotate(180) بشكل موثوق)
+  document.querySelectorAll('.vertical-text').forEach(el => {
+    const text = el.textContent.trim();
+    const parentTh = el.parentElement;
+    if(!parentTh) return;
+    const original = parentTh.innerHTML;
+    restores.push({ el:parentTh, original });
+    // أنشئ بديل أفقي - النص يلتف لعدة أسطر إذا لزم
+    const words = text.split(/\s+/);
+    // إذا كان النص طويل (أكثر من كلمة)، اعرضه عمودياً بسطر لكل كلمة
+    const verticalHTML = words.map(w =>
+      `<div style="display:block;line-height:1.15;">${w}</div>`
+    ).join('');
+    parentTh.innerHTML = `<div class="vertical-text-export" style="display:inline-block;font-weight:800;font-size:0.62rem;line-height:1.15;padding:4px 2px;text-align:center;writing-mode:horizontal-tb;transform:none;">${verticalHTML}</div>`;
+  });
+
+  // لف نصوص الترويسة والرؤوس بـ spans لكل كلمة (للترويسة الرئيسية فقط، مش الجدول)
+  document.querySelectorAll('.l1, .info-strip .title, .info-strip .lab, .sig-cell .lab').forEach(el => {
+    if(el.children.length > 0) return;
     const original = el.innerHTML;
+    const text = el.textContent.trim();
+    if(!text) return;
     restores.push({ el, original });
-    el.innerHTML = mainText.split(/\s+/).map(w =>
+    el.innerHTML = text.split(/\s+/).map(w =>
       `<span style="display:inline-block;white-space:nowrap;">${w}</span>`
-    ).join(' ') + subText;
+    ).join(' ');
   });
 
   // حول قيم الـ inputs لـ spans
@@ -2022,7 +2060,7 @@ async function saveToMyProfile() {
       showToast('⚠️ سجّل دخولك أولاً لحفظ الكشف في حسابك');
     }
     setTimeout(() => {
-      window.location.href = 'login.html?next=noor2.html';
+      window.location.href = 'login.html?next=noor.html';
     }, 1500);
     return;
   }
@@ -2131,8 +2169,8 @@ async function saveExportToCloud(format = 'pdf') {
     
     // 5️⃣ إرسال
     const result = await window.trackExport({
-      type: 'noor2',
-      title: 'سجل درجات اللغة الإنجليزية (نور)',
+      type: 'noor',
+      title: 'كشف رصد درجات (نور)',
       format: format,
       content: content
     });
