@@ -441,18 +441,38 @@ body{
   color:var(--text);
 }
 
-/* ═══ Info ═══ */
-.info-note{
-  margin-top:12px;
-  padding:12px 14px;
-  background:rgba(240,184,85,0.05);
-  border:1px solid var(--border-gold);
-  border-radius:12px;
-  font-size:0.76rem;
-  color:var(--text-dim);
-  line-height:1.7;
+/* ═══ Footer ═══ */
+.footer{
+  margin-top:32px;
+  text-align:center;
+  font-size:0.78rem;
+  color:var(--text-faint);
 }
-.info-note strong{color:var(--gold);}
+.footer .feats{
+  display:flex;
+  justify-content:center;
+  gap:16px;
+  margin-bottom:12px;
+  flex-wrap:wrap;
+}
+.footer .feat{
+  display:flex;
+  align-items:center;
+  gap:5px;
+  color:var(--text-dim);
+  font-weight:600;
+}
+.footer a{
+  color:var(--teal-bright);
+  text-decoration:none;
+  font-weight:700;
+  transition:color 0.2s;
+}
+.footer a:hover{color:var(--gold);}
+
+@media (max-width:400px){
+  .footer .feats{gap:10px;}
+}
 
 /* ═══ Spinner ═══ */
 .spinner{
@@ -598,10 +618,13 @@ body{
     </div>
   </div>
 
-  <!-- معلومة -->
-  <div class="info-note">
-    <strong>💡 ملاحظة:</strong> الصورة تُرفع على خدمة <strong>ImgBB</strong> الآمنة. 
-    الروابط دائمة افتراضياً، أو يمكنك اختيار صلاحية محددة.
+  <div class="footer">
+    <div class="feats">
+      <span class="feat">⚡ فوري</span>
+      <span class="feat">🔒 آمن</span>
+      <span class="feat">📤 مشاركة سهلة</span>
+    </div>
+    <a href="index.html">← العودة للرئيسية</a>
   </div>
 
 </div>
