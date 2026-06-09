@@ -4180,6 +4180,29 @@ window.saveCoupon = async function() {
     const expiryVal = document.getElementById('cpInputExpiry').value;
     const desc = document.getElementById('cpInputDesc').value.trim();
     
+    // 🐛 Debug: اطبع الحقول في console
+    console.log('🎟️ Creating coupon:', { code, percent, maxUses, expiryVal, desc });
+    
+    // Validation محلّي قبل الإرسال
+    if (!code) {
+      alert('❌ الكود مطلوب');
+      saveBtn.disabled = false;
+      saveBtn.innerHTML = '<span>💾</span><span>إنشاء الكود</span>';
+      return;
+    }
+    if (!/^[A-Z0-9_-]{3,20}$/.test(code)) {
+      alert('❌ الكود يجب أن يحتوي أحرف إنجليزية كبيرة وأرقام فقط (3-20 حرف)\n\nمثال: TEST20, EID2030');
+      saveBtn.disabled = false;
+      saveBtn.innerHTML = '<span>💾</span><span>إنشاء الكود</span>';
+      return;
+    }
+    if (percent < 1 || percent > 100) {
+      alert('❌ نسبة الخصم يجب أن تكون بين 1-100');
+      saveBtn.disabled = false;
+      saveBtn.innerHTML = '<span>💾</span><span>إنشاء الكود</span>';
+      return;
+    }
+    
     const couponData = {
       code: code,
       discountPercent: percent,
@@ -4188,18 +4211,32 @@ window.saveCoupon = async function() {
       description: desc
     };
     
+    console.log('📤 Sending to Firebase...');
     const result = await createCoupon(couponData);
+    console.log('📥 Firebase result:', result);
     
     if (result.success) {
-      showToast(`✅ تم إنشاء الكود ${result.code} بنجاح`, 'success');
+      // showToast أو alert كـ fallback
+      try {
+        showToast(`✅ تم إنشاء الكود ${result.code} بنجاح`, 'success');
+      } catch(e) {
+        alert(`✅ تم إنشاء الكود ${result.code} بنجاح`);
+      }
       closeCouponModal();
       loadCoupons();
     } else {
-      showToast('❌ ' + (result.error || 'فشل الإنشاء'), 'error');
+      const errMsg = '❌ فشل الإنشاء: ' + (result.error || 'سبب غير معروف');
+      try {
+        showToast(errMsg, 'error');
+      } catch(e) {
+        alert(errMsg);
+      }
+      // اطبع تفاصيل الخطأ في console
+      console.error('Coupon creation failed:', result);
     }
   } catch(e) {
-    console.error(e);
-    showToast('❌ خطأ: ' + e.message, 'error');
+    console.error('saveCoupon exception:', e);
+    alert('❌ خطأ تقني: ' + (e.message || 'غير معروف') + '\n\nتحقق من Console (F12) للتفاصيل');
   } finally {
     saveBtn.disabled = false;
     saveBtn.innerHTML = '<span>💾</span><span>إنشاء الكود</span>';
