@@ -1,0 +1,756 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#050a12">
+<title>تحويل الصورة إلى رابط · التقارير الذكية</title>
+
+<link rel="icon" type="image/svg+xml" href="favicon.svg">
+<link rel="icon" type="image/png" sizes="48x48" href="favicon-48x48.png">
+<link rel="icon" type="image/png" sizes="32x32" href="favicon-32x32.png">
+<link rel="apple-touch-icon" sizes="180x180" href="apple-touch-icon.png">
+
+<link href="https://fonts.googleapis.com/css2?family=Aref+Ruqaa:wght@400;700&family=Reem+Kufi:wght@500;700;900&family=Tajawal:wght@400;500;700;900&display=swap" rel="stylesheet">
+
+<style>
+:root{
+  --navy:#050a12;
+  --navy-2:#0a1620;
+  --navy-3:#0f1f2e;
+  --surface:#0d1925;
+  --surface-2:#12202f;
+  --teal:#2a8aab;
+  --teal-bright:#3aa8d0;
+  --teal-deep:#1e6b8a;
+  --gold:#f0b855;
+  --gold-soft:#d99a2b;
+  --red:#d44545;
+  --red-soft:#c83838;
+  --text:#eef4f8;
+  --text-dim:#7d94a8;
+  --text-faint:#4a5d70;
+  --border:rgba(42,138,171,0.18);
+  --border-gold:rgba(240,184,85,0.25);
+  --green:#16a34a;
+}
+
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+body{
+  font-family:'Tajawal','Tahoma',sans-serif;
+  background:var(--navy);
+  color:var(--text);
+  min-height:100vh;
+  display:flex;flex-direction:column;align-items:center;
+  padding:32px 18px 70px;
+  position:relative;overflow-x:hidden;
+}
+
+/* ═══ الخلفية المميزة ═══ */
+.bg-fx{position:fixed;inset:0;z-index:0;pointer-events:none;overflow:hidden;}
+.bg-fx::before{
+  content:"";position:absolute;top:-15%;right:-10%;
+  width:500px;height:500px;
+  background:radial-gradient(circle, rgba(240,184,85,0.18) 0%, transparent 65%);
+  border-radius:50%;
+}
+.bg-fx::after{
+  content:"";position:absolute;bottom:-15%;left:-10%;
+  width:500px;height:500px;
+  background:radial-gradient(circle, rgba(42,138,171,0.15) 0%, transparent 65%);
+  border-radius:50%;
+}
+.bg-grid{
+  position:fixed;inset:0;z-index:0;pointer-events:none;
+  background-image:
+    linear-gradient(rgba(42,138,171,0.04) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(42,138,171,0.04) 1px, transparent 1px);
+  background-size:38px 38px;
+}
+.wrap{position:relative;z-index:1;width:100%;max-width:520px;}
+
+/* ═══ Back Link ═══ */
+.back-link{
+  display:inline-flex;align-items:center;gap:7px;
+  padding:8px 14px;
+  background:rgba(42,138,171,0.08);
+  border:1px solid var(--border);
+  color:var(--text-dim);
+  border-radius:99px;
+  font-family:inherit;
+  font-size:0.78rem;font-weight:700;
+  text-decoration:none;
+  transition:background 0.2s, border-color 0.2s, color 0.2s;
+  margin-bottom:24px;
+}
+.back-link:hover{
+  background:rgba(42,138,171,0.15);
+  border-color:rgba(42,138,171,0.4);
+  color:var(--text);
+}
+.back-link svg{transition:transform 0.25s cubic-bezier(0.4,0,0.2,1);}
+.back-link:hover svg{transform:translateX(3px);}
+
+/* ═══ Header ═══ */
+.header{text-align:center;margin-bottom:26px;}
+.brand-top{
+  display:inline-flex;align-items:center;gap:6px;
+  font-size:0.72rem;font-weight:700;color:var(--text-dim);
+  letter-spacing:0.5px;
+  background:rgba(42,138,171,0.08);
+  border:1px solid var(--border);
+  padding:6px 14px;border-radius:99px;
+  margin-bottom:18px;
+}
+.logo-mark{
+  width:74px;height:74px;margin:0 auto 14px;
+  position:relative;display:flex;align-items:center;justify-content:center;
+}
+.logo-mark .ring{
+  position:absolute;inset:0;
+  border:2px solid var(--gold);
+  border-radius:18px;
+  transform:rotate(45deg);
+  box-shadow:0 0 25px rgba(240,184,85,0.4);
+}
+.logo-mark .inner{
+  position:relative;z-index:1;
+  width:54px;height:54px;
+  background:linear-gradient(135deg, var(--gold), var(--gold-soft));
+  border-radius:14px;
+  display:flex;align-items:center;justify-content:center;
+  color:#fff;
+  box-shadow:inset 0 0 0 1px rgba(255,255,255,0.18);
+}
+.title{
+  font-family:'Aref Ruqaa', serif;
+  font-size:1.95rem;
+  font-weight:700;
+  color:var(--text);
+  margin-bottom:8px;
+  letter-spacing:-0.5px;
+}
+.subtitle{
+  font-size:0.88rem;
+  color:var(--text-dim);
+  font-weight:500;
+  line-height:1.6;
+  max-width:380px;
+  margin:0 auto;
+}
+
+/* ═══ Card ═══ */
+.card{
+  background:var(--surface);
+  border:1px solid var(--border);
+  border-radius:20px;
+  padding:22px 18px;
+  margin-bottom:14px;
+  box-shadow:0 24px 50px rgba(0,0,0,0.4), 0 0 0 1px rgba(42,138,171,0.05);
+  position:relative;
+}
+.card-title{
+  font-family:'Reem Kufi','Tajawal',sans-serif;
+  font-size:0.95rem;
+  font-weight:800;
+  color:var(--gold);
+  margin-bottom:14px;
+  display:flex;align-items:center;gap:8px;
+}
+
+/* ═══ Upload Zone ═══ */
+.upload-zone{
+  border:2px dashed rgba(42,138,171,0.35);
+  border-radius:16px;
+  padding:32px 20px;
+  text-align:center;
+  cursor:pointer;
+  transition:background 0.2s, border-color 0.2s;
+  background:rgba(42,138,171,0.04);
+}
+.upload-zone:hover,.upload-zone.dragover{
+  background:rgba(42,138,171,0.08);
+  border-color:rgba(58,168,208,0.55);
+}
+.upload-zone.dragover{border-style:solid;}
+.upload-icon{
+  width:64px;height:64px;
+  margin:0 auto 12px;
+  border-radius:50%;
+  background:linear-gradient(135deg, rgba(58,168,208,0.22), rgba(42,138,171,0.12));
+  border:1px solid rgba(58,168,208,0.35);
+  display:flex;align-items:center;justify-content:center;
+  color:var(--teal-bright);
+}
+.upload-title{
+  font-family:'Reem Kufi','Tajawal',sans-serif;
+  font-size:1.02rem;font-weight:700;
+  color:var(--text);
+  margin-bottom:6px;
+}
+.upload-sub{
+  font-size:0.8rem;
+  color:var(--text-dim);
+  font-weight:500;
+  margin-bottom:14px;
+}
+.upload-btn{
+  display:inline-flex;align-items:center;gap:8px;
+  padding:11px 22px;
+  background:linear-gradient(135deg, rgba(58,168,208,0.25), rgba(42,138,171,0.15));
+  border:1px solid rgba(58,168,208,0.4);
+  color:var(--teal-bright);
+  border-radius:12px;
+  font-family:inherit;font-size:0.86rem;font-weight:700;
+  cursor:pointer;
+  transition:all 0.2s;
+}
+.upload-btn:hover{
+  background:linear-gradient(135deg, rgba(58,168,208,0.35), rgba(42,138,171,0.2));
+  border-color:rgba(58,168,208,0.55);
+  color:var(--text);
+  transform:translateY(-1px);
+}
+
+/* ═══ Preview ═══ */
+.preview-wrap{
+  position:relative;
+  border-radius:14px;
+  overflow:hidden;
+  background:#000;
+  max-height:280px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+}
+.preview-img{
+  width:100%;
+  max-height:280px;
+  object-fit:contain;
+  display:block;
+}
+.preview-remove{
+  position:absolute;
+  top:10px;left:10px;
+  width:34px;height:34px;
+  background:rgba(220,68,68,0.92);
+  color:#fff;
+  border:1px solid rgba(255,255,255,0.2);
+  border-radius:50%;
+  cursor:pointer;
+  font-size:1.15rem;
+  font-weight:900;
+  display:flex;align-items:center;justify-content:center;
+  transition:all 0.2s;
+}
+.preview-remove:hover{transform:scale(1.08);background:var(--red);}
+.preview-info{
+  position:absolute;
+  bottom:0;left:0;right:0;
+  background:linear-gradient(transparent, rgba(0,0,0,0.85));
+  color:#fff;
+  padding:24px 14px 12px;
+  font-size:0.82rem;
+  font-weight:700;
+  text-align:center;
+}
+
+/* ═══ Setting Row ═══ */
+.setting-row{margin-bottom:14px;}
+.setting-row:last-child{margin-bottom:0;}
+.setting-label{
+  display:block;
+  font-size:0.82rem;
+  font-weight:700;
+  color:var(--text-dim);
+  margin-bottom:8px;
+}
+.setting-select{
+  width:100%;
+  padding:11px 14px;
+  background:var(--surface-2);
+  border:1px solid var(--border);
+  border-radius:12px;
+  color:var(--text);
+  font-family:inherit;
+  font-size:0.88rem;
+  font-weight:600;
+  cursor:pointer;
+  transition:all 0.2s;
+}
+.setting-select:focus{
+  outline:none;
+  border-color:rgba(58,168,208,0.55);
+  background:var(--navy-3);
+}
+
+/* ═══ Convert Button ═══ */
+.convert-btn{
+  width:100%;
+  padding:14px;
+  background:linear-gradient(135deg, var(--gold), var(--gold-soft));
+  color:#3d2200;
+  border:none;
+  border-radius:14px;
+  font-family:'Reem Kufi','Tajawal',sans-serif;
+  font-size:1rem;
+  font-weight:900;
+  cursor:pointer;
+  display:flex;align-items:center;justify-content:center;gap:8px;
+  box-shadow:0 8px 22px rgba(240,184,85,0.35);
+  transition:all 0.25s;
+}
+.convert-btn:hover:not(:disabled){
+  transform:translateY(-2px);
+  box-shadow:0 12px 28px rgba(240,184,85,0.5);
+}
+.convert-btn:disabled{
+  opacity:0.5;
+  cursor:not-allowed;
+  transform:none;
+  box-shadow:none;
+}
+
+/* ═══ Status ═══ */
+.status{
+  margin-top:12px;
+  padding:12px 14px;
+  border-radius:12px;
+  text-align:center;
+  font-weight:700;
+  font-size:0.86rem;
+  display:none;
+}
+.status.show{display:flex;align-items:center;justify-content:center;gap:8px;}
+.status.loading{
+  background:rgba(42,138,171,0.15);
+  color:var(--teal-bright);
+  border:1px solid var(--border);
+}
+.status.error{
+  background:rgba(212,69,69,0.12);
+  color:#fca5a5;
+  border:1px solid rgba(212,69,69,0.3);
+}
+
+/* ═══ Result Card ═══ */
+.result-card{
+  background:linear-gradient(180deg, rgba(22,163,74,0.08), rgba(21,128,61,0.02));
+  border:1px solid rgba(22,163,74,0.35);
+  border-radius:20px;
+  padding:22px 18px;
+  margin-top:14px;
+  display:none;
+  position:relative;
+}
+.result-card.show{display:block;}
+.result-card::before{
+  content:"";
+  position:absolute;
+  top:0;left:0;right:0;
+  height:3px;
+  background:linear-gradient(90deg, transparent, var(--green), transparent);
+  border-radius:20px 20px 0 0;
+}
+.result-head{
+  display:flex;align-items:center;gap:12px;
+  margin-bottom:14px;
+}
+.result-icon{
+  width:44px;height:44px;
+  background:linear-gradient(135deg, var(--green), #15803d);
+  border-radius:12px;
+  display:flex;align-items:center;justify-content:center;
+  color:#fff;
+  flex-shrink:0;
+  box-shadow:0 6px 14px rgba(22,163,74,0.4);
+}
+.result-title{
+  font-family:'Reem Kufi','Tajawal',sans-serif;
+  font-size:0.98rem;
+  font-weight:800;
+  color:#86efac;
+  margin-bottom:2px;
+}
+.result-sub{
+  font-size:0.76rem;
+  color:var(--text-dim);
+  font-weight:500;
+}
+
+.url-box{
+  display:flex;
+  background:var(--navy);
+  border:1px solid var(--border);
+  border-radius:12px;
+  overflow:hidden;
+  margin-bottom:10px;
+}
+.url-input{
+  flex:1;
+  padding:12px 14px;
+  background:transparent;
+  border:none;
+  color:var(--text);
+  font:600 0.8rem 'Courier New',monospace;
+  direction:ltr;
+  outline:none;
+  min-width:0;
+}
+.copy-btn{
+  padding:12px 18px;
+  background:linear-gradient(135deg, var(--gold), var(--gold-soft));
+  color:#3d2200;
+  border:none;
+  cursor:pointer;
+  font-family:inherit;
+  font-size:0.84rem;
+  font-weight:900;
+  white-space:nowrap;
+  transition:all 0.2s;
+}
+.copy-btn:hover{filter:brightness(1.1);}
+.copy-btn.copied{
+  background:linear-gradient(135deg, var(--green), #15803d);
+  color:#fff;
+}
+
+.result-actions{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:8px;
+}
+.result-btn{
+  padding:10px;
+  background:rgba(42,138,171,0.1);
+  color:var(--teal-bright);
+  border:1px solid var(--border);
+  border-radius:10px;
+  font-family:inherit;
+  font-size:0.82rem;
+  font-weight:700;
+  cursor:pointer;
+  text-align:center;
+  text-decoration:none;
+  display:flex;align-items:center;justify-content:center;gap:6px;
+  transition:all 0.2s;
+}
+.result-btn:hover{
+  background:rgba(42,138,171,0.2);
+  border-color:rgba(58,168,208,0.55);
+  color:var(--text);
+}
+
+/* ═══ Info ═══ */
+.info-note{
+  margin-top:12px;
+  padding:12px 14px;
+  background:rgba(240,184,85,0.05);
+  border:1px solid var(--border-gold);
+  border-radius:12px;
+  font-size:0.76rem;
+  color:var(--text-dim);
+  line-height:1.7;
+}
+.info-note strong{color:var(--gold);}
+
+/* ═══ Spinner ═══ */
+.spinner{
+  display:inline-block;
+  width:14px;height:14px;
+  border:2.5px solid rgba(255,255,255,0.25);
+  border-top-color:currentColor;
+  border-radius:50%;
+  animation:spin 0.7s linear infinite;
+}
+@keyframes spin{to{transform:rotate(360deg);}}
+
+@media (max-width:480px){
+  body{padding:24px 14px 50px;}
+  .title{font-size:1.65rem;}
+  .subtitle{font-size:0.82rem;}
+  .card{padding:18px 14px;border-radius:18px;}
+  .upload-zone{padding:26px 14px;}
+  .upload-icon{width:54px;height:54px;}
+  .logo-mark{width:64px;height:64px;}
+  .logo-mark .inner{width:46px;height:46px;}
+}
+</style>
+</head>
+<body>
+
+<div class="bg-fx"></div>
+<div class="bg-grid"></div>
+
+<div class="wrap">
+
+  <a href="index.html" class="back-link">
+    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+      <line x1="19" y1="12" x2="5" y2="12"/>
+      <polyline points="12 19 5 12 12 5"/>
+    </svg>
+    <span>القائمة</span>
+  </a>
+
+  <div class="header">
+    <div class="brand-top">
+      <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+        <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/>
+      </svg>
+      <span>أدوات احترافية</span>
+    </div>
+    <div class="logo-mark">
+      <div class="ring"></div>
+      <div class="inner">
+        <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/>
+          <path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/>
+        </svg>
+      </div>
+    </div>
+    <h1 class="title">تحويل الصورة إلى رابط</h1>
+    <p class="subtitle">ارفع صورة واحصل على رابط قابل للمشاركة فوراً مع خيار صلاحية مرن</p>
+  </div>
+
+  <!-- بطاقة الرفع -->
+  <div class="card">
+    <div class="card-title">📤 رفع الصورة</div>
+    <div class="upload-zone" id="uploadZone" onclick="if(!hasImage)document.getElementById('fileInput').click()">
+      <input type="file" id="fileInput" accept="image/*" style="display:none">
+      
+      <div id="uploadInitial">
+        <div class="upload-icon">
+          <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+            <polyline points="17 8 12 3 7 8"/>
+            <line x1="12" y1="3" x2="12" y2="15"/>
+          </svg>
+        </div>
+        <div class="upload-title">اسحب الصورة هنا أو اختر من جهازك</div>
+        <div class="upload-sub">يدعم JPG · PNG · WebP · GIF · حتى 32 ميجا</div>
+        <button class="upload-btn" type="button" onclick="event.stopPropagation();document.getElementById('fileInput').click()">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M12 5v14M5 12h14"/>
+          </svg>
+          <span>اختيار الصورة</span>
+        </button>
+      </div>
+      
+      <div class="preview-wrap" id="previewWrap" style="display:none;">
+        <button class="preview-remove" onclick="removeImage(event)" title="إزالة">✕</button>
+        <img class="preview-img" id="previewImg" alt="Preview">
+        <div class="preview-info" id="previewInfo"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- بطاقة الإعدادات -->
+  <div class="card" id="settingsCard" style="display:none;">
+    <div class="card-title">⚙️ الإعدادات</div>
+    
+    <div class="setting-row">
+      <label class="setting-label">⏰ صلاحية الرابط</label>
+      <select class="setting-select" id="expirySelect">
+        <option value="0">للأبد (افتراضي)</option>
+        <option value="86400">24 ساعة</option>
+        <option value="604800">أسبوع</option>
+        <option value="2592000">شهر</option>
+      </select>
+    </div>
+    
+    <button class="convert-btn" id="convertBtn" onclick="uploadImage()" style="margin-top:8px;">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/>
+        <path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/>
+      </svg>
+      <span>تحويل إلى رابط</span>
+    </button>
+    
+    <div class="status" id="status"></div>
+  </div>
+
+  <!-- نتيجة -->
+  <div class="result-card" id="resultCard">
+    <div class="result-head">
+      <div class="result-icon">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+          <polyline points="20 6 9 17 4 12"/>
+        </svg>
+      </div>
+      <div>
+        <div class="result-title">تم التحويل بنجاح!</div>
+        <div class="result-sub">انسخ الرابط وشاركه مع من تريد</div>
+      </div>
+    </div>
+    
+    <div class="url-box">
+      <input type="text" class="url-input" id="urlInput" readonly>
+      <button class="copy-btn" id="copyBtn" onclick="copyUrl()">📋 نسخ</button>
+    </div>
+    
+    <div class="result-actions">
+      <a class="result-btn" id="openLink" href="#" target="_blank">
+        <span>🔗</span><span>فتح الرابط</span>
+      </a>
+      <a class="result-btn" id="qrLink" href="#">
+        <span>📱</span><span>إنشاء QR</span>
+      </a>
+    </div>
+  </div>
+
+  <!-- معلومة -->
+  <div class="info-note">
+    <strong>💡 ملاحظة:</strong> الصورة تُرفع على خدمة <strong>ImgBB</strong> الآمنة. 
+    الروابط دائمة افتراضياً، أو يمكنك اختيار صلاحية محددة.
+  </div>
+
+</div>
+
+<script>
+const IMGBB_API_KEY = '5ed2279682923813bedc03db8ada58c8';
+
+let selectedFile = null;
+let hasImage = false;
+
+const uploadZone = document.getElementById('uploadZone');
+const fileInput = document.getElementById('fileInput');
+const uploadInitial = document.getElementById('uploadInitial');
+const previewWrap = document.getElementById('previewWrap');
+const previewImg = document.getElementById('previewImg');
+const previewInfo = document.getElementById('previewInfo');
+const settingsCard = document.getElementById('settingsCard');
+const convertBtn = document.getElementById('convertBtn');
+const statusEl = document.getElementById('status');
+const resultCard = document.getElementById('resultCard');
+
+// Drag & Drop
+uploadZone.addEventListener('dragover', (e) => {
+  e.preventDefault();
+  if (!hasImage) uploadZone.classList.add('dragover');
+});
+uploadZone.addEventListener('dragleave', () => uploadZone.classList.remove('dragover'));
+uploadZone.addEventListener('drop', (e) => {
+  e.preventDefault();
+  uploadZone.classList.remove('dragover');
+  if (!hasImage && e.dataTransfer.files.length > 0) {
+    handleFile(e.dataTransfer.files[0]);
+  }
+});
+
+fileInput.addEventListener('change', (e) => {
+  if (e.target.files.length > 0) handleFile(e.target.files[0]);
+});
+
+function handleFile(file){
+  if (!file.type.startsWith('image/')) {
+    showStatus('❌ يرجى اختيار ملف صورة فقط', 'error');
+    return;
+  }
+  if (file.size > 32 * 1024 * 1024) {
+    showStatus('❌ حجم الصورة كبير جداً (الحد الأقصى 32MB)', 'error');
+    return;
+  }
+  
+  selectedFile = file;
+  hasImage = true;
+  
+  const reader = new FileReader();
+  reader.onload = (e) => {
+    previewImg.src = e.target.result;
+    previewInfo.textContent = `${file.name} · ${(file.size / 1024).toFixed(0)} KB`;
+    uploadInitial.style.display = 'none';
+    previewWrap.style.display = 'flex';
+    settingsCard.style.display = 'block';
+    resultCard.classList.remove('show');
+    hideStatus();
+    
+    setTimeout(() => {
+      settingsCard.scrollIntoView({behavior:'smooth', block:'nearest'});
+    }, 100);
+  };
+  reader.readAsDataURL(file);
+}
+
+window.removeImage = function(event){
+  event.stopPropagation();
+  selectedFile = null;
+  hasImage = false;
+  previewImg.src = '';
+  fileInput.value = '';
+  uploadInitial.style.display = 'block';
+  previewWrap.style.display = 'none';
+  settingsCard.style.display = 'none';
+  resultCard.classList.remove('show');
+  hideStatus();
+};
+
+function showStatus(msg, type = 'loading'){
+  statusEl.innerHTML = type === 'loading' 
+    ? `<span class="spinner"></span><span>${msg}</span>` 
+    : msg;
+  statusEl.className = `status show ${type}`;
+}
+function hideStatus(){statusEl.classList.remove('show');}
+
+window.uploadImage = async function(){
+  if (!selectedFile) return;
+  
+  convertBtn.disabled = true;
+  showStatus('جاري رفع الصورة...', 'loading');
+  resultCard.classList.remove('show');
+  
+  try {
+    const formData = new FormData();
+    formData.append('image', selectedFile);
+    
+    const expiry = document.getElementById('expirySelect').value;
+    let url = 'https://api.imgbb.com/1/upload?key=' + IMGBB_API_KEY;
+    if (expiry && expiry !== '0') url += '&expiration=' + expiry;
+    
+    const response = await fetch(url, {method:'POST', body:formData});
+    const data = await response.json();
+    
+    if (!data.success) throw new Error(data.error?.message || 'فشل الرفع');
+    
+    const imageUrl = data.data.url;
+    document.getElementById('urlInput').value = imageUrl;
+    document.getElementById('openLink').href = imageUrl;
+    document.getElementById('qrLink').href = 'link-qr.html?url=' + encodeURIComponent(imageUrl);
+    
+    hideStatus();
+    resultCard.classList.add('show');
+    
+    setTimeout(() => {
+      resultCard.scrollIntoView({behavior:'smooth', block:'nearest'});
+    }, 100);
+    
+  } catch(err) {
+    console.error('Upload error:', err);
+    showStatus('❌ فشل الرفع: ' + (err.message || 'حاول مرة أخرى'), 'error');
+  } finally {
+    convertBtn.disabled = false;
+  }
+};
+
+window.copyUrl = async function(){
+  const urlInput = document.getElementById('urlInput');
+  const copyBtn = document.getElementById('copyBtn');
+  
+  try {
+    await navigator.clipboard.writeText(urlInput.value);
+  } catch(e) {
+    urlInput.select();
+    document.execCommand('copy');
+  }
+  
+  copyBtn.classList.add('copied');
+  copyBtn.innerHTML = '✓ تم النسخ';
+  setTimeout(() => {
+    copyBtn.classList.remove('copied');
+    copyBtn.innerHTML = '📋 نسخ';
+  }, 2000);
+};
+</script>
+
+</body>
+</html>
