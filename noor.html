@@ -12,7 +12,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;800;900&family=Reem+Kufi:wght@400;500;600;700&display=swap" rel="stylesheet">
 
-<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/html2canvas-pro@1.5.8/dist/html2canvas-pro.min.js"></script>
 
 <style>
 :root{
@@ -389,15 +389,20 @@ input:focus,textarea:focus{outline:none;}
   background:transparent;
   padding:6px 10px;
   font-size:0.84rem;
-  font-family:inherit;
+  font-family:'Tajawal',Tahoma,Arial,sans-serif;
   color:var(--ink);
   outline:none;
   font-weight:500;
   text-align:right;
   resize:none;
   overflow:hidden;
-  line-height:1.4;
+  line-height:1.5;
   display:block;
+  direction:rtl;
+  unicode-bidi:plaintext;
+  word-spacing:normal;
+  letter-spacing:normal;
+  text-rendering:optimizeLegibility;
 }
 .grades-table td.cell-name textarea::placeholder{color:#bbb; font-weight:400;}
 
@@ -1491,26 +1496,38 @@ function prepareForExport(){
     tempNodes.push({ inp, span });
   });
   // textarea (للأسماء) - يدعم التفاف النص لعدة أسطر
+  // 🆕 نستخدم عرض الخلية الأم بدلاً من عرض الـ textarea نفسه
+  // لأن عرض الـ textarea ينضغط مع forceExportWidth
   document.querySelectorAll('textarea').forEach(ta => {
     if(!ta.value) return;
+    const parentCell = ta.closest('td');
     const div = document.createElement('div');
-    div.className = '__export-tmp';
+    div.className = '__export-tmp arabic-name-export';
+    div.textContent = ta.value;
+    // ضع نفس padding مثل الـ textarea
     const cs = getComputedStyle(ta);
     div.style.cssText = `
-      width:${ta.offsetWidth}px; min-height:${ta.offsetHeight}px;
-      font-size:${cs.fontSize}; font-weight:${cs.fontWeight};
-      color:${cs.color}; padding:${cs.padding};
-      text-align:right; line-height:1.5;
-      direction:rtl; font-family:'Tajawal','Reem Kufi','Segoe UI',Tahoma,Arial,sans-serif;
-      white-space:normal; word-wrap:break-word; overflow-wrap:break-word;
-      letter-spacing:normal; word-spacing:normal;
+      width:100%;
+      min-height:${ta.offsetHeight}px;
+      font-size:${cs.fontSize};
+      font-weight:${cs.fontWeight};
+      color:${cs.color};
+      padding:6px 10px;
+      text-align:right;
+      line-height:1.5;
+      direction:rtl;
+      font-family:'Tajawal',Tahoma,Arial,sans-serif;
+      white-space:normal;
+      word-wrap:break-word;
+      overflow-wrap:break-word;
+      letter-spacing:normal;
+      word-spacing:normal;
+      unicode-bidi:plaintext;
       text-rendering:optimizeLegibility;
-      -webkit-font-feature-settings:"liga","calt","kern";
-      font-feature-settings:"liga","calt","kern";
-      unicode-bidi:embed;
-      display:block; box-sizing:border-box;
+      box-sizing:border-box;
+      display:block;
+      vertical-align:middle;
     `;
-    div.textContent = ta.value;
     ta.style.display = 'none';
     ta.parentNode.insertBefore(div, ta.nextSibling);
     tempNodes.push({ inp:ta, span:div });
@@ -1557,6 +1574,29 @@ function restoreExportWidth(page, original){
   page.querySelectorAll('.cell-name textarea').forEach(ta => autoResizeName(ta));
 }
 
+/* 🆕 دالة: تنتظر تحميل خط Tajawal بشكل فعلي قبل التصدير */
+async function waitForArabicFont(){
+  try {
+    // تأكد من تحميل كل الخطوط
+    if(document.fonts && document.fonts.ready){
+      await document.fonts.ready;
+    }
+    // تأكد من تحميل Tajawal بالأوزان المستخدمة بشكل صريح
+    if(document.fonts && document.fonts.load){
+      await Promise.all([
+        document.fonts.load('500 14px Tajawal'),
+        document.fonts.load('700 14px Tajawal'),
+        document.fonts.load('800 14px Tajawal'),
+        document.fonts.load('900 14px Tajawal'),
+      ]).catch(() => {});
+    }
+    // إعطاء وقت إضافي للمتصفح لإكمال render
+    await new Promise(r => setTimeout(r, 200));
+  } catch(e){
+    console.warn('Font preload error:', e);
+  }
+}
+
 async function _doSaveImage(){
   if (typeof window.checkDownloadAccess === 'function') {
     try {
@@ -1569,8 +1609,7 @@ async function _doSaveImage(){
   const page = document.getElementById('page');
   const originalWidth = forceExportWidth(page);
   try {
-    await document.fonts.ready;
-    await new Promise(r => setTimeout(r, 400));
+    await waitForArabicFont();
     const canvas = await html2canvas(page, {
       backgroundColor:'#ffffff', scale:2.5, useCORS:true, logging:false, allowTaint:true,
       width: EXPORT_WIDTH,
@@ -1653,8 +1692,7 @@ async function _doExportPDF(){
   const originalWidth = forceExportWidth(page);
   
   try {
-    await document.fonts.ready;
-    await new Promise(r => setTimeout(r, 400));
+    await waitForArabicFont();
     const canvas = await html2canvas(page, {
       backgroundColor:'#ffffff', scale:2, useCORS:true, logging:false, allowTaint:true,
       width: EXPORT_WIDTH,
@@ -1743,8 +1781,7 @@ async function shareReportLocal(){
     }
   };
   try {
-    await document.fonts.ready;
-    await new Promise(r => setTimeout(r, 400));
+    await waitForArabicFont();
     const canvas = await html2canvas(page, {
       backgroundColor:'#ffffff', scale:2.5, useCORS:true, logging:false, allowTaint:true,
       width: EXPORT_WIDTH,
