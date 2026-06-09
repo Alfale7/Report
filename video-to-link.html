@@ -1036,10 +1036,14 @@ window.copyUrl = async function(){
 window.shareVideo = async function(){
   if (!_uploadedVideoUrl) return;
   
-  // النص بدون الرابط (الرابط يُضاف تلقائياً من url field)
+  // النص مرتّب مع تباعد واضح
   const shareText = '✨ تم إنشاء الرابط من:\n' +
                     '🌐 www.ksa2030.one\n' +
-                    'التقارير الذكية — منصة تقارير المدرسة';
+                    'التقارير الذكية — منصة تقارير المدرسة\n' +
+                    '\n' +
+                    '━━━━━━━━━━━━━━━━\n' +
+                    '\n' +
+                    '🎬 رابط الفيديو:';
   
   // Native Share API (للجوال)
   if (navigator.share) {
@@ -1047,7 +1051,7 @@ window.shareVideo = async function(){
       await navigator.share({
         title: 'التقارير الذكية · ksa2030.one',
         text: shareText,
-        url: _uploadedVideoUrl  // الرابط هنا فقط
+        url: _uploadedVideoUrl  // الرابط يضاف تحت تلقائياً
       });
     } catch(err) {
       if (err.name !== 'AbortError') {
@@ -1055,14 +1059,13 @@ window.shareVideo = async function(){
       }
     }
   } else {
-    // المتصفحات اللي ما تدعم navigator.share
     fallbackShare(shareText);
   }
 };
 
 function fallbackShare(text) {
-  // للـ fallback نضيف الرابط مرة واحدة فقط
-  const fullText = text + '\n\n' + _uploadedVideoUrl;
+  // للـ fallback نضيف الرابط تحت العبارة مباشرة
+  const fullText = text + '\n' + _uploadedVideoUrl;
   const waUrl = 'https://wa.me/?text=' + encodeURIComponent(fullText);
   window.open(waUrl, '_blank');
 }
