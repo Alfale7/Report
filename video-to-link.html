@@ -586,9 +586,9 @@ body{
       </a>
     </div>
     <div class="result-actions" style="margin-top:8px;">
-      <a class="result-btn" id="whatsappShare" href="#" target="_blank" style="background:rgba(37,211,102,0.12);color:#86efac;border-color:rgba(37,211,102,0.3);">
-        <span>💬</span><span>مشاركة واتساب</span>
-      </a>
+      <button class="result-btn" id="whatsappShare" onclick="shareVideo()" style="background:rgba(37,211,102,0.12);color:#86efac;border-color:rgba(37,211,102,0.3);">
+        <span>💬</span><span>مشاركة الفيديو</span>
+      </button>
       <button class="result-btn" onclick="resetUpload()">
         <span>🔄</span><span>فيديو جديد</span>
       </button>
@@ -614,6 +614,7 @@ const MAX_FILE_SIZE = 100 * 1024 * 1024; // 100MB
 
 let selectedFile = null;
 let hasVideo = false;
+let _uploadedVideoUrl = '';
 
 const uploadZone = document.getElementById('uploadZone');
 const fileInput = document.getElementById('fileInput');
@@ -782,7 +783,7 @@ window.uploadVideo = async function(){
     document.getElementById('urlInput').value = videoUrl;
     document.getElementById('openLink').href = videoUrl;
     document.getElementById('qrLink').href = 'link-qr.html?url=' + encodeURIComponent(videoUrl);
-    document.getElementById('whatsappShare').href = 'https://wa.me/?text=' + encodeURIComponent('شاهد الفيديو: ' + videoUrl);
+    _uploadedVideoUrl = videoUrl;
     
     progressWrap.classList.remove('show');
     actionCard.style.display = 'none';
@@ -820,6 +821,42 @@ window.copyUrl = async function(){
     copyBtn.innerHTML = '📋 نسخ';
   }, 2000);
 };
+
+// ═══ مشاركة الفيديو ═══
+window.shareVideo = async function(){
+  if (!_uploadedVideoUrl) return;
+  
+  // نص المشاركة الفاخر (يطلع في واتساب وغيره)
+  const shareText = '🎬 شاهد الفيديو\n\n' + _uploadedVideoUrl + '\n\n' +
+                    '✨ تم إنشاء الرابط من:\n' +
+                    '🌐 www.ksa2030.one\n' +
+                    'التقارير الذكية — منصة تقارير المدرسة';
+  
+  // Native Share API (للجوال)
+  if (navigator.share) {
+    try {
+      await navigator.share({
+        title: 'التقارير الذكية · ksa2030.one',
+        text: shareText,
+        url: _uploadedVideoUrl
+      });
+    } catch(err) {
+      if (err.name !== 'AbortError') {
+        // fallback لو فشل
+        fallbackShare(shareText);
+      }
+    }
+  } else {
+    // المتصفحات اللي ما تدعم navigator.share
+    fallbackShare(shareText);
+  }
+};
+
+function fallbackShare(text) {
+  // افتح واتس مع النص كامل
+  const waUrl = 'https://wa.me/?text=' + encodeURIComponent(text);
+  window.open(waUrl, '_blank');
+}
 </script>
 
 </body>
