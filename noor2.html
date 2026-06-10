@@ -324,6 +324,17 @@ input:focus,textarea:focus{outline:none;}
 }
 .table-scroll-indicator.hidden{display:none !important;}
 
+/* ═══ إطار خارجي للجدول - يضمن الـ borders في جميع الجهات ═══ */
+/* هذه الطريقة الأكثر موثوقية - تعمل في كل المتصفحات و html2canvas-pro و PDF */
+.table-frame{
+  border:2.5px solid #000;
+  display:inline-block;
+  width:1280px;
+  max-width:1280px;
+  vertical-align:top;
+  box-sizing:content-box;
+}
+
 .grades-table{
   width:1280px;
   max-width:1280px;
@@ -331,6 +342,7 @@ input:focus,textarea:focus{outline:none;}
   font-size:0.76rem;
   table-layout:fixed;
   min-width:1280px;
+  display:table;
 }
 .grades-table th, .grades-table td{
   border:1.5px solid #000;
@@ -540,12 +552,11 @@ input:focus,textarea:focus{outline:none;}
   background:var(--tasks-cell);
 }
 
-/* عمود المجموع الكلي - حدود قوية كاملة (border + box-shadow كـ backup) */
+/* عمود المجموع الكلي - حدود قوية للفصل عن "اختبار الاستماع" */
 .grades-table th.col-total,
 .grades-table td.cell-total{
-  border-left:2.5px solid #000 !important;
-  border-right:2.5px solid #000 !important;
-  box-shadow:inset 2.5px 0 0 #000, inset -2.5px 0 0 #000;
+  border-left:2px solid #000 !important;
+  border-right:2px solid #000 !important;
 }
 .grades-table td.cell-total{
   background:var(--total-bg);
@@ -1062,6 +1073,7 @@ input:focus,textarea:focus{outline:none;}
   <div class="table-wrap" id="tableWrap">
     <!-- مؤشر سهم متحرك على حافة الجدول -->
     <div class="table-scroll-indicator" id="tableScrollIndicator"></div>
+    <div class="table-frame">
     <table class="grades-table">
       <thead>
         <!-- الصف 1: العناوين الرئيسية -->
@@ -1126,6 +1138,7 @@ input:focus,textarea:focus{outline:none;}
         <!-- يتم بناء الصفوف ديناميكياً -->
       </tbody>
     </table>
+    </div>
   </div>
 
   <button class="add-row-btn" onclick="addStudentRow()">
