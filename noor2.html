@@ -1109,9 +1109,6 @@ input:focus,textarea:focus{outline:none;}
 </head>
 <body>
 
-<!-- 🔥 Firebase + الحمايات -->
-<script type="module" src="report-firebase.js?v=17"></script>
-
 <div id="page">
 
   <!-- ═══ ترويسة الوزارة الموحدة ═══ -->
@@ -2221,7 +2218,7 @@ async function saveToMyProfile() {
       showToast('⚠️ سجّل دخولك أولاً لحفظ الكشف في حسابك');
     }
     setTimeout(() => {
-      window.location.href = 'login.html?next=noor.html';
+      window.location.href = 'login.html?next=noor2.html';
     }, 1500);
     return;
   }
@@ -2330,8 +2327,8 @@ async function saveExportToCloud(format = 'pdf') {
     
     // 5️⃣ إرسال
     const result = await window.trackExport({
-      type: 'noor',
-      title: 'كشف رصد درجات (نور)',
+      type: 'noor2',
+      title: 'سجل درجات اللغة الإنجليزية (نور)',
       format: format,
       content: content
     });
