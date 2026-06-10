@@ -3253,6 +3253,20 @@ backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);
   box-shadow:0 12px 32px rgba(26,60,94,0.45), 0 0 0 1px rgba(212,164,91,0.7);
 }
 
+/* ═══ بانر سجل المتابعة اليومي - تنويع لوني ═══ */
+.gift-banner-daily{
+  background:linear-gradient(135deg, #0b3946 0%, #1a6a7d 45%, #2c979d 100%);
+  box-shadow:0 8px 24px rgba(11,57,70,0.4), 0 0 0 1px rgba(232,197,71,0.4);
+  margin-top:0;
+}
+.gift-banner-daily:hover{
+  box-shadow:0 12px 32px rgba(11,57,70,0.5), 0 0 0 1px rgba(232,197,71,0.7);
+}
+.gift-banner-daily .gift-pdf-badge{
+  background:linear-gradient(135deg, #16a34a, #15803d);
+  color:#fff;
+}
+
 /* ═══ بانر الأدوات المجانية ═══ */
 .tools-banner{
   margin:10px 2px 12px;
@@ -6312,6 +6326,27 @@ font-size:0.78rem;text-align:center;margin-top:12px;display:none;
       </div>
     </a>
 
+    <!-- ═══ بانر سجل المتابعة اليومي - مجاني ═══ -->
+    <a href="daily.html" class="gift-banner gift-banner-daily" id="dailyBanner">
+      <div class="gift-shine"></div>
+      <div class="gift-icon-wrap">
+        <div class="gift-icon">📋</div>
+        <div class="gift-pdf-badge">مجاني</div>
+      </div>
+      <div class="gift-content">
+        <div class="gift-row1">
+          <span class="gift-tag" data-i18n="dailyTag">سجل مجاني</span>
+          <span class="gift-sparkle">✨</span>
+        </div>
+        <div class="gift-title" data-i18n="dailyTitle">سجل المتابعة اليومي</div>
+        <div class="gift-sub" data-i18n="dailySub">متابعة يومية للطلاب · جاهز للطباعة · بلا تسجيل</div>
+      </div>
+      <div class="gift-cta">
+        <span class="gift-cta-icon">›</span>
+        <span class="gift-cta-text" data-i18n="dailyCta">ابدأ</span>
+      </div>
+    </a>
+
     <!-- ═══ بانر الأدوات المجانية (باركود QR) ═══ -->
     <div class="tools-banner">
       <div class="tools-banner-head">
@@ -8201,6 +8236,11 @@ const I18N = {
     envTitle: "هوية الأظرف للاختبارات",
     envSub: "قوالب جاهزة · للأظرف الرسمية للاختبارات",
     envCta: "حمّل",
+    
+    dailyTag: "سجل مجاني",
+    dailyTitle: "سجل المتابعة اليومي",
+    dailySub: "متابعة يومية للطلاب · جاهز للطباعة · بلا تسجيل",
+    dailyCta: "ابدأ",
     tbTitle: "أدوات تحويل مجانية",
     tbSub: "صور · فيديو · PDF · باركود · روابط · توقيع إلكتروني",
     tbBadge: "مجاني ✨",
@@ -8552,6 +8592,11 @@ const I18N = {
     envTitle: "Exam Envelope Templates",
     envSub: "Ready templates · For official exam envelopes",
     envCta: "Get",
+    
+    dailyTag: "FREE TOOL",
+    dailyTitle: "Daily Student Follow-up Log",
+    dailySub: "Daily student tracking · Print-ready · No registration",
+    dailyCta: "Open",
     tbTitle: "Free Conversion Tools",
     tbSub: "Images · Video · PDF · QR · Links · E-Signature",
     tbBadge: "Free ✨",
