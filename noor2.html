@@ -680,10 +680,13 @@ input:focus,textarea:focus{outline:none;}
   }
 }
 
-/* زر إضافة صف */
+/* زر إضافة طلاب مع قائمة مرنة */
+.add-row-wrap{
+  position:relative;
+  margin:14px 14px 0;
+}
 .add-row-btn{
   width:100%;
-  margin:14px 14px 0;
   padding:13px 18px;
   background:linear-gradient(135deg, var(--accent-soft) 0%, var(--accent) 100%);
   color:#fff;
@@ -700,6 +703,81 @@ input:focus,textarea:focus{outline:none;}
 .add-row-btn:hover{
   transform:translateY(-2px);
   box-shadow:0 10px 22px rgba(59,168,126,0.42);
+}
+.add-arrow{
+  font-size:0.7rem;
+  transition:transform .25s ease;
+  margin-right:auto;
+  opacity:0.85;
+}
+.add-row-wrap.open .add-arrow{transform:rotate(180deg);}
+
+/* القائمة المنسدلة لإضافة الطلاب */
+.add-menu{
+  position:absolute;
+  bottom:calc(100% + 8px);
+  left:0;
+  right:0;
+  background:#fff;
+  border-radius:14px;
+  box-shadow:0 -6px 24px rgba(0,0,0,0.12), 0 -2px 8px rgba(0,0,0,0.06);
+  padding:6px;
+  display:none;
+  flex-direction:column;
+  gap:4px;
+  z-index:50;
+  border:1px solid rgba(59,168,126,0.15);
+  animation:addMenuSlide .25s ease;
+}
+.add-row-wrap.open .add-menu{display:flex;}
+@keyframes addMenuSlide{
+  from{opacity:0; transform:translateY(8px);}
+  to{opacity:1; transform:translateY(0);}
+}
+.add-opt{
+  display:flex;
+  align-items:center;
+  gap:12px;
+  padding:11px 14px;
+  background:#f8fafc;
+  border:1.5px solid transparent;
+  border-radius:10px;
+  cursor:pointer;
+  font-family:inherit;
+  font-weight:700;
+  font-size:0.9rem;
+  color:#333;
+  transition:all .15s ease;
+  text-align:right;
+  direction:rtl;
+}
+.add-opt:hover{
+  background:rgba(59,168,126,0.08);
+  border-color:rgba(59,168,126,0.3);
+  transform:translateX(-2px);
+}
+.add-opt-num{
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  min-width:32px;
+  height:32px;
+  padding:0 8px;
+  background:linear-gradient(135deg, var(--accent-soft) 0%, var(--accent) 100%);
+  color:#fff;
+  border-radius:8px;
+  font-weight:900;
+  font-size:0.95rem;
+  flex-shrink:0;
+}
+.add-opt-custom .add-opt-num{
+  background:linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+  font-size:1rem;
+}
+.add-opt-lab{
+  font-size:0.92rem;
+  color:#4b5563;
+  font-weight:600;
 }
 
 /* ═══ التوقيعات ═══ */
@@ -1000,6 +1078,8 @@ input:focus,textarea:focus{outline:none;}
 /* ═══ وضع التصدير ═══ */
 .exporting .row-del-btn{display:none !important;}
 .exporting .add-row-btn{display:none !important;}
+.exporting .add-row-wrap{display:none !important;}
+.exporting .add-menu{display:none !important;}
 .exporting .scroll-hint{display:none !important;}
 .exporting .table-scroll-indicator{display:none !important;}
 .exporting input::placeholder{color:transparent !important;}
@@ -1155,10 +1235,36 @@ input:focus,textarea:focus{outline:none;}
     </table>
   </div>
 
-  <button class="add-row-btn" onclick="addStudentRow()">
-    <span style="font-size:1.15rem;">➕</span>
-    <span>إضافة طالب جديد</span>
-  </button>
+  <!-- زر إضافة طلاب مع قائمة مرنة -->
+  <div class="add-row-wrap">
+    <button class="add-row-btn" onclick="toggleAddMenu()" id="addRowBtn">
+      <span style="font-size:1.15rem;">➕</span>
+      <span>إضافة طلاب</span>
+      <span class="add-arrow" id="addArrow">▼</span>
+    </button>
+    <div class="add-menu" id="addMenu">
+      <button class="add-opt" onclick="addMultipleStudents(1)">
+        <span class="add-opt-num">1</span>
+        <span class="add-opt-lab">طالب واحد</span>
+      </button>
+      <button class="add-opt" onclick="addMultipleStudents(5)">
+        <span class="add-opt-num">5</span>
+        <span class="add-opt-lab">طلاب</span>
+      </button>
+      <button class="add-opt" onclick="addMultipleStudents(10)">
+        <span class="add-opt-num">10</span>
+        <span class="add-opt-lab">طلاب</span>
+      </button>
+      <button class="add-opt" onclick="addMultipleStudents(20)">
+        <span class="add-opt-num">20</span>
+        <span class="add-opt-lab">طالب</span>
+      </button>
+      <button class="add-opt add-opt-custom" onclick="addCustomCount()">
+        <span class="add-opt-num">✏️</span>
+        <span class="add-opt-lab">عدد مخصص</span>
+      </button>
+    </div>
+  </div>
 
   <!-- التوقيعات -->
   <div class="signatures">
@@ -1302,6 +1408,50 @@ function makeEmptyStudent(){
     final:'', listening:''
   };
 }
+
+/* ═══ قائمة إضافة الطلاب المرنة ═══ */
+function toggleAddMenu(){
+  const wrap = document.querySelector('.add-row-wrap');
+  if(!wrap) return;
+  wrap.classList.toggle('open');
+}
+function closeAddMenu(){
+  const wrap = document.querySelector('.add-row-wrap');
+  if(wrap) wrap.classList.remove('open');
+}
+function addMultipleStudents(count){
+  closeAddMenu();
+  if(!count || count < 1) return;
+  if(count > 100){
+    showToast('⚠️ الحد الأقصى 100 طالب في المرة');
+    count = 100;
+  }
+  for(let i = 0; i < count; i++){
+    addStudentRow(null, true); // silent لتجنب scroll لكل صف
+  }
+  showToast(`✅ تمت إضافة ${count} ${count === 1 ? 'طالب' : (count <= 10 ? 'طلاب' : 'طالب')}`);
+  setTimeout(() => {
+    const lastRow = document.querySelector('#gradesBody tr:last-child');
+    if(lastRow) lastRow.scrollIntoView({behavior:'smooth', block:'center'});
+  }, 100);
+}
+function addCustomCount(){
+  closeAddMenu();
+  const input = prompt('كم عدد الطلاب الذين تريد إضافتهم؟ (1-100)', '15');
+  if(input === null) return;
+  const num = parseInt(input);
+  if(isNaN(num) || num < 1){
+    showToast('⚠️ الرجاء إدخال رقم صحيح أكبر من صفر');
+    return;
+  }
+  addMultipleStudents(num);
+}
+// إغلاق القائمة عند الضغط خارجها
+document.addEventListener('click', (e) => {
+  const wrap = document.querySelector('.add-row-wrap');
+  if(!wrap || !wrap.classList.contains('open')) return;
+  if(!wrap.contains(e.target)) closeAddMenu();
+});
 
 function addStudentRow(prefill=null, silent=false){
   rowCounter++;
@@ -2351,9 +2501,14 @@ async function saveExportToCloud(format = 'pdf') {
       btn.style.opacity = '';
       btn.style.cursor = '';
     });
+    // ✅ احذف الـ silentBlock listener (مهم - وإلا الأزرار تبقى صامتة)
+    document.querySelectorAll('.add-row-btn').forEach(btn => {
+      btn.removeEventListener('click', silentBlock, true);
+    });
     document.querySelectorAll('.row-delete, .btn-delete').forEach(btn => {
       btn.style.opacity = '';
       btn.style.cursor = '';
+      btn.removeEventListener('click', silentBlock, true);
     });
     _previewEnforced = false;
   }
