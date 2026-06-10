@@ -415,7 +415,7 @@ input:focus,textarea:focus{outline:none;}
 
 /* عند التصدير: النص العمودي يبقى كما هو (يعمل بشكل صحيح بـ rotate(-90deg)) */
 .grades-table thead .col-num{width:38px; background:#fff;}
-.grades-table thead .col-name{width:auto; min-width:280px; background:#fff;}
+.grades-table thead .col-name{width:auto; min-width:360px; background:#fff;}
 /* رؤوس "الفترة الأولى" و "الفترة الثانية" - رمادي خفيف */
 .grades-table thead .col-period{background:var(--period-bg); color:#000; font-weight:900;}
 /* رأس "اختبار نهاية الفصل" - بنفسجي */
@@ -423,9 +423,8 @@ input:focus,textarea:focus{outline:none;}
 /* رأس "اختبار الاستماع والمحادثة" - أزرق */
 .grades-table thead .col-listening{background:var(--blue-bg); color:#000;}
 
-/* مستوى التصنيف الثاني - مجموعات داخل الفترة */
-/* "المهام الأدائية" و "مشاركة والتفاعل" - نفس اللون البرتقالي */
-.grades-table thead .group-tasks{background:var(--tasks-bg); color:#000; font-weight:900;}
+/* "المهام الأدائية" و "مشاركة والتفاعل" - مستطيلات الرأس الرئيسية بلون سماوي */
+.grades-table thead .group-tasks{background:var(--blue-bg); color:#000; font-weight:900;}
 /* "تقويمات تحريرية" - بنفسجي */
 .grades-table thead .group-tahriri{background:var(--purple-bg); color:#000; font-weight:900;}
 
@@ -487,8 +486,8 @@ input:focus,textarea:focus{outline:none;}
   min-height:34px;
   border:none;
   background:transparent;
-  padding:6px 10px;
-  font-size:0.84rem;
+  padding:6px 8px;
+  font-size:0.8rem;
   font-family:'Tajawal',Tahoma,Arial,sans-serif;
   color:var(--ink);
   outline:none;
