@@ -2,10 +2,13 @@
 # https://ksa2030.one
 
 # ════════════════════════════════════════
-# السماح الكامل للجميع
+# السماح الكامل للجميع + منع الصفحات الخاصة
 # ════════════════════════════════════════
 User-agent: *
 Allow: /
+Disallow: /admin.html
+Disallow: /profile.html
+Disallow: /firebase-config.js
 
 # ════════════════════════════════════════
 # 🔥 السماح الصريح لـ Googlebot-Image
@@ -28,14 +31,6 @@ Allow: /apple-touch-icon.png
 # ════════════════════════════════════════
 User-agent: Googlebot
 Allow: /
-
-# ════════════════════════════════════════
-# منع زحف الصفحات الخاصة
-# ════════════════════════════════════════
-User-agent: *
-Disallow: /admin.html
-Disallow: /profile.html
-Disallow: /firebase-config.js
 
 # ════════════════════════════════════════
 # Sitemap
