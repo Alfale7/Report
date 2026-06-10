@@ -6660,7 +6660,7 @@ font-size:0.78rem;text-align:center;margin-top:12px;display:none;
         <div class="cat-text">
           <div class="cat-title">
             <span data-i18n="catNoor">كشف رصد درجات متوافق مع نور</span>
-            <span class="cat-count">2</span>
+            <span class="cat-count">3</span>
           </div>
           <div class="cat-sub" data-i18n="catNoorSub">كشف درجات احترافي · متوافق مع نظام نور · جاهز للطباعة</div>
         </div>
@@ -6718,6 +6718,33 @@ font-size:0.78rem;text-align:center;margin-top:12px;display:none;
         <div class="card-text">
           <div class="card-title" data-i18n="noor2CardTitle">سجل درجات لمادة اللغة الإنجليزية</div>
           <div class="card-desc" data-i18n="noor2CardDesc">سجل احترافي · مادة اللغة الإنجليزية · متوافق مع نور · جاهز للطباعة</div>
+        </div>
+        <div class="card-action">‹</div>
+      </div>
+    </div>
+
+    <div class="preview-card r-noor locked" data-target="noor3.html" onclick="handleCardClick(this)">
+      <span class="card-badge badge-new">✨ <span data-i18n="badgeNew">جديد</span></span>
+      <div class="thumb thumb-noor">
+        <div class="noor-snap">
+          <div class="noor-snap-glow"></div>
+          <div class="noor-snap-head">📚</div>
+          <div class="noor-snap-title" data-i18n="noor3SnapTitle">سجل الدرجات للمواد</div>
+          <div class="noor-snap-types">
+            <span class="nr-pill nr-grades">📝 <span data-i18n="noor3PillGrades">درجات</span></span>
+            <span class="nr-pill nr-students">📚 <span data-i18n="noor3PillSubjects">مواد</span></span>
+            <span class="nr-pill nr-noor">✅ <span data-i18n="noor3PillCompat">نور</span></span>
+          </div>
+          <div class="noor-snap-badge" data-i18n="noor3Badge">جميع المواد · فصل دراسي</div>
+        </div>
+      </div>
+      <div class="card-content">
+        <div class="card-icon-wrap">
+          <div class="card-icon">📚</div>
+        </div>
+        <div class="card-text">
+          <div class="card-title" data-i18n="noor3CardTitle">سجل الدرجات للمواد</div>
+          <div class="card-desc" data-i18n="noor3CardDesc">سجل احترافي · جميع المواد · الفصل الدراسي · متوافق مع نور · جاهز للطباعة</div>
         </div>
         <div class="card-action">‹</div>
       </div>
@@ -8008,6 +8035,14 @@ const I18N = {
     noor2CardTitle: "سجل درجات لمادة اللغة الإنجليزية",
     noor2CardDesc: "سجل احترافي · مادة اللغة الإنجليزية · متوافق مع نور · جاهز للطباعة",
     
+    noor3SnapTitle: "سجل الدرجات للمواد",
+    noor3PillGrades: "درجات",
+    noor3PillSubjects: "مواد",
+    noor3PillCompat: "نور",
+    noor3Badge: "جميع المواد · فصل دراسي",
+    noor3CardTitle: "سجل الدرجات للمواد",
+    noor3CardDesc: "سجل احترافي · جميع المواد · الفصل الدراسي · متوافق مع نور · جاهز للطباعة",
+    
     moeBadge: "هوية وزارة التعليم",
     shareBtn: "مشاركة",
     appTitle: "التقارير الذكية",
@@ -8350,6 +8385,14 @@ const I18N = {
     noor2Badge: "English Grade Sheet",
     noor2CardTitle: "English Language Grade Sheet",
     noor2CardDesc: "Professional sheet · English subject · Noor-compatible · Print-ready",
+    
+    noor3SnapTitle: "Subjects Grade Record",
+    noor3PillGrades: "Grades",
+    noor3PillSubjects: "Subjects",
+    noor3PillCompat: "Noor",
+    noor3Badge: "All Subjects · Semester",
+    noor3CardTitle: "Subjects Grade Record",
+    noor3CardDesc: "Professional sheet · All subjects · Semester · Noor-compatible · Print-ready",
     
     moeBadge: "Ministry of Education Identity",
     shareBtn: "Share",
@@ -8864,7 +8907,7 @@ function handleCardClick(card){
   const target = card.getAttribute('data-target');
 
   // 👁️ تقارير المعاينة / التجربة - يفتحها أي زائر بدون تسجيل دخول
-  const VIEW_ONLY_AND_FREE_TRIAL = ['report.html', 'tasis.html', 'watny.html', 'alm.html', 'alm2.html', 'green.html', 'shawahed.html', 'enjaz.html', 'kg.html', 'report2.html', 'report3.html', 'teacher.html', 'arabic.html', 'cert.html', 'exam.html', 'star.html', 'plan.html', 'visit.html', 'radio.html', 'council.html', 'parent.html', 'weakness.html', 'noor.html', 'noor2.html'];
+  const VIEW_ONLY_AND_FREE_TRIAL = ['report.html', 'tasis.html', 'watny.html', 'alm.html', 'alm2.html', 'green.html', 'shawahed.html', 'enjaz.html', 'kg.html', 'report2.html', 'report3.html', 'teacher.html', 'arabic.html', 'cert.html', 'exam.html', 'star.html', 'plan.html', 'visit.html', 'radio.html', 'council.html', 'parent.html', 'weakness.html', 'noor.html', 'noor2.html', 'noor3.html'];
   if (target && VIEW_ONLY_AND_FREE_TRIAL.includes(target)) {
     window.location.href = target;
     return;
