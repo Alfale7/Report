@@ -404,9 +404,9 @@ input:focus,textarea:focus{outline:none;}
 .grades-table thead .col-listening,
 .grades-table thead .group-tahriri{
   height:130px;
-  width:42px;
-  min-width:42px;
-  max-width:42px;
+  width:36px;
+  min-width:36px;
+  max-width:36px;
   padding:0;
   vertical-align:middle;
   text-align:center;
@@ -415,7 +415,7 @@ input:focus,textarea:focus{outline:none;}
 
 /* عند التصدير: النص العمودي يبقى كما هو (يعمل بشكل صحيح بـ rotate(-90deg)) */
 .grades-table thead .col-num{width:38px; background:#fff;}
-.grades-table thead .col-name{width:auto; min-width:360px; background:#fff;}
+.grades-table thead .col-name{width:200px; min-width:200px; max-width:200px; background:#fff;}
 /* رؤوس "الفترة الأولى" و "الفترة الثانية" - رمادي خفيف */
 .grades-table thead .col-period{background:var(--period-bg); color:#000; font-weight:900;}
 /* رأس "اختبار نهاية الفصل" - بنفسجي */
@@ -437,11 +437,11 @@ input:focus,textarea:focus{outline:none;}
   vertical-align:middle;
 }
 /* رؤوس البنود الفرعية (واجبات/بحوث/تطبيقات/مشاركة/المجموع/تحريرية) */
-.grades-table thead .sub-task{background:var(--tasks-soft); color:#000; min-width:42px;}
-.grades-table thead .sub-sum-task{background:var(--tasks-soft); color:#000; min-width:42px; font-weight:900;}
-.grades-table thead .sub-tahriri{background:var(--purple-soft); color:#000; min-width:42px;}
-.grades-table thead .sub-final{background:var(--purple-soft); color:#000; min-width:42px;}
-.grades-table thead .sub-listening{background:var(--blue-soft); color:#000; min-width:42px;}
+.grades-table thead .sub-task{background:var(--tasks-soft); color:#000; min-width:36px;}
+.grades-table thead .sub-sum-task{background:var(--tasks-soft); color:#000; min-width:36px; font-weight:900;}
+.grades-table thead .sub-tahriri{background:var(--purple-soft); color:#000; min-width:36px;}
+.grades-table thead .sub-final{background:var(--purple-soft); color:#000; min-width:36px;}
+.grades-table thead .sub-listening{background:var(--blue-soft); color:#000; min-width:36px;}
 
 /* صف الدرجات القصوى - خلفية تطابق العمود */
 .grades-table thead .max-row th{
@@ -486,8 +486,8 @@ input:focus,textarea:focus{outline:none;}
   min-height:34px;
   border:none;
   background:transparent;
-  padding:6px 8px;
-  font-size:0.8rem;
+  padding:6px 12px;
+  font-size:0.88rem;
   font-family:'Tajawal',Tahoma,Arial,sans-serif;
   color:var(--ink);
   outline:none;
