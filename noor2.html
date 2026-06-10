@@ -2101,8 +2101,40 @@ async function _doExportPDF(){
     }
     const x = (pageW - imgW) / 2, y = (pageH - imgH) / 2;
     pdf.addImage(imgData, 'JPEG', x, y, imgW, imgH);
-    pdf.save('كشف_رصد_درجات.pdf');
-    showToast('✅ تم إنشاء PDF');
+    
+    // 🆕 جرّب المشاركة المباشرة على الجوال (لتجنب blob URL في واتس)
+    const pdfBlob = pdf.output('blob');
+    const pdfFile = new File([pdfBlob], 'سجل_درجات_اللغة_الإنجليزية.pdf', { type: 'application/pdf' });
+    
+    const shareText = '✨ تم إنشاؤه الرابط عبر :\n' +
+                      '🌐 www.ksa2030.one\n' +
+                      'التقارير الذكية — منصة تقارير المدرسة';
+    
+    const canShareFiles = navigator.share && navigator.canShare && navigator.canShare({ files: [pdfFile] });
+    
+    if (canShareFiles && /iPhone|iPad|iPod|Android/i.test(navigator.userAgent)) {
+      // 📱 جوال → مشاركة مباشرة (PDF كملف)
+      try {
+        await navigator.share({
+          files: [pdfFile],
+          title: 'التقارير الذكية · ksa2030.one',
+          text: shareText
+        });
+        showToast('✅ تم المشاركة');
+      } catch(err) {
+        if (err.name === 'AbortError') {
+          showToast('تم الإلغاء');
+        } else {
+          // fallback → تنزيل عادي
+          pdf.save('سجل_درجات_اللغة_الإنجليزية.pdf');
+          showToast('📥 تم تنزيل PDF');
+        }
+      }
+    } else {
+      // 💻 ديسكتوب → تنزيل عادي
+      pdf.save('سجل_درجات_اللغة_الإنجليزية.pdf');
+      showToast('✅ تم إنشاء PDF');
+    }
   } catch(e){
     console.error(e);
     showToast('❌ فشل التصدير: ' + (e.message || ''));
