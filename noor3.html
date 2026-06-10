@@ -56,7 +56,7 @@ input,textarea,button,select{font-family:inherit;}
 input:focus,textarea:focus{outline:none;}
 
 #page{
-  max-width:860px;
+  max-width:890px;
   margin:0 auto;
   background:var(--paper);
   border-radius:var(--radius);
@@ -311,14 +311,15 @@ input:focus,textarea:focus{outline:none;}
 .table-scroll-indicator.hidden{display:none !important;}
 
 .grades-table{
-  width:774px;
-  max-width:774px;
+  width:806px;
+  max-width:806px;
   border-collapse:separate;
   border-spacing:0;
   font-size:0.82rem;
   table-layout:fixed;
-  min-width:774px;
+  min-width:806px;
   box-sizing:border-box;
+  border:2px solid #000;
 }
 .grades-table th, .grades-table td{
   border-right:1.5px solid #000;
@@ -428,10 +429,10 @@ input:focus,textarea:focus{outline:none;}
 .grades-table thead .sub-adaiya{
   background:#f5dcc0;
   color:#000;
-  width:64px;
-  min-width:64px;
-  max-width:64px;
-  font-size:0.66rem;
+  width:80px;
+  min-width:80px;
+  max-width:80px;
+  font-size:0.68rem;
 }
 .grades-table thead .sub-sum{
   background:#fbe9d7;
@@ -1885,7 +1886,7 @@ function exportAsImage(){
   setTimeout(() => { _doSaveImage(); }, 200);
 }
 /* 🆕 دالة مساعدة: تجبر عرض الصفحة لتفادي التصغير على الجوال */
-const EXPORT_WIDTH = 820;
+const EXPORT_WIDTH = 850;
 function forceExportWidth(page){
   const original = {
     width: page.style.width,
