@@ -56,7 +56,7 @@ input,textarea,button,select{font-family:inherit;}
 input:focus,textarea:focus{outline:none;}
 
 #page{
-  max-width:890px;
+  max-width:806px;
   margin:0 auto;
   background:var(--paper);
   border-radius:var(--radius);
@@ -185,7 +185,7 @@ input:focus,textarea:focus{outline:none;}
 
 /* ═══ الجدول الرئيسي ═══ */
 .table-wrap{
-  padding:14px 14px 16px;
+  padding:14px 0 16px;
   overflow-x:auto;
   position:relative;
   scroll-behavior:smooth;
@@ -1045,7 +1045,7 @@ input:focus,textarea:focus{outline:none;}
   .scroll-hint{display:flex !important;}
   .table-scroll-indicator{display:block !important;}
 
-  .table-wrap{padding:10px 8px;}
+  .table-wrap{padding:10px 0;}
   .grades-table{font-size:0.74rem;}
   .grades-table thead tr:first-child th{font-size:0.78rem; padding:7px 4px;}
   .grades-table thead tr:nth-child(2) th{font-size:0.6rem; padding:4px 2px; height:54px;}
@@ -1886,7 +1886,7 @@ function exportAsImage(){
   setTimeout(() => { _doSaveImage(); }, 200);
 }
 /* 🆕 دالة مساعدة: تجبر عرض الصفحة لتفادي التصغير على الجوال */
-const EXPORT_WIDTH = 850;
+const EXPORT_WIDTH = 806;
 function forceExportWidth(page){
   const original = {
     width: page.style.width,
