@@ -2297,9 +2297,14 @@ async function saveExportToCloud(format = 'pdf') {
       btn.style.opacity = '';
       btn.style.cursor = '';
     });
+    // ✅ احذف الـ silentBlock listener (مهم - وإلا الأزرار تبقى صامتة)
+    document.querySelectorAll('.add-row-btn').forEach(btn => {
+      btn.removeEventListener('click', silentBlock, true);
+    });
     document.querySelectorAll('.row-delete, .btn-delete').forEach(btn => {
       btn.style.opacity = '';
       btn.style.cursor = '';
+      btn.removeEventListener('click', silentBlock, true);
     });
     _previewEnforced = false;
   }
