@@ -1968,9 +1968,19 @@ async function shareReportLocal(){
     if(!blob){ showToast('❌ فشل إنشاء الملف'); return; }
     const file = new File([blob], 'كشف_رصد_درجات.png', { type:'image/png' });
     const canShareFiles = navigator.share && (!navigator.canShare || navigator.canShare({ files:[file] }));
+    
+    // نص المشاركة الفاخر مع تعريف الموقع
+    const shareText = '✨ تم إنشاؤه الرابط عبر :\n' +
+                      '🌐 www.ksa2030.one\n' +
+                      'التقارير الذكية — منصة تقارير المدرسة';
+    
     if(canShareFiles){
       try {
-        await navigator.share({ files:[file], title:'كشف رصد درجات الطلاب', text:'كشف رصد درجات الطلاب' });
+        await navigator.share({ 
+          files:[file], 
+          title:'التقارير الذكية · ksa2030.one', 
+          text: shareText 
+        });
         showToast('✅ تم المشاركة');
       } catch(err){
         if(err.name === 'AbortError') return;
