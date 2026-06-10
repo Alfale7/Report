@@ -333,9 +333,7 @@ input:focus,textarea:focus{outline:none;}
   font-size:0.76rem;
   table-layout:fixed;
   min-width:1280px;
-  /* الإطار الخارجي - top و left على الـ table مباشرة */
-  border-top:2px solid #000;
-  border-left:2px solid #000;
+  box-sizing:border-box;
 }
 /* كل خلية: border-right و border-bottom فقط (لا تكرار) */
 .grades-table th,
@@ -348,6 +346,23 @@ input:focus,textarea:focus{outline:none;}
   text-align:center;
   position:relative;
   vertical-align:middle;
+}
+/* الإطار الخارجي - مرسوم على الخلايا الطرفية (مضمون في التصدير) */
+/* الإطار الأيمن: أول خلية في كل صف */
+.grades-table tr > *:first-child{
+  border-right:2px solid #000;
+}
+/* الإطار الأيسر: آخر خلية في كل صف */
+.grades-table tr > *:last-child{
+  border-left:2px solid #000;
+}
+/* الإطار العلوي: كل خلية في أول صف */
+.grades-table thead tr:first-child > *{
+  border-top:2px solid #000;
+}
+/* الإطار السفلي: مضمون عبر border-bottom على آخر صف */
+.grades-table tbody tr:last-child > *{
+  border-bottom:2px solid #000;
 }
 
 /* رؤوس المستوى الأول */
