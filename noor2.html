@@ -1007,6 +1007,10 @@ input:focus,textarea:focus{outline:none;}
 .exporting .action-bar{display:none !important;}
 .exporting .export-menu, .exporting .export-sheet-backdrop{display:none !important;}
 
+/* 🆕 الحل الجذري: في التصدير، نحذف padding و overflow ليتسع الجدول كاملاً */
+.exporting #page{overflow:visible !important;}
+.exporting .table-wrap{padding:0 !important; overflow:visible !important;}
+
 /* ═══ Print ═══ */
 @media print{
   body{background:#fff; padding:0;}
