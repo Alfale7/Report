@@ -998,16 +998,20 @@ window.uploadVideo = async function(){
   hideStatus();
   
   try {
-    const videoUrl = await uploadCloudinary(selectedFile, (percent) => {
+    const pdfUrl = await uploadCloudinary(selectedFile, (percent) => {
       progressFill.style.width = percent + '%';
       progressPercent.textContent = percent + '%';
     });
     
-    // النجاح
-    document.getElementById('urlInput').value = videoUrl;
-    document.getElementById('openLink').href = videoUrl;
-    document.getElementById('qrLink').href = 'link-qr.html?url=' + encodeURIComponent(videoUrl);
-    _uploadedPdfUrl = videoUrl;
+    // 🆕 حل ذكي: نستخدم Google Docs Viewer لضمان عرض الـ PDF في أي متصفح
+    // هذا الرابط يفتح ويعرض الـ PDF مباشرة دون تنزيل
+    const viewerUrl = `https://docs.google.com/viewer?url=${encodeURIComponent(pdfUrl)}`;
+    
+    // النجاح - نستخدم Google Viewer URL في كل الأماكن
+    document.getElementById('urlInput').value = viewerUrl;       // الرابط الذكي للنسخ
+    document.getElementById('openLink').href = viewerUrl;        // فتح عبر Google Viewer
+    document.getElementById('qrLink').href = 'link-qr.html?url=' + encodeURIComponent(viewerUrl);
+    _uploadedPdfUrl = pdfUrl;                                    // نحفظ الأصلي للمشاركة
     
     progressWrap.classList.remove('show');
     actionCard.style.display = 'none';
@@ -1073,9 +1077,12 @@ window.copyUrl = async function(){
 window.shareVideo = async function(){
   if (!_uploadedPdfUrl) return;
   
+  // 🆕 نستخدم Google Docs Viewer للمشاركة لضمان العرض المباشر للمستلم
+  const viewerUrl = `https://docs.google.com/viewer?url=${encodeURIComponent(_uploadedPdfUrl)}`;
+  
   // النص مرتّب: الرابط أولاً ثم التعريف
   const shareText = '📄 رابط ملف PDF:\n' +
-                    _uploadedPdfUrl + '\n' +
+                    viewerUrl + '\n' +
                     '\n' +
                     '━━━━━━━━━━━━━━━━\n' +
                     '\n' +
