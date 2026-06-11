@@ -1003,15 +1003,25 @@ window.uploadVideo = async function(){
       progressPercent.textContent = percent + '%';
     });
     
-    // 🆕 حل ذكي: نستخدم Google Docs Viewer لضمان عرض الـ PDF في أي متصفح
-    // هذا الرابط يفتح ويعرض الـ PDF مباشرة دون تنزيل
-    const viewerUrl = `https://docs.google.com/viewer?url=${encodeURIComponent(pdfUrl)}`;
+    // 🆕 الحل الأقوى: نضيف flag في URL لمنع التنزيل التلقائي
+    // Cloudinary يدعم fl_attachment:false للعرض inline
+    // نحوّل من raw/upload → image/upload مع fl_attachment:false
+    let displayUrl = pdfUrl;
     
-    // النجاح - نستخدم Google Viewer URL في كل الأماكن
-    document.getElementById('urlInput').value = viewerUrl;       // الرابط الذكي للنسخ
-    document.getElementById('openLink').href = viewerUrl;        // فتح عبر Google Viewer
-    document.getElementById('qrLink').href = 'link-qr.html?url=' + encodeURIComponent(viewerUrl);
-    _uploadedPdfUrl = pdfUrl;                                    // نحفظ الأصلي للمشاركة
+    // إذا كان raw/upload نحوّله image/upload
+    if (displayUrl.includes('/raw/upload/')) {
+      displayUrl = displayUrl.replace('/raw/upload/', '/image/upload/fl_attachment:false/');
+    } 
+    // إذا كان image/upload نضيف fl_attachment:false
+    else if (displayUrl.includes('/image/upload/') && !displayUrl.includes('fl_attachment')) {
+      displayUrl = displayUrl.replace('/image/upload/', '/image/upload/fl_attachment:false/');
+    }
+    
+    // النجاح
+    document.getElementById('urlInput').value = displayUrl;
+    document.getElementById('openLink').href = displayUrl;
+    document.getElementById('qrLink').href = 'link-qr.html?url=' + encodeURIComponent(displayUrl);
+    _uploadedPdfUrl = displayUrl;
     
     progressWrap.classList.remove('show');
     actionCard.style.display = 'none';
@@ -1077,12 +1087,9 @@ window.copyUrl = async function(){
 window.shareVideo = async function(){
   if (!_uploadedPdfUrl) return;
   
-  // 🆕 نستخدم Google Docs Viewer للمشاركة لضمان العرض المباشر للمستلم
-  const viewerUrl = `https://docs.google.com/viewer?url=${encodeURIComponent(_uploadedPdfUrl)}`;
-  
   // النص مرتّب: الرابط أولاً ثم التعريف
   const shareText = '📄 رابط ملف PDF:\n' +
-                    viewerUrl + '\n' +
+                    _uploadedPdfUrl + '\n' +
                     '\n' +
                     '━━━━━━━━━━━━━━━━\n' +
                     '\n' +
@@ -1096,7 +1103,6 @@ window.shareVideo = async function(){
       await navigator.share({
         title: 'التقارير الذكية · ksa2030.one',
         text: shareText
-        // لا نمرّر url عشان ما يتكرر (الرابط داخل النص)
       });
     } catch(err) {
       if (err.name !== 'AbortError') {
