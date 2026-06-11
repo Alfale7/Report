@@ -1,0 +1,429 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>عرض PDF · التقارير الذكية</title>
+<meta name="description" content="عارض PDF احترافي · التقارير الذكية ksa2030.one">
+
+<link rel="icon" type="image/svg+xml" href="favicon.svg">
+<link rel="icon" type="image/png" sizes="32x32" href="favicon-32x32.png">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;900&display=swap" rel="stylesheet">
+
+<!-- PDF.js Library من Mozilla -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+
+<style>
+:root{
+  --navy:#050a12;
+  --navy-2:#0a1620;
+  --teal:#2a8aab;
+  --gold:#f0b855;
+  --text:#eef4f8;
+  --text-dim:#7d94a8;
+  --border:rgba(42,138,171,0.18);
+}
+
+*{margin:0;padding:0;box-sizing:border-box;}
+
+body{
+  font-family:'Tajawal',sans-serif;
+  background:var(--navy);
+  color:var(--text);
+  min-height:100vh;
+}
+
+/* ═══ شريط علوي ═══ */
+.topbar{
+  position:sticky;
+  top:0;
+  z-index:100;
+  background:linear-gradient(180deg, var(--navy-2), rgba(10,22,32,0.95));
+  backdrop-filter:blur(10px);
+  border-bottom:1px solid var(--border);
+  padding:12px 16px;
+  display:flex;
+  align-items:center;
+  gap:12px;
+}
+
+.brand{
+  display:flex;
+  align-items:center;
+  gap:10px;
+  flex:1;
+}
+
+.brand-logo{
+  width:36px;
+  height:36px;
+  background:linear-gradient(135deg, var(--teal), var(--navy));
+  border:1.5px solid var(--gold);
+  border-radius:10px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  color:var(--gold);
+  font-weight:900;
+  font-size:1.1rem;
+  font-family:'Tajawal',serif;
+}
+
+.brand-text{
+  display:flex;
+  flex-direction:column;
+}
+
+.brand-name{
+  font-weight:900;
+  font-size:0.95rem;
+  color:var(--text);
+}
+
+.brand-sub{
+  font-size:0.7rem;
+  color:var(--teal);
+  font-weight:600;
+}
+
+/* ═══ أزرار ═══ */
+.btn{
+  background:rgba(240,184,85,0.12);
+  color:var(--gold);
+  border:1px solid rgba(240,184,85,0.3);
+  padding:8px 14px;
+  border-radius:10px;
+  cursor:pointer;
+  font:700 0.85rem 'Tajawal',sans-serif;
+  display:flex;
+  align-items:center;
+  gap:6px;
+  transition:all 0.2s;
+  text-decoration:none;
+}
+
+.btn:hover{
+  background:rgba(240,184,85,0.2);
+  transform:translateY(-1px);
+}
+
+.btn.primary{
+  background:linear-gradient(135deg, var(--gold), #d99a2b);
+  color:#3d2200;
+  border-color:transparent;
+}
+
+.btn.primary:hover{
+  box-shadow:0 6px 16px rgba(240,184,85,0.35);
+}
+
+/* ═══ عداد الصفحات ═══ */
+.page-info{
+  font-size:0.85rem;
+  color:var(--text-dim);
+  font-weight:600;
+  padding:6px 12px;
+  background:rgba(42,138,171,0.1);
+  border:1px solid var(--border);
+  border-radius:8px;
+}
+
+/* ═══ منطقة العرض ═══ */
+.viewer{
+  padding:20px 12px 40px;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  gap:14px;
+}
+
+.pdf-page{
+  max-width:100%;
+  box-shadow:0 8px 24px rgba(0,0,0,0.4);
+  border-radius:4px;
+  background:#fff;
+}
+
+/* ═══ Loading ═══ */
+.loading{
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:center;
+  min-height:60vh;
+  gap:14px;
+}
+
+.spinner{
+  width:50px;
+  height:50px;
+  border:4px solid rgba(240,184,85,0.2);
+  border-top-color:var(--gold);
+  border-radius:50%;
+  animation:spin 1s linear infinite;
+}
+
+@keyframes spin{
+  to{transform:rotate(360deg);}
+}
+
+.loading-text{
+  color:var(--text-dim);
+  font-size:0.95rem;
+  font-weight:600;
+}
+
+.loading-progress{
+  font-size:0.85rem;
+  color:var(--gold);
+  font-weight:700;
+}
+
+/* ═══ Error ═══ */
+.error{
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:center;
+  min-height:50vh;
+  padding:30px 20px;
+  text-align:center;
+  gap:14px;
+}
+
+.error-icon{
+  font-size:3rem;
+}
+
+.error-title{
+  font-size:1.2rem;
+  font-weight:900;
+  color:var(--text);
+}
+
+.error-desc{
+  color:var(--text-dim);
+  font-size:0.92rem;
+  line-height:1.7;
+  max-width:400px;
+}
+
+/* ═══ Footer ═══ */
+.viewer-footer{
+  text-align:center;
+  padding:20px;
+  color:var(--text-dim);
+  font-size:0.8rem;
+  border-top:1px solid var(--border);
+  margin-top:30px;
+}
+
+.viewer-footer a{
+  color:var(--teal);
+  text-decoration:none;
+  font-weight:700;
+}
+
+@media (max-width:600px){
+  .brand-text{display:none;}
+  .topbar{padding:10px 12px;gap:8px;}
+  .btn{padding:7px 10px;font-size:0.8rem;}
+}
+</style>
+</head>
+<body>
+
+<!-- ═══ شريط علوي ═══ -->
+<div class="topbar">
+  <a href="https://ksa2030.one" class="brand" style="text-decoration:none;color:inherit;">
+    <div class="brand-logo">ك</div>
+    <div class="brand-text">
+      <div class="brand-name">التقارير الذكية</div>
+      <div class="brand-sub">ksa2030.one</div>
+    </div>
+  </a>
+  
+  <div class="page-info" id="pageInfo" style="display:none;">
+    <span id="currentPage">1</span> / <span id="totalPages">1</span>
+  </div>
+  
+  <a href="#" class="btn primary" id="downloadBtn" style="display:none;">
+    <span>⬇</span>
+    <span>تحميل</span>
+  </a>
+</div>
+
+<!-- ═══ منطقة العرض ═══ -->
+<div class="viewer" id="viewer">
+  <div class="loading" id="loading">
+    <div class="spinner"></div>
+    <div class="loading-text">جاري تحميل الملف...</div>
+    <div class="loading-progress" id="loadProgress">0%</div>
+  </div>
+</div>
+
+<!-- ═══ Footer ═══ -->
+<div class="viewer-footer">
+  ✨ عُرض عبر التقارير الذكية · <a href="https://ksa2030.one">ksa2030.one</a>
+</div>
+
+<script>
+// ═══════════════════════════════════════════════════════
+// 📋 PDF.js Configuration
+// ═══════════════════════════════════════════════════════
+pdfjsLib.GlobalWorkerOptions.workerSrc = 
+  'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
+
+const viewer = document.getElementById('viewer');
+const loading = document.getElementById('loading');
+const pageInfo = document.getElementById('pageInfo');
+const downloadBtn = document.getElementById('downloadBtn');
+const currentPageEl = document.getElementById('currentPage');
+const totalPagesEl = document.getElementById('totalPages');
+const loadProgress = document.getElementById('loadProgress');
+
+// ═══════════════════════════════════════════════════════
+// 🔗 استخراج رابط الـ PDF من Query String
+// ═══════════════════════════════════════════════════════
+function getPdfUrl() {
+  const params = new URLSearchParams(window.location.search);
+  return params.get('url') || params.get('file');
+}
+
+// ═══════════════════════════════════════════════════════
+// ❌ عرض خطأ
+// ═══════════════════════════════════════════════════════
+function showError(title, desc) {
+  viewer.innerHTML = `
+    <div class="error">
+      <div class="error-icon">⚠️</div>
+      <div class="error-title">${title}</div>
+      <div class="error-desc">${desc}</div>
+      <a href="https://ksa2030.one" class="btn primary" style="margin-top:14px;">
+        <span>🏠</span>
+        <span>الذهاب للموقع</span>
+      </a>
+    </div>
+  `;
+}
+
+// ═══════════════════════════════════════════════════════
+// 📄 تحميل وعرض PDF
+// ═══════════════════════════════════════════════════════
+async function loadPdf() {
+  const pdfUrl = getPdfUrl();
+  
+  if (!pdfUrl) {
+    showError(
+      'لا يوجد رابط PDF',
+      'لم يتم تحديد ملف PDF للعرض. يرجى التأكد من الرابط.'
+    );
+    return;
+  }
+  
+  try {
+    // تحميل الـ PDF مع progress
+    const loadingTask = pdfjsLib.getDocument({
+      url: pdfUrl,
+      withCredentials: false,
+    });
+    
+    loadingTask.onProgress = function(progress) {
+      if (progress.total) {
+        const percent = Math.round((progress.loaded / progress.total) * 100);
+        loadProgress.textContent = percent + '%';
+      }
+    };
+    
+    const pdf = await loadingTask.promise;
+    
+    // اخفاء loading
+    loading.style.display = 'none';
+    
+    // إظهار معلومات الصفحات
+    pageInfo.style.display = 'block';
+    totalPagesEl.textContent = pdf.numPages;
+    
+    // إظهار زر التحميل
+    downloadBtn.style.display = 'flex';
+    downloadBtn.href = pdfUrl;
+    downloadBtn.setAttribute('download', '');
+    
+    // عرض كل الصفحات
+    for (let pageNum = 1; pageNum <= pdf.numPages; pageNum++) {
+      await renderPage(pdf, pageNum);
+    }
+    
+    // متابعة الصفحة الحالية أثناء الـ scroll
+    setupScrollTracking(pdf.numPages);
+    
+  } catch (err) {
+    console.error('PDF loading error:', err);
+    showError(
+      'تعذّر تحميل الملف',
+      'حدث خطأ أثناء محاولة عرض الملف. قد يكون الرابط غير صحيح أو الملف غير متاح.'
+    );
+  }
+}
+
+// ═══════════════════════════════════════════════════════
+// 🎨 عرض صفحة واحدة
+// ═══════════════════════════════════════════════════════
+async function renderPage(pdf, pageNum) {
+  const page = await pdf.getPage(pageNum);
+  
+  // حساب الـ scale بناءً على عرض الشاشة
+  const containerWidth = Math.min(window.innerWidth - 24, 900);
+  const viewport = page.getViewport({ scale: 1 });
+  const scale = (containerWidth / viewport.width) * (window.devicePixelRatio || 1);
+  const scaledViewport = page.getViewport({ scale });
+  
+  // إنشاء canvas
+  const canvas = document.createElement('canvas');
+  canvas.className = 'pdf-page';
+  canvas.dataset.page = pageNum;
+  canvas.width = scaledViewport.width;
+  canvas.height = scaledViewport.height;
+  canvas.style.width = (scaledViewport.width / (window.devicePixelRatio || 1)) + 'px';
+  canvas.style.height = (scaledViewport.height / (window.devicePixelRatio || 1)) + 'px';
+  
+  viewer.appendChild(canvas);
+  
+  // رسم الصفحة
+  const context = canvas.getContext('2d');
+  await page.render({
+    canvasContext: context,
+    viewport: scaledViewport
+  }).promise;
+}
+
+// ═══════════════════════════════════════════════════════
+// 📍 تتبّع الصفحة الحالية أثناء الـ scroll
+// ═══════════════════════════════════════════════════════
+function setupScrollTracking(totalPages) {
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        const pageNum = entry.target.dataset.page;
+        currentPageEl.textContent = pageNum;
+      }
+    });
+  }, { threshold: 0.5 });
+  
+  document.querySelectorAll('.pdf-page').forEach(page => {
+    observer.observe(page);
+  });
+}
+
+// ═══════════════════════════════════════════════════════
+// 🚀 ابدأ
+// ═══════════════════════════════════════════════════════
+loadPdf();
+</script>
+
+</body>
+</html>

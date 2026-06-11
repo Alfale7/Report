@@ -1003,25 +1003,16 @@ window.uploadVideo = async function(){
       progressPercent.textContent = percent + '%';
     });
     
-    // 🆕 الحل الأقوى: نضيف flag في URL لمنع التنزيل التلقائي
-    // Cloudinary يدعم fl_attachment:false للعرض inline
-    // نحوّل من raw/upload → image/upload مع fl_attachment:false
-    let displayUrl = pdfUrl;
-    
-    // إذا كان raw/upload نحوّله image/upload
-    if (displayUrl.includes('/raw/upload/')) {
-      displayUrl = displayUrl.replace('/raw/upload/', '/image/upload/fl_attachment:false/');
-    } 
-    // إذا كان image/upload نضيف fl_attachment:false
-    else if (displayUrl.includes('/image/upload/') && !displayUrl.includes('fl_attachment')) {
-      displayUrl = displayUrl.replace('/image/upload/', '/image/upload/fl_attachment:false/');
-    }
+    // 🆕 الحل النهائي: نستخدم PDF viewer داخلي بـ PDF.js
+    // هذا يضمن العرض في كل المتصفحات بدون أي إعدادات Cloudinary
+    // المستخدم يبقى في موقعك (SEO + branding)
+    const viewerUrl = window.location.origin + '/pdf-view.html?url=' + encodeURIComponent(pdfUrl);
     
     // النجاح
-    document.getElementById('urlInput').value = displayUrl;
-    document.getElementById('openLink').href = displayUrl;
-    document.getElementById('qrLink').href = 'link-qr.html?url=' + encodeURIComponent(displayUrl);
-    _uploadedPdfUrl = displayUrl;
+    document.getElementById('urlInput').value = viewerUrl;
+    document.getElementById('openLink').href = viewerUrl;
+    document.getElementById('qrLink').href = 'link-qr.html?url=' + encodeURIComponent(viewerUrl);
+    _uploadedPdfUrl = viewerUrl;
     
     progressWrap.classList.remove('show');
     actionCard.style.display = 'none';
