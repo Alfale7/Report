@@ -14,9 +14,6 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;900&display=swap" rel="stylesheet">
 
-<!-- PDF.js Library من Mozilla -->
-<script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
-
 <style>
 :root{
   --navy:#050a12;
@@ -30,25 +27,29 @@
 
 *{margin:0;padding:0;box-sizing:border-box;}
 
+html, body{
+  height:100%;
+  overflow:hidden;
+}
+
 body{
   font-family:'Tajawal',sans-serif;
   background:var(--navy);
   color:var(--text);
-  min-height:100vh;
+  display:flex;
+  flex-direction:column;
 }
 
 /* ═══ شريط علوي ═══ */
 .topbar{
-  position:sticky;
-  top:0;
-  z-index:100;
   background:linear-gradient(180deg, var(--navy-2), rgba(10,22,32,0.95));
-  backdrop-filter:blur(10px);
   border-bottom:1px solid var(--border);
-  padding:12px 16px;
+  padding:10px 16px;
   display:flex;
   align-items:center;
   gap:12px;
+  flex-shrink:0;
+  z-index:100;
 }
 
 .brand{
@@ -56,6 +57,8 @@ body{
   align-items:center;
   gap:10px;
   flex:1;
+  text-decoration:none;
+  color:inherit;
 }
 
 .brand-logo{
@@ -70,7 +73,6 @@ body{
   color:var(--gold);
   font-weight:900;
   font-size:1.1rem;
-  font-family:'Tajawal',serif;
 }
 
 .brand-text{
@@ -90,11 +92,10 @@ body{
   font-weight:600;
 }
 
-/* ═══ أزرار ═══ */
 .btn{
-  background:rgba(240,184,85,0.12);
-  color:var(--gold);
-  border:1px solid rgba(240,184,85,0.3);
+  background:linear-gradient(135deg, var(--gold), #d99a2b);
+  color:#3d2200;
+  border:none;
   padding:8px 14px;
   border-radius:10px;
   cursor:pointer;
@@ -107,55 +108,35 @@ body{
 }
 
 .btn:hover{
-  background:rgba(240,184,85,0.2);
   transform:translateY(-1px);
-}
-
-.btn.primary{
-  background:linear-gradient(135deg, var(--gold), #d99a2b);
-  color:#3d2200;
-  border-color:transparent;
-}
-
-.btn.primary:hover{
   box-shadow:0 6px 16px rgba(240,184,85,0.35);
 }
 
-/* ═══ عداد الصفحات ═══ */
-.page-info{
-  font-size:0.85rem;
-  color:var(--text-dim);
-  font-weight:600;
-  padding:6px 12px;
-  background:rgba(42,138,171,0.1);
-  border:1px solid var(--border);
-  border-radius:8px;
-}
-
 /* ═══ منطقة العرض ═══ */
-.viewer{
-  padding:20px 12px 40px;
-  display:flex;
-  flex-direction:column;
-  align-items:center;
-  gap:14px;
+.viewer-area{
+  flex:1;
+  position:relative;
+  background:#525659;
+  overflow:hidden;
 }
 
-.pdf-page{
-  max-width:100%;
-  box-shadow:0 8px 24px rgba(0,0,0,0.4);
-  border-radius:4px;
-  background:#fff;
+.pdf-frame{
+  width:100%;
+  height:100%;
+  border:none;
 }
 
 /* ═══ Loading ═══ */
 .loading{
+  position:absolute;
+  inset:0;
   display:flex;
   flex-direction:column;
   align-items:center;
   justify-content:center;
-  min-height:60vh;
+  background:var(--navy);
   gap:14px;
+  z-index:10;
 }
 
 .spinner{
@@ -177,22 +158,19 @@ body{
   font-weight:600;
 }
 
-.loading-progress{
-  font-size:0.85rem;
-  color:var(--gold);
-  font-weight:700;
-}
-
 /* ═══ Error ═══ */
 .error{
+  position:absolute;
+  inset:0;
   display:flex;
   flex-direction:column;
   align-items:center;
   justify-content:center;
-  min-height:50vh;
   padding:30px 20px;
   text-align:center;
   gap:14px;
+  background:var(--navy);
+  z-index:10;
 }
 
 .error-icon{
@@ -210,22 +188,7 @@ body{
   font-size:0.92rem;
   line-height:1.7;
   max-width:400px;
-}
-
-/* ═══ Footer ═══ */
-.viewer-footer{
-  text-align:center;
-  padding:20px;
-  color:var(--text-dim);
-  font-size:0.8rem;
-  border-top:1px solid var(--border);
-  margin-top:30px;
-}
-
-.viewer-footer a{
-  color:var(--teal);
-  text-decoration:none;
-  font-weight:700;
+  margin-bottom:8px;
 }
 
 @media (max-width:600px){
@@ -239,7 +202,7 @@ body{
 
 <!-- ═══ شريط علوي ═══ -->
 <div class="topbar">
-  <a href="https://ksa2030.one" class="brand" style="text-decoration:none;color:inherit;">
+  <a href="https://ksa2030.one" class="brand">
     <div class="brand-logo">ك</div>
     <div class="brand-text">
       <div class="brand-name">التقارير الذكية</div>
@@ -247,182 +210,83 @@ body{
     </div>
   </a>
   
-  <div class="page-info" id="pageInfo" style="display:none;">
-    <span id="currentPage">1</span> / <span id="totalPages">1</span>
-  </div>
-  
-  <a href="#" class="btn primary" id="downloadBtn" style="display:none;">
+  <a href="#" class="btn" id="downloadBtn" style="display:none;" target="_blank">
     <span>⬇</span>
-    <span>تحميل</span>
+    <span>تنزيل</span>
   </a>
 </div>
 
 <!-- ═══ منطقة العرض ═══ -->
-<div class="viewer" id="viewer">
+<div class="viewer-area">
   <div class="loading" id="loading">
     <div class="spinner"></div>
     <div class="loading-text">جاري تحميل الملف...</div>
-    <div class="loading-progress" id="loadProgress">0%</div>
   </div>
-</div>
-
-<!-- ═══ Footer ═══ -->
-<div class="viewer-footer">
-  ✨ عُرض عبر التقارير الذكية · <a href="https://ksa2030.one">ksa2030.one</a>
+  
+  <iframe id="pdfFrame" class="pdf-frame" style="display:none;"></iframe>
 </div>
 
 <script>
-// ═══════════════════════════════════════════════════════
-// 📋 PDF.js Configuration
-// ═══════════════════════════════════════════════════════
-pdfjsLib.GlobalWorkerOptions.workerSrc = 
-  'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
+// استخراج رابط الـ PDF
+const params = new URLSearchParams(window.location.search);
+const pdfUrl = params.get('url') || params.get('file');
 
-const viewer = document.getElementById('viewer');
 const loading = document.getElementById('loading');
-const pageInfo = document.getElementById('pageInfo');
+const pdfFrame = document.getElementById('pdfFrame');
 const downloadBtn = document.getElementById('downloadBtn');
-const currentPageEl = document.getElementById('currentPage');
-const totalPagesEl = document.getElementById('totalPages');
-const loadProgress = document.getElementById('loadProgress');
 
-// ═══════════════════════════════════════════════════════
-// 🔗 استخراج رابط الـ PDF من Query String
-// ═══════════════════════════════════════════════════════
-function getPdfUrl() {
-  const params = new URLSearchParams(window.location.search);
-  return params.get('url') || params.get('file');
-}
-
-// ═══════════════════════════════════════════════════════
-// ❌ عرض خطأ
-// ═══════════════════════════════════════════════════════
-function showError(title, desc) {
-  viewer.innerHTML = `
+function showError(title, desc, retryUrl) {
+  loading.innerHTML = `
     <div class="error">
       <div class="error-icon">⚠️</div>
       <div class="error-title">${title}</div>
       <div class="error-desc">${desc}</div>
-      <a href="https://ksa2030.one" class="btn primary" style="margin-top:14px;">
+      ${retryUrl ? `
+        <a href="${retryUrl}" class="btn" target="_blank" style="margin-top:10px;">
+          <span>⬇</span>
+          <span>تنزيل الملف مباشرة</span>
+        </a>
+      ` : ''}
+      <a href="https://ksa2030.one" class="btn" style="margin-top:6px;background:transparent;color:#fff;border:1px solid var(--border);">
         <span>🏠</span>
-        <span>الذهاب للموقع</span>
+        <span>العودة للموقع</span>
       </a>
     </div>
   `;
 }
 
-// ═══════════════════════════════════════════════════════
-// 📄 تحميل وعرض PDF
-// ═══════════════════════════════════════════════════════
-async function loadPdf() {
-  const pdfUrl = getPdfUrl();
+if (!pdfUrl) {
+  showError('لا يوجد رابط PDF', 'لم يتم تحديد ملف PDF للعرض.');
+} else {
+  // إعداد زر التنزيل
+  downloadBtn.href = pdfUrl;
+  downloadBtn.style.display = 'flex';
   
-  if (!pdfUrl) {
-    showError(
-      'لا يوجد رابط PDF',
-      'لم يتم تحديد ملف PDF للعرض. يرجى التأكد من الرابط.'
-    );
-    return;
-  }
+  // 🆕 الحل: استخدام Mozilla PDF.js Web Viewer مباشرة
+  // مستضاف على mozilla.github.io - يتعامل مع PDFs بشكل احترافي
+  const mozillaViewer = `https://mozilla.github.io/pdf.js/web/viewer.html?file=${encodeURIComponent(pdfUrl)}`;
   
-  try {
-    // تحميل الـ PDF مع progress
-    const loadingTask = pdfjsLib.getDocument({
-      url: pdfUrl,
-      withCredentials: false,
-    });
-    
-    loadingTask.onProgress = function(progress) {
-      if (progress.total) {
-        const percent = Math.round((progress.loaded / progress.total) * 100);
-        loadProgress.textContent = percent + '%';
-      }
-    };
-    
-    const pdf = await loadingTask.promise;
-    
-    // اخفاء loading
-    loading.style.display = 'none';
-    
-    // إظهار معلومات الصفحات
-    pageInfo.style.display = 'block';
-    totalPagesEl.textContent = pdf.numPages;
-    
-    // إظهار زر التحميل
-    downloadBtn.style.display = 'flex';
-    downloadBtn.href = pdfUrl;
-    downloadBtn.setAttribute('download', '');
-    
-    // عرض كل الصفحات
-    for (let pageNum = 1; pageNum <= pdf.numPages; pageNum++) {
-      await renderPage(pdf, pageNum);
+  pdfFrame.src = mozillaViewer;
+  
+  // إخفاء loading لما الـ iframe يحمل
+  pdfFrame.onload = function() {
+    setTimeout(() => {
+      loading.style.display = 'none';
+      pdfFrame.style.display = 'block';
+    }, 500);
+  };
+  
+  // Fallback: إذا فشل بعد 20 ثانية، اعرض خيار التنزيل
+  setTimeout(function() {
+    if (loading.style.display !== 'none') {
+      showError(
+        'يستغرق التحميل وقتاً طويلاً',
+        'إذا لم يتم العرض، يمكنك تنزيل الملف مباشرة.',
+        pdfUrl
+      );
     }
-    
-    // متابعة الصفحة الحالية أثناء الـ scroll
-    setupScrollTracking(pdf.numPages);
-    
-  } catch (err) {
-    console.error('PDF loading error:', err);
-    showError(
-      'تعذّر تحميل الملف',
-      'حدث خطأ أثناء محاولة عرض الملف. قد يكون الرابط غير صحيح أو الملف غير متاح.'
-    );
-  }
+  }, 20000);
 }
-
-// ═══════════════════════════════════════════════════════
-// 🎨 عرض صفحة واحدة
-// ═══════════════════════════════════════════════════════
-async function renderPage(pdf, pageNum) {
-  const page = await pdf.getPage(pageNum);
-  
-  // حساب الـ scale بناءً على عرض الشاشة
-  const containerWidth = Math.min(window.innerWidth - 24, 900);
-  const viewport = page.getViewport({ scale: 1 });
-  const scale = (containerWidth / viewport.width) * (window.devicePixelRatio || 1);
-  const scaledViewport = page.getViewport({ scale });
-  
-  // إنشاء canvas
-  const canvas = document.createElement('canvas');
-  canvas.className = 'pdf-page';
-  canvas.dataset.page = pageNum;
-  canvas.width = scaledViewport.width;
-  canvas.height = scaledViewport.height;
-  canvas.style.width = (scaledViewport.width / (window.devicePixelRatio || 1)) + 'px';
-  canvas.style.height = (scaledViewport.height / (window.devicePixelRatio || 1)) + 'px';
-  
-  viewer.appendChild(canvas);
-  
-  // رسم الصفحة
-  const context = canvas.getContext('2d');
-  await page.render({
-    canvasContext: context,
-    viewport: scaledViewport
-  }).promise;
-}
-
-// ═══════════════════════════════════════════════════════
-// 📍 تتبّع الصفحة الحالية أثناء الـ scroll
-// ═══════════════════════════════════════════════════════
-function setupScrollTracking(totalPages) {
-  const observer = new IntersectionObserver((entries) => {
-    entries.forEach(entry => {
-      if (entry.isIntersecting) {
-        const pageNum = entry.target.dataset.page;
-        currentPageEl.textContent = pageNum;
-      }
-    });
-  }, { threshold: 0.5 });
-  
-  document.querySelectorAll('.pdf-page').forEach(page => {
-    observer.observe(page);
-  });
-}
-
-// ═══════════════════════════════════════════════════════
-// 🚀 ابدأ
-// ═══════════════════════════════════════════════════════
-loadPdf();
 </script>
 
 </body>
