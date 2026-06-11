@@ -1647,8 +1647,10 @@ async function shareReport(){
         try {
           await navigator.share({
             files: [file],
-            title: document.title,
-            text: '🇸🇦 ' + document.title
+            title: 'التقارير الذكية · ksa2030.one',
+            text: '✨ تم إنشاؤه الرابط عبر :\n' +
+                  '🌐 www.ksa2030.one\n' +
+                  'التقارير الذكية — منصة تقارير المدرسة'
           });
           if(typeof showToast === 'function') showToast('✅ تم المشاركة');
         } catch(err) {
@@ -1896,8 +1898,35 @@ async function exportAsPDFv2(){
       author:'منصة التقارير - ksa2030.one',
       creator:'ksa2030.one'
     });
-    pdf.save('تقرير_الفعالية.pdf');
-    showToast(I18N[currentLang].toastDone);
+    // ═══ حفظ - منطق ذكي ═══
+    const pdfBlob = pdf.output('blob');
+    const pdfFile = new File([pdfBlob], 'تقرير_الفعالية.pdf', { type: 'application/pdf' });
+    
+    const shareText = '✨ تم إنشاؤه الرابط عبر :\n' +
+                      '🌐 www.ksa2030.one\n' +
+                      'التقارير الذكية — منصة تقارير المدرسة';
+    
+    const canShareFiles = navigator.share && navigator.canShare && navigator.canShare({ files: [pdfFile] });
+    const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
+    
+    if (canShareFiles && isMobile) {
+      try {
+        await navigator.share({
+          files: [pdfFile],
+          title: 'التقارير الذكية · ksa2030.one',
+          text: shareText
+        });
+        showToast(I18N[currentLang].toastDone);
+      } catch(err) {
+        if (err.name !== 'AbortError') {
+          pdf.save('تقرير_الفعالية.pdf');
+          showToast(I18N[currentLang].toastDone);
+        }
+      }
+    } else {
+      pdf.save('تقرير_الفعالية.pdf');
+      setTimeout(() => showCopyTextModal(shareText), 600);
+    }
   }catch(e){
     console.error(e);
     showToast(I18N[currentLang].toastError);
@@ -2259,6 +2288,137 @@ function compressImageAsync(dataUrl, maxWidth = 600, quality = 0.6) {
     if (loader) loader.remove();
   }
 })();
+
+// ═══════════════════════════════════════════════════════
+// 📋 Modal النص الترويجي للنسخ (ديسكتوب بعد تنزيل PDF)
+// ═══════════════════════════════════════════════════════
+function showCopyTextModal(text){
+  const old = document.getElementById('_copyTextModal');
+  if (old) old.remove();
+  
+  const modal = document.createElement('div');
+  modal.id = '_copyTextModal';
+  modal.style.cssText = `
+    position:fixed;inset:0;background:rgba(7,38,49,0.88);
+    backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);
+    z-index:99999;display:flex;align-items:center;justify-content:center;
+    padding:20px;animation:_ctmFade 0.3s ease;
+  `;
+  modal.innerHTML = `
+    <style>
+      @keyframes _ctmFade{from{opacity:0;}to{opacity:1;}}
+      @keyframes _ctmSlide{from{opacity:0;transform:translateY(20px) scale(0.95);}to{opacity:1;transform:translateY(0) scale(1);}}
+    </style>
+    <div style="
+      background:linear-gradient(180deg, #fefdf8, #fdf5f0);
+      border:2px solid #e8c547;
+      border-radius:24px;
+      padding:28px 22px 22px;
+      max-width:440px;width:100%;
+      box-shadow:0 24px 60px rgba(0,0,0,0.5);
+      animation:_ctmSlide 0.4s cubic-bezier(0.22,1,0.36,1);
+      position:relative;
+      font-family:'Tajawal',sans-serif;
+    ">
+      <button onclick="document.getElementById('_copyTextModal').remove()" 
+              style="position:absolute;top:14px;left:14px;
+                     width:34px;height:34px;background:#f1f3f0;
+                     border:none;border-radius:50%;cursor:pointer;
+                     font-size:1.1rem;color:#666;font-weight:900;
+                     display:flex;align-items:center;justify-content:center;
+                     transition:all 0.2s;">✕</button>
+      
+      <div style="text-align:center;margin-bottom:18px;">
+        <div style="
+          width:60px;height:60px;margin:0 auto 12px;
+          background:linear-gradient(135deg,#16a34a,#15803d);
+          border-radius:18px;
+          display:flex;align-items:center;justify-content:center;
+          font-size:1.8rem;color:#fff;
+          box-shadow:0 8px 20px rgba(22,163,74,0.35);
+        ">✅</div>
+        <h2 style="
+          font:900 1.25rem 'Reem Kufi','Tajawal',sans-serif;
+          color:#0b3946;margin:0 0 6px;
+        ">تم تنزيل PDF بنجاح!</h2>
+        <p style="font-size:0.86rem;color:#666;margin:0;">
+          📋 انسخ هذا النص لمشاركته مع الملف
+        </p>
+      </div>
+      
+      <div style="
+        background:#fff;
+        border:1.5px solid rgba(232,197,71,0.5);
+        border-radius:14px;
+        padding:14px 16px;
+        margin-bottom:14px;
+        font-size:0.92rem;
+        line-height:1.8;
+        color:#0b3946;
+        white-space:pre-wrap;
+        text-align:right;
+        direction:rtl;
+        font-weight:600;
+        max-height:200px;
+        overflow-y:auto;
+      " id="_copyTextContent">${text}</div>
+      
+      <button onclick="(async()=>{
+        try{
+          await navigator.clipboard.writeText(document.getElementById('_copyTextContent').textContent);
+          const btn=event.target.closest('button');
+          btn.innerHTML='<span style=\'font-size:1.1rem;\'>✓</span> <span>تم النسخ بنجاح</span>';
+          btn.style.background='linear-gradient(135deg,#16a34a,#15803d)';
+          btn.style.color='#fff';
+          setTimeout(()=>document.getElementById('_copyTextModal').remove(), 1200);
+        }catch(e){
+          alert('انسخ النص يدوياً من الصندوق');
+        }
+      })()" style="
+        width:100%;
+        padding:14px;
+        background:linear-gradient(135deg,#e8c547,#d4a657);
+        color:#3d2200;
+        border:none;
+        border-radius:14px;
+        font:900 1rem 'Tajawal',sans-serif;
+        cursor:pointer;
+        display:flex;align-items:center;justify-content:center;gap:8px;
+        box-shadow:0 6px 16px rgba(232,197,71,0.35);
+        transition:all 0.2s;
+      "
+      onmouseover="this.style.transform='translateY(-2px)';this.style.boxShadow='0 10px 22px rgba(232,197,71,0.5)';"
+      onmouseout="this.style.transform='';this.style.boxShadow='0 6px 16px rgba(232,197,71,0.35)';">
+        <span style="font-size:1.1rem;">📋</span>
+        <span>نسخ النص للمشاركة</span>
+      </button>
+      
+      <p style="
+        text-align:center;
+        font-size:0.78rem;
+        color:#888;
+        margin-top:12px;
+        line-height:1.6;
+      ">
+        💡 افتح واتساب ويب ↞ الصق النص ↞ ارفق الـ PDF المُنزّل
+      </p>
+    </div>
+  `;
+  document.body.appendChild(modal);
+  
+  function closeOnEsc(e){
+    if (e.key === 'Escape') {
+      modal.remove();
+      document.removeEventListener('keydown', closeOnEsc);
+    }
+  }
+  document.addEventListener('keydown', closeOnEsc);
+  
+  modal.addEventListener('click', (e) => {
+    if (e.target === modal) modal.remove();
+  });
+}
+
 </script>
 
 </body>
