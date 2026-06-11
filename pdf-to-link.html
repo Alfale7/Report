@@ -916,7 +916,7 @@ function uploadCloudinary(file, onProgress){
     const formData = new FormData();
     formData.append('file', file);
     formData.append('upload_preset', CLOUDINARY_UPLOAD_PRESET);
-    formData.append('folder', 'ksa2030/pdfs');
+    formData.append('folder', 'ksa2030.one/pdfs');
     
     const xhr = new XMLHttpRequest();
     xhr.timeout = 300000;

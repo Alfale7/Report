@@ -760,7 +760,7 @@ function uploadCloudinary(file, onProgress){
     const formData = new FormData();
     formData.append('file', file);
     formData.append('upload_preset', CLOUDINARY_UPLOAD_PRESET);
-    formData.append('folder', 'ksa2030');
+    formData.append('folder', 'ksa2030.one/qr-files');
     
     const xhr = new XMLHttpRequest();
     xhr.timeout = 120000; // دقيقتين للملفات الكبيرة
