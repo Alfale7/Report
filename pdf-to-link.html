@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="theme-color" content="#050a12">
-<title>تحويل الفيديو إلى رابط · التقارير الذكية</title>
+<title>تحويل PDF إلى رابط · التقارير الذكية</title>
 
 <link rel="icon" type="image/svg+xml" href="favicon.svg">
 <link rel="icon" type="image/png" sizes="48x48" href="favicon-48x48.png">
@@ -51,13 +51,13 @@ body{
 .bg-fx::before{
   content:"";position:absolute;top:-15%;right:-10%;
   width:500px;height:500px;
-  background:radial-gradient(circle, rgba(240,184,85,0.18) 0%, transparent 65%);
+  background:radial-gradient(circle, rgba(212,69,69,0.18) 0%, transparent 65%);
   border-radius:50%;
 }
 .bg-fx::after{
   content:"";position:absolute;bottom:-15%;left:-10%;
   width:500px;height:500px;
-  background:radial-gradient(circle, rgba(42,138,171,0.15) 0%, transparent 65%);
+  background:radial-gradient(circle, rgba(240,184,85,0.12) 0%, transparent 65%);
   border-radius:50%;
 }
 .bg-grid{
@@ -219,6 +219,40 @@ body{
   object-fit:contain;
   display:block;
   background:#000;
+}
+/* ═══ معاينة PDF ═══ */
+.pdf-preview-icon{
+  width:100%;
+  height:200px;
+  background:linear-gradient(135deg, #dc2626, #b91c1c);
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:center;
+  gap:8px;
+  position:relative;
+  overflow:hidden;
+}
+.pdf-preview-icon::before{
+  content:'';
+  position:absolute;
+  inset:0;
+  background:
+    radial-gradient(circle at 30% 30%, rgba(255,255,255,0.15) 0%, transparent 50%),
+    radial-gradient(circle at 70% 70%, rgba(0,0,0,0.2) 0%, transparent 50%);
+}
+.pdf-icon-big{
+  font-size:4rem;
+  z-index:1;
+  filter:drop-shadow(0 4px 12px rgba(0,0,0,0.3));
+}
+.pdf-label{
+  z-index:1;
+  color:#fff;
+  font-weight:900;
+  font-size:1.1rem;
+  letter-spacing:2px;
+  text-shadow:0 2px 6px rgba(0,0,0,0.3);
 }
 .preview-remove{
   position:absolute;
@@ -622,19 +656,22 @@ body{
       <div class="ring"></div>
       <div class="inner">
         <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-          <polygon points="23 7 16 12 23 17 23 7"/>
-          <rect x="1" y="5" width="15" height="14" rx="2" ry="2"/>
+          <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+          <polyline points="14 2 14 8 20 8"/>
+          <line x1="9" y1="14" x2="15" y2="14"/>
+          <line x1="9" y1="18" x2="15" y2="18"/>
+          <line x1="9" y1="10" x2="11" y2="10"/>
         </svg>
       </div>
     </div>
-    <h1 class="title">تحويل الفيديو إلى رابط</h1>
-    <p class="subtitle">ارفع فيديو واحصل على رابط قابل للمشاركة فوراً عبر واتساب وغيره</p>
+    <h1 class="title">تحويل PDF إلى رابط</h1>
+    <p class="subtitle">ارفع ملف PDF واحصل على رابط قابل للمشاركة فوراً عبر واتساب وغيره</p>
   </div>
 
   <div class="card">
-    <div class="card-title">📤 رفع الفيديو</div>
-    <div class="upload-zone" id="uploadZone" onclick="if(!hasVideo)document.getElementById('fileInput').click()">
-      <input type="file" id="fileInput" accept="video/*" style="display:none">
+    <div class="card-title">📤 رفع ملف PDF</div>
+    <div class="upload-zone" id="uploadZone" onclick="if(!hasPdf)document.getElementById('fileInput').click()">
+      <input type="file" id="fileInput" accept=".pdf,application/pdf" style="display:none">
       
       <div id="uploadInitial">
         <div class="upload-icon">
@@ -644,19 +681,22 @@ body{
             <line x1="12" y1="3" x2="12" y2="15"/>
           </svg>
         </div>
-        <div class="upload-title">اسحب الفيديو هنا أو اختر من جوالك</div>
-        <div class="upload-sub">يدعم MP4 · MOV · AVI · WebM · حتى 100 ميجا</div>
+        <div class="upload-title">اسحب ملف PDF هنا أو اختر من جوالك</div>
+        <div class="upload-sub">يدعم ملفات PDF · حتى 100 ميجا</div>
         <button class="upload-btn" type="button" onclick="event.stopPropagation();document.getElementById('fileInput').click()">
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
             <path d="M12 5v14M5 12h14"/>
           </svg>
-          <span>اختيار الفيديو</span>
+          <span>اختيار الملف</span>
         </button>
       </div>
       
       <div class="preview-wrap" id="previewWrap" style="display:none;">
         <button class="preview-remove" onclick="removeVideo(event)" title="إزالة">✕</button>
-        <video class="preview-video" id="previewVideo" controls playsinline></video>
+        <div class="pdf-preview-icon" id="previewVideo">
+          <div class="pdf-icon-big">📄</div>
+          <div class="pdf-label">PDF</div>
+        </div>
         <div class="preview-info" id="previewInfo"></div>
       </div>
     </div>
@@ -706,7 +746,7 @@ body{
     
     <div class="result-actions">
       <a class="result-btn" id="openLink" href="#" target="_blank">
-        <span>🎬</span><span>فتح الفيديو</span>
+        <span>📄</span><span>فتح الملف</span>
       </a>
       <a class="result-btn" id="qrLink" href="#">
         <span>📱</span><span>إنشاء QR</span>
@@ -714,10 +754,10 @@ body{
     </div>
     <div class="result-actions" style="margin-top:8px;">
       <button class="result-btn" id="whatsappShare" onclick="shareVideo()" style="background:rgba(37,211,102,0.12);color:#86efac;border-color:rgba(37,211,102,0.3);">
-        <span>💬</span><span>مشاركة الفيديو</span>
+        <span>💬</span><span>مشاركة الملف</span>
       </button>
       <button class="result-btn" onclick="resetUpload()">
-        <span>🔄</span><span>فيديو جديد</span>
+        <span>🔄</span><span>ملف جديد</span>
       </button>
     </div>
   </div>
@@ -758,7 +798,7 @@ body{
       <a href="index.html" class="limit-btn limit-btn-primary">
         <span>🏠</span><span>الذهاب للأدوات الأخرى</span>
       </a>
-      <a href="https://wa.me/966550522867?text=أحتاج+المساعدة+في+تحويل+فيديو" target="_blank" class="limit-btn limit-btn-secondary">
+      <a href="https://wa.me/966550522867?text=أحتاج+المساعدة+في+تحويل+PDF" target="_blank" class="limit-btn limit-btn-secondary">
         <span>💬</span><span>تواصل معنا</span>
       </a>
     </div>
@@ -772,8 +812,8 @@ const CLOUDINARY_UPLOAD_PRESET = 'pdf_upload';
 const MAX_FILE_SIZE = 100 * 1024 * 1024; // 100MB
 
 let selectedFile = null;
-let hasVideo = false;
-let _uploadedVideoUrl = '';
+let hasPdf = false;
+let _uploadedPdfUrl = '';
 
 const uploadZone = document.getElementById('uploadZone');
 const fileInput = document.getElementById('fileInput');
@@ -792,13 +832,13 @@ const resultCard = document.getElementById('resultCard');
 // Drag & Drop
 uploadZone.addEventListener('dragover', (e) => {
   e.preventDefault();
-  if (!hasVideo) uploadZone.classList.add('dragover');
+  if (!hasPdf) uploadZone.classList.add('dragover');
 });
 uploadZone.addEventListener('dragleave', () => uploadZone.classList.remove('dragover'));
 uploadZone.addEventListener('drop', (e) => {
   e.preventDefault();
   uploadZone.classList.remove('dragover');
-  if (!hasVideo && e.dataTransfer.files.length > 0) handleFile(e.dataTransfer.files[0]);
+  if (!hasPdf && e.dataTransfer.files.length > 0) handleFile(e.dataTransfer.files[0]);
 });
 
 fileInput.addEventListener('change', (e) => {
@@ -806,20 +846,19 @@ fileInput.addEventListener('change', (e) => {
 });
 
 function handleFile(file){
-  if (!file.type.startsWith('video/')) {
-    showStatus('❌ يرجى اختيار ملف فيديو فقط', 'error');
+  if (!file.type.includes('pdf') && !file.name.toLowerCase().endsWith('.pdf')) {
+    showStatus('❌ يرجى اختيار ملف PDF فقط', 'error');
     return;
   }
   if (file.size > MAX_FILE_SIZE) {
-    showStatus('❌ حجم الفيديو كبير جداً (الحد الأقصى 100 ميجا)', 'error');
+    showStatus('❌ حجم الملف كبير جداً (الحد الأقصى 100 ميجا)', 'error');
     return;
   }
   
   selectedFile = file;
-  hasVideo = true;
+  hasPdf = true;
   
-  const url = URL.createObjectURL(file);
-  previewVideo.src = url;
+  // لا نحتاج لـ blob URL في PDF - بس نعرض الأيقونة
   
   const sizeMB = (file.size / (1024 * 1024)).toFixed(1);
   previewInfo.textContent = `${file.name} · ${sizeMB} ميجا`;
@@ -837,10 +876,8 @@ function handleFile(file){
 
 window.removeVideo = function(event){
   event.stopPropagation();
-  if (previewVideo.src) URL.revokeObjectURL(previewVideo.src);
   selectedFile = null;
-  hasVideo = false;
-  previewVideo.src = '';
+  hasPdf = false;
   fileInput.value = '';
   uploadInitial.style.display = 'block';
   previewWrap.style.display = 'none';
@@ -853,7 +890,7 @@ window.removeVideo = function(event){
 window.resetUpload = function() {
   if (previewVideo.src) URL.revokeObjectURL(previewVideo.src);
   selectedFile = null;
-  hasVideo = false;
+  hasPdf = false;
   previewVideo.src = '';
   fileInput.value = '';
   uploadInitial.style.display = 'block';
@@ -879,7 +916,7 @@ function uploadCloudinary(file, onProgress){
     const formData = new FormData();
     formData.append('file', file);
     formData.append('upload_preset', CLOUDINARY_UPLOAD_PRESET);
-    formData.append('folder', 'ksa2030/videos');
+    formData.append('folder', 'ksa2030/pdfs');
     
     const xhr = new XMLHttpRequest();
     xhr.timeout = 300000;
@@ -970,7 +1007,7 @@ window.uploadVideo = async function(){
     document.getElementById('urlInput').value = videoUrl;
     document.getElementById('openLink').href = videoUrl;
     document.getElementById('qrLink').href = 'link-qr.html?url=' + encodeURIComponent(videoUrl);
-    _uploadedVideoUrl = videoUrl;
+    _uploadedPdfUrl = videoUrl;
     
     progressWrap.classList.remove('show');
     actionCard.style.display = 'none';
@@ -1032,13 +1069,13 @@ window.copyUrl = async function(){
   }, 2000);
 };
 
-// ═══ مشاركة الفيديو ═══
+// ═══ مشاركة الملف ═══
 window.shareVideo = async function(){
-  if (!_uploadedVideoUrl) return;
+  if (!_uploadedPdfUrl) return;
   
   // النص مرتّب: الرابط أولاً ثم التعريف
-  const shareText = '🎬 رابط الفيديو:\n' +
-                    _uploadedVideoUrl + '\n' +
+  const shareText = '📄 رابط ملف PDF:\n' +
+                    _uploadedPdfUrl + '\n' +
                     '\n' +
                     '━━━━━━━━━━━━━━━━\n' +
                     '\n' +
