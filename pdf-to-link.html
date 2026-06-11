@@ -917,10 +917,11 @@ function uploadCloudinary(file, onProgress){
     formData.append('file', file);
     formData.append('upload_preset', CLOUDINARY_UPLOAD_PRESET);
     formData.append('folder', 'ksa2030.one/pdfs');
+    formData.append('resource_type', 'raw');  // 🆕 مهم: نحفظ PDF كملف خام
     
     const xhr = new XMLHttpRequest();
     xhr.timeout = 300000;
-    xhr.open('POST', `https://api.cloudinary.com/v1_1/${CLOUDINARY_CLOUD_NAME}/auto/upload`);
+    xhr.open('POST', `https://api.cloudinary.com/v1_1/${CLOUDINARY_CLOUD_NAME}/raw/upload`);
     
     xhr.upload.addEventListener('progress', (e) => {
       if(e.lengthComputable && onProgress){
