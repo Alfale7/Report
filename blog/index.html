@@ -262,43 +262,7 @@ body::before{
   .hero-desc{font-size:0.95rem;}
 }
 
-/* ═══ Categories ═══ */
-.categories{
-  max-width:1100px;
-  margin:0 auto 40px;
-  padding:0 20px;
-  display:flex;
-  flex-wrap:wrap;
-  gap:10px;
-  justify-content:center;
-}
 
-.cat-pill{
-  padding:8px 18px;
-  background:var(--card-bg);
-  border:1px solid var(--border);
-  border-radius:20px;
-  color:var(--text);
-  font-weight:700;
-  font-size:0.88rem;
-  cursor:pointer;
-  transition:all 0.2s;
-  display:inline-flex;
-  align-items:center;
-  gap:6px;
-}
-
-.cat-pill:hover{
-  border-color:var(--gold);
-  color:var(--gold);
-  transform:translateY(-1px);
-}
-
-.cat-pill.active{
-  background:linear-gradient(135deg, var(--gold), var(--gold-dark));
-  color:#3d2200;
-  border-color:transparent;
-}
 
 /* ═══ Posts Grid ═══ */
 .posts{
@@ -550,15 +514,6 @@ body::before{
   </p>
 </section>
 
-<!-- ═══ Categories ═══ -->
-<div class="categories">
-  <button class="cat-pill active" data-cat="all">📋 الكل</button>
-  <button class="cat-pill" data-cat="national">🇸🇦 المناسبات الوطنية</button>
-  <button class="cat-pill" data-cat="reports">📊 التقارير والإدارة</button>
-  <button class="cat-pill" data-cat="teacher">👨‍🏫 المعلم والطالب</button>
-  <button class="cat-pill" data-cat="tools">🛠️ الأدوات والمهارات</button>
-</div>
-
 <!-- ═══ Posts Grid ═══ -->
 <section class="posts" id="postsGrid">
   
@@ -668,14 +623,7 @@ body::before{
 </footer>
 
 <script>
-// تفاعل التصنيفات (الفلتر)
-document.querySelectorAll('.cat-pill').forEach(btn => {
-  btn.addEventListener('click', () => {
-    document.querySelectorAll('.cat-pill').forEach(b => b.classList.remove('active'));
-    btn.classList.add('active');
-    // مكان فلترة المقالات حسب الفئة لاحقاً
-  });
-});
+
 </script>
 
 </body>
