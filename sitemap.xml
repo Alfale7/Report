@@ -1,30 +1,17 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
-        xmlns:xhtml="http://www.w3.org/1999/xhtml">
-
-  <!-- ═══════════════════════════════════════════════════
-       🏠 الصفحة الرئيسية (أعلى أولوية)
-       ═══════════════════════════════════════════════════ -->
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
     <loc>https://ksa2030.one/</loc>
     <lastmod>2026-06-10</lastmod>
     <changefreq>weekly</changefreq>
     <priority>1.0</priority>
   </url>
-
-  <!-- ═══════════════════════════════════════════════════
-       💳 صفحة الدفع (مهمة جداً للتحويل)
-       ═══════════════════════════════════════════════════ -->
   <url>
     <loc>https://ksa2030.one/pay.html</loc>
     <lastmod>2026-06-10</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.95</priority>
   </url>
-
-  <!-- ═══════════════════════════════════════════════════
-       📊 كشوف الدرجات - متوافقة مع نور (0.92)
-       ═══════════════════════════════════════════════════ -->
   <url>
     <loc>https://ksa2030.one/noor.html</loc>
     <lastmod>2026-06-10</lastmod>
@@ -43,10 +30,6 @@
     <changefreq>monthly</changefreq>
     <priority>0.92</priority>
   </url>
-
-  <!-- ═══════════════════════════════════════════════════
-       💎 تقارير الإنجاز والمتميزون (0.9)
-       ═══════════════════════════════════════════════════ -->
   <url>
     <loc>https://ksa2030.one/enjaz.html</loc>
     <lastmod>2026-06-10</lastmod>
@@ -77,10 +60,6 @@
     <changefreq>monthly</changefreq>
     <priority>0.9</priority>
   </url>
-
-  <!-- ═══════════════════════════════════════════════════
-       🇸🇦 تقارير المناسبات الوطنية (0.85)
-       ═══════════════════════════════════════════════════ -->
   <url>
     <loc>https://ksa2030.one/watny.html</loc>
     <lastmod>2026-06-10</lastmod>
@@ -111,10 +90,6 @@
     <changefreq>monthly</changefreq>
     <priority>0.85</priority>
   </url>
-
-  <!-- ═══════════════════════════════════════════════════
-       📋 متابعة الطلاب والتواصل (0.85)
-       ═══════════════════════════════════════════════════ -->
   <url>
     <loc>https://ksa2030.one/weakness.html</loc>
     <lastmod>2026-06-10</lastmod>
@@ -127,20 +102,12 @@
     <changefreq>monthly</changefreq>
     <priority>0.85</priority>
   </url>
-
-  <!-- ═══════════════════════════════════════════════════
-       🆓 سجل المتابعة اليومي (مجاني للجميع)
-       ═══════════════════════════════════════════════════ -->
   <url>
     <loc>https://ksa2030.one/daily.html</loc>
     <lastmod>2026-06-10</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.85</priority>
   </url>
-
-  <!-- ═══════════════════════════════════════════════════
-       🎓 المناسبات التعليمية والثقافية (0.8)
-       ═══════════════════════════════════════════════════ -->
   <url>
     <loc>https://ksa2030.one/teacher.html</loc>
     <lastmod>2026-06-10</lastmod>
@@ -153,10 +120,6 @@
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
-
-  <!-- ═══════════════════════════════════════════════════
-       📑 تقارير إضافية (0.8)
-       ═══════════════════════════════════════════════════ -->
   <url>
     <loc>https://ksa2030.one/report2.html</loc>
     <lastmod>2026-06-10</lastmod>
@@ -169,10 +132,6 @@
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
-
-  <!-- ═══════════════════════════════════════════════════
-       📋 التقارير الإدارية والمدرسية (0.75)
-       ═══════════════════════════════════════════════════ -->
   <url>
     <loc>https://ksa2030.one/council.html</loc>
     <lastmod>2026-06-10</lastmod>
@@ -209,10 +168,6 @@
     <changefreq>monthly</changefreq>
     <priority>0.75</priority>
   </url>
-
-  <!-- ═══════════════════════════════════════════════════
-       🛠️ الأدوات المجانية (0.75)
-       ═══════════════════════════════════════════════════ -->
   <url>
     <loc>https://ksa2030.one/qr.html</loc>
     <lastmod>2026-06-10</lastmod>
@@ -255,10 +210,6 @@
     <changefreq>monthly</changefreq>
     <priority>0.75</priority>
   </url>
-
-  <!-- ═══════════════════════════════════════════════════
-       📄 صفحات المعلومات (0.6)
-       ═══════════════════════════════════════════════════ -->
   <url>
     <loc>https://ksa2030.one/about.html</loc>
     <lastmod>2026-06-10</lastmod>
@@ -289,10 +240,6 @@
     <changefreq>monthly</changefreq>
     <priority>0.5</priority>
   </url>
-
-  <!-- ═══════════════════════════════════════════════════
-       📑 الصفحات القانونية (0.3)
-       ═══════════════════════════════════════════════════ -->
   <url>
     <loc>https://ksa2030.one/privacy.html</loc>
     <lastmod>2026-06-10</lastmod>
@@ -311,5 +258,4 @@
     <changefreq>yearly</changefreq>
     <priority>0.3</priority>
   </url>
-
 </urlset>
