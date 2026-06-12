@@ -1106,6 +1106,61 @@ body.view-only-mode .crit-input{
 
   <!-- 🔥 Firebase Integration (يجب أن يكون قبل أي محتوى) -->
   <script type="module" src="report-firebase.js"></script>
+
+  <!-- ═══ Schema.org Markup ═══ -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "CreativeWork",
+    "name": "تقرير الزيارة الصفية",
+    "description": "تقرير الزيارة الصفية للمشرف التربوي",
+    "url": "https://ksa2030.one/visit.html",
+    "image": "https://ksa2030.one/icon512.png",
+    "inLanguage": "ar-SA",
+    "isPartOf": {
+      "@type": "WebSite",
+      "name": "التقارير الذكية ksa2030",
+      "url": "https://ksa2030.one"
+    },
+    "creator": {
+      "@type": "Organization",
+      "name": "التقارير الذكية ksa2030",
+      "url": "https://ksa2030.one",
+      "logo": "https://ksa2030.one/icon512.png"
+    },
+    "audience": {
+      "@type": "EducationalAudience",
+      "educationalRole": "teacher"
+    },
+    "offers": {
+      "@type": "Offer",
+      "price": "49",
+      "priceCurrency": "SAR",
+      "availability": "https://schema.org/InStock"
+    }
+  }
+  </script>
+  
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    "itemListElement": [
+      {
+        "@type": "ListItem",
+        "position": 1,
+        "name": "الرئيسية",
+        "item": "https://ksa2030.one/"
+      },
+      {
+        "@type": "ListItem",
+        "position": 2,
+        "name": "الزيارة الصفية",
+        "item": "https://ksa2030.one/visit.html"
+      }
+    ]
+  }
+  </script>
 </head>
 <body>
 
