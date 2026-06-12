@@ -7806,21 +7806,21 @@ font-size:0.78rem;text-align:center;margin-top:12px;display:none;
     <div class="footer-links">
 
       <div class="footer-col">
-        <h3 class="footer-col-title">🔗 روابط مهمة</h3>
+        <h3 class="footer-col-title" data-i18n="footerImportantLinks">🔗 روابط مهمة</h3>
         <ul class="footer-list">
-          <li><a href="privacy.html">🛡️ سياسة الخصوصية</a></li>
-          <li><a href="terms.html">📜 الشروط والأحكام</a></li>
-          <li><a href="refund.html">💰 سياسة الاسترجاع</a></li>
+          <li><a href="privacy.html" data-i18n="footerPrivacy">🛡️ سياسة الخصوصية</a></li>
+          <li><a href="terms.html" data-i18n="footerTerms">📜 الشروط والأحكام</a></li>
+          <li><a href="refund.html" data-i18n="footerRefund">💰 سياسة الاسترجاع</a></li>
         </ul>
       </div>
 
       <div class="footer-col">
-        <h3 class="footer-col-title">📂 روابط أخرى</h3>
+        <h3 class="footer-col-title" data-i18n="footerOtherLinks">📂 روابط أخرى</h3>
         <ul class="footer-list">
-          <li><a href="contact.html">💬 تواصل معنا</a></li>
-          <li><a href="about.html">💎 من نحن</a></li>
-          <li><a href="faq.html">❓ الأسئلة الشائعة</a></li>
-          <li><a href="blog/">📚 المدونة التعليمية</a></li>
+          <li><a href="contact.html" data-i18n="footerContact">💬 تواصل معنا</a></li>
+          <li><a href="about.html" data-i18n="footerAbout">💎 من نحن</a></li>
+          <li><a href="faq.html" data-i18n="footerFaq">❓ الأسئلة الشائعة</a></li>
+          <li><a href="blog/" data-i18n="footerBlog">📚 المدونة التعليمية</a></li>
         </ul>
       </div>
 
@@ -7830,14 +7830,16 @@ font-size:0.78rem;text-align:center;margin-top:12px;display:none;
     <div class="footer-brand">
       <div class="footer-logo">
         <span class="footer-logo-icon">📋</span>
-        <span class="footer-logo-text">منصة التقارير الذكية</span>
+        <span class="footer-logo-text" data-i18n="footerLogoText">منصة التقارير الذكية</span>
       </div>
-      <div class="footer-tagline">صُمم بـ <span class="footer-heart">♥</span> لمدارس المملكة العربية السعودية</div>
+      <div class="footer-tagline">
+        <span data-i18n="footerMadeWith">صُمم بـ</span> <span class="footer-heart">♥</span> <span data-i18n="footerForSchools">لمدارس المملكة العربية السعودية</span>
+      </div>
     </div>
 
     <!-- ©️ الحقوق -->
     <div class="footer-copy">
-      © 2026 · جميع الحقوق محفوظة · <a href="https://ksa2030.one">ksa2030.one</a>
+      © 2026 · <span data-i18n="footerRights">جميع الحقوق محفوظة</span> · <a href="https://ksa2030.one">ksa2030.one</a>
     </div>
 
   </footer>
@@ -8439,7 +8441,21 @@ const I18N = {
     madeWith1: "صُمم بـ",
     madeWith2: "لمدارس المملكة العربية السعودية",
     copyYear: "٢٠٢٦",
-    copyText: "جميع الحقوق محفوظة · التقارير الذكية"
+    copyText: "جميع الحقوق محفوظة · التقارير الذكية",
+    
+    footerImportantLinks: "🔗 روابط مهمة",
+    footerPrivacy: "🛡️ سياسة الخصوصية",
+    footerTerms: "📜 الشروط والأحكام",
+    footerRefund: "💰 سياسة الاسترجاع",
+    footerOtherLinks: "📂 روابط أخرى",
+    footerContact: "💬 تواصل معنا",
+    footerAbout: "💎 من نحن",
+    footerFaq: "❓ الأسئلة الشائعة",
+    footerBlog: "📚 المدونة التعليمية",
+    footerLogoText: "منصة التقارير الذكية",
+    footerMadeWith: "صُمم بـ",
+    footerForSchools: "لمدارس المملكة العربية السعودية",
+    footerRights: "جميع الحقوق محفوظة"
   },
   en: {
     brandMark: "Platform is Live",
@@ -8797,7 +8813,21 @@ const I18N = {
     madeWith1: "Made with",
     madeWith2: "for the schools of Saudi Arabia",
     copyYear: "2026",
-    copyText: "All rights reserved · Smart Reports"
+    copyText: "All rights reserved · Smart Reports",
+    
+    footerImportantLinks: "🔗 Important Links",
+    footerPrivacy: "🛡️ Privacy Policy",
+    footerTerms: "📜 Terms & Conditions",
+    footerRefund: "💰 Refund Policy",
+    footerOtherLinks: "📂 More Links",
+    footerContact: "💬 Contact Us",
+    footerAbout: "💎 About Us",
+    footerFaq: "❓ FAQ",
+    footerBlog: "📚 Educational Blog",
+    footerLogoText: "Smart Reports Platform",
+    footerMadeWith: "Made with",
+    footerForSchools: "for the schools of Saudi Arabia",
+    footerRights: "All rights reserved"
   }
 };
 
