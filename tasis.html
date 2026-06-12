@@ -1211,6 +1211,13 @@ async function saveAsImage(){
 
   showToast(I18N[getCurrentLang()].toastPreparing);
 
+  // إخفاء عناصر "+ إضافة صورة" للإطارات الفارغة أثناء الالتقاط (يُسترجع في finally)
+  const _phPrevImg=[];
+  document.querySelectorAll('#page .frame-placeholder').forEach(ph=>{
+    _phPrevImg.push([ph, ph.style.display]);
+    ph.style.display='none';
+  });
+
   try{
     await document.fonts.ready;
     const warm=document.createElement('canvas');
@@ -1238,12 +1245,14 @@ async function saveAsImage(){
     showToast(I18N[getCurrentLang()].toastDone);
   }catch(e){
     showToast(I18N[getCurrentLang()].toastError);
+  }finally{
+    // إرجاع الحقول + الإطارات (يضمن الاسترجاع حتى لو صار خطأ غير متوقع)
+    fields.forEach(([inpId,ptId,,isInline])=>{
+      document.getElementById(inpId).style.display='';
+      document.getElementById(ptId).style.display='none';
+    });
+    _phPrevImg.forEach(([ph,d])=>{ ph.style.display=d; });
   }
-
-  fields.forEach(([inpId,ptId,,isInline])=>{
-    document.getElementById(inpId).style.display='';
-    document.getElementById(ptId).style.display='none';
-  });
 }
 
 // ═══════════════════════════════════════════════
@@ -1342,6 +1351,13 @@ async function shareReport(){
 
   showToast('⏳ جاري تحضير المشاركة...');
 
+  // إخفاء عناصر "+ إضافة صورة" للإطارات الفارغة أثناء الالتقاط (يُسترجع في finally)
+  const _phPrevShare=[];
+  document.querySelectorAll('#page .frame-placeholder').forEach(ph=>{
+    _phPrevShare.push([ph, ph.style.display]);
+    ph.style.display='none';
+  });
+
   try {
     await document.fonts.ready;
     const warm = document.createElement('canvas');
@@ -1405,13 +1421,14 @@ async function shareReport(){
   } catch(e) {
     console.error('Share error:', e);
     showToast('❌ فشل التصدير');
+  } finally {
+    // إرجاع الحقول + الإطارات لوضعها الطبيعي (يضمن الاسترجاع حتى مع أي خطأ)
+    fields.forEach(([inpId,ptId,,isInline])=>{
+      document.getElementById(inpId).style.display = '';
+      document.getElementById(ptId).style.display = 'none';
+    });
+    _phPrevShare.forEach(([ph,d])=>{ ph.style.display=d; });
   }
-
-  // إرجاع الحقول لوضعها الطبيعي
-  fields.forEach(([inpId,ptId,,isInline])=>{
-    document.getElementById(inpId).style.display = '';
-    document.getElementById(ptId).style.display = 'none';
-  });
 }
 
 // ═══════════════════════════════════════════════════════
@@ -1848,6 +1865,13 @@ async function exportAsPDFv2(){
     replacements.push({ original: el, replacement });
   });
   
+  // إخفاء عناصر "+ إضافة صورة" للإطارات الفارغة أثناء الالتقاط (يُسترجع في finally)
+  const _phPrevPdf=[];
+  page.querySelectorAll('.frame-placeholder').forEach(ph=>{
+    _phPrevPdf.push([ph, ph.style.display]);
+    ph.style.display='none';
+  });
+
   try {
     // نتأكد من تحميل الخطوط
     if(document.fonts && document.fonts.ready){
@@ -1965,6 +1989,8 @@ async function exportAsPDFv2(){
       original.style.display = '';
       if(replacement.parentNode) replacement.parentNode.removeChild(replacement);
     });
+    // ═══ إرجاع الإطارات الفارغة ═══
+    _phPrevPdf.forEach(([ph,d])=>{ ph.style.display=d; });
   }
 }
 
