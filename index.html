@@ -6759,7 +6759,7 @@ font-size:0.78rem;text-align:center;margin-top:12px;display:none;
         <div class="cat-text">
           <div class="cat-title">
             <span data-i18n="catEalaj">الخطة العلاجية والإثرائية</span>
-            <span class="cat-count">1</span>
+            <span class="cat-count">2</span>
           </div>
           <div class="cat-sub" data-i18n="catEalajSub">علاج الضعف وإثراء التفوق · ٨ أقسام</div>
         </div>
@@ -6790,6 +6790,29 @@ font-size:0.78rem;text-align:center;margin-top:12px;display:none;
         <div class="card-action">‹</div>
       </div>
     </div>
+      <div class="preview-card r-ealaj locked" data-target="khotta.html" onclick="handleCardClick(this)">
+      <span class="card-badge badge-new">✨ <span data-i18n="badgeKhotta">جديد</span></span>
+      <div class="thumb" style="background:linear-gradient(135deg,#0b3946 0%,#1a6a7d 55%,#2c979d 100%);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;padding:18px;">
+        <div style="display:flex;gap:14px;align-items:center;">
+          <div style="width:52px;height:52px;border-radius:14px;background:rgba(255,255,255,0.14);border:1.5px solid rgba(255,255,255,0.3);display:flex;align-items:center;justify-content:center;font-size:1.5rem;">🩹</div>
+          <div style="width:52px;height:52px;border-radius:14px;background:rgba(201,164,91,0.25);border:1.5px solid rgba(201,164,91,0.45);display:flex;align-items:center;justify-content:center;font-size:1.5rem;">📊</div>
+        </div>
+        <div style="color:#fff;font-weight:900;font-size:0.92rem;text-align:center;">الخطة العلاجية · نظام نور</div>
+        <div style="color:rgba(255,255,255,0.85);font-size:0.66rem;font-weight:700;letter-spacing:1px;">REMEDIAL PLAN · NOOR</div>
+        <div style="background:rgba(255,255,255,0.16);border:1px solid rgba(255,255,255,0.25);border-radius:20px;padding:3px 12px;color:#fff;font-size:0.66rem;font-weight:800;">متوافقة مع نظام نور · مرنة</div>
+      </div>
+      <div class="card-content">
+        <div class="card-icon-wrap">
+          <div class="card-icon">🩹</div>
+        </div>
+        <div class="card-text">
+          <div class="card-title" data-i18n="khottaCardTitle">الخطة العلاجية (نظام نور)</div>
+          <div class="card-desc" data-i18n="khottaCardDesc">تحكم كامل بالحقول · متوافقة مع نور · تصدير صورة وPDF</div>
+        </div>
+        <div class="card-action">‹</div>
+      </div>
+    </div>
+
 
         </div>
       </div>
@@ -8322,6 +8345,9 @@ const I18N = {
     badgeEalaj: "جديد",
     ealajCardTitle: "الخطة العلاجية والإثرائية",
     ealajCardDesc: "حصر الطلاب · المهارات المفقودة · أنشطة الإثراء · تصدير PDF",
+    badgeKhotta: "جديد",
+    khottaCardTitle: "الخطة العلاجية (نظام نور)",
+    khottaCardDesc: "تحكم كامل بالحقول · متوافقة مع نور · تصدير صورة وPDF",
     catShawahedSub: "11 عنصر رسمي · فواصل + صور شواهد",
     badgeShawahed: "جديد",
     shawahedCardTitle: "شواهد الأداء الوظيفي",
@@ -8699,6 +8725,9 @@ const I18N = {
     badgeEalaj: "New",
     ealajCardTitle: "Remedial & Enrichment Plan",
     ealajCardDesc: "Students list · missing skills · enrichment activities · PDF export",
+    badgeKhotta: "New",
+    khottaCardTitle: "Remedial Plan (Noor System)",
+    khottaCardDesc: "Full field control · Noor-compatible · Image & PDF export",
     catShawahedSub: "11 official elements · Covers + evidence images",
     badgeShawahed: "New",
     shawahedCardTitle: "Job Performance Evidence",
@@ -9104,7 +9133,7 @@ function handleCardClick(card){
   const target = card.getAttribute('data-target');
 
   // 👁️ تقارير المعاينة / التجربة - يفتحها أي زائر بدون تسجيل دخول
-  const VIEW_ONLY_AND_FREE_TRIAL = ['report.html', 'tasis.html', 'watny.html', 'alm.html', 'alm2.html', 'green.html', 'shawahed.html', 'enjaz.html', 'kg.html', 'report2.html', 'report3.html', 'teacher.html', 'arabic.html', 'cert.html', 'exam.html', 'star.html', 'plan.html', 'visit.html', 'radio.html', 'council.html', 'parent.html', 'weakness.html', 'noor.html', 'noor2.html', 'noor3.html', 'ealaj.html'];
+  const VIEW_ONLY_AND_FREE_TRIAL = ['khotta.html', 'report.html', 'tasis.html', 'watny.html', 'alm.html', 'alm2.html', 'green.html', 'shawahed.html', 'enjaz.html', 'kg.html', 'report2.html', 'report3.html', 'teacher.html', 'arabic.html', 'cert.html', 'exam.html', 'star.html', 'plan.html', 'visit.html', 'radio.html', 'council.html', 'parent.html', 'weakness.html', 'noor.html', 'noor2.html', 'noor3.html', 'ealaj.html'];
   if (target && VIEW_ONLY_AND_FREE_TRIAL.includes(target)) {
     window.location.href = target;
     return;
