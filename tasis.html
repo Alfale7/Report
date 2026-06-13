@@ -10,6 +10,8 @@
 <title>تقرير يوم التأسيس · المناسبات الوطنية · ksa2030</title>
   <meta name="description" content="تقارير احترافية ليوم التأسيس السعودي بتصاميم تراثية. صور، نشاط، فعاليات، جاهزة للطباعة والمشاركة فوراً.">
   <meta name="keywords" content="تقرير يوم التأسيس, يوم التأسيس السعودي, مناسبات وطنية, 22 فبراير, تقرير وطني">
+  <link rel="canonical" href="https://ksa2030.one/tasis.html">
+  <meta name="robots" content="index, follow">
   
   <!-- Open Graph -->
   <meta property="og:title" content="تقرير يوم التأسيس · ksa2030">
@@ -650,7 +652,7 @@ transition:all 0.2s;
 </head>
 <body>
 
-
+<h1 style="position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0;">تقرير يوم التأسيس السعودي — نموذج احترافي للمناسبات الوطنية | ksa2030.one</h1>
 
 <div id="page">
 
@@ -1213,9 +1215,13 @@ async function saveAsImage(){
 
   // إخفاء عناصر "+ إضافة صورة" للإطارات الفارغة أثناء الالتقاط (يُسترجع في finally)
   const _phPrevImg=[];
-  document.querySelectorAll('#page .frame-placeholder').forEach(ph=>{
-    _phPrevImg.push([ph, ph.style.display]);
-    ph.style.display='none';
+  document.querySelectorAll('#page .photo-frame').forEach(fr=>{
+    const img=fr.querySelector('img');
+    const hasImg = img && img.src && img.src.startsWith('data:image/');
+    if(!hasImg){
+      _phPrevImg.push([fr, fr.style.display]);
+      fr.style.display='none';
+    }
   });
 
   try{
@@ -1353,9 +1359,13 @@ async function shareReport(){
 
   // إخفاء عناصر "+ إضافة صورة" للإطارات الفارغة أثناء الالتقاط (يُسترجع في finally)
   const _phPrevShare=[];
-  document.querySelectorAll('#page .frame-placeholder').forEach(ph=>{
-    _phPrevShare.push([ph, ph.style.display]);
-    ph.style.display='none';
+  document.querySelectorAll('#page .photo-frame').forEach(fr=>{
+    const img=fr.querySelector('img');
+    const hasImg = img && img.src && img.src.startsWith('data:image/');
+    if(!hasImg){
+      _phPrevShare.push([fr, fr.style.display]);
+      fr.style.display='none';
+    }
   });
 
   try {
@@ -1867,9 +1877,13 @@ async function exportAsPDFv2(){
   
   // إخفاء عناصر "+ إضافة صورة" للإطارات الفارغة أثناء الالتقاط (يُسترجع في finally)
   const _phPrevPdf=[];
-  page.querySelectorAll('.frame-placeholder').forEach(ph=>{
-    _phPrevPdf.push([ph, ph.style.display]);
-    ph.style.display='none';
+  page.querySelectorAll('.photo-frame').forEach(fr=>{
+    const img=fr.querySelector('img');
+    const hasImg = img && img.src && img.src.startsWith('data:image/');
+    if(!hasImg){
+      _phPrevPdf.push([fr, fr.style.display]);
+      fr.style.display='none';
+    }
   });
 
   try {
