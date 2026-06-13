@@ -7,6 +7,8 @@
 <title>ملف إنجاز معلمة رياض الأطفال · ksa2030</title>
   <meta name="description" content="ملف إنجاز رياض الأطفال احترافي بتصاميم ملونة وجذابة. وثّق إنجازات المعلمة بسهولة مع صور وشواهد دقيقة.">
   <meta name="keywords" content="ملف إنجاز رياض الأطفال, معلمة كي جي, KG portfolio, إنجاز كي جي, رياض أطفال">
+  <link rel="canonical" href="https://ksa2030.one/kg.html">
+  <meta name="robots" content="index, follow">
   
   <!-- Open Graph -->
   <meta property="og:title" content="ملف إنجاز معلمة رياض الأطفال · ksa2030">
@@ -2450,6 +2452,7 @@ body.view-tabs .section.tab-section.tab-active{display:block; animation:fadeInTa
 .exporting .toc-accordion-header{cursor:default;}
 .exporting .toc-collapsible{max-height:none !important; opacity:1 !important; margin-top:10px !important;}
 .exporting .shahed-slot:not(.has-image){display:none !important;}
+.exporting .cover-photo-wrap:not(.has-cover){display:none !important;}
 .exporting .field-input::placeholder,
 .exporting .field-textarea::placeholder,
 .exporting input::placeholder,
@@ -2975,6 +2978,7 @@ body.view-tabs .section.tab-section.tab-active{display:block; animation:fadeInTa
   </script>
 </head>
 <body data-theme="">
+<h1 style="position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0;">ملف إنجاز معلمة رياض الأطفال — نموذج احترافي جاهز | ksa2030.one</h1>
 <div class="enjaz-paper" id="enjaz-paper">
 
   <!-- ═══ شريط وضع العرض (Continuous / Tabbed) ═══ -->
@@ -4408,6 +4412,7 @@ function loadData(){
           document.getElementById('photoImg').src = data[key];
           document.getElementById('photoImg').style.display = 'block';
           document.getElementById('photoPlaceholder').style.display = 'none';
+          document.getElementById('photoWrap').classList.add('has-cover');
         }
         return;
       }
@@ -4620,6 +4625,7 @@ if(document.readyState === 'loading'){
     document.getElementById('photoImg').src = ev.target.result;
     document.getElementById('photoImg').style.display = 'block';
     document.getElementById('photoPlaceholder').style.display = 'none';
+    document.getElementById('photoWrap').classList.add('has-cover');
     scheduleSave();
   };
   reader.readAsDataURL(file);
@@ -5379,20 +5385,22 @@ function collectAtomicRectsForPDF(paper, scale){
 // 🆕 ضبط نقطة القطع (نظام طبقتين)
 function adjustCutForAtomic(tentativeCut, atomic, yOffset, pageHeight){
   let cut = tentativeCut;
-  // 1) الـ hard: محترمة دائماً — اسحب القطع لرأس أصغر عنصر منشطر
-  for(const r of atomic.hard){
-    if(r.top > yOffset && r.top < cut && r.bottom > tentativeCut){
-      if(r.top < cut) cut = r.top;
-    }
-  }
-  // 2) الـ soft: محترمة فقط إن بقيت الصفحة ممتلئة ≥75%
-  //    وإلا نسمح بانكسارها بين بنودها الـ hard الداخلية
   const minPageFill = pageHeight * 0.75;
-  for(const r of atomic.soft){
-    if(r.top > yOffset && r.top < cut && r.bottom > tentativeCut){
-      const pageContent = r.top - yOffset;
-      if(pageContent >= minPageFill && r.top < cut){
-        cut = r.top;
+  // نكرّر الفحص حتى تستقر نقطة القطع: سحب القطع لأعلى عنصرٍ قد يقع وسط عنصرٍ آخر،
+  // لذا نُعيد الفحص حتى لا تَشطُر النقطةُ الحاليةُ أيَّ عنصرٍ ذرّي.
+  let changed = true, guard = 0;
+  while(changed && guard < 200){
+    changed = false; guard++;
+    // 1) الـ hard: محترمة دائماً — أي عنصر تَشطُره نقطةُ القطع الحالية، اسحب القطع لرأسه
+    for(const r of atomic.hard){
+      if(r.top > yOffset && r.top < cut && r.bottom > cut){
+        cut = r.top; changed = true;
+      }
+    }
+    // 2) الـ soft: محترمة فقط إن بقيت الصفحة ممتلئة ≥75%
+    for(const r of atomic.soft){
+      if(r.top > yOffset && r.top < cut && r.bottom > cut){
+        if((r.top - yOffset) >= minPageFill){ cut = r.top; changed = true; }
       }
     }
   }
