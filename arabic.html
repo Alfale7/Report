@@ -9,6 +9,8 @@
 <title>تقرير يوم اللغة العربية · ksa2030</title>
   <meta name="description" content="تقارير احترافية لليوم العالمي للغة العربية. تصاميم تراثية جميلة، صور، فعاليات، جاهزة للطباعة والمشاركة.">
   <meta name="keywords" content="يوم اللغة العربية, اليوم العالمي للغة العربية, تقرير لغة عربية, 18 ديسمبر, لغتي">
+  <link rel="canonical" href="https://ksa2030.one/arabic.html">
+  <meta name="robots" content="index, follow">
   
   <!-- Open Graph -->
   <meta property="og:title" content="تقرير يوم اللغة العربية · ksa2030">
@@ -1038,6 +1040,7 @@ html,body{
   </script>
 </head>
 <body>
+<h1 style="position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0;">تقرير يوم اللغة العربية — نموذج فعالية جاهز | ksa2030.one</h1>
 
 <div id="toast"></div>
 
@@ -1654,7 +1657,7 @@ async function saveAsImage(){
       logging: false,
       allowTaint: true,
       foreignObjectRendering: false,
-      onclone: (doc) => {
+      onclone: (doc) => {doc.querySelectorAll('.photo-slot').forEach(function(sl){if(!sl.classList.contains('has-image')){sl.style.display='none';}});
         const style = doc.createElement('style');
         style.textContent = `
           * {
@@ -1822,7 +1825,7 @@ async function shareReport(){
       useCORS: true,
       logging: false,
       allowTaint: true,
-      onclone: (doc) => {
+      onclone: (doc) => {doc.querySelectorAll('.photo-slot').forEach(function(sl){if(!sl.classList.contains('has-image')){sl.style.display='none';}});
         const style = doc.createElement('style');
         style.textContent = "* { font-family: 'Tajawal','Arial Unicode MS','Tahoma',Arial,sans-serif !important; letter-spacing: 0 !important; }";
         doc.head.appendChild(style);
@@ -1989,7 +1992,7 @@ async function exportAsPDFv2(){
       useCORS: true,
       logging: false,
       allowTaint: true,
-      onclone: (doc) => {
+      onclone: (doc) => {doc.querySelectorAll('.photo-slot').forEach(function(sl){if(!sl.classList.contains('has-image')){sl.style.display='none';}});
         const style = doc.createElement('style');
         style.textContent = `
           * {
